@@ -236,3 +236,10 @@ __marimo__/
 # Ignore editor-specific JetBrains files (if you want):
 .idea/
 .vscode/
+
+
+# ignore claude related files
+.claude/
+apps/backend/.clinerules
+apps/frontend/.clinerules
+.clinerules

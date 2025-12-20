@@ -1,4 +1,111 @@
-name: backend-ci.yml
+name: Backend CI
+
 on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: codegraph
+          POSTGRES_PASSWORD: codegraph
+          POSTGRES_DB: codegraph_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: apps/backend/.venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Run linting (Black, Ruff)
+        run: |
+          poetry run black --check src/ tests/
+          poetry run ruff check src/ tests/
+
+      - name: Run type checking (mypy)
+        run: poetry run mypy src/
+
+      - name: Run tests with coverage
+        env:
+          DATABASE_URL: postgresql+asyncpg://codegraph:codegraph@localhost:5432/codegraph_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: poetry run pytest --cov=src --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: apps/backend/coverage.xml
+          flags: backend
+          name: backend-coverage
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Bandit security check
+        working-directory: apps/backend
+        run: |
+          pip install bandit
+          bandit -r src -f json -o bandit-report.json
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: bandit-security-report
+          path: apps/backend/bandit-report.json

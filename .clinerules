@@ -97,11 +97,62 @@ codegraph/
 - **Token Tracking**: Log token usage for cost monitoring
 - **Performance Metrics**: Track execution time per agent/tool
 
-### Cost Optimization
-- **Model Selection**: Use simplest model that can complete the task
-- **Prompt Efficiency**: Keep prompts concise, avoid unnecessary context
-- **Caching**: Cache LLM responses where appropriate
-- **Rate Limiting**: Implement user-level rate limits to prevent abuse
+### Cost Optimization (CRITICAL - Hard Constraints)
+
+#### Model Tiering (Golden Rule)
+- **Haiku 4.5**: Routing, classification, planning (max 200 tokens), tool selection, code diffs, exploration
+- **Sonnet 4.5**: Final synthesis/polish ONLY (max 800 tokens), user-visible answers
+- **Opus 4**: Reserved for complex architectural decisions (use sparingly, NOT as default)
+
+**Pattern**:
+```
+User Input → Haiku (intent) → Haiku (plan) → Haiku (diffs/tools) → Sonnet (final polish, max 800 tokens)
+```
+
+**Rule**: If Sonnet appears anywhere except final synthesis, cost budget is exceeded.
+
+#### Hard Output Token Caps
+- **Sonnet max_output_tokens = 800** (Non-negotiable)
+- **No chain-of-thought reasoning** in responses
+- **No explaining your reasoning** to users
+- **No intermediate step exposure**
+- **Respond concisely**: Never restate the problem or show debug logs
+
+#### Structured Outputs Over Explanations
+- BAD: "Explain why this code works..."
+- GOOD: `{"change_summary": "...", "diff": "...", "risk_level": "low"}`
+- Use JSON/structured formats, never verbose prose for internal reasoning
+
+#### Cache Discipline
+- **CACHE ONLY immutable content**: Framework docs, static schemas, API contracts, coding standards
+- **NEVER cache**: Conversation history, partial outputs, planning steps, tool results
+- Rule of Thumb: If it changes per request → do not cache
+
+#### Early-Exit Guards
+- Use cheap Haiku pre-checks before expensive flows
+- Stop if: "No code change needed", "User wants explanation only", "Duplicate request"
+- Pattern: `Haiku → should_continue: true|false` (abort early = zero Sonnet cost)
+
+#### Diff-Only Code Generation
+- Never generate full files
+- Use unified diffs only
+- Context window ≤ 200 lines
+- One file at a time
+- This alone cuts output tokens by 10×
+
+#### LangSmith Cost Monitoring
+- Set cost per run limits
+- Alert on token budget overages
+- Detect model misuse (Sonnet outside final node)
+- Fail run if Sonnet output tokens exceed 2k per trace
+
+#### Expected Savings
+- Cap Sonnet output: 70-85% reduction
+- Model tiering: 40-60% reduction
+- Cache hygiene: 20-30% reduction
+- Early exits: Variable but large
+- Diff-only code: 5-10× per code task
+- **Combined target**: Reduce costs by 85-90%
 
 ## Dependency Management
 
