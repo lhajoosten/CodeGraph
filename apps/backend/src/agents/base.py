@@ -3,8 +3,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from langchain_core.messages import BaseMessage
-
 from src.core.config import settings
 from src.core.logging import get_logger
 

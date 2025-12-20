@@ -4,5 +4,5 @@ export function Tasks() {
       <h1 className="text-3xl font-bold mb-6">Tasks</h1>
       <p>Task list will be implemented here</p>
     </div>
-  )
+  );
 }

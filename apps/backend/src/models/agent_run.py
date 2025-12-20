@@ -4,7 +4,7 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, JSON, String
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin
@@ -39,9 +39,7 @@ class AgentRun(Base, TimestampMixin):
     __tablename__ = "agent_runs"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    agent_type: Mapped[AgentType] = mapped_column(
-        Enum(AgentType), nullable=False, index=True
-    )
+    agent_type: Mapped[AgentType] = mapped_column(Enum(AgentType), nullable=False, index=True)
     status: Mapped[AgentRunStatus] = mapped_column(
         Enum(AgentRunStatus), default=AgentRunStatus.PENDING, nullable=False, index=True
     )

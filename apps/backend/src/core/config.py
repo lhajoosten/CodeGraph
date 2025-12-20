@@ -1,7 +1,5 @@
 """Application configuration management using Pydantic Settings."""
 
-from typing import List
-
 from pydantic import PostgresDsn, RedisDsn, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -43,12 +41,12 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
 
     # CORS
-    cors_origins: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
     cors_allow_credentials: bool = True
 
     @field_validator("cors_origins", mode="before")
     @classmethod
-    def parse_cors_origins(cls, v: str | List[str]) -> List[str]:
+    def parse_cors_origins(cls, v: str | list[str]) -> list[str]:
         """Parse comma-separated CORS origins into a list."""
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",")]

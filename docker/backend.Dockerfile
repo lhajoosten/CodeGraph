@@ -1,6 +1,6 @@
 # Multi-stage build for Python backend
 
-FROM python:3.11-slim as base
+FROM python:3.12-alpine AS base
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -9,10 +9,9 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+    build-base \
+    curl
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
@@ -39,7 +38,7 @@ CMD poetry run alembic upgrade head && \
     poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000
 
 # Production stage
-FROM base as production
+FROM base AS production
 
 # Remove development dependencies
 RUN poetry install --no-interaction --no-ansi --no-root --only main

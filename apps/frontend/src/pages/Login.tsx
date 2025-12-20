@@ -1,27 +1,35 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/stores/auth-store'
-import { api } from '@/lib/api'
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth-store';
+import { useLogin } from '@/hooks';
 
 export function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
-  const login = useAuthStore((state) => state.login)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  const loginMutation = useLogin();
 
-    try {
-      const response = await api.post('/auth/login', { email, password })
-      login(response.data.access_token)
-      navigate('/')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed')
-    }
-  }
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    loginMutation.mutate(
+      {
+        requestBody: {
+          email,
+          password,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          login(data.access_token);
+          navigate('/');
+        },
+      }
+    );
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -32,9 +40,11 @@ export function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
+          {loginMutation.error && (
             <div className="rounded bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
+              {loginMutation.error instanceof Error
+                ? loginMutation.error.message
+                : 'Login failed. Please try again.'}
             </div>
           )}
 
@@ -49,6 +59,7 @@ export function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded border px-3 py-2"
               required
+              disabled={loginMutation.isPending}
             />
           </div>
 
@@ -63,17 +74,19 @@ export function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded border px-3 py-2"
               required
+              disabled={loginMutation.isPending}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+            disabled={loginMutation.isPending}
+            className="w-full rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            Sign In
+            {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

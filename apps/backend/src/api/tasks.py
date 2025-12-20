@@ -70,9 +70,7 @@ async def list_tasks(
     offset = (page - 1) * page_size
 
     # Get total count
-    count_result = await db.execute(
-        select(Task).where(Task.user_id == current_user.id)
-    )
+    count_result = await db.execute(select(Task).where(Task.user_id == current_user.id))
     total = len(count_result.scalars().all())
 
     # Get paginated tasks

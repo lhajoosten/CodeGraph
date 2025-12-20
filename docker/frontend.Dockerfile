@@ -1,6 +1,6 @@
 # Multi-stage build for React frontend
 
-FROM node:18-alpine as base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
@@ -14,19 +14,19 @@ RUN npm install
 COPY . .
 
 # Development stage
-FROM base as development
+FROM base AS development
 
 EXPOSE 5173
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # Build stage
-FROM base as build
+FROM base AS build
 
 RUN npm run build
 
 # Production stage with nginx
-FROM nginx:alpine as production
+FROM nginx:alpine AS production
 
 # Copy built files from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
