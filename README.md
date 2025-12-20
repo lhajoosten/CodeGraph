@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![CodeGraph Logo](docs/assets/logo.png)
+![CodeGraph Logo](CodeGraphBanner.jpg)
 
 **Autonomous AI coding agents powered by Claude**
 
