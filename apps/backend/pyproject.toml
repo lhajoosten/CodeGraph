@@ -36,6 +36,8 @@ mypy = "^1.7.1"
 types-python-jose = "^3.5.0.20250531"
 types-passlib = "^1.7.7.20250602"
 aiosqlite = "^0.20.0"
+testcontainers = "^4.13.3"
+psycopg2-binary = "^2.9.11"
 
 [build-system]
 requires = ["poetry-core"]

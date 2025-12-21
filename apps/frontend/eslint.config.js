@@ -18,6 +18,7 @@ export default tseslint.config(
       "**/openapi-ts.config.ts",
       ".husky/",
       "src/openapi/**/*",
+      "coverage/", // ignore coverage output
     ],
   },
   eslint.configs.recommended,
@@ -101,10 +102,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{ts,tsx}", "vitest.config.ts", "vite.config.ts"],
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.json", "./tsconfig.node.json"],
+        project: ["./tsconfig.eslint.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },

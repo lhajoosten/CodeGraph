@@ -184,6 +184,13 @@ coverage/
 reports/
 .traces/
 runs/
+apps/**/coverage/
+apps/**/reports/
+apps/**/.nyc_output/
+apps/**/test-results/
+apps/**/cypress/videos/
+apps/**/cypress/screenshots/
+apps/**/coverage.xml
 
 ############################
 # LangChain / LangGraph / LangSmith

@@ -35,6 +35,6 @@
       "@/types/react-query/*": ["node_modules/types/react-query/*"]
     }
   },
-  "include": ["src", "vitest.config.ts", "test"],
+  "include": ["src", "test"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
