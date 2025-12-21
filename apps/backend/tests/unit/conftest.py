@@ -12,7 +12,6 @@ from sqlalchemy.pool import StaticPool
 from src.core.database import Base, get_db
 from src.main import app
 
-
 # In-memory SQLite for unit tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 

@@ -37,8 +37,8 @@ async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
     # Create some tasks
     for i in range(3):
         task = Task(
-            title=f"Task {i+1}",
-            description=f"Description for task {i+1}",
+            title=f"Task {i + 1}",
+            description=f"Description for task {i + 1}",
             status=TaskStatus.PENDING if i == 0 else TaskStatus.IN_PROGRESS,
             priority=TaskPriority.MEDIUM,
             user_id=user.id,
@@ -55,9 +55,7 @@ async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
 class TestTaskIntegration:
     """Integration tests for task management with PostgreSQL."""
 
-    async def test_create_task_success(
-        self, client: TestClient, auth_token: str
-    ) -> None:
+    async def test_create_task_success(self, client: TestClient, auth_token: str) -> None:
         """Test successful task creation."""
         response = client.post(
             "/api/v1/tasks",
@@ -190,9 +188,7 @@ class TestTaskIntegration:
         )
         assert response.status_code == 404
 
-    async def test_get_nonexistent_task(
-        self, client: TestClient, auth_token: str
-    ) -> None:
+    async def test_get_nonexistent_task(self, client: TestClient, auth_token: str) -> None:
         """Test getting a non-existent task."""
         response = client.get(
             "/api/v1/tasks/99999",

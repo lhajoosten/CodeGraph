@@ -84,5 +84,6 @@ jobs:
         with:
           urls: |
             http://localhost:3000
+          staticDistDir: ./apps/frontend/dist
           uploadArtifacts: true
           temporaryPublicStorage: true

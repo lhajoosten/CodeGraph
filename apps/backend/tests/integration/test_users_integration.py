@@ -76,9 +76,7 @@ class TestUserAuthIntegration:
         )
         assert response.status_code == 422
 
-    async def test_login_success(
-        self, client: TestClient, db_session: AsyncSession
-    ) -> None:
+    async def test_login_success(self, client: TestClient, db_session: AsyncSession) -> None:
         """Test successful login returns JWT tokens."""
         # Register user first
         register_response = client.post(
@@ -139,9 +137,7 @@ class TestUserAuthIntegration:
         )
         assert response.status_code == 401
 
-    async def test_login_inactive_user(
-        self, client: TestClient, db_session: AsyncSession
-    ) -> None:
+    async def test_login_inactive_user(self, client: TestClient, db_session: AsyncSession) -> None:
         """Test login fails for inactive user."""
         # Create inactive user directly
         inactive_user = User(

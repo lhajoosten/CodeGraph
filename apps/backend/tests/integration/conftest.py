@@ -12,7 +12,6 @@ from testcontainers.postgres import PostgresContainer
 from src.core.database import Base, get_db
 from src.main import app
 
-
 # Global container instance
 pg_container: PostgresContainer | None = None
 
@@ -48,14 +47,16 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
     parsed = urlparse(sync_url)
 
     # Rebuild URL with asyncpg scheme
-    async_db_url = urlunparse((
-        "postgresql+asyncpg",  # scheme
-        parsed.netloc,  # network location (user:password@host:port)
-        parsed.path,  # path (database name)
-        parsed.params,
-        parsed.query,
-        parsed.fragment,
-    ))
+    async_db_url = urlunparse(
+        (
+            "postgresql+asyncpg",  # scheme
+            parsed.netloc,  # network location (user:password@host:port)
+            parsed.path,  # path (database name)
+            parsed.params,
+            parsed.query,
+            parsed.fragment,
+        )
+    )
 
     try:
         # Create engine with asyncpg

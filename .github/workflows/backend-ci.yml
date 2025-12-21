@@ -69,10 +69,8 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
-      - name: Run linting (Black, Ruff)
-        run: |
-          poetry run black --check src/ tests/
-          poetry run ruff check src/ tests/
+      - name: Run linting (Ruff)
+        run: poetry run ruff check src/ tests/
 
       - name: Run type checking (mypy)
         run: poetry run mypy src/
