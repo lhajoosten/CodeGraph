@@ -36,6 +36,6 @@
     }
   },
   "include": ["src", "vitest.config.ts", "test"],
-  "exclude": ["eslint.config.js"],
+  "exclude": [""],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

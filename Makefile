@@ -32,14 +32,22 @@ help:
 	@echo "  make docker-compose    - Start full stack with docker-compose"
 	@echo ""
 	@echo "Code Quality:"
+	@echo "  make check             - Full check pipeline (lint + format + type-check)"
+	@echo "  make check-backend     - Backend check pipeline"
+	@echo "  make check-frontend    - Frontend check pipeline"
+	@echo ""
 	@echo "  make lint              - Run linters (backend + frontend)"
 	@echo "  make lint-backend      - Run backend linter (ruff)"
 	@echo "  make lint-frontend     - Run frontend linter (eslint)"
 	@echo "  make lint-fix          - Run frontend linter fix"
+	@echo ""
 	@echo "  make format            - Format code (backend + frontend)"
-	@echo "  make format-backend    - Format backend code (black)"
+	@echo "  make format-backend    - Format backend code (ruff)"
 	@echo "  make format-frontend   - Format frontend code (prettier)"
+	@echo ""
 	@echo "  make type-check        - Type check (backend + frontend)"
+	@echo "  make type-check-backend - Type check backend (mypy)"
+	@echo "  make type-check-frontend - Type check frontend"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test              - Run tests (backend + frontend)"
@@ -143,7 +151,7 @@ format: format-backend format-frontend
 
 format-backend:
 	@echo "Formatting backend code..."
-	cd $(BACKEND_DIR) && poetry run black src/
+	cd $(BACKEND_DIR) && poetry run ruff format .
 
 format-frontend:
 	@echo "Formatting frontend code..."
@@ -202,9 +210,15 @@ clean-frontend:
 	cd $(FRONTEND_DIR) && \
 		rm -rf node_modules .next .dist build coverage .vite dist 2>/dev/null || true
 
-# Utilities
-check: type-check lint
-	@echo "✓ All checks passed (types + lint)"
+# Code Quality Pipeline
+check-backend: lint-backend format-backend type-check-backend
+	@echo "✓ Backend checks passed (lint + format + type-check)"
+
+check-frontend: lint-frontend format-frontend type-check-frontend
+	@echo "✓ Frontend checks passed (lint + format + type-check)"
+
+check: check-backend check-frontend
+	@echo "✓ All checks passed (backend + frontend)"
 
 setup: install db-migrate
 	@echo "✓ Development environment setup complete"

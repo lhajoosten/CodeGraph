@@ -13,6 +13,7 @@ export default tseslint.config(
   {
     ignores: [
       "**/dist/",
+      "eslint.config.js",
       "eslint.config.mjs",
       "**/openapi-ts.config.ts",
       ".husky/",
@@ -39,11 +40,6 @@ export default tseslint.config(
       parser: tsParser,
       ecmaVersion: "latest",
       sourceType: "module",
-
-      parserOptions: {
-        project: ["./tsconfig.json", "./tsconfig.node.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
     },
 
     settings: {
@@ -106,6 +102,12 @@ export default tseslint.config(
   },
   {
     files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.json", "./tsconfig.node.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   },
   {
     files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
