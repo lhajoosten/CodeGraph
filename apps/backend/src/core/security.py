@@ -8,8 +8,8 @@ from passlib.context import CryptContext
 
 from src.core.config import settings
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing context with bcrypt configuration to avoid wrap bug detection issues
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

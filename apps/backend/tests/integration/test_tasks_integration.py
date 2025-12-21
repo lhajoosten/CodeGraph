@@ -1,7 +1,8 @@
 """Integration tests for task management endpoints with real database."""
 
 import pytest
-from fastapi.testclient import TestClient
+import pytest_asyncio
+from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.security import create_access_token, get_password_hash
@@ -9,26 +10,25 @@ from src.models.task import Task, TaskPriority, TaskStatus
 from src.models.user import User
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def auth_token(db_session: AsyncSession) -> str:
     """Create an authenticated user and return access token."""
     user = User(
         email="taskuser@example.com",
-        hashed_password=get_password_hash("pass123"),
+        hashed_password=get_password_hash("pass1234"),
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
-
     return create_access_token({"sub": str(user.id)})
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
     """Create user with some tasks and return user + token."""
     user = User(
         email="taskcreator@example.com",
-        hashed_password=get_password_hash("pass123"),
+        hashed_password=get_password_hash("pass1234"),
     )
     db_session.add(user)
     await db_session.commit()
@@ -46,7 +46,6 @@ async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
         db_session.add(task)
 
     await db_session.commit()
-
     token = create_access_token({"sub": str(user.id)})
     return user, token
 
@@ -55,9 +54,9 @@ async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
 class TestTaskIntegration:
     """Integration tests for task management with PostgreSQL."""
 
-    async def test_create_task_success(self, client: TestClient, auth_token: str) -> None:
+    async def test_create_task_success(self, client: AsyncClient, auth_token: str) -> None:
         """Test successful task creation."""
-        response = client.post(
+        response = await client.post(
             "/api/v1/tasks",
             json={
                 "title": "Fix bug in login",
@@ -72,9 +71,9 @@ class TestTaskIntegration:
         assert data["priority"] == "high"
         assert data["status"] == "pending"
 
-    async def test_create_task_unauthorized(self, client: TestClient) -> None:
+    async def test_create_task_unauthorized(self, client: AsyncClient) -> None:
         """Test task creation fails without authentication."""
-        response = client.post(
+        response = await client.post(
             "/api/v1/tasks",
             json={
                 "title": "Unauthorized task",
@@ -85,30 +84,31 @@ class TestTaskIntegration:
         assert response.status_code == 401
 
     async def test_list_user_tasks(
-        self, client: TestClient, user_with_tasks: tuple[User, str]
+        self, client: AsyncClient, user_with_tasks: tuple[User, str]
     ) -> None:
         """Test retrieving user's tasks."""
         user, token = user_with_tasks
 
-        response = client.get(
+        response = await client.get(
             "/api/v1/tasks",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 3
-        assert all(task["user_id"] == user.id for task in data)
+        assert data["total"] == 3
+        assert len(data["items"]) == 3
+        assert all(task["user_id"] == user.id for task in data["items"])
 
     async def test_get_task_detail(
-        self, client: TestClient, db_session: AsyncSession, auth_token: str
+        self, client: AsyncClient, db_session: AsyncSession, auth_token: str
     ) -> None:
         """Test retrieving a single task."""
-        # Get user from token
+        # Setup async database operations
         user = await db_session.get(User, 1)
         if not user:
             user = User(
                 email="detailuser@example.com",
-                hashed_password=get_password_hash("pass123"),
+                hashed_password=get_password_hash("pass1234"),
             )
             db_session.add(user)
             await db_session.commit()
@@ -125,7 +125,7 @@ class TestTaskIntegration:
         await db_session.refresh(task)
 
         # Get task
-        response = client.get(
+        response = await client.get(
             f"/api/v1/tasks/{task.id}",
             headers={"Authorization": f"Bearer {auth_token}"},
         )
@@ -135,20 +135,23 @@ class TestTaskIntegration:
         assert data["id"] == task.id
 
     async def test_update_task(
-        self, client: TestClient, user_with_tasks: tuple[User, str], db_session: AsyncSession
+        self, client: AsyncClient, user_with_tasks: tuple[User, str], db_session: AsyncSession
     ) -> None:
         """Test updating a task."""
+        from sqlalchemy import select
+
         user, token = user_with_tasks
 
         # Get first task
-        tasks = await db_session.query(Task).filter(Task.user_id == user.id).all()
+        result = await db_session.execute(select(Task).where(Task.user_id == user.id))
+        tasks = result.scalars().all()
         task_id = tasks[0].id if tasks else None
 
         if not task_id:
             pytest.skip("No tasks found")
 
         # Update task
-        response = client.patch(
+        response = await client.patch(
             f"/api/v1/tasks/{task_id}",
             json={
                 "title": "Updated Task Title",
@@ -162,35 +165,38 @@ class TestTaskIntegration:
         assert data["status"] == "completed"
 
     async def test_delete_task(
-        self, client: TestClient, user_with_tasks: tuple[User, str], db_session: AsyncSession
+        self, client: AsyncClient, user_with_tasks: tuple[User, str], db_session: AsyncSession
     ) -> None:
         """Test deleting a task."""
+        from sqlalchemy import select
+
         user, token = user_with_tasks
 
         # Get first task
-        tasks = await db_session.query(Task).filter(Task.user_id == user.id).all()
+        result = await db_session.execute(select(Task).where(Task.user_id == user.id))
+        tasks = result.scalars().all()
         task_id = tasks[0].id if tasks else None
 
         if not task_id:
             pytest.skip("No tasks found")
 
         # Delete task
-        response = client.delete(
+        response = await client.delete(
             f"/api/v1/tasks/{task_id}",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == 204
 
         # Verify deletion
-        response = client.get(
+        response = await client.get(
             f"/api/v1/tasks/{task_id}",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == 404
 
-    async def test_get_nonexistent_task(self, client: TestClient, auth_token: str) -> None:
+    async def test_get_nonexistent_task(self, client: AsyncClient, auth_token: str) -> None:
         """Test getting a non-existent task."""
-        response = client.get(
+        response = await client.get(
             "/api/v1/tasks/99999",
             headers={"Authorization": f"Bearer {auth_token}"},
         )
