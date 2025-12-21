@@ -166,10 +166,6 @@ out/
 coverage/
 reports/
 
-# Package manager
-package-lock.json*
-yarn.lock*
-
 ############################
 # Frontend Frameworks & Deployments
 ############################
@@ -179,6 +175,7 @@ yarn.lock*
 .storybook/
 .cypress/
 .test-results/
+.tanstack
 
 ############################
 # Testing
@@ -187,6 +184,13 @@ coverage/
 reports/
 .traces/
 runs/
+apps/**/coverage/
+apps/**/reports/
+apps/**/.nyc_output/
+apps/**/test-results/
+apps/**/cypress/videos/
+apps/**/cypress/screenshots/
+apps/**/coverage.xml
 
 ############################
 # LangChain / LangGraph / LangSmith
@@ -236,3 +240,10 @@ __marimo__/
 # Ignore editor-specific JetBrains files (if you want):
 .idea/
 .vscode/
+
+
+# ignore claude related files
+.claude/
+apps/backend/.clinerules
+apps/frontend/.clinerules
+.clinerules
