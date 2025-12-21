@@ -35,6 +35,7 @@ help:
 	@echo "  make lint              - Run linters (backend + frontend)"
 	@echo "  make lint-backend      - Run backend linter (ruff)"
 	@echo "  make lint-frontend     - Run frontend linter (eslint)"
+	@echo "  make lint-fix          - Run frontend linter fix"
 	@echo "  make format            - Format code (backend + frontend)"
 	@echo "  make format-backend    - Format backend code (black)"
 	@echo "  make format-frontend   - Format frontend code (prettier)"
@@ -131,6 +132,11 @@ lint-backend:
 lint-frontend:
 	@echo "Linting frontend code..."
 	cd $(FRONTEND_DIR) && npm run lint
+
+lint-fix:
+	@echo "Fixing frontend lint issues..."
+	cd $(FRONTEND_DIR) && npm run lint:fix
+	@echo "✓ Frontend lint issues fixed"
 
 format: format-backend format-frontend
 	@echo "✓ All code formatted"

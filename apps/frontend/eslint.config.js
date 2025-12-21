@@ -1,100 +1,117 @@
-import js from '@eslint/js';
-      import tseslint from '@typescript-eslint/eslint-plugin';
-      import tsparser from '@typescript-eslint/parser';
-      import react from 'eslint-plugin-react';
-      import reactHooks from 'eslint-plugin-react-hooks';
-      import reactRefresh from 'eslint-plugin-react-refresh';
-      import { fileURLToPath } from 'url';
-      import { dirname } from 'path';
-      const __dirname = dirname(fileURLToPath(import.meta.url));
+import reactRefresh from "eslint-plugin-react-refresh";
+import reactCompiler from "eslint-plugin-react-compiler";
+import react19Upgrade from "eslint-plugin-react-19-upgrade";
+import globals from "globals";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import tseslint from "typescript-eslint";
+import eslint from "@eslint/js";
+import eslintPluginBetterTailwindcss from "eslint-plugin-better-tailwindcss";
 
-      export default [
+export default tseslint.config(
+  {
+    ignores: [
+      "**/dist/",
+      "eslint.config.mjs",
+      "**/openapi-ts.config.ts",
+      ".husky/",
+      "src/openapi/**/*",
+    ],
+  },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  reactRefresh.configs.vite,
+  {
+    plugins: {
+      "react-compiler": reactCompiler,
+      "react-19-upgrade": react19Upgrade,
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
+      "better-tailwindcss": eslintPluginBetterTailwindcss,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        process: true,
+      },
+
+      parser: tsParser,
+      ecmaVersion: "latest",
+      sourceType: "module",
+
+      parserOptions: {
+        project: ["./tsconfig.json", "./tsconfig.node.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+
+    settings: {
+      "better-tailwindcss": {
+        entryPoint: "src/index.css",
+      },
+      react: {
+        createClass: "createReactClass",
+        pragma: "React",
+        fragment: "Fragment",
+        version: "detect",
+        flowVersion: "0.53",
+      },
+
+      propWrapperFunctions: [],
+      componentWrapperFunctions: [],
+      formComponents: [],
+      linkComponents: [],
+    },
+
+    rules: {
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...eslintPluginBetterTailwindcss.configs["recommended-warn"].rules,
+      ...eslintPluginBetterTailwindcss.configs["recommended-error"].rules,
+      "better-tailwindcss/no-unregistered-classes": [
+        "warn",
         {
-          ignores: [
-            'node_modules/**',
-            'dist/**',
-            'build/**',
-            'src/api/generated/**',
-            '**/*.gen.ts',
-            'openapi-ts.config.ts',
-          ],
+          ignore: ["^recharts-.+"],
         },
-        js.configs.recommended,
+      ],
+      "react-refresh/only-export-components": [
+        "warn",
         {
-          files: ['**/*.ts', '**/*.tsx'],
-          ignores: ['vite.config.ts', 'tailwind.config.js'],
-          languageOptions: {
-            globals: {
-              // Browser globals
-              window: 'readonly',
-              document: 'readonly',
-              navigator: 'readonly',
-              fetch: 'readonly',
-              btoa: 'readonly',
-              atob: 'readonly',
-              setTimeout: 'readonly',
-              setInterval: 'readonly',
-              clearTimeout: 'readonly',
-              clearInterval: 'readonly',
-              console: 'readonly',
-              URL: 'readonly',
-              URLSearchParams: 'readonly',
-              // Node globals (for vite.config.ts, etc.)
-              process: 'readonly',
-            },
-            parser: tsparser,
-            parserOptions: {
-              project: ['./tsconfig.json'],
-              tsconfigRootDir: __dirname,
-              ecmaVersion: 'latest',
-              sourceType: 'module',
-            },
-          },
-          plugins: {
-            '@typescript-eslint': tseslint,
-            react,
-            'react-hooks': reactHooks,
-            'react-refresh': reactRefresh,
-          },
-          rules: {
-            'react-refresh/only-export-components': [
-              'warn',
-              { allowConstantExport: true },
-            ],
-            '@typescript-eslint/no-unused-vars': [
-              'error',
-              { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-            ],
-            '@typescript-eslint/no-explicit-any': 'error',
-            '@typescript-eslint/explicit-function-return-type': 'off',
-            '@typescript-eslint/explicit-module-boundary-types': 'off',
-            '@typescript-eslint/no-non-null-assertion': 'warn',
-            'react/prop-types': 'off',
-          },
-          settings: {
-            react: {
-              version: 'detect',
-            },
-          },
+          allowConstantExport: true,
         },
-        // Config files (vite and tailwind)
+      ],
+
+      "@typescript-eslint/no-misused-promises": [
+        "error",
         {
-          files: ['vite.config.ts'],
-          languageOptions: {
-            globals: {
-              process: 'readonly',
-            },
-            ecmaVersion: 'latest',
-            sourceType: 'module',
-          },
+          checksVoidReturn: false,
         },
+      ],
+      "react/react-in-jsx-scope": "off",
+      "react-19-upgrade/no-default-props": "error",
+      "react-19-upgrade/no-prop-types": "warn",
+      "react-19-upgrade/no-legacy-context": "error",
+      "react-19-upgrade/no-string-refs": "error",
+      "react-19-upgrade/no-factories": "error",
+      "react-compiler/react-compiler": "error",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
         {
-          files: ['tailwind.config.js'],
-          languageOptions: {
-            globals: {
-              module: 'readonly',
-              require: 'readonly',
-            },
-          },
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
-      ];
+      ],
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+  },
+  {
+    files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "react/display-name": "off",
+    },
+  },
+);

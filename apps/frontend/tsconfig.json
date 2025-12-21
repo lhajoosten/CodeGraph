@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2023",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "allowJs": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -17,15 +18,24 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
+    /* Path resolution */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"],
+      "@/assets/*": ["src/assets/*"],
+      "@/components/*": ["src/components/*"],
+      "@/routes/*": ["src/routes/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/types/*": ["src/types/*"],
+      "@/openapi/*": ["src/openapi/*"],
+      "@/schemas/*": ["src/schemas/*"],
+      "@/types/react-query/*": ["node_modules/types/react-query/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "vitest.config.ts", "test"],
+  "exclude": ["eslint.config.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

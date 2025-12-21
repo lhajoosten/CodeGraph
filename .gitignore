@@ -166,10 +166,6 @@ out/
 coverage/
 reports/
 
-# Package manager
-package-lock.json*
-yarn.lock*
-
 ############################
 # Frontend Frameworks & Deployments
 ############################
@@ -179,6 +175,7 @@ yarn.lock*
 .storybook/
 .cypress/
 .test-results/
+.tanstack
 
 ############################
 # Testing

@@ -159,7 +159,7 @@ codegraph/
 │       │   └── setup.ts
 │       ├── index.html
 │       ├── vite.config.ts
-│       ├── tailwind.config.js
+│       ├── tailwind.config.ts
 │       ├── tsconfig.json
 │       ├── package.json
 │       ├── .env.example
@@ -319,7 +319,7 @@ mypy = "^1.7.1"
 
 **vite.config.ts** - Configure path aliases (@/ for src/)
 
-**tailwind.config.js** - Shadcn/ui compatible config
+**tailwind.config.ts** - Shadcn/ui compatible config
 
 **tsconfig.json** - Strict TypeScript configuration
 

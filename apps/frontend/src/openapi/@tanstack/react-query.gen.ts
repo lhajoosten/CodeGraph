@@ -7,9 +7,21 @@ import {
   queryOptions,
   type UseMutationOptions,
 } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen';
-import { type Options, Sdk } from '../sdk.gen';
+import {
+  createTaskApiV1TasksPost,
+  deleteTaskApiV1TasksTaskIdDelete,
+  getCurrentUserInfoApiV1UsersMeGet,
+  getTaskApiV1TasksTaskIdGet,
+  healthCheckHealthGet,
+  listTasksApiV1TasksGet,
+  loginUserApiV1AuthLoginPost,
+  type Options,
+  registerUserApiV1AuthRegisterPost,
+  updateTaskApiV1TasksTaskIdPatch,
+} from '../sdk.gen';
 import type {
   CreateTaskApiV1TasksPostData,
   CreateTaskApiV1TasksPostError,
@@ -39,7 +51,7 @@ import type {
 } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
-  Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
+  Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
     _id: string;
     _infinite?: boolean;
     tags?: ReadonlyArray<string>;
@@ -54,7 +66,7 @@ const createQueryKey = <TOptions extends Options>(
 ): [QueryKey<TOptions>[0]] => {
   const params: QueryKey<TOptions>[0] = {
     _id: id,
-    baseUrl: options?.baseUrl || (options?.client ?? client).getConfig().baseUrl,
+    baseURL: options?.baseURL || (options?.client ?? client).getConfig().baseURL,
   } as QueryKey<TOptions>[0];
   if (infinite) {
     params._infinite = infinite;
@@ -91,12 +103,12 @@ export const healthCheckHealthGetQueryKey = (options?: Options<HealthCheckHealth
 export const healthCheckHealthGetOptions = (options?: Options<HealthCheckHealthGetData>) =>
   queryOptions<
     HealthCheckHealthGetResponse,
-    DefaultError,
+    AxiosError<DefaultError>,
     HealthCheckHealthGetResponse,
     ReturnType<typeof healthCheckHealthGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await Sdk.__registry.get().healthCheckHealthGet({
+      const { data } = await healthCheckHealthGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -126,16 +138,16 @@ export const registerUserApiV1AuthRegisterPostMutation = (
   options?: Partial<Options<RegisterUserApiV1AuthRegisterPostData>>
 ): UseMutationOptions<
   RegisterUserApiV1AuthRegisterPostResponse,
-  RegisterUserApiV1AuthRegisterPostError,
+  AxiosError<RegisterUserApiV1AuthRegisterPostError>,
   Options<RegisterUserApiV1AuthRegisterPostData>
 > => {
   const mutationOptions: UseMutationOptions<
     RegisterUserApiV1AuthRegisterPostResponse,
-    RegisterUserApiV1AuthRegisterPostError,
+    AxiosError<RegisterUserApiV1AuthRegisterPostError>,
     Options<RegisterUserApiV1AuthRegisterPostData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await Sdk.__registry.get().registerUserApiV1AuthRegisterPost({
+      const { data } = await registerUserApiV1AuthRegisterPost({
         ...options,
         ...fnOptions,
         throwOnError: true,
@@ -165,16 +177,16 @@ export const loginUserApiV1AuthLoginPostMutation = (
   options?: Partial<Options<LoginUserApiV1AuthLoginPostData>>
 ): UseMutationOptions<
   LoginUserApiV1AuthLoginPostResponse,
-  LoginUserApiV1AuthLoginPostError,
+  AxiosError<LoginUserApiV1AuthLoginPostError>,
   Options<LoginUserApiV1AuthLoginPostData>
 > => {
   const mutationOptions: UseMutationOptions<
     LoginUserApiV1AuthLoginPostResponse,
-    LoginUserApiV1AuthLoginPostError,
+    AxiosError<LoginUserApiV1AuthLoginPostError>,
     Options<LoginUserApiV1AuthLoginPostData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await Sdk.__registry.get().loginUserApiV1AuthLoginPost({
+      const { data } = await loginUserApiV1AuthLoginPost({
         ...options,
         ...fnOptions,
         throwOnError: true,
@@ -205,12 +217,12 @@ export const getCurrentUserInfoApiV1UsersMeGetOptions = (
 ) =>
   queryOptions<
     GetCurrentUserInfoApiV1UsersMeGetResponse,
-    DefaultError,
+    AxiosError<DefaultError>,
     GetCurrentUserInfoApiV1UsersMeGetResponse,
     ReturnType<typeof getCurrentUserInfoApiV1UsersMeGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await Sdk.__registry.get().getCurrentUserInfoApiV1UsersMeGet({
+      const { data } = await getCurrentUserInfoApiV1UsersMeGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -241,12 +253,12 @@ export const listTasksApiV1TasksGetQueryKey = (options?: Options<ListTasksApiV1T
 export const listTasksApiV1TasksGetOptions = (options?: Options<ListTasksApiV1TasksGetData>) =>
   queryOptions<
     ListTasksApiV1TasksGetResponse,
-    ListTasksApiV1TasksGetError,
+    AxiosError<ListTasksApiV1TasksGetError>,
     ListTasksApiV1TasksGetResponse,
     ReturnType<typeof listTasksApiV1TasksGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await Sdk.__registry.get().listTasksApiV1TasksGet({
+      const { data } = await listTasksApiV1TasksGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -315,7 +327,7 @@ export const listTasksApiV1TasksGetInfiniteOptions = (
 ) =>
   infiniteQueryOptions<
     ListTasksApiV1TasksGetResponse,
-    ListTasksApiV1TasksGetError,
+    AxiosError<ListTasksApiV1TasksGetError>,
     InfiniteData<ListTasksApiV1TasksGetResponse>,
     QueryKey<Options<ListTasksApiV1TasksGetData>>,
     | number
@@ -337,7 +349,7 @@ export const listTasksApiV1TasksGetInfiniteOptions = (
                 },
               };
         const params = createInfiniteParams(queryKey, page);
-        const { data } = await Sdk.__registry.get().listTasksApiV1TasksGet({
+        const { data } = await listTasksApiV1TasksGet({
           ...options,
           ...params,
           signal,
@@ -366,16 +378,16 @@ export const createTaskApiV1TasksPostMutation = (
   options?: Partial<Options<CreateTaskApiV1TasksPostData>>
 ): UseMutationOptions<
   CreateTaskApiV1TasksPostResponse,
-  CreateTaskApiV1TasksPostError,
+  AxiosError<CreateTaskApiV1TasksPostError>,
   Options<CreateTaskApiV1TasksPostData>
 > => {
   const mutationOptions: UseMutationOptions<
     CreateTaskApiV1TasksPostResponse,
-    CreateTaskApiV1TasksPostError,
+    AxiosError<CreateTaskApiV1TasksPostError>,
     Options<CreateTaskApiV1TasksPostData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await Sdk.__registry.get().createTaskApiV1TasksPost({
+      const { data } = await createTaskApiV1TasksPost({
         ...options,
         ...fnOptions,
         throwOnError: true,
@@ -403,16 +415,16 @@ export const deleteTaskApiV1TasksTaskIdDeleteMutation = (
   options?: Partial<Options<DeleteTaskApiV1TasksTaskIdDeleteData>>
 ): UseMutationOptions<
   DeleteTaskApiV1TasksTaskIdDeleteResponse,
-  DeleteTaskApiV1TasksTaskIdDeleteError,
+  AxiosError<DeleteTaskApiV1TasksTaskIdDeleteError>,
   Options<DeleteTaskApiV1TasksTaskIdDeleteData>
 > => {
   const mutationOptions: UseMutationOptions<
     DeleteTaskApiV1TasksTaskIdDeleteResponse,
-    DeleteTaskApiV1TasksTaskIdDeleteError,
+    AxiosError<DeleteTaskApiV1TasksTaskIdDeleteError>,
     Options<DeleteTaskApiV1TasksTaskIdDeleteData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await Sdk.__registry.get().deleteTaskApiV1TasksTaskIdDelete({
+      const { data } = await deleteTaskApiV1TasksTaskIdDelete({
         ...options,
         ...fnOptions,
         throwOnError: true,
@@ -448,12 +460,12 @@ export const getTaskApiV1TasksTaskIdGetOptions = (
 ) =>
   queryOptions<
     GetTaskApiV1TasksTaskIdGetResponse,
-    GetTaskApiV1TasksTaskIdGetError,
+    AxiosError<GetTaskApiV1TasksTaskIdGetError>,
     GetTaskApiV1TasksTaskIdGetResponse,
     ReturnType<typeof getTaskApiV1TasksTaskIdGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await Sdk.__registry.get().getTaskApiV1TasksTaskIdGet({
+      const { data } = await getTaskApiV1TasksTaskIdGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -485,16 +497,16 @@ export const updateTaskApiV1TasksTaskIdPatchMutation = (
   options?: Partial<Options<UpdateTaskApiV1TasksTaskIdPatchData>>
 ): UseMutationOptions<
   UpdateTaskApiV1TasksTaskIdPatchResponse,
-  UpdateTaskApiV1TasksTaskIdPatchError,
+  AxiosError<UpdateTaskApiV1TasksTaskIdPatchError>,
   Options<UpdateTaskApiV1TasksTaskIdPatchData>
 > => {
   const mutationOptions: UseMutationOptions<
     UpdateTaskApiV1TasksTaskIdPatchResponse,
-    UpdateTaskApiV1TasksTaskIdPatchError,
+    AxiosError<UpdateTaskApiV1TasksTaskIdPatchError>,
     Options<UpdateTaskApiV1TasksTaskIdPatchData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await Sdk.__registry.get().updateTaskApiV1TasksTaskIdPatch({
+      const { data } = await updateTaskApiV1TasksTaskIdPatch({
         ...options,
         ...fnOptions,
         throwOnError: true,
