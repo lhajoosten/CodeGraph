@@ -11,29 +11,78 @@ import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen';
 import {
+  changeEmailApiV1AuthChangeEmailPost,
+  changePasswordApiV1AuthChangePasswordPost,
   createTaskApiV1TasksPost,
   deleteTaskApiV1TasksTaskIdDelete,
+  disableTwoFactorApiV1TwoFactorDisablePost,
+  enableTwoFactorApiV1TwoFactorEnablePost,
+  forgotPasswordApiV1AuthForgotPasswordPost,
+  getConnectedAccountsApiV1OauthAccountsGet,
+  getCurrentUserInfoApiV1AuthMeGet,
   getCurrentUserInfoApiV1UsersMeGet,
+  getOauthProvidersApiV1OauthProvidersGet,
   getTaskApiV1TasksTaskIdGet,
+  getTwoFactorStatusApiV1TwoFactorStatusGet,
   healthCheckHealthGet,
   listTasksApiV1TasksGet,
   loginUserApiV1AuthLoginPost,
+  logoutApiV1AuthLogoutPost,
+  oauthAuthorizeApiV1OauthProviderAuthorizeGet,
+  oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet,
+  oauthCallbackApiV1OauthProviderCallbackPost,
   type Options,
+  refreshApiV1AuthRefreshPost,
+  regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost,
   registerUserApiV1AuthRegisterPost,
+  resendVerificationApiV1AuthResendVerificationPost,
+  resetPasswordApiV1AuthResetPasswordPost,
+  sendTestEmailApiV1TestSendTestEmailPost,
+  setupTwoFactorApiV1TwoFactorSetupPost,
+  unlinkOauthAccountApiV1OauthProviderUnlinkDelete,
   updateTaskApiV1TasksTaskIdPatch,
+  verifyEmailApiV1AuthVerifyEmailPost,
+  verifyTwoFactorApiV1TwoFactorVerifyPost,
 } from '../sdk.gen';
 import type {
+  ChangeEmailApiV1AuthChangeEmailPostData,
+  ChangeEmailApiV1AuthChangeEmailPostError,
+  ChangeEmailApiV1AuthChangeEmailPostResponse,
+  ChangePasswordApiV1AuthChangePasswordPostData,
+  ChangePasswordApiV1AuthChangePasswordPostError,
+  ChangePasswordApiV1AuthChangePasswordPostResponse,
   CreateTaskApiV1TasksPostData,
   CreateTaskApiV1TasksPostError,
   CreateTaskApiV1TasksPostResponse,
   DeleteTaskApiV1TasksTaskIdDeleteData,
   DeleteTaskApiV1TasksTaskIdDeleteError,
   DeleteTaskApiV1TasksTaskIdDeleteResponse,
+  DisableTwoFactorApiV1TwoFactorDisablePostData,
+  DisableTwoFactorApiV1TwoFactorDisablePostError,
+  DisableTwoFactorApiV1TwoFactorDisablePostResponse,
+  EnableTwoFactorApiV1TwoFactorEnablePostData,
+  EnableTwoFactorApiV1TwoFactorEnablePostError,
+  EnableTwoFactorApiV1TwoFactorEnablePostResponse,
+  ForgotPasswordApiV1AuthForgotPasswordPostData,
+  ForgotPasswordApiV1AuthForgotPasswordPostError,
+  ForgotPasswordApiV1AuthForgotPasswordPostResponse,
+  GetConnectedAccountsApiV1OauthAccountsGetData,
+  GetConnectedAccountsApiV1OauthAccountsGetError,
+  GetConnectedAccountsApiV1OauthAccountsGetResponse,
+  GetCurrentUserInfoApiV1AuthMeGetData,
+  GetCurrentUserInfoApiV1AuthMeGetError,
+  GetCurrentUserInfoApiV1AuthMeGetResponse,
   GetCurrentUserInfoApiV1UsersMeGetData,
+  GetCurrentUserInfoApiV1UsersMeGetError,
   GetCurrentUserInfoApiV1UsersMeGetResponse,
+  GetOauthProvidersApiV1OauthProvidersGetData,
+  GetOauthProvidersApiV1OauthProvidersGetResponse,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetError,
   GetTaskApiV1TasksTaskIdGetResponse,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetData,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetError,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetResponse,
   HealthCheckHealthGetData,
   HealthCheckHealthGetResponse,
   ListTasksApiV1TasksGetData,
@@ -42,12 +91,49 @@ import type {
   LoginUserApiV1AuthLoginPostData,
   LoginUserApiV1AuthLoginPostError,
   LoginUserApiV1AuthLoginPostResponse,
+  LogoutApiV1AuthLogoutPostData,
+  LogoutApiV1AuthLogoutPostError,
+  LogoutApiV1AuthLogoutPostResponse,
+  OauthAuthorizeApiV1OauthProviderAuthorizeGetData,
+  OauthAuthorizeApiV1OauthProviderAuthorizeGetError,
+  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
+  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError,
+  OauthCallbackApiV1OauthProviderCallbackPostData,
+  OauthCallbackApiV1OauthProviderCallbackPostError,
+  OauthCallbackApiV1OauthProviderCallbackPostResponse,
+  RefreshApiV1AuthRefreshPostData,
+  RefreshApiV1AuthRefreshPostError,
+  RefreshApiV1AuthRefreshPostResponse,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostError,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse,
   RegisterUserApiV1AuthRegisterPostData,
   RegisterUserApiV1AuthRegisterPostError,
   RegisterUserApiV1AuthRegisterPostResponse,
+  ResendVerificationApiV1AuthResendVerificationPostData,
+  ResendVerificationApiV1AuthResendVerificationPostError,
+  ResendVerificationApiV1AuthResendVerificationPostResponse,
+  ResetPasswordApiV1AuthResetPasswordPostData,
+  ResetPasswordApiV1AuthResetPasswordPostError,
+  ResetPasswordApiV1AuthResetPasswordPostResponse,
+  SendTestEmailApiV1TestSendTestEmailPostData,
+  SendTestEmailApiV1TestSendTestEmailPostError,
+  SendTestEmailApiV1TestSendTestEmailPostResponse,
+  SetupTwoFactorApiV1TwoFactorSetupPostData,
+  SetupTwoFactorApiV1TwoFactorSetupPostError,
+  SetupTwoFactorApiV1TwoFactorSetupPostResponse,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchError,
   UpdateTaskApiV1TasksTaskIdPatchResponse,
+  VerifyEmailApiV1AuthVerifyEmailPostData,
+  VerifyEmailApiV1AuthVerifyEmailPostError,
+  VerifyEmailApiV1AuthVerifyEmailPostResponse,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostData,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostError,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostResponse,
 } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
@@ -197,6 +283,358 @@ export const loginUserApiV1AuthLoginPostMutation = (
   return mutationOptions;
 };
 
+/**
+ * Logout
+ *
+ * Logout user, clears cookies and revokes refresh token.
+ *
+ * Args:
+ * response: FastAPI response object (to clear cookies)
+ * refresh_token: Refresh token from cookie
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ */
+export const logoutApiV1AuthLogoutPostMutation = (
+  options?: Partial<Options<LogoutApiV1AuthLogoutPostData>>
+): UseMutationOptions<
+  LogoutApiV1AuthLogoutPostResponse,
+  AxiosError<LogoutApiV1AuthLogoutPostError>,
+  Options<LogoutApiV1AuthLogoutPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    LogoutApiV1AuthLogoutPostResponse,
+    AxiosError<LogoutApiV1AuthLogoutPostError>,
+    Options<LogoutApiV1AuthLogoutPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await logoutApiV1AuthLogoutPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Refresh
+ *
+ * Refresh access token using refresh token from cookie.
+ *
+ * Implements token rotation: issues new refresh token and revokes old one.
+ *
+ * Args:
+ * response: FastAPI response object (to set new cookies)
+ * request: FastAPI request object (for IP address)
+ * refresh_token: Refresh token from cookie
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If refresh token is invalid, expired, or revoked
+ */
+export const refreshApiV1AuthRefreshPostMutation = (
+  options?: Partial<Options<RefreshApiV1AuthRefreshPostData>>
+): UseMutationOptions<
+  RefreshApiV1AuthRefreshPostResponse,
+  AxiosError<RefreshApiV1AuthRefreshPostError>,
+  Options<RefreshApiV1AuthRefreshPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RefreshApiV1AuthRefreshPostResponse,
+    AxiosError<RefreshApiV1AuthRefreshPostError>,
+    Options<RefreshApiV1AuthRefreshPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await refreshApiV1AuthRefreshPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getCurrentUserInfoApiV1AuthMeGetQueryKey = (
+  options?: Options<GetCurrentUserInfoApiV1AuthMeGetData>
+) => createQueryKey('getCurrentUserInfoApiV1AuthMeGet', options);
+
+/**
+ * Get Current User Info
+ *
+ * Get current authenticated user information.
+ *
+ * Args:
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * UserResponse: Current user data
+ */
+export const getCurrentUserInfoApiV1AuthMeGetOptions = (
+  options?: Options<GetCurrentUserInfoApiV1AuthMeGetData>
+) =>
+  queryOptions<
+    GetCurrentUserInfoApiV1AuthMeGetResponse,
+    AxiosError<GetCurrentUserInfoApiV1AuthMeGetError>,
+    GetCurrentUserInfoApiV1AuthMeGetResponse,
+    ReturnType<typeof getCurrentUserInfoApiV1AuthMeGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCurrentUserInfoApiV1AuthMeGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCurrentUserInfoApiV1AuthMeGetQueryKey(options),
+  });
+
+/**
+ * Verify Email
+ *
+ * Verify user email with verification token.
+ *
+ * Args:
+ * request_data: Email verification token
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If token is invalid or expired
+ */
+export const verifyEmailApiV1AuthVerifyEmailPostMutation = (
+  options?: Partial<Options<VerifyEmailApiV1AuthVerifyEmailPostData>>
+): UseMutationOptions<
+  VerifyEmailApiV1AuthVerifyEmailPostResponse,
+  AxiosError<VerifyEmailApiV1AuthVerifyEmailPostError>,
+  Options<VerifyEmailApiV1AuthVerifyEmailPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    VerifyEmailApiV1AuthVerifyEmailPostResponse,
+    AxiosError<VerifyEmailApiV1AuthVerifyEmailPostError>,
+    Options<VerifyEmailApiV1AuthVerifyEmailPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await verifyEmailApiV1AuthVerifyEmailPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Resend Verification
+ *
+ * Resend verification email to user.
+ *
+ * Args:
+ * request_data: User email address
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If email not found
+ */
+export const resendVerificationApiV1AuthResendVerificationPostMutation = (
+  options?: Partial<Options<ResendVerificationApiV1AuthResendVerificationPostData>>
+): UseMutationOptions<
+  ResendVerificationApiV1AuthResendVerificationPostResponse,
+  AxiosError<ResendVerificationApiV1AuthResendVerificationPostError>,
+  Options<ResendVerificationApiV1AuthResendVerificationPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ResendVerificationApiV1AuthResendVerificationPostResponse,
+    AxiosError<ResendVerificationApiV1AuthResendVerificationPostError>,
+    Options<ResendVerificationApiV1AuthResendVerificationPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await resendVerificationApiV1AuthResendVerificationPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Forgot Password
+ *
+ * Request password reset for user account.
+ *
+ * Args:
+ * request_data: User email address
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message (always returns success for security)
+ */
+export const forgotPasswordApiV1AuthForgotPasswordPostMutation = (
+  options?: Partial<Options<ForgotPasswordApiV1AuthForgotPasswordPostData>>
+): UseMutationOptions<
+  ForgotPasswordApiV1AuthForgotPasswordPostResponse,
+  AxiosError<ForgotPasswordApiV1AuthForgotPasswordPostError>,
+  Options<ForgotPasswordApiV1AuthForgotPasswordPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ForgotPasswordApiV1AuthForgotPasswordPostResponse,
+    AxiosError<ForgotPasswordApiV1AuthForgotPasswordPostError>,
+    Options<ForgotPasswordApiV1AuthForgotPasswordPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await forgotPasswordApiV1AuthForgotPasswordPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Reset Password
+ *
+ * Reset user password with reset token.
+ *
+ * Args:
+ * request_data: Reset token and new password
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If token is invalid or expired
+ */
+export const resetPasswordApiV1AuthResetPasswordPostMutation = (
+  options?: Partial<Options<ResetPasswordApiV1AuthResetPasswordPostData>>
+): UseMutationOptions<
+  ResetPasswordApiV1AuthResetPasswordPostResponse,
+  AxiosError<ResetPasswordApiV1AuthResetPasswordPostError>,
+  Options<ResetPasswordApiV1AuthResetPasswordPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ResetPasswordApiV1AuthResetPasswordPostResponse,
+    AxiosError<ResetPasswordApiV1AuthResetPasswordPostError>,
+    Options<ResetPasswordApiV1AuthResetPasswordPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await resetPasswordApiV1AuthResetPasswordPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Change Password
+ *
+ * Change password for authenticated user.
+ *
+ * Args:
+ * request_data: Current password and new password
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If current password is incorrect
+ */
+export const changePasswordApiV1AuthChangePasswordPostMutation = (
+  options?: Partial<Options<ChangePasswordApiV1AuthChangePasswordPostData>>
+): UseMutationOptions<
+  ChangePasswordApiV1AuthChangePasswordPostResponse,
+  AxiosError<ChangePasswordApiV1AuthChangePasswordPostError>,
+  Options<ChangePasswordApiV1AuthChangePasswordPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ChangePasswordApiV1AuthChangePasswordPostResponse,
+    AxiosError<ChangePasswordApiV1AuthChangePasswordPostError>,
+    Options<ChangePasswordApiV1AuthChangePasswordPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await changePasswordApiV1AuthChangePasswordPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Change Email
+ *
+ * Request email change for authenticated user.
+ *
+ * Sends verification email to new address.
+ *
+ * Args:
+ * request_data: New email address and password
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If password is incorrect or new email already registered
+ */
+export const changeEmailApiV1AuthChangeEmailPostMutation = (
+  options?: Partial<Options<ChangeEmailApiV1AuthChangeEmailPostData>>
+): UseMutationOptions<
+  ChangeEmailApiV1AuthChangeEmailPostResponse,
+  AxiosError<ChangeEmailApiV1AuthChangeEmailPostError>,
+  Options<ChangeEmailApiV1AuthChangeEmailPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ChangeEmailApiV1AuthChangeEmailPostResponse,
+    AxiosError<ChangeEmailApiV1AuthChangeEmailPostError>,
+    Options<ChangeEmailApiV1AuthChangeEmailPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await changeEmailApiV1AuthChangeEmailPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
 export const getCurrentUserInfoApiV1UsersMeGetQueryKey = (
   options?: Options<GetCurrentUserInfoApiV1UsersMeGetData>
 ) => createQueryKey('getCurrentUserInfoApiV1UsersMeGet', options);
@@ -217,7 +655,7 @@ export const getCurrentUserInfoApiV1UsersMeGetOptions = (
 ) =>
   queryOptions<
     GetCurrentUserInfoApiV1UsersMeGetResponse,
-    AxiosError<DefaultError>,
+    AxiosError<GetCurrentUserInfoApiV1UsersMeGetError>,
     GetCurrentUserInfoApiV1UsersMeGetResponse,
     ReturnType<typeof getCurrentUserInfoApiV1UsersMeGetQueryKey>
   >({
@@ -507,6 +945,503 @@ export const updateTaskApiV1TasksTaskIdPatchMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await updateTaskApiV1TasksTaskIdPatch({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getTwoFactorStatusApiV1TwoFactorStatusGetQueryKey = (
+  options?: Options<GetTwoFactorStatusApiV1TwoFactorStatusGetData>
+) => createQueryKey('getTwoFactorStatusApiV1TwoFactorStatusGet', options);
+
+/**
+ * Get Two Factor Status
+ *
+ * Get the current 2FA status for the authenticated user.
+ *
+ * Returns:
+ * TwoFactorStatusResponse with enabled status and remaining backup codes.
+ */
+export const getTwoFactorStatusApiV1TwoFactorStatusGetOptions = (
+  options?: Options<GetTwoFactorStatusApiV1TwoFactorStatusGetData>
+) =>
+  queryOptions<
+    GetTwoFactorStatusApiV1TwoFactorStatusGetResponse,
+    AxiosError<GetTwoFactorStatusApiV1TwoFactorStatusGetError>,
+    GetTwoFactorStatusApiV1TwoFactorStatusGetResponse,
+    ReturnType<typeof getTwoFactorStatusApiV1TwoFactorStatusGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTwoFactorStatusApiV1TwoFactorStatusGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTwoFactorStatusApiV1TwoFactorStatusGetQueryKey(options),
+  });
+
+/**
+ * Setup Two Factor
+ *
+ * Start the 2FA setup process.
+ *
+ * Generates a TOTP secret and QR code for the user to scan with their
+ * authenticator app.
+ *
+ * Returns:
+ * TwoFactorSetupResponse with QR code and secret.
+ *
+ * Raises:
+ * HTTPException: If 2FA is already enabled.
+ */
+export const setupTwoFactorApiV1TwoFactorSetupPostMutation = (
+  options?: Partial<Options<SetupTwoFactorApiV1TwoFactorSetupPostData>>
+): UseMutationOptions<
+  SetupTwoFactorApiV1TwoFactorSetupPostResponse,
+  AxiosError<SetupTwoFactorApiV1TwoFactorSetupPostError>,
+  Options<SetupTwoFactorApiV1TwoFactorSetupPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    SetupTwoFactorApiV1TwoFactorSetupPostResponse,
+    AxiosError<SetupTwoFactorApiV1TwoFactorSetupPostError>,
+    Options<SetupTwoFactorApiV1TwoFactorSetupPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await setupTwoFactorApiV1TwoFactorSetupPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Enable Two Factor
+ *
+ * Enable 2FA after verifying the TOTP code.
+ *
+ * The user must first call /two-factor/setup and scan the QR code before
+ * calling this endpoint with the code from their authenticator app.
+ *
+ * Args:
+ * request: Contains the 6-digit TOTP code.
+ *
+ * Returns:
+ * TwoFactorEnableResponse with backup codes.
+ *
+ * Raises:
+ * HTTPException: If the code is invalid or 2FA is not set up.
+ */
+export const enableTwoFactorApiV1TwoFactorEnablePostMutation = (
+  options?: Partial<Options<EnableTwoFactorApiV1TwoFactorEnablePostData>>
+): UseMutationOptions<
+  EnableTwoFactorApiV1TwoFactorEnablePostResponse,
+  AxiosError<EnableTwoFactorApiV1TwoFactorEnablePostError>,
+  Options<EnableTwoFactorApiV1TwoFactorEnablePostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    EnableTwoFactorApiV1TwoFactorEnablePostResponse,
+    AxiosError<EnableTwoFactorApiV1TwoFactorEnablePostError>,
+    Options<EnableTwoFactorApiV1TwoFactorEnablePostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await enableTwoFactorApiV1TwoFactorEnablePost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Disable Two Factor
+ *
+ * Disable 2FA for the authenticated user.
+ *
+ * Requires the user's password for confirmation.
+ *
+ * Args:
+ * request: Contains the user's password.
+ *
+ * Returns:
+ * Success message.
+ *
+ * Raises:
+ * HTTPException: If 2FA is not enabled or password is incorrect.
+ */
+export const disableTwoFactorApiV1TwoFactorDisablePostMutation = (
+  options?: Partial<Options<DisableTwoFactorApiV1TwoFactorDisablePostData>>
+): UseMutationOptions<
+  DisableTwoFactorApiV1TwoFactorDisablePostResponse,
+  AxiosError<DisableTwoFactorApiV1TwoFactorDisablePostError>,
+  Options<DisableTwoFactorApiV1TwoFactorDisablePostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DisableTwoFactorApiV1TwoFactorDisablePostResponse,
+    AxiosError<DisableTwoFactorApiV1TwoFactorDisablePostError>,
+    Options<DisableTwoFactorApiV1TwoFactorDisablePostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await disableTwoFactorApiV1TwoFactorDisablePost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Verify Two Factor
+ *
+ * Verify a 2FA code (TOTP or backup code).
+ *
+ * This endpoint can be used during login or for sensitive operations.
+ *
+ * Args:
+ * request: Contains the TOTP or backup code.
+ *
+ * Returns:
+ * TwoFactorVerifyResponse indicating if the code is valid.
+ */
+export const verifyTwoFactorApiV1TwoFactorVerifyPostMutation = (
+  options?: Partial<Options<VerifyTwoFactorApiV1TwoFactorVerifyPostData>>
+): UseMutationOptions<
+  VerifyTwoFactorApiV1TwoFactorVerifyPostResponse,
+  AxiosError<VerifyTwoFactorApiV1TwoFactorVerifyPostError>,
+  Options<VerifyTwoFactorApiV1TwoFactorVerifyPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    VerifyTwoFactorApiV1TwoFactorVerifyPostResponse,
+    AxiosError<VerifyTwoFactorApiV1TwoFactorVerifyPostError>,
+    Options<VerifyTwoFactorApiV1TwoFactorVerifyPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await verifyTwoFactorApiV1TwoFactorVerifyPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Regenerate Backup Codes
+ *
+ * Regenerate backup codes for the authenticated user.
+ *
+ * This invalidates all existing backup codes and generates new ones.
+ * Requires the user's password for confirmation.
+ *
+ * Args:
+ * request: Contains the user's password.
+ *
+ * Returns:
+ * RegenerateBackupCodesResponse with new backup codes.
+ *
+ * Raises:
+ * HTTPException: If 2FA is not enabled or password is incorrect.
+ */
+export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostMutation = (
+  options?: Partial<Options<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData>>
+): UseMutationOptions<
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse,
+  AxiosError<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostError>,
+  Options<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse,
+    AxiosError<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostError>,
+    Options<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getOauthProvidersApiV1OauthProvidersGetQueryKey = (
+  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData>
+) => createQueryKey('getOauthProvidersApiV1OauthProvidersGet', options);
+
+/**
+ * Get Oauth Providers
+ *
+ * Get available OAuth providers and their configuration status.
+ *
+ * Returns:
+ * Dictionary of provider names and whether they are configured.
+ */
+export const getOauthProvidersApiV1OauthProvidersGetOptions = (
+  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData>
+) =>
+  queryOptions<
+    GetOauthProvidersApiV1OauthProvidersGetResponse,
+    AxiosError<DefaultError>,
+    GetOauthProvidersApiV1OauthProvidersGetResponse,
+    ReturnType<typeof getOauthProvidersApiV1OauthProvidersGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getOauthProvidersApiV1OauthProvidersGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getOauthProvidersApiV1OauthProvidersGetQueryKey(options),
+  });
+
+export const oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey = (
+  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData>
+) => createQueryKey('oauthAuthorizeApiV1OauthProviderAuthorizeGet', options);
+
+/**
+ * Oauth Authorize
+ *
+ * Start OAuth authorization flow.
+ *
+ * Redirects the user to the OAuth provider's authorization page.
+ *
+ * Args:
+ * provider: OAuth provider name (github, google, microsoft).
+ * redirect_url: Optional URL to redirect to after successful auth.
+ *
+ * Returns:
+ * Redirect to the OAuth provider.
+ *
+ * Raises:
+ * HTTPException: If provider is not supported or not configured.
+ */
+export const oauthAuthorizeApiV1OauthProviderAuthorizeGetOptions = (
+  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData>
+) =>
+  queryOptions<
+    unknown,
+    AxiosError<OauthAuthorizeApiV1OauthProviderAuthorizeGetError>,
+    unknown,
+    ReturnType<typeof oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await oauthAuthorizeApiV1OauthProviderAuthorizeGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey(options),
+  });
+
+export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey = (
+  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData>
+) => createQueryKey('oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet', options);
+
+/**
+ * Oauth Authorize Link
+ *
+ * Start OAuth authorization flow for linking to existing account.
+ *
+ * Requires authentication. Links the OAuth account to the current user.
+ *
+ * Args:
+ * provider: OAuth provider name.
+ * redirect_url: Optional URL to redirect to after linking.
+ *
+ * Returns:
+ * Redirect to the OAuth provider.
+ */
+export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetOptions = (
+  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData>
+) =>
+  queryOptions<
+    unknown,
+    AxiosError<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError>,
+    unknown,
+    ReturnType<typeof oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey(options),
+  });
+
+/**
+ * Oauth Callback
+ *
+ * Handle OAuth callback.
+ *
+ * Exchanges the authorization code for tokens and creates/links user account.
+ *
+ * Args:
+ * provider: OAuth provider name.
+ * request: Contains code and state from OAuth callback.
+ *
+ * Returns:
+ * User info and redirect URL.
+ *
+ * Raises:
+ * HTTPException: If callback fails.
+ */
+export const oauthCallbackApiV1OauthProviderCallbackPostMutation = (
+  options?: Partial<Options<OauthCallbackApiV1OauthProviderCallbackPostData>>
+): UseMutationOptions<
+  OauthCallbackApiV1OauthProviderCallbackPostResponse,
+  AxiosError<OauthCallbackApiV1OauthProviderCallbackPostError>,
+  Options<OauthCallbackApiV1OauthProviderCallbackPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    OauthCallbackApiV1OauthProviderCallbackPostResponse,
+    AxiosError<OauthCallbackApiV1OauthProviderCallbackPostError>,
+    Options<OauthCallbackApiV1OauthProviderCallbackPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await oauthCallbackApiV1OauthProviderCallbackPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getConnectedAccountsApiV1OauthAccountsGetQueryKey = (
+  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData>
+) => createQueryKey('getConnectedAccountsApiV1OauthAccountsGet', options);
+
+/**
+ * Get Connected Accounts
+ *
+ * Get all OAuth accounts linked to the current user.
+ *
+ * Returns:
+ * List of connected OAuth accounts.
+ */
+export const getConnectedAccountsApiV1OauthAccountsGetOptions = (
+  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData>
+) =>
+  queryOptions<
+    GetConnectedAccountsApiV1OauthAccountsGetResponse,
+    AxiosError<GetConnectedAccountsApiV1OauthAccountsGetError>,
+    GetConnectedAccountsApiV1OauthAccountsGetResponse,
+    ReturnType<typeof getConnectedAccountsApiV1OauthAccountsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getConnectedAccountsApiV1OauthAccountsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getConnectedAccountsApiV1OauthAccountsGetQueryKey(options),
+  });
+
+/**
+ * Unlink Oauth Account
+ *
+ * Unlink an OAuth account from the current user.
+ *
+ * Args:
+ * provider: OAuth provider to unlink.
+ *
+ * Returns:
+ * Success message.
+ *
+ * Raises:
+ * HTTPException: If unlinking fails.
+ */
+export const unlinkOauthAccountApiV1OauthProviderUnlinkDeleteMutation = (
+  options?: Partial<Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>>
+): UseMutationOptions<
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
+  AxiosError<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError>,
+  Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
+    AxiosError<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError>,
+    Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await unlinkOauthAccountApiV1OauthProviderUnlinkDelete({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Send Test Email
+ *
+ * Send a test email to verify SMTP configuration.
+ *
+ * **Development Only** - Remove this endpoint in production.
+ *
+ * Args:
+ * recipient_email: Email address to send test email to
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message with details
+ *
+ * Raises:
+ * HTTPException: If email sending fails
+ */
+export const sendTestEmailApiV1TestSendTestEmailPostMutation = (
+  options?: Partial<Options<SendTestEmailApiV1TestSendTestEmailPostData>>
+): UseMutationOptions<
+  SendTestEmailApiV1TestSendTestEmailPostResponse,
+  AxiosError<SendTestEmailApiV1TestSendTestEmailPostError>,
+  Options<SendTestEmailApiV1TestSendTestEmailPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    SendTestEmailApiV1TestSendTestEmailPostResponse,
+    AxiosError<SendTestEmailApiV1TestSendTestEmailPostError>,
+    Options<SendTestEmailApiV1TestSendTestEmailPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await sendTestEmailApiV1TestSendTestEmailPost({
         ...options,
         ...fnOptions,
         throwOnError: true,

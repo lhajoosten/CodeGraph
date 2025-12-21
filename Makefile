@@ -1,4 +1,4 @@
-.PHONY: help install dev build test clean docker-up docker-down docker-logs db-migrate db-reset lint format type-check api-generate all
+.PHONY: help install dev build test clean docker-up docker-down docker-logs db-migrate db-reset db-init db-setup db-test db-fix-auth lint format type-check api-generate all
 
 # Variables
 DOCKER_COMPOSE=docker-compose -f docker/docker-compose.yml
@@ -22,7 +22,11 @@ help:
 	@echo ""
 	@echo "API & Database:"
 	@echo "  make api-generate      - Generate API client from OpenAPI spec"
+	@echo "  make db-setup          - Full database setup (docker + auth fix + migrations)"
+	@echo "  make db-init           - Initialize database container & fix authentication"
+	@echo "  make db-test           - Test database connection"
 	@echo "  make db-migrate        - Run database migrations"
+	@echo "  make db-fix-auth       - Fix PostgreSQL authentication (pg_hba.conf)"
 	@echo "  make db-reset          - Reset database (careful!)"
 	@echo ""
 	@echo "Docker:"
@@ -104,6 +108,21 @@ docker-logs:
 	@echo "Tailing Docker logs..."
 	cd $(DOCKER_DIR) && docker-compose logs -f
 
+docker-build:
+	@echo "Building Docker containers..."
+	cd $(DOCKER_DIR) && docker-compose build
+	@echo "✓ Docker containers built"
+
+# restart docker, build containers first, then bring up full stack, run db-fix-auth and db-migrate
+docker-full:
+	@echo "Rebuilding and restarting full Docker stack..."
+	make docker-build
+	cd $(DOCKER_DIR) && docker-compose up -d
+	@sleep 5
+	make db-fix-auth
+	make db-migrate
+	@echo "✓ Full Docker stack restarted"
+
 # Database
 db-migrate:
 	@echo "Running database migrations..."
@@ -122,6 +141,34 @@ db-reset:
 	else \
 		echo "Database reset cancelled"; \
 	fi
+
+# Database Setup & Authentication
+db-fix-auth:
+	@echo "Fixing PostgreSQL authentication (pg_hba.conf)..."
+	@if docker ps | grep -q codegraph-postgres; then \
+		docker exec codegraph-postgres bash -c 'echo "host    all             all             172.18.0.0/16           md5" >> /var/lib/postgresql/data/pg_hba.conf' && \
+		docker exec codegraph-postgres bash -c 'echo "host    all             all             0.0.0.0/0               md5" >> /var/lib/postgresql/data/pg_hba.conf' && \
+		docker restart codegraph-postgres && \
+		sleep 2 && \
+		echo "✓ PostgreSQL authentication fixed"; \
+	else \
+		echo "✗ PostgreSQL container is not running"; \
+		exit 1; \
+	fi
+
+db-test:
+	@echo "Testing database connection..."
+	@poetry -C $(BACKEND_DIR) run python $(PWD)/scripts/test_db_connection.py
+
+db-init: docker-up db-fix-auth db-test db-migrate
+	@echo "✓ Database initialized and ready"
+
+db-setup: docker-up db-fix-auth db-migrate db-test
+	@echo "✓ Database setup complete"
+	@echo ""
+	@echo "Next steps:"
+	@echo "  make dev-backend    - Start backend dev server"
+	@echo "  make dev-frontend   - Start frontend dev server"
 
 # API
 api-generate:

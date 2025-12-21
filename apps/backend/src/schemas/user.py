@@ -37,6 +37,7 @@ class UserResponse(UserBase):
     id: int
     is_active: bool
     is_superuser: bool
+    email_verified: bool
     created_at: datetime
     updated_at: datetime
 

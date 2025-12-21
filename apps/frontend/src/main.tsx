@@ -7,6 +7,9 @@ import { Link, RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from '@/routeTree.gen.ts';
 import { RouteContext } from '@/lib/types.ts';
 
+// Initialize API client configuration (must be imported before any API calls)
+import '@/lib/api-client';
+
 if (import.meta.env.VITE_ENABLE_SCAN === 'true') {
   import('react-scan').then(({ scan }) => {
     scan({ enabled: true });

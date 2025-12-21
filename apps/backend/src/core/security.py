@@ -1,6 +1,9 @@
 """Security utilities for authentication and authorization."""
 
-from datetime import datetime, timedelta
+import hashlib
+import logging
+import secrets
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from jose import JWTError, jwt
@@ -8,8 +11,35 @@ from passlib.context import CryptContext
 
 from src.core.config import settings
 
-# Password hashing context with bcrypt configuration to avoid wrap bug detection issues
+logger = logging.getLogger(__name__)
+
+# BCrypt has a maximum password length of 72 bytes
+BCRYPT_MAX_PASSWORD_LENGTH = 72
+
+# Password hashing context with bcrypt configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+
+
+def _truncate_password(password: str) -> str:
+    """
+    Truncate password to BCrypt's maximum length of 72 bytes.
+
+    BCrypt silently truncates passwords longer than 72 bytes, which can lead to
+    security issues where different passwords hash to the same value. This function
+    explicitly truncates to ensure consistent behavior.
+
+    Args:
+        password: Plain text password
+
+    Returns:
+        Password truncated to 72 bytes if necessary
+    """
+    password_bytes = password.encode("utf-8")
+    if len(password_bytes) > BCRYPT_MAX_PASSWORD_LENGTH:
+        logger.debug(f"Password exceeds {BCRYPT_MAX_PASSWORD_LENGTH} bytes, truncating")
+        # Truncate at byte boundary, then decode back to string
+        return password_bytes[:BCRYPT_MAX_PASSWORD_LENGTH].decode("utf-8", errors="ignore")
+    return password
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -23,7 +53,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    truncated = _truncate_password(plain_password)
+    return pwd_context.verify(truncated, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
@@ -36,7 +67,8 @@ def get_password_hash(password: str) -> str:
     Returns:
         Hashed password string
     """
-    return pwd_context.hash(password)
+    truncated = _truncate_password(password)
+    return pwd_context.hash(truncated)
 
 
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
@@ -52,12 +84,13 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     """
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = datetime.now(UTC) + timedelta(minutes=settings.access_token_expire_minutes)
 
     to_encode.update({"exp": expire, "type": "access"})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    logger.debug(f"Created access token for user_id={data.get('sub')}")
     return encoded_jwt
 
 
@@ -72,10 +105,11 @@ def create_refresh_token(data: dict[str, Any]) -> str:
         Encoded JWT refresh token string
     """
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=settings.refresh_token_expire_days)
+    expire = datetime.now(UTC) + timedelta(days=settings.refresh_token_expire_days)
 
     to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    logger.debug(f"Created refresh token for user_id={data.get('sub')}")
     return encoded_jwt
 
 
@@ -94,6 +128,31 @@ def decode_token(token: str) -> dict[str, Any] | None:
     """
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+        logger.debug(f"Successfully decoded token for user_id={payload.get('sub')}")
         return payload
-    except JWTError:
+    except JWTError as e:
+        logger.debug(f"Failed to decode token: {e}")
         return None
+
+
+def create_session_token() -> str:
+    """
+    Create a cryptographically secure session token.
+
+    Returns:
+        str: Random session token
+    """
+    return secrets.token_urlsafe(32)
+
+
+def hash_token(token: str) -> str:
+    """
+    Hash a token using SHA-256 for secure storage.
+
+    Args:
+        token: Token to hash
+
+    Returns:
+        str: Hexadecimal hash of the token
+    """
+    return hashlib.sha256(token.encode()).hexdigest()

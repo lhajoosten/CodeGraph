@@ -12,9 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as R404RouteImport } from './routes/$404'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
+import { Route as PublicVerifyEmailPendingRouteImport } from './routes/_public/verify-email-pending'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
+import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
-import { Route as ProtectedTasksRouteImport } from './routes/_protected/tasks'
+import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password'
+import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
+import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
 import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
+import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -33,78 +40,185 @@ const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_protected/index.lazy').then((d) => d.Route),
 )
+const PublicVerifyEmailPendingRoute =
+  PublicVerifyEmailPendingRouteImport.update({
+    id: '/_public/verify-email-pending',
+    path: '/verify-email-pending',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_public/verify-email-pending.lazy').then((d) => d.Route),
+  )
+const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
+  id: '/_public/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
+  id: '/_public/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_public/reset-password.lazy').then((d) => d.Route),
+)
+const PublicRegisterRoute = PublicRegisterRouteImport.update({
+  id: '/_public/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_public/register.lazy').then((d) => d.Route),
+)
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/_public/login.lazy').then((d) => d.Route))
-const ProtectedTasksRoute = ProtectedTasksRouteImport.update({
-  id: '/_protected/tasks',
-  path: '/tasks',
+const PublicForgotPasswordRoute = PublicForgotPasswordRouteImport.update({
+  id: '/_public/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
-  import('./routes/_protected/tasks.lazy').then((d) => d.Route),
+  import('./routes/_public/forgot-password.lazy').then((d) => d.Route),
+)
+const ProtectedTasksIndexRoute = ProtectedTasksIndexRouteImport.update({
+  id: '/_protected/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/tasks/index.lazy').then((d) => d.Route),
+)
+const ProtectedSettingsIndexRoute = ProtectedSettingsIndexRouteImport.update({
+  id: '/_protected/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/settings/index.lazy').then((d) => d.Route),
 )
 const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProtectedTasksLazyRoute,
+  id: '/_protected/tasks/$id',
+  path: '/tasks/$id',
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route),
 )
+const PublicOauthCallbackProviderRoute =
+  PublicOauthCallbackProviderRouteImport.update({
+    id: '/_public/oauth/callback/$provider',
+    path: '/oauth/callback/$provider',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_public/oauth.callback.$provider.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 export interface FileRoutesByFullPath {
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
-  '/tasks': typeof ProtectedTasksRoute
+  '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
+  '/reset-password': typeof PublicResetPasswordRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/settings': typeof ProtectedSettingsIndexRoute
+  '/tasks': typeof ProtectedTasksIndexRoute
+  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRoutesByTo {
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
-  '/tasks': typeof ProtectedTasksRoute
+  '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
+  '/reset-password': typeof PublicResetPasswordRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/settings': typeof ProtectedSettingsIndexRoute
+  '/tasks': typeof ProtectedTasksIndexRoute
+  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
-  '/_protected/tasks': typeof ProtectedTasksRoute
+  '/_public/forgot-password': typeof PublicForgotPasswordRoute
   '/_public/login': typeof PublicLoginRoute
+  '/_public/register': typeof PublicRegisterRoute
+  '/_public/reset-password': typeof PublicResetPasswordRoute
+  '/_public/verify-email': typeof PublicVerifyEmailRoute
+  '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/_protected/': typeof ProtectedIndexRoute
   '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
+  '/_protected/settings/': typeof ProtectedSettingsIndexRoute
+  '/_protected/tasks/': typeof ProtectedTasksIndexRoute
+  '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/$404'
     | '/unauthorized'
-    | '/tasks'
+    | '/forgot-password'
     | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/verify-email-pending'
     | '/'
     | '/tasks/$id'
+    | '/settings'
+    | '/tasks'
+    | '/oauth/callback/$provider'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$404' | '/unauthorized' | '/tasks' | '/login' | '/' | '/tasks/$id'
+  to:
+    | '/$404'
+    | '/unauthorized'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/verify-email'
+    | '/verify-email-pending'
+    | '/'
+    | '/tasks/$id'
+    | '/settings'
+    | '/tasks'
+    | '/oauth/callback/$provider'
   id:
     | '__root__'
     | '/$404'
     | '/unauthorized'
-    | '/_protected/tasks'
+    | '/_public/forgot-password'
     | '/_public/login'
+    | '/_public/register'
+    | '/_public/reset-password'
+    | '/_public/verify-email'
+    | '/_public/verify-email-pending'
     | '/_protected/'
     | '/_protected/tasks/$id'
+    | '/_protected/settings/'
+    | '/_protected/tasks/'
+    | '/_public/oauth/callback/$provider'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   R404Route: typeof R404Route
   UnauthorizedRoute: typeof UnauthorizedRoute
-  ProtectedTasksRoute: typeof ProtectedTasksRoute
+  PublicForgotPasswordRoute: typeof PublicForgotPasswordRoute
   PublicLoginRoute: typeof PublicLoginRoute
+  PublicRegisterRoute: typeof PublicRegisterRoute
+  PublicResetPasswordRoute: typeof PublicResetPasswordRoute
+  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
+  PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
+  ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute
+  ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
+  ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
+  PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,6 +244,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/verify-email-pending': {
+      id: '/_public/verify-email-pending'
+      path: '/verify-email-pending'
+      fullPath: '/verify-email-pending'
+      preLoaderRoute: typeof PublicVerifyEmailPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/verify-email': {
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/reset-password': {
+      id: '/_public/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof PublicResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/register': {
+      id: '/_public/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof PublicRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/login': {
       id: '/_public/login'
       path: '/login'
@@ -137,19 +279,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/tasks': {
-      id: '/_protected/tasks'
+    '/_public/forgot-password': {
+      id: '/_public/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof PublicForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/tasks/': {
+      id: '/_protected/tasks/'
       path: '/tasks'
       fullPath: '/tasks'
-      preLoaderRoute: typeof ProtectedTasksRouteImport
+      preLoaderRoute: typeof ProtectedTasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/settings/': {
+      id: '/_protected/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ProtectedSettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/tasks/$id': {
       id: '/_protected/tasks/$id'
-      path: '/$id'
+      path: '/tasks/$id'
       fullPath: '/tasks/$id'
       preLoaderRoute: typeof ProtectedTasksIdRouteImport
-      parentRoute: typeof ProtectedTasksLazyRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/oauth/callback/$provider': {
+      id: '/_public/oauth/callback/$provider'
+      path: '/oauth/callback/$provider'
+      fullPath: '/oauth/callback/$provider'
+      preLoaderRoute: typeof PublicOauthCallbackProviderRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -157,9 +320,17 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   R404Route: R404Route,
   UnauthorizedRoute: UnauthorizedRoute,
-  ProtectedTasksRoute: ProtectedTasksRoute,
+  PublicForgotPasswordRoute: PublicForgotPasswordRoute,
   PublicLoginRoute: PublicLoginRoute,
+  PublicRegisterRoute: PublicRegisterRoute,
+  PublicResetPasswordRoute: PublicResetPasswordRoute,
+  PublicVerifyEmailRoute: PublicVerifyEmailRoute,
+  PublicVerifyEmailPendingRoute: PublicVerifyEmailPendingRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
+  ProtectedTasksIdRoute: ProtectedTasksIdRoute,
+  ProtectedSettingsIndexRoute: ProtectedSettingsIndexRoute,
+  ProtectedTasksIndexRoute: ProtectedTasksIndexRoute,
+  PublicOauthCallbackProviderRoute: PublicOauthCallbackProviderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

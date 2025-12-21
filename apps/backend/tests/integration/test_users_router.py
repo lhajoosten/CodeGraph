@@ -97,9 +97,10 @@ class TestUserAuthIntegration:
         )
         assert login_response.status_code == 200
         data = login_response.json()
-        assert "access_token" in data
-        assert "refresh_token" in data
-        assert data["token_type"] == "bearer"
+        # Tokens are set via HTTP-only cookies, not in response body
+        assert data["message"] == "Login successful"
+        # Verify cookies are set by checking the response headers
+        assert "set-cookie" in {k.lower() for k in login_response.headers.keys()}
 
     async def test_login_invalid_credentials(
         self, client: AsyncClient, db_session: AsyncSession

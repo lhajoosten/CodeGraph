@@ -11,31 +11,42 @@ import {
   updateTaskApiV1TasksTaskIdPatchMutation,
   deleteTaskApiV1TasksTaskIdDeleteMutation,
 } from '@/openapi/@tanstack/react-query.gen';
-import type { ListTasksApiV1TasksGetData } from '@/openapi/types.gen';
+
+// Query parameters for listing tasks
+export interface UseTasksOptions {
+  page?: number;
+  pageSize?: number;
+}
 
 // Query key factory
 export const taskQueryKeys = {
   all: ['tasks'] as const,
   lists: () => [...taskQueryKeys.all, 'list'] as const,
-  list: (filters?: Partial<ListTasksApiV1TasksGetData>) =>
-    [...taskQueryKeys.lists(), { filters }] as const,
+  list: (filters?: UseTasksOptions) => [...taskQueryKeys.lists(), { filters }] as const,
   details: () => [...taskQueryKeys.all, 'detail'] as const,
   detail: (id: number) => [...taskQueryKeys.details(), id] as const,
 };
 
 /**
- * Fetch all tasks with optional pagination and filtering.
+ * Fetch all tasks with optional pagination.
+ * Note: Filtering by status/priority/search requires client-side filtering
+ * as the backend API currently only supports pagination.
  *
- * @param options - Query parameters (skip, limit, status, etc.)
- * @returns Query hook with task list
+ * @param options - Query parameters (page, pageSize)
+ * @returns Query hook with paginated task list response
  *
  * @example
- * const { data: response, isLoading } = useTasks({ skip: 0, limit: 20 });
+ * const { data: response, isLoading } = useTasks({ page: 1, pageSize: 20 });
  * const tasks = response?.items || [];
  */
-export const useTasks = (options?: Partial<ListTasksApiV1TasksGetData>) => {
+export const useTasks = (options?: UseTasksOptions) => {
   return useQuery({
-    ...listTasksApiV1TasksGetOptions(options),
+    ...listTasksApiV1TasksGetOptions({
+      query: {
+        page: options?.page,
+        page_size: options?.pageSize,
+      },
+    }),
     staleTime: 1 * 60 * 1000, // 1 minute
   });
 };
@@ -116,22 +127,22 @@ export const useUpdateTask = (taskId: number) => {
  * Delete a task.
  * Automatically invalidates the task list and removes the specific task from cache.
  *
- * @param taskId - The task ID to delete
  * @returns Mutation hook for deleting a task
  *
  * @example
- * const deleteMutation = useDeleteTask(123);
+ * const deleteMutation = useDeleteTask();
  * deleteMutation.mutate(
  *   { path: { task_id: 123 } },
  *   { onSuccess: () => console.log('Task deleted!') }
  * );
  */
-export const useDeleteTask = (taskId: number) => {
+export const useDeleteTask = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     ...deleteTaskApiV1TasksTaskIdDeleteMutation(),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const taskId = variables.path.task_id;
       // Invalidate the task list
       queryClient.invalidateQueries({
         queryKey: taskQueryKeys.lists(),

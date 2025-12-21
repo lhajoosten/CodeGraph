@@ -3,7 +3,7 @@
  * Auto-generated from OpenAPI spec via @hey-api/openapi-ts.
  */
 
-export { useCurrentUser, useLogin, useRegister } from './use-auth';
+export { useCurrentUser, useLogin, useLogout, useRegister } from './use-auth';
 
 export {
   useTasks,

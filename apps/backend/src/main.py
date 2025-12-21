@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.api import tasks, users
+from src.api import auth, oauth, tasks, test_email, two_factor, users
 from src.core.config import settings
 from src.core.database import close_db
 from src.core.logging import configure_logging, get_logger
@@ -76,8 +76,12 @@ async def health_check() -> dict[str, str]:
 
 
 # Include routers
+app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
+app.include_router(two_factor.router, prefix="/api/v1", tags=["two-factor-auth"])
+app.include_router(oauth.router, prefix="/api/v1", tags=["oauth"])
+app.include_router(test_email.router, tags=["testing"])
 
 
 # Global exception handler

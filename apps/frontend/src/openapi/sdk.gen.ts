@@ -3,17 +3,44 @@
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
 import type {
+  ChangeEmailApiV1AuthChangeEmailPostData,
+  ChangeEmailApiV1AuthChangeEmailPostErrors,
+  ChangeEmailApiV1AuthChangeEmailPostResponses,
+  ChangePasswordApiV1AuthChangePasswordPostData,
+  ChangePasswordApiV1AuthChangePasswordPostErrors,
+  ChangePasswordApiV1AuthChangePasswordPostResponses,
   CreateTaskApiV1TasksPostData,
   CreateTaskApiV1TasksPostErrors,
   CreateTaskApiV1TasksPostResponses,
   DeleteTaskApiV1TasksTaskIdDeleteData,
   DeleteTaskApiV1TasksTaskIdDeleteErrors,
   DeleteTaskApiV1TasksTaskIdDeleteResponses,
+  DisableTwoFactorApiV1TwoFactorDisablePostData,
+  DisableTwoFactorApiV1TwoFactorDisablePostErrors,
+  DisableTwoFactorApiV1TwoFactorDisablePostResponses,
+  EnableTwoFactorApiV1TwoFactorEnablePostData,
+  EnableTwoFactorApiV1TwoFactorEnablePostErrors,
+  EnableTwoFactorApiV1TwoFactorEnablePostResponses,
+  ForgotPasswordApiV1AuthForgotPasswordPostData,
+  ForgotPasswordApiV1AuthForgotPasswordPostErrors,
+  ForgotPasswordApiV1AuthForgotPasswordPostResponses,
+  GetConnectedAccountsApiV1OauthAccountsGetData,
+  GetConnectedAccountsApiV1OauthAccountsGetErrors,
+  GetConnectedAccountsApiV1OauthAccountsGetResponses,
+  GetCurrentUserInfoApiV1AuthMeGetData,
+  GetCurrentUserInfoApiV1AuthMeGetErrors,
+  GetCurrentUserInfoApiV1AuthMeGetResponses,
   GetCurrentUserInfoApiV1UsersMeGetData,
+  GetCurrentUserInfoApiV1UsersMeGetErrors,
   GetCurrentUserInfoApiV1UsersMeGetResponses,
+  GetOauthProvidersApiV1OauthProvidersGetData,
+  GetOauthProvidersApiV1OauthProvidersGetResponses,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetErrors,
   GetTaskApiV1TasksTaskIdGetResponses,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetData,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetErrors,
+  GetTwoFactorStatusApiV1TwoFactorStatusGetResponses,
   HealthCheckHealthGetData,
   HealthCheckHealthGetResponses,
   ListTasksApiV1TasksGetData,
@@ -22,12 +49,51 @@ import type {
   LoginUserApiV1AuthLoginPostData,
   LoginUserApiV1AuthLoginPostErrors,
   LoginUserApiV1AuthLoginPostResponses,
+  LogoutApiV1AuthLogoutPostData,
+  LogoutApiV1AuthLogoutPostErrors,
+  LogoutApiV1AuthLogoutPostResponses,
+  OauthAuthorizeApiV1OauthProviderAuthorizeGetData,
+  OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors,
+  OauthAuthorizeApiV1OauthProviderAuthorizeGetResponses,
+  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
+  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors,
+  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses,
+  OauthCallbackApiV1OauthProviderCallbackPostData,
+  OauthCallbackApiV1OauthProviderCallbackPostErrors,
+  OauthCallbackApiV1OauthProviderCallbackPostResponses,
+  RefreshApiV1AuthRefreshPostData,
+  RefreshApiV1AuthRefreshPostErrors,
+  RefreshApiV1AuthRefreshPostResponses,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors,
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses,
   RegisterUserApiV1AuthRegisterPostData,
   RegisterUserApiV1AuthRegisterPostErrors,
   RegisterUserApiV1AuthRegisterPostResponses,
+  ResendVerificationApiV1AuthResendVerificationPostData,
+  ResendVerificationApiV1AuthResendVerificationPostErrors,
+  ResendVerificationApiV1AuthResendVerificationPostResponses,
+  ResetPasswordApiV1AuthResetPasswordPostData,
+  ResetPasswordApiV1AuthResetPasswordPostErrors,
+  ResetPasswordApiV1AuthResetPasswordPostResponses,
+  SendTestEmailApiV1TestSendTestEmailPostData,
+  SendTestEmailApiV1TestSendTestEmailPostErrors,
+  SendTestEmailApiV1TestSendTestEmailPostResponses,
+  SetupTwoFactorApiV1TwoFactorSetupPostData,
+  SetupTwoFactorApiV1TwoFactorSetupPostErrors,
+  SetupTwoFactorApiV1TwoFactorSetupPostResponses,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors,
+  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses,
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchErrors,
   UpdateTaskApiV1TasksTaskIdPatchResponses,
+  VerifyEmailApiV1AuthVerifyEmailPostData,
+  VerifyEmailApiV1AuthVerifyEmailPostErrors,
+  VerifyEmailApiV1AuthVerifyEmailPostResponses,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostData,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostErrors,
+  VerifyTwoFactorApiV1TwoFactorVerifyPostResponses,
 } from './types.gen';
 
 export type Options<
@@ -129,6 +195,284 @@ export const loginUserApiV1AuthLoginPost = <ThrowOnError extends boolean = false
   });
 
 /**
+ * Logout
+ *
+ * Logout user, clears cookies and revokes refresh token.
+ *
+ * Args:
+ * response: FastAPI response object (to clear cookies)
+ * refresh_token: Refresh token from cookie
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ */
+export const logoutApiV1AuthLogoutPost = <ThrowOnError extends boolean = false>(
+  options?: Options<LogoutApiV1AuthLogoutPostData, ThrowOnError>
+) =>
+  (options?.client ?? client).post<
+    LogoutApiV1AuthLogoutPostResponses,
+    LogoutApiV1AuthLogoutPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/logout',
+    ...options,
+  });
+
+/**
+ * Refresh
+ *
+ * Refresh access token using refresh token from cookie.
+ *
+ * Implements token rotation: issues new refresh token and revokes old one.
+ *
+ * Args:
+ * response: FastAPI response object (to set new cookies)
+ * request: FastAPI request object (for IP address)
+ * refresh_token: Refresh token from cookie
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If refresh token is invalid, expired, or revoked
+ */
+export const refreshApiV1AuthRefreshPost = <ThrowOnError extends boolean = false>(
+  options?: Options<RefreshApiV1AuthRefreshPostData, ThrowOnError>
+) =>
+  (options?.client ?? client).post<
+    RefreshApiV1AuthRefreshPostResponses,
+    RefreshApiV1AuthRefreshPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/refresh',
+    ...options,
+  });
+
+/**
+ * Get Current User Info
+ *
+ * Get current authenticated user information.
+ *
+ * Args:
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * UserResponse: Current user data
+ */
+export const getCurrentUserInfoApiV1AuthMeGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetCurrentUserInfoApiV1AuthMeGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetCurrentUserInfoApiV1AuthMeGetResponses,
+    GetCurrentUserInfoApiV1AuthMeGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/me',
+    ...options,
+  });
+
+/**
+ * Verify Email
+ *
+ * Verify user email with verification token.
+ *
+ * Args:
+ * request_data: Email verification token
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If token is invalid or expired
+ */
+export const verifyEmailApiV1AuthVerifyEmailPost = <ThrowOnError extends boolean = false>(
+  options: Options<VerifyEmailApiV1AuthVerifyEmailPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    VerifyEmailApiV1AuthVerifyEmailPostResponses,
+    VerifyEmailApiV1AuthVerifyEmailPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/verify-email',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Resend Verification
+ *
+ * Resend verification email to user.
+ *
+ * Args:
+ * request_data: User email address
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If email not found
+ */
+export const resendVerificationApiV1AuthResendVerificationPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ResendVerificationApiV1AuthResendVerificationPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ResendVerificationApiV1AuthResendVerificationPostResponses,
+    ResendVerificationApiV1AuthResendVerificationPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/resend-verification',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Forgot Password
+ *
+ * Request password reset for user account.
+ *
+ * Args:
+ * request_data: User email address
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message (always returns success for security)
+ */
+export const forgotPasswordApiV1AuthForgotPasswordPost = <ThrowOnError extends boolean = false>(
+  options: Options<ForgotPasswordApiV1AuthForgotPasswordPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ForgotPasswordApiV1AuthForgotPasswordPostResponses,
+    ForgotPasswordApiV1AuthForgotPasswordPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/forgot-password',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Reset Password
+ *
+ * Reset user password with reset token.
+ *
+ * Args:
+ * request_data: Reset token and new password
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If token is invalid or expired
+ */
+export const resetPasswordApiV1AuthResetPasswordPost = <ThrowOnError extends boolean = false>(
+  options: Options<ResetPasswordApiV1AuthResetPasswordPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ResetPasswordApiV1AuthResetPasswordPostResponses,
+    ResetPasswordApiV1AuthResetPasswordPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/reset-password',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Change Password
+ *
+ * Change password for authenticated user.
+ *
+ * Args:
+ * request_data: Current password and new password
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If current password is incorrect
+ */
+export const changePasswordApiV1AuthChangePasswordPost = <ThrowOnError extends boolean = false>(
+  options: Options<ChangePasswordApiV1AuthChangePasswordPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ChangePasswordApiV1AuthChangePasswordPostResponses,
+    ChangePasswordApiV1AuthChangePasswordPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/change-password',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Change Email
+ *
+ * Request email change for authenticated user.
+ *
+ * Sends verification email to new address.
+ *
+ * Args:
+ * request_data: New email address and password
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message
+ *
+ * Raises:
+ * HTTPException: If password is incorrect or new email already registered
+ */
+export const changeEmailApiV1AuthChangeEmailPost = <ThrowOnError extends boolean = false>(
+  options: Options<ChangeEmailApiV1AuthChangeEmailPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ChangeEmailApiV1AuthChangeEmailPostResponses,
+    ChangeEmailApiV1AuthChangeEmailPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/change-email',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
  * Get Current User Info
  *
  * Get current user information.
@@ -144,7 +488,7 @@ export const getCurrentUserInfoApiV1UsersMeGet = <ThrowOnError extends boolean =
 ) =>
   (options?.client ?? client).get<
     GetCurrentUserInfoApiV1UsersMeGetResponses,
-    unknown,
+    GetCurrentUserInfoApiV1UsersMeGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
@@ -292,4 +636,379 @@ export const updateTaskApiV1TasksTaskIdPatch = <ThrowOnError extends boolean = f
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Get Two Factor Status
+ *
+ * Get the current 2FA status for the authenticated user.
+ *
+ * Returns:
+ * TwoFactorStatusResponse with enabled status and remaining backup codes.
+ */
+export const getTwoFactorStatusApiV1TwoFactorStatusGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetTwoFactorStatusApiV1TwoFactorStatusGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetTwoFactorStatusApiV1TwoFactorStatusGetResponses,
+    GetTwoFactorStatusApiV1TwoFactorStatusGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/status',
+    ...options,
+  });
+
+/**
+ * Setup Two Factor
+ *
+ * Start the 2FA setup process.
+ *
+ * Generates a TOTP secret and QR code for the user to scan with their
+ * authenticator app.
+ *
+ * Returns:
+ * TwoFactorSetupResponse with QR code and secret.
+ *
+ * Raises:
+ * HTTPException: If 2FA is already enabled.
+ */
+export const setupTwoFactorApiV1TwoFactorSetupPost = <ThrowOnError extends boolean = false>(
+  options?: Options<SetupTwoFactorApiV1TwoFactorSetupPostData, ThrowOnError>
+) =>
+  (options?.client ?? client).post<
+    SetupTwoFactorApiV1TwoFactorSetupPostResponses,
+    SetupTwoFactorApiV1TwoFactorSetupPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/setup',
+    ...options,
+  });
+
+/**
+ * Enable Two Factor
+ *
+ * Enable 2FA after verifying the TOTP code.
+ *
+ * The user must first call /two-factor/setup and scan the QR code before
+ * calling this endpoint with the code from their authenticator app.
+ *
+ * Args:
+ * request: Contains the 6-digit TOTP code.
+ *
+ * Returns:
+ * TwoFactorEnableResponse with backup codes.
+ *
+ * Raises:
+ * HTTPException: If the code is invalid or 2FA is not set up.
+ */
+export const enableTwoFactorApiV1TwoFactorEnablePost = <ThrowOnError extends boolean = false>(
+  options: Options<EnableTwoFactorApiV1TwoFactorEnablePostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    EnableTwoFactorApiV1TwoFactorEnablePostResponses,
+    EnableTwoFactorApiV1TwoFactorEnablePostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/enable',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Disable Two Factor
+ *
+ * Disable 2FA for the authenticated user.
+ *
+ * Requires the user's password for confirmation.
+ *
+ * Args:
+ * request: Contains the user's password.
+ *
+ * Returns:
+ * Success message.
+ *
+ * Raises:
+ * HTTPException: If 2FA is not enabled or password is incorrect.
+ */
+export const disableTwoFactorApiV1TwoFactorDisablePost = <ThrowOnError extends boolean = false>(
+  options: Options<DisableTwoFactorApiV1TwoFactorDisablePostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    DisableTwoFactorApiV1TwoFactorDisablePostResponses,
+    DisableTwoFactorApiV1TwoFactorDisablePostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/disable',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Verify Two Factor
+ *
+ * Verify a 2FA code (TOTP or backup code).
+ *
+ * This endpoint can be used during login or for sensitive operations.
+ *
+ * Args:
+ * request: Contains the TOTP or backup code.
+ *
+ * Returns:
+ * TwoFactorVerifyResponse indicating if the code is valid.
+ */
+export const verifyTwoFactorApiV1TwoFactorVerifyPost = <ThrowOnError extends boolean = false>(
+  options: Options<VerifyTwoFactorApiV1TwoFactorVerifyPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    VerifyTwoFactorApiV1TwoFactorVerifyPostResponses,
+    VerifyTwoFactorApiV1TwoFactorVerifyPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/verify',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Regenerate Backup Codes
+ *
+ * Regenerate backup codes for the authenticated user.
+ *
+ * This invalidates all existing backup codes and generates new ones.
+ * Requires the user's password for confirmation.
+ *
+ * Args:
+ * request: Contains the user's password.
+ *
+ * Returns:
+ * RegenerateBackupCodesResponse with new backup codes.
+ *
+ * Raises:
+ * HTTPException: If 2FA is not enabled or password is incorrect.
+ */
+export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses,
+    RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/two-factor/regenerate-backup-codes',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get Oauth Providers
+ *
+ * Get available OAuth providers and their configuration status.
+ *
+ * Returns:
+ * Dictionary of provider names and whether they are configured.
+ */
+export const getOauthProvidersApiV1OauthProvidersGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetOauthProvidersApiV1OauthProvidersGetResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/providers',
+    ...options,
+  });
+
+/**
+ * Oauth Authorize
+ *
+ * Start OAuth authorization flow.
+ *
+ * Redirects the user to the OAuth provider's authorization page.
+ *
+ * Args:
+ * provider: OAuth provider name (github, google, microsoft).
+ * redirect_url: Optional URL to redirect to after successful auth.
+ *
+ * Returns:
+ * Redirect to the OAuth provider.
+ *
+ * Raises:
+ * HTTPException: If provider is not supported or not configured.
+ */
+export const oauthAuthorizeApiV1OauthProviderAuthorizeGet = <ThrowOnError extends boolean = false>(
+  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    OauthAuthorizeApiV1OauthProviderAuthorizeGetResponses,
+    OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/{provider}/authorize',
+    ...options,
+  });
+
+/**
+ * Oauth Authorize Link
+ *
+ * Start OAuth authorization flow for linking to existing account.
+ *
+ * Requires authentication. Links the OAuth account to the current user.
+ *
+ * Args:
+ * provider: OAuth provider name.
+ * redirect_url: Optional URL to redirect to after linking.
+ *
+ * Returns:
+ * Redirect to the OAuth provider.
+ */
+export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses,
+    OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/{provider}/authorize/link',
+    ...options,
+  });
+
+/**
+ * Oauth Callback
+ *
+ * Handle OAuth callback.
+ *
+ * Exchanges the authorization code for tokens and creates/links user account.
+ *
+ * Args:
+ * provider: OAuth provider name.
+ * request: Contains code and state from OAuth callback.
+ *
+ * Returns:
+ * User info and redirect URL.
+ *
+ * Raises:
+ * HTTPException: If callback fails.
+ */
+export const oauthCallbackApiV1OauthProviderCallbackPost = <ThrowOnError extends boolean = false>(
+  options: Options<OauthCallbackApiV1OauthProviderCallbackPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    OauthCallbackApiV1OauthProviderCallbackPostResponses,
+    OauthCallbackApiV1OauthProviderCallbackPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/{provider}/callback',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get Connected Accounts
+ *
+ * Get all OAuth accounts linked to the current user.
+ *
+ * Returns:
+ * List of connected OAuth accounts.
+ */
+export const getConnectedAccountsApiV1OauthAccountsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetConnectedAccountsApiV1OauthAccountsGetResponses,
+    GetConnectedAccountsApiV1OauthAccountsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/accounts',
+    ...options,
+  });
+
+/**
+ * Unlink Oauth Account
+ *
+ * Unlink an OAuth account from the current user.
+ *
+ * Args:
+ * provider: OAuth provider to unlink.
+ *
+ * Returns:
+ * Success message.
+ *
+ * Raises:
+ * HTTPException: If unlinking fails.
+ */
+export const unlinkOauthAccountApiV1OauthProviderUnlinkDelete = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses,
+    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/oauth/{provider}/unlink',
+    ...options,
+  });
+
+/**
+ * Send Test Email
+ *
+ * Send a test email to verify SMTP configuration.
+ *
+ * **Development Only** - Remove this endpoint in production.
+ *
+ * Args:
+ * recipient_email: Email address to send test email to
+ * db: Database session
+ *
+ * Returns:
+ * dict: Success message with details
+ *
+ * Raises:
+ * HTTPException: If email sending fails
+ */
+export const sendTestEmailApiV1TestSendTestEmailPost = <ThrowOnError extends boolean = false>(
+  options: Options<SendTestEmailApiV1TestSendTestEmailPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    SendTestEmailApiV1TestSendTestEmailPostResponses,
+    SendTestEmailApiV1TestSendTestEmailPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/test/send-test-email',
+    ...options,
   });

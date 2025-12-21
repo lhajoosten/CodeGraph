@@ -11,6 +11,7 @@ export {
   // Auth hooks
   useCurrentUser,
   useLogin,
+  useLogout,
   useRegister,
   // Task hooks
   useTasks,
@@ -22,4 +23,34 @@ export {
 } from './api';
 
 // Common component hooks - reusable UI logic
-export { useToggle, useFormError, useLocalStorage } from './common';
+export {
+  // State hooks
+  useToggle,
+  useFormError,
+  useLocalStorage,
+  useDisclosure,
+  useControlledDisclosure,
+  // Utility hooks
+  useDebounce,
+  useDebouncedCallback,
+  useCopyToClipboard,
+  useIsMounted,
+  useHasMounted,
+  // DOM hooks
+  useClickOutside,
+  useClickOutsideMultiple,
+  useKeyboardShortcut,
+  useKeyboardShortcuts,
+  // Media query hooks
+  useMediaQuery,
+  useIsMobile,
+  useIsTablet,
+  useIsDesktop,
+  usePrefersReducedMotion,
+  usePrefersDarkMode,
+  useBreakpoint,
+  // SSE hooks
+  useEventSource,
+  useAgentStream,
+  type AgentUpdate,
+} from './common';

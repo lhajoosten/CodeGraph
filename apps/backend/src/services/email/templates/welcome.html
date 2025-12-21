@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CodeGraph</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            margin: 30px 0;
+            line-height: 1.8;
+            text-align: left;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 20px auto;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .features {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        .features li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .features li:last-child {
+            border-bottom: none;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to CodeGraph! 🎉</h1>
+        </div>
+
+        <div class="content">
+            <p>Hi {{ user_email }},</p>
+
+            <p>Your account has been successfully created and verified. We're excited to have you on board!</p>
+
+            <div style="text-align: center;">
+                <a href="{{ dashboard_link }}" class="button">Go to Dashboard</a>
+            </div>
+
+            <div class="features">
+                <p><strong>Here's what you can do with CodeGraph:</strong></p>
+                <ul>
+                    <li>Create and manage your development tasks</li>
+                    <li>Connect your GitHub repositories for better integration</li>
+                    <li>Collaborate with team members</li>
+                    <li>Enable two-factor authentication for enhanced security</li>
+                    <li>Track your code analysis and insights</li>
+                </ul>
+            </div>
+
+            <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+        </div>
+
+        <div class="footer">
+            <p>CodeGraph Team</p>
+            <p>This is an automated email. Please do not reply to this message.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,7 +1,6 @@
 """Database configuration and session management."""
 
 from collections.abc import AsyncGenerator
-from typing import Any
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -9,9 +8,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
 
 from src.core.config import settings
+from src.models.base import Base
 
 # Create async engine
 engine: AsyncEngine = create_async_engine(
@@ -30,9 +29,6 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False,
     autoflush=False,
 )
-
-# Base class for all models
-Base: Any = declarative_base()
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

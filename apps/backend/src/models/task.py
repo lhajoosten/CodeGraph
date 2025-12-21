@@ -37,7 +37,20 @@ class TaskPriority(str, enum.Enum):
 
 
 class Task(Base, TimestampMixin):
-    """Task model representing a coding task to be executed by agents."""
+    """Task model representing a coding task to be executed by agents.
+
+    Attributes:
+        id (int): Primary key.
+        title (str): Title of the task.
+        description (str): Detailed description of the task.
+        status (TaskStatus): Current status of the task.
+        priority (TaskPriority): Priority level of the task.
+
+    Relationships:
+        user (User): The user who created the task.
+        repository (Repository | None): The repository associated with the task.
+        agent_runs (list[AgentRun]): List of agent runs associated with the task.
+    """
 
     __tablename__ = "tasks"
 

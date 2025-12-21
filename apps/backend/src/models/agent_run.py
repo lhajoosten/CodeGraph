@@ -34,7 +34,25 @@ class AgentRunStatus(str, enum.Enum):
 
 
 class AgentRun(Base, TimestampMixin):
-    """Agent run model representing an execution of an agent for a task."""
+    """Agent run model representing an execution of an agent for a task.
+
+    Attributes:
+        id (int): Primary key.
+        agent_type (AgentType): Type of the agent.
+        status (AgentRunStatus): Current status of the agent run.
+        started_at (datetime | None): Timestamp when the agent run started.
+        completed_at (datetime | None): Timestamp when the agent run completed.
+        model_used (str | None): The model used during the agent run.
+        tokens_used (int | None): Number of tokens used during the run.
+        error_message (str | None): Error message if the run failed.
+        input_data (dict[str, Any] | None): Input data provided to the agent.
+        output_data (dict[str, Any] | None): Output data produced by the agent.
+        run_metadata (dict[str, Any] | None): Additional metadata about the run.
+        task_id (int): Foreign key to the associated task.
+
+    Relationships:
+        task (Task): The task associated with the agent run.
+    """
 
     __tablename__ = "agent_runs"
 
