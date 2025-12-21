@@ -21,14 +21,14 @@ ENV PATH="/root/.local/bin:$PATH"
 WORKDIR /app
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock* ./
+COPY apps/backend/pyproject.toml apps/backend/poetry.lock* ./
 
 # Install dependencies
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root
 
 # Copy application code
-COPY . .
+COPY apps/backend/ .
 
 # Expose port
 EXPOSE 8000

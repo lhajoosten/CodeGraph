@@ -31,8 +31,8 @@ services:
 
   backend:
     build:
-      context: ../apps/backend
-      dockerfile: ../../docker/backend.Dockerfile
+      context: ..
+      dockerfile: docker/backend.Dockerfile
     container_name: codegraph-backend
     environment:
       DATABASE_URL: postgresql+asyncpg://codegraph:codegraph@postgres:5432/codegraph
@@ -55,8 +55,8 @@ services:
 
   frontend:
     build:
-      context: ../apps/frontend
-      dockerfile: ../../docker/frontend.Dockerfile
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
       target: development
     container_name: codegraph-frontend
     environment:

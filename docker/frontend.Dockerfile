@@ -5,13 +5,13 @@ FROM node:20-alpine AS base
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY apps/frontend/package*.json ./
 
 # Install dependencies (use npm ci for Docker to respect package-lock.json)
 RUN npm ci
 
 # Copy application code
-COPY . .
+COPY apps/frontend/ .
 
 # Development stage
 FROM base AS development
