@@ -272,7 +272,6 @@ body {
     --shadow-tabs: 0 0 24px 0 rgba(32, 32, 32, 0.4);
     --shadow-modal: 0px 0px 24px 0px rgba(32, 32, 32, 0.4);
     --shadow-main: 0px 0px 36px 0px rgba(104, 101, 99, 0.1);
-    --background-image-auth: url('/auth_background_dark.png');
 
     /* Dark Crowe Theme Colors */
     --color-sidebar: #f5a80026;

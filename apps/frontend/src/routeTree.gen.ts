@@ -8,87 +8,75 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as R404RouteImport } from './routes/$404'
-import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
-import { Route as PublicLoginRouteImport } from './routes/_public/login'
-import { Route as ProtectedTasksRouteImport } from './routes/_protected/tasks'
-import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized';
+import { Route as R404RouteImport } from './routes/$404';
+import { Route as ProtectedIndexRouteImport } from './routes/_protected/index';
+import { Route as PublicLoginRouteImport } from './routes/_public/login';
+import { Route as ProtectedTasksRouteImport } from './routes/_protected/tasks';
+import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id';
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const R404Route = R404RouteImport.update({
   id: '/$404',
   path: '/$404',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/_protected/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/_protected/index.lazy').then((d) => d.Route),
-)
+} as any).lazy(() => import('./routes/_protected/index.lazy').then((d) => d.Route));
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/login.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/_public/login.lazy').then((d) => d.Route));
 const ProtectedTasksRoute = ProtectedTasksRouteImport.update({
   id: '/_protected/tasks',
   path: '/tasks',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/_protected/tasks.lazy').then((d) => d.Route),
-)
+} as any).lazy(() => import('./routes/_protected/tasks.lazy').then((d) => d.Route));
 const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => ProtectedTasksLazyRoute,
-} as any).lazy(() =>
-  import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route),
-)
+} as any).lazy(() => import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route));
 
 export interface FileRoutesByFullPath {
-  '/$404': typeof R404Route
-  '/unauthorized': typeof UnauthorizedRoute
-  '/tasks': typeof ProtectedTasksRoute
-  '/login': typeof PublicLoginRoute
-  '/': typeof ProtectedIndexRoute
-  '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/$404': typeof R404Route;
+  '/unauthorized': typeof UnauthorizedRoute;
+  '/tasks': typeof ProtectedTasksRoute;
+  '/login': typeof PublicLoginRoute;
+  '/': typeof ProtectedIndexRoute;
+  '/tasks/$id': typeof ProtectedTasksIdRoute;
 }
 export interface FileRoutesByTo {
-  '/$404': typeof R404Route
-  '/unauthorized': typeof UnauthorizedRoute
-  '/tasks': typeof ProtectedTasksRoute
-  '/login': typeof PublicLoginRoute
-  '/': typeof ProtectedIndexRoute
-  '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/$404': typeof R404Route;
+  '/unauthorized': typeof UnauthorizedRoute;
+  '/tasks': typeof ProtectedTasksRoute;
+  '/login': typeof PublicLoginRoute;
+  '/': typeof ProtectedIndexRoute;
+  '/tasks/$id': typeof ProtectedTasksIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/$404': typeof R404Route
-  '/unauthorized': typeof UnauthorizedRoute
-  '/_protected/tasks': typeof ProtectedTasksRoute
-  '/_public/login': typeof PublicLoginRoute
-  '/_protected/': typeof ProtectedIndexRoute
-  '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
+  __root__: typeof rootRouteImport;
+  '/$404': typeof R404Route;
+  '/unauthorized': typeof UnauthorizedRoute;
+  '/_protected/tasks': typeof ProtectedTasksRoute;
+  '/_public/login': typeof PublicLoginRoute;
+  '/_protected/': typeof ProtectedIndexRoute;
+  '/_protected/tasks/$id': typeof ProtectedTasksIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/$404'
-    | '/unauthorized'
-    | '/tasks'
-    | '/login'
-    | '/'
-    | '/tasks/$id'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/$404' | '/unauthorized' | '/tasks' | '/login' | '/' | '/tasks/$id'
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: '/$404' | '/unauthorized' | '/tasks' | '/login' | '/' | '/tasks/$id';
+  fileRoutesByTo: FileRoutesByTo;
+  to: '/$404' | '/unauthorized' | '/tasks' | '/login' | '/' | '/tasks/$id';
   id:
     | '__root__'
     | '/$404'
@@ -96,61 +84,61 @@ export interface FileRouteTypes {
     | '/_protected/tasks'
     | '/_public/login'
     | '/_protected/'
-    | '/_protected/tasks/$id'
-  fileRoutesById: FileRoutesById
+    | '/_protected/tasks/$id';
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  R404Route: typeof R404Route
-  UnauthorizedRoute: typeof UnauthorizedRoute
-  ProtectedTasksRoute: typeof ProtectedTasksRoute
-  PublicLoginRoute: typeof PublicLoginRoute
-  ProtectedIndexRoute: typeof ProtectedIndexRoute
+  R404Route: typeof R404Route;
+  UnauthorizedRoute: typeof UnauthorizedRoute;
+  ProtectedTasksRoute: typeof ProtectedTasksRoute;
+  PublicLoginRoute: typeof PublicLoginRoute;
+  ProtectedIndexRoute: typeof ProtectedIndexRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/unauthorized';
+      path: '/unauthorized';
+      fullPath: '/unauthorized';
+      preLoaderRoute: typeof UnauthorizedRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/$404': {
-      id: '/$404'
-      path: '/$404'
-      fullPath: '/$404'
-      preLoaderRoute: typeof R404RouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/$404';
+      path: '/$404';
+      fullPath: '/$404';
+      preLoaderRoute: typeof R404RouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_protected/': {
-      id: '/_protected/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof ProtectedIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_protected/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof ProtectedIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_public/login': {
-      id: '/_public/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof PublicLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_public/login';
+      path: '/login';
+      fullPath: '/login';
+      preLoaderRoute: typeof PublicLoginRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_protected/tasks': {
-      id: '/_protected/tasks'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof ProtectedTasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_protected/tasks';
+      path: '/tasks';
+      fullPath: '/tasks';
+      preLoaderRoute: typeof ProtectedTasksRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_protected/tasks/$id': {
-      id: '/_protected/tasks/$id'
-      path: '/$id'
-      fullPath: '/tasks/$id'
-      preLoaderRoute: typeof ProtectedTasksIdRouteImport
-      parentRoute: typeof ProtectedTasksLazyRoute
-    }
+      id: '/_protected/tasks/$id';
+      path: '/$id';
+      fullPath: '/tasks/$id';
+      preLoaderRoute: typeof ProtectedTasksIdRouteImport;
+      parentRoute: typeof ProtectedTasksLazyRoute;
+    };
   }
 }
 
@@ -160,7 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedTasksRoute: ProtectedTasksRoute,
   PublicLoginRoute: PublicLoginRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
