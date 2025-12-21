@@ -18,10 +18,10 @@ class Settings(BaseSettings):
     app_name: str = "CodeGraph"
     app_version: str = "0.1.0"
     environment: str = "development"
-    debug: bool = True
+    debug: bool = False
 
     # Server
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = 8000
 
     # Database
