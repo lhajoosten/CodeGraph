@@ -1,6 +1,6 @@
 """LangGraph workflow definitions for agent orchestration."""
 
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from src.core.logging import get_logger
 
@@ -13,8 +13,8 @@ class AgentState(TypedDict):
     task_id: int
     description: str
     plan: list[str]
-    code_changes: list[dict]
-    test_results: dict
+    code_changes: list[dict[str, Any]]
+    test_results: dict[str, Any]
     current_step: int
     error: str | None
 

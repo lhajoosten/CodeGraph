@@ -17,10 +17,11 @@ export function Login() {
 
     loginMutation.mutate(
       {
-        requestBody: {
+        body: {
           email,
           password,
         },
+        url: '/api/v1/auth/login',
       },
       {
         onSuccess: (data) => {

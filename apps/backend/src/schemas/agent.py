@@ -1,6 +1,7 @@
 """Pydantic schemas for agent-related operations."""
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -36,5 +37,5 @@ class AgentStreamEvent(BaseModel):
 
     event_type: str
     agent_type: AgentType
-    data: dict
+    data: dict[str, Any]
     timestamp: datetime

@@ -22,7 +22,7 @@ import { useCallback, useState } from 'react';
 export const useLocalStorage = <T>(
   key: string,
   initialValue: T
-): [T, (value: T | ((val: T) => T)) => void] => {
+): [T, (value: T | ((prev: T) => T)) => void] => {
   // State to store our value
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
@@ -39,7 +39,7 @@ export const useLocalStorage = <T>(
   // Return a wrapped version of useState's setter function that
   // persists the new value to localStorage
   const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
+    (value: T | ((prev: T) => T)) => {
       try {
         // Allow value to be a function so we have same API as useState
         const valueToStore = value instanceof Function ? value(storedValue) : value;

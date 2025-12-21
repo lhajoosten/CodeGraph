@@ -11,19 +11,7 @@ import {
   updateTaskApiV1TasksTaskIdPatchMutation,
   deleteTaskApiV1TasksTaskIdDeleteMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
-import type {
-  ListTasksApiV1TasksGetData,
-  GetTaskApiV1TasksTaskIdGetError,
-  GetTaskApiV1TasksTaskIdGetResponse,
-  CreateTaskApiV1TasksPostData,
-  CreateTaskApiV1TasksPostResponse,
-  CreateTaskApiV1TasksPostError,
-  UpdateTaskApiV1TasksTaskIdPatchData,
-  UpdateTaskApiV1TasksTaskIdPatchResponse,
-  UpdateTaskApiV1TasksTaskIdPatchError,
-  DeleteTaskApiV1TasksTaskIdDeleteData,
-  DeleteTaskApiV1TasksTaskIdDeleteError,
-} from '@/api/generated/types.gen';
+import type { ListTasksApiV1TasksGetData } from '@/api/generated/types.gen';
 
 // Query key factory
 export const taskQueryKeys = {
@@ -62,8 +50,8 @@ export const useTasks = (options?: Partial<ListTasksApiV1TasksGetData>) => {
  * const { data: task, isLoading } = useTask(123);
  */
 export const useTask = (taskId: number) => {
-  return useQuery<GetTaskApiV1TasksTaskIdGetResponse, GetTaskApiV1TasksTaskIdGetError>({
-    ...getTaskApiV1TasksTaskIdGetOptions({ path: { taskId } }),
+  return useQuery({
+    ...getTaskApiV1TasksTaskIdGetOptions({ path: { task_id: taskId } }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -77,18 +65,15 @@ export const useTask = (taskId: number) => {
  * @example
  * const createMutation = useCreateTask();
  * createMutation.mutate(
- *   { requestBody: { title: 'New Task', description: '...', priority: 'MEDIUM' } },
+ *   { body: { title: 'New Task', description: '...', priority: 'MEDIUM' } },
  *   { onSuccess: () => console.log('Task created!') }
  * );
  */
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    CreateTaskApiV1TasksPostResponse,
-    CreateTaskApiV1TasksPostError,
-    CreateTaskApiV1TasksPostData
-  >(createTaskApiV1TasksPostMutation(), {
+  return useMutation({
+    ...createTaskApiV1TasksPostMutation(),
     onSuccess: () => {
       // Invalidate task list to refetch
       queryClient.invalidateQueries({ queryKey: taskQueryKeys.lists() });
@@ -106,18 +91,15 @@ export const useCreateTask = () => {
  * @example
  * const updateMutation = useUpdateTask(123);
  * updateMutation.mutate(
- *   { requestBody: { status: 'COMPLETED' }, path: { taskId: 123 } },
+ *   { body: { status: 'COMPLETED' }, path: { task_id: 123 } },
  *   { onSuccess: () => console.log('Task updated!') }
  * );
  */
 export const useUpdateTask = (taskId: number) => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    UpdateTaskApiV1TasksTaskIdPatchResponse,
-    UpdateTaskApiV1TasksTaskIdPatchError,
-    UpdateTaskApiV1TasksTaskIdPatchData
-  >(updateTaskApiV1TasksTaskIdPatchMutation(), {
+  return useMutation({
+    ...updateTaskApiV1TasksTaskIdPatchMutation(),
     onSuccess: () => {
       // Invalidate both the specific task and the list
       queryClient.invalidateQueries({
@@ -140,18 +122,15 @@ export const useUpdateTask = (taskId: number) => {
  * @example
  * const deleteMutation = useDeleteTask(123);
  * deleteMutation.mutate(
- *   { path: { taskId: 123 } },
+ *   { path: { task_id: 123 } },
  *   { onSuccess: () => console.log('Task deleted!') }
  * );
  */
 export const useDeleteTask = (taskId: number) => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    DeleteTaskApiV1TasksTaskIdDeleteError,
-    DeleteTaskApiV1TasksTaskIdDeleteData
-  >(deleteTaskApiV1TasksTaskIdDeleteMutation(), {
+  return useMutation({
+    ...deleteTaskApiV1TasksTaskIdDeleteMutation(),
     onSuccess: () => {
       // Invalidate the task list
       queryClient.invalidateQueries({

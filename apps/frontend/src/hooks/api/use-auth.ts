@@ -42,7 +42,7 @@ export const useCurrentUser = () => {
  * @example
  * const registerMutation = useRegister();
  * registerMutation.mutate(
- *   { requestBody: { email: 'user@example.com', password: 'password' } },
+ *   { body: { email: 'user@example.com', password: 'password' } },
  *   { onSuccess: (data) => console.log('Registered!', data) }
  * );
  */
@@ -62,7 +62,7 @@ export const useRegister = () => {
  * @example
  * const loginMutation = useLogin();
  * loginMutation.mutate(
- *   { requestBody: { email: 'user@example.com', password: 'password' } },
+ *   { body: { email: 'user@example.com', password: 'password' } },
  *   {
  *     onSuccess: (data) => {
  *       // Save token and redirect

@@ -241,5 +241,5 @@ make install-backend
 ## Additional Resources
 
 - [API Usage Guide](./apps/frontend/API_USAGE_GUIDE.md) - How to use the generated API client
-- [Cost Governance Rules](../../.clinerules) - Token limits and model tiering
+- [Cost Governance Rules](../../.claude/.clinerules) - Token limits and model tiering
 - [Architecture](../architecture/overview.md) - System design

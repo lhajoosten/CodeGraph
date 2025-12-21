@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged
+npx lint-staged
+
+# Run backend checks
+cd apps/backend
+poetry run ruff check src tests
+poetry run black --check src tests
+poetry run mypy src

@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (_token: string) => void;
   logout: () => void;
 }
 
@@ -13,7 +13,7 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: null,
       isAuthenticated: false,
-      login: (token: string) => set({ token, isAuthenticated: true }),
+      login: (_token: string) => set({ token: _token, isAuthenticated: true }),
       logout: () => set({ token: null, isAuthenticated: false }),
     }),
     {

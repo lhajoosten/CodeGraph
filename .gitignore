@@ -240,6 +240,6 @@ __marimo__/
 
 # ignore claude related files
 .claude/
-apps/backend/.clinerules
-apps/frontend/.clinerules
-.clinerules
+.claude/backend/.clinerules
+.claude/frontend/.clinerules
+.claude/.clinerules

@@ -2,7 +2,7 @@
 
 import enum
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -52,9 +52,9 @@ class AgentRun(Base, TimestampMixin):
     error_message: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 
     # Agent output and metadata stored as JSON
-    input_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    output_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    run_metadata: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    input_data: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    output_data: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    run_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
     # Foreign keys
     task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), nullable=False, index=True)

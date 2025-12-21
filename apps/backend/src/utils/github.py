@@ -1,5 +1,7 @@
 """GitHub utility functions."""
 
+from typing import Any
+
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -20,7 +22,7 @@ async def clone_repository(github_url: str, target_path: str) -> None:
 
 async def create_pull_request(
     repo_owner: str, repo_name: str, title: str, body: str, head: str, base: str
-) -> dict:
+) -> dict[str, Any]:
     """
     Create a pull request on GitHub.
 
