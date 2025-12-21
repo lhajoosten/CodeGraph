@@ -25,7 +25,7 @@ client.instance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (isEqual(error.response.data, { detail: 'Unauthorized' })) {
-        router.navigate({ to: '/auth/sign-in' });
+        router.navigate({ to: '/login', search: { redirect: router.state.location.pathname } });
       }
     } else if (error.response?.status === 403) {
       if (
@@ -37,7 +37,7 @@ client.instance.interceptors.response.use(
           description: 'You do not have the required permissions to access this resource.',
           color: 'danger',
         });
-        router.navigate({ to: '/unauthorized' });
+        router.navigate({ to: '/' });
       }
     } else if (error.response?.status === 500) {
       if (error.response.data.detail === 'Internal Server Error') {

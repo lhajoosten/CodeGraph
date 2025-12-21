@@ -10,8 +10,8 @@ import {
   createTaskApiV1TasksPostMutation,
   updateTaskApiV1TasksTaskIdPatchMutation,
   deleteTaskApiV1TasksTaskIdDeleteMutation,
-} from '@/api/generated/@tanstack/react-query.gen';
-import type { ListTasksApiV1TasksGetData } from '@/api/generated/types.gen';
+} from '@/openapi/@tanstack/react-query.gen';
+import type { ListTasksApiV1TasksGetData } from '@/openapi/types.gen';
 
 // Query key factory
 export const taskQueryKeys = {

@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import App from './App.tsx';
 import './index.css';
 import { isAxiosError } from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from '@/routeTree.gen.ts';
 import { RouteContext } from '@/lib/types.ts';
-import { createRouter } from '@tanstack/react-router';
 
 if (import.meta.env.VITE_ENABLE_SCAN === 'true') {
   import('react-scan').then(({ scan }) => {
@@ -72,7 +70,7 @@ export const queryClient = new QueryClient(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>
 );

@@ -8,15 +8,7 @@ import {
   getCurrentUserInfoApiV1UsersMeGetOptions,
   loginUserApiV1AuthLoginPostMutation,
   registerUserApiV1AuthRegisterPostMutation,
-} from '@/api/generated/@tanstack/react-query.gen';
-import type {
-  LoginUserApiV1AuthLoginPostData,
-  LoginUserApiV1AuthLoginPostError,
-  LoginUserApiV1AuthLoginPostResponse,
-  RegisterUserApiV1AuthRegisterPostData,
-  RegisterUserApiV1AuthRegisterPostError,
-  RegisterUserApiV1AuthRegisterPostResponse,
-} from '@/api/generated/types.gen';
+} from '@/openapi/@tanstack/react-query.gen';
 
 /**
  * Fetch the current authenticated user.
@@ -47,11 +39,7 @@ export const useCurrentUser = () => {
  * );
  */
 export const useRegister = () => {
-  return useMutation<
-    RegisterUserApiV1AuthRegisterPostResponse,
-    RegisterUserApiV1AuthRegisterPostError,
-    RegisterUserApiV1AuthRegisterPostData
-  >(registerUserApiV1AuthRegisterPostMutation());
+  return useMutation(registerUserApiV1AuthRegisterPostMutation());
 };
 
 /**
@@ -73,9 +61,5 @@ export const useRegister = () => {
  * );
  */
 export const useLogin = () => {
-  return useMutation<
-    LoginUserApiV1AuthLoginPostResponse,
-    LoginUserApiV1AuthLoginPostError,
-    LoginUserApiV1AuthLoginPostData
-  >(loginUserApiV1AuthLoginPostMutation());
+  return useMutation(loginUserApiV1AuthLoginPostMutation());
 };
