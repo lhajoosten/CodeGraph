@@ -4,6 +4,7 @@ import logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
+from typing import Any
 
 import aiosmtplib
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -20,7 +21,7 @@ class SMTPEmailService(EmailService):
     Sends emails via SMTP with HTML templates rendered from Jinja2.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize SMTP email service with Jinja2 template environment."""
         template_dir = Path(__file__).parent / "templates"
         self.env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
@@ -34,7 +35,7 @@ class SMTPEmailService(EmailService):
         to: str,
         subject: str,
         template: str,
-        context: dict,
+        context: dict[str, Any],
     ) -> bool:
         """Send an email using SMTP.
 
@@ -111,7 +112,7 @@ class SMTPEmailService(EmailService):
             )
             return False
 
-    def _render_template(self, template: str, context: dict) -> str:
+    def _render_template(self, template: str, context: dict[str, Any]) -> str:
         """Render a Jinja2 template with the given context.
 
         Args:

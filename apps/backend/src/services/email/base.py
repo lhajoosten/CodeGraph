@@ -1,6 +1,7 @@
 """Abstract base class for email services."""
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class EmailService(ABC):
@@ -16,7 +17,7 @@ class EmailService(ABC):
         to: str,
         subject: str,
         template: str,
-        context: dict,
+        context: dict[str, Any],
     ) -> bool:
         """Send an email using the specified template.
 

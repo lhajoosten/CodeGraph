@@ -1,33 +1,7 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-
-const badgeVariants = cva(
-  'inline-flex items-center rounded-full border font-semibold transition-colors',
-  {
-    variants: {
-      variant: {
-        default: 'border-transparent bg-primary text-text-button',
-        secondary: 'border-transparent bg-secondary text-text-secondary',
-        success: 'border-transparent bg-success text-white',
-        danger: 'border-transparent bg-danger text-white',
-        warning: 'border-transparent bg-warning text-text-button',
-        info: 'border-transparent bg-info text-white',
-        outline: 'border-border bg-transparent text-text-primary',
-        ghost: 'border-transparent bg-transparent text-text-secondary',
-      },
-      size: {
-        default: 'px-2.5 py-0.5 text-xs',
-        sm: 'px-2 py-0.5 text-[10px]',
-        lg: 'px-3 py-1 text-sm',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  }
-);
+import { badgeVariants } from './variants/badge-variants.ts';
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
@@ -40,9 +14,13 @@ function Badge({ className, variant, size, dot, dotColor, children, ...props }: 
     <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
       {dot && (
         <span
-          className={cn('mr-1.5 h-1.5 w-1.5 rounded-full', dotColor || `
+          className={cn(
+            'mr-1.5 h-1.5 w-1.5 rounded-full',
+            dotColor ||
+              `
             bg-current
-          `)}
+          `
+          )}
           aria-hidden="true"
         />
       )}
@@ -51,4 +29,6 @@ function Badge({ className, variant, size, dot, dotColor, children, ...props }: 
   );
 }
 
-export { Badge, badgeVariants };
+export { Badge };
+// eslint-disable-next-line react-refresh/only-export-components
+export { badgeVariants } from './variants/badge-variants.ts';

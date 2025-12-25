@@ -4,7 +4,6 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.security import get_password_hash
-from src.models.oauth_account import OAuthAccount
 from src.models.user import User
 from src.services.oauth_service import (
     GitHubOAuth,

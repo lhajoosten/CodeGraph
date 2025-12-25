@@ -2,14 +2,16 @@
 
 import secrets
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user, get_db
+from src.api.deps import get_current_user
 from src.core.cookies import set_auth_cookies
+from src.core.database import get_db
 from src.core.logging import get_logger
 from src.core.security import create_access_token, create_refresh_token
 from src.models.user import User
@@ -24,7 +26,7 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 # Store OAuth states temporarily (in production, use Redis)
-oauth_states: dict[str, dict] = {}
+oauth_states: dict[str, dict[str, Any]] = {}
 
 
 class OAuthAccountResponse(BaseModel):
@@ -175,7 +177,7 @@ async def oauth_callback(
     request: OAuthCallbackRequest,
     response: Response,
     db: AsyncSession = Depends(get_db),
-) -> dict:
+) -> dict[str, Any]:
     """Handle OAuth callback.
 
     Exchanges the authorization code for tokens and creates/links user account.
@@ -246,9 +248,12 @@ async def oauth_callback(
     user, is_new = await oauth_service.get_or_create_user(profile)
 
     # Set auth cookies
-    access_token = create_access_token(user.id)
-    refresh_token = create_refresh_token(user.id)
-    set_auth_cookies(response, access_token, refresh_token)
+    from src.core.csrf import generate_csrf_token
+
+    access_token = create_access_token(data={"sub": str(user.id)})
+    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    csrf_token = generate_csrf_token()
+    set_auth_cookies(response, access_token, refresh_token, csrf_token)
 
     logger.info(
         "oauth_login_success",

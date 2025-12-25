@@ -6,8 +6,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_db
 from src.core.config import settings as app_settings
+from src.core.database import get_db
 from src.services.email import get_email_service
 
 logger = logging.getLogger(__name__)

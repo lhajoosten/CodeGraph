@@ -37,12 +37,14 @@ function VerifyEmailPendingPage() {
   };
 
   return (
-    <div className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}>
+    <div
+      className={`
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
+    >
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -126,7 +128,7 @@ function VerifyEmailPendingPage() {
           <div className="space-y-3 text-sm text-gray-600">
             <p>👉 Click the link in the email to verify your account</p>
             <p>⏱️ The link expires in 24 hours</p>
-            <p>📧 Check your spam folder if you don't see it</p>
+            <p>📧 Check your spam folder if you don&apos;t see it</p>
           </div>
 
           {/* Resend Button */}

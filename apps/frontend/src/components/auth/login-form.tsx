@@ -99,10 +99,13 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
             <Label htmlFor="password" required>
               Password
             </Label>
-            <Link to="/forgot-password" className={`
-              text-xs text-primary
-              hover:underline
-            `}>
+            <Link
+              to="/forgot-password"
+              className={`
+                text-xs text-primary
+                hover:underline
+              `}
+            >
               Forgot password?
             </Link>
           </div>
@@ -122,9 +125,11 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
                 `}
                 tabIndex={-1}
               >
-                {showPassword.isOpen ? <EyeOff className="h-4 w-4" /> : <Eye className={`
-                  h-4 w-4
-                `} />}
+                {showPassword.isOpen ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className={`h-4 w-4`} />
+                )}
               </button>
             }
             variant={errors.password ? 'error' : 'default'}
@@ -136,9 +141,12 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
         {/* Remember me */}
         <div className="flex items-center space-x-2">
           <Checkbox id="rememberMe" {...register('rememberMe')} />
-          <label htmlFor="rememberMe" className={`
+          <label
+            htmlFor="rememberMe"
+            className={`
             cursor-pointer text-sm text-text-secondary
-          `}>
+          `}
+          >
             Remember me
           </label>
         </div>
@@ -149,11 +157,14 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
       </Button>
 
       <p className="text-center text-sm text-text-secondary">
-        Don't have an account?{' '}
-        <Link to="/register" className={`
-          font-medium text-primary
-          hover:underline
-        `}>
+        Don&apos;t have an account?{' '}
+        <Link
+          to="/register"
+          className={`
+            font-medium text-primary
+            hover:underline
+          `}
+        >
           Sign up
         </Link>
       </p>

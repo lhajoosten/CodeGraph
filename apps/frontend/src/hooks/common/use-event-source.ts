@@ -53,7 +53,9 @@ export function useEventSource<T = unknown>(
     maxReconnectAttempts = AGENT_CONFIG.MAX_RETRIES,
   } = options;
 
-  const [status, setStatus] = useState<EventSourceStatus>('closed');
+  const [status, setStatus] = useState<EventSourceStatus>(() =>
+    enabled ? 'connecting' : 'closed'
+  );
   const [data, setData] = useState<T | null>(null);
   const [messages, setMessages] = useState<T[]>([]);
   const [error, setError] = useState<Event | null>(null);
@@ -61,6 +63,7 @@ export function useEventSource<T = unknown>(
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const connectRef = useRef<(() => void) | null>(null);
 
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
@@ -78,8 +81,6 @@ export function useEventSource<T = unknown>(
     cleanup();
 
     if (!enabled) return;
-
-    setStatus('connecting');
 
     const eventSource = new EventSource(fullUrl, { withCredentials });
     eventSourceRef.current = eventSource;
@@ -111,7 +112,7 @@ export function useEventSource<T = unknown>(
       if (reconnectAttemptsRef.current < maxReconnectAttempts) {
         reconnectAttemptsRef.current++;
         reconnectTimeoutRef.current = setTimeout(() => {
-          connect();
+          connectRef.current?.();
         }, reconnectInterval);
       } else {
         setStatus('closed');
@@ -131,8 +132,14 @@ export function useEventSource<T = unknown>(
     cleanup,
   ]);
 
+  // Store connect in ref to avoid circular reference
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
+
   const reconnect = useCallback(() => {
     reconnectAttemptsRef.current = 0;
+    setStatus('connecting');
     connect();
   }, [connect]);
 
@@ -143,11 +150,63 @@ export function useEventSource<T = unknown>(
   }, [cleanup, onClose]);
 
   useEffect(() => {
-    if (enabled) {
-      connect();
+    if (!enabled) {
+      cleanup();
+      return cleanup;
     }
+
+    // Set up EventSource connection
+    const eventSource = new EventSource(fullUrl, { withCredentials });
+    eventSourceRef.current = eventSource;
+
+    eventSource.onopen = () => {
+      setStatus('open');
+      setError(null);
+      reconnectAttemptsRef.current = 0;
+      onOpen?.();
+    };
+
+    eventSource.onmessage = (event) => {
+      try {
+        const parsedData: T = JSON.parse(event.data);
+        setData(parsedData);
+        setMessages((prev) => [...prev, parsedData]);
+        onMessage?.(parsedData);
+      } catch {
+        console.error('Failed to parse SSE data:', event.data);
+      }
+    };
+
+    eventSource.onerror = (event) => {
+      setError(event);
+      setStatus('error');
+      onError?.(event);
+
+      // Attempt to reconnect
+      if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+        reconnectAttemptsRef.current++;
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectRef.current?.();
+        }, reconnectInterval);
+      } else {
+        setStatus('closed');
+        onClose?.();
+      }
+    };
+
     return cleanup;
-  }, [enabled, connect, cleanup]);
+  }, [
+    enabled,
+    fullUrl,
+    withCredentials,
+    onMessage,
+    onError,
+    onOpen,
+    onClose,
+    reconnectInterval,
+    maxReconnectAttempts,
+    cleanup,
+  ]);
 
   return {
     status,

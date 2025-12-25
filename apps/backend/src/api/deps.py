@@ -105,9 +105,9 @@ async def get_current_user(
 
 
 async def get_current_user_optional(
+    db: Annotated[AsyncSession, Depends(get_db)],
     access_token: Annotated[str | None, Cookie()] = None,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)] = None,
-    db: Annotated[AsyncSession, Depends(get_db)] = None,
 ) -> User | None:
     """
     Get the current user if authenticated, otherwise return None.

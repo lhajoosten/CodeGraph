@@ -13,11 +13,15 @@ import { BREAKPOINTS, MEDIA_QUERIES } from '@/lib/constants';
  * ```
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return window.matchMedia(query).matches;
+  });
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    setMatches(media.matches);
 
     const listener = (event: MediaQueryListEvent) => {
       setMatches(event.matches);

@@ -99,7 +99,7 @@ describe('ForgotPasswordForm', () => {
     const user = userEvent.setup();
 
     mockUseMutation.mockReturnValue({
-      mutate: vi.fn((data: any) => {}),
+      mutate: vi.fn((_data: any) => {}),
       isPending: false,
       isSuccess: true,
       isError: false,

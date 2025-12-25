@@ -19,10 +19,12 @@ function AppLayout({ children, className }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar - hidden on mobile, visible on desktop */}
-      <div className={`
-        hidden
-        lg:block
-      `}>
+      <div
+        className={`
+          hidden
+          lg:block
+        `}
+      >
         <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
       </div>
 
@@ -37,10 +39,12 @@ function AppLayout({ children, className }: AppLayoutProps) {
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
-          <div className={`
-            fixed inset-y-0 left-0 z-50 w-64
-            lg:hidden
-          `}>
+          <div
+            className={`
+              fixed inset-y-0 left-0 z-50 w-64
+              lg:hidden
+            `}
+          >
             <Sidebar isOpen={true} onToggle={() => setMobileMenuOpen(false)} />
           </div>
         </>
@@ -55,10 +59,17 @@ function AppLayout({ children, className }: AppLayoutProps) {
       >
         <Header showMenuButton onMenuClick={toggleMobileMenu} />
 
-        <main className={cn(`
-          flex-1 p-4
-          lg:p-6
-        `, className)}>{children}</main>
+        <main
+          className={cn(
+            `
+              flex-1 p-4
+              lg:p-6
+            `,
+            className
+          )}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

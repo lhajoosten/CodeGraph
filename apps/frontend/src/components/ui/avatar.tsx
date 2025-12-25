@@ -1,25 +1,8 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
-
-const avatarVariants = cva(`
-  relative flex shrink-0 overflow-hidden rounded-full bg-secondary
-`, {
-  variants: {
-    size: {
-      default: 'h-10 w-10',
-      xs: 'h-6 w-6',
-      sm: 'h-8 w-8',
-      lg: 'h-12 w-12',
-      xl: 'h-16 w-16',
-      '2xl': 'h-24 w-24',
-    },
-  },
-  defaultVariants: {
-    size: 'default',
-  },
-});
+import { avatarVariants, getInitials } from './variants/avatar-variants.ts';
 
 export interface AvatarProps
   extends
@@ -67,15 +50,6 @@ const AvatarFallback = React.forwardRef<
 ));
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
-// Helper function to generate initials
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
 export interface UserAvatarProps extends AvatarProps {
   src?: string | null;
   name: string;
@@ -91,4 +65,6 @@ function UserAvatar({ src, name, alt, ...props }: UserAvatarProps) {
   );
 }
 
-export { Avatar, AvatarImage, AvatarFallback, UserAvatar, avatarVariants, getInitials };
+export { Avatar, AvatarImage, AvatarFallback, UserAvatar };
+// eslint-disable-next-line react-refresh/only-export-components
+export { avatarVariants, getInitials } from './variants/avatar-variants.ts';

@@ -23,10 +23,13 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-text-secondary">
             <li>
-              <Link to="/" className={`
-                transition-colors
-                hover:text-text-primary
-              `}>
+              <Link
+                to="/"
+                className={`
+                  transition-colors
+                  hover:text-text-primary
+                `}
+              >
                 <Home className="h-4 w-4" />
                 <span className="sr-only">Home</span>
               </Link>
@@ -38,10 +41,13 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
                 </li>
                 <li>
                   {item.href ? (
-                    <Link to={item.href} className={`
-                      transition-colors
-                      hover:text-text-primary
-                    `}>
+                    <Link
+                      to={item.href}
+                      className={`
+                        transition-colors
+                        hover:text-text-primary
+                      `}
+                    >
                       {item.label}
                     </Link>
                   ) : (
@@ -56,10 +62,12 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
 
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <h1 className={`
-            text-2xl font-bold tracking-tight text-text-primary
-            sm:text-3xl
-          `}>
+          <h1
+            className={`
+              text-2xl font-bold tracking-tight text-text-primary
+              sm:text-3xl
+            `}
+          >
             {title}
           </h1>
           {description && <p className="text-text-secondary">{description}</p>}

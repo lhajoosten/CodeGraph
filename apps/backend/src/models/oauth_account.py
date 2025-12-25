@@ -1,19 +1,19 @@
 """OAuth account model for third-party authentication."""
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Use JSONB for PostgreSQL, fallback to JSON for other databases (e.g., SQLite in tests)
-JSONType = JSON().with_variant(JSONB(), "postgresql")
-
 from src.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from src.models.user import User
+
+# Use JSONB for PostgreSQL, fallback to JSON for other databases (e.g., SQLite in tests)
+JSONType = JSON().with_variant(JSONB(), "postgresql")
 
 
 class OAuthAccount(Base, TimestampMixin):
@@ -60,7 +60,7 @@ class OAuthAccount(Base, TimestampMixin):
     email: Mapped[str | None] = mapped_column(String(255))
     name: Mapped[str | None] = mapped_column(String(255))
     avatar_url: Mapped[str | None] = mapped_column(String(512))
-    profile_data: Mapped[dict] = mapped_column(JSONType, default=dict)
+    profile_data: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="oauth_accounts")

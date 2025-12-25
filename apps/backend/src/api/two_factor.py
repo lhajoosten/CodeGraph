@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user, get_db
+from src.api.deps import get_current_user
+from src.core.database import get_db
 from src.core.logging import get_logger
 from src.core.security import verify_password
 from src.models.user import User

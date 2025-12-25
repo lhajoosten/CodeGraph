@@ -89,6 +89,9 @@ class EmailTokenService:
                 user.email_verified = True
                 logger.info(f"Email verified for user_id={user.id}")
 
+            # Commit the changes
+            await db.commit()
+
             return True, user
 
         except Exception as e:
@@ -157,6 +160,9 @@ class EmailTokenService:
             reset_token.used_at = datetime.now(UTC)
             logger.info(f"Password reset token verified for user_id={reset_token.user_id}")
 
+            # Commit the changes
+            await db.commit()
+
             return True, reset_token.user
 
         except Exception as e:
@@ -167,7 +173,7 @@ class EmailTokenService:
 class EmailSendingService:
     """Service for sending transactional emails."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize email service."""
         self.email_service = get_email_service()
 

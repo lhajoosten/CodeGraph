@@ -49,10 +49,12 @@ function MobileNav({ className }: MobileNavProps) {
                 flex flex-col items-center gap-1 px-3 py-2 text-xs
                 transition-colors
               `,
-              active ? 'text-primary' : `
-                text-text-secondary
-                hover:text-text-primary
-              `
+              active
+                ? 'text-primary'
+                : `
+                  text-text-secondary
+                  hover:text-text-primary
+                `
             )}
           >
             <item.icon className={cn('h-5 w-5', active && 'text-primary')} />

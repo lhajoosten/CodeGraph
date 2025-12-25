@@ -1,6 +1,7 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useRegister } from '@/hooks';
+import { getErrorMessage } from '@/hooks/api/utils';
 
 export const Route = createLazyFileRoute('/_public/register')({
   component: RegisterPage,
@@ -63,9 +64,8 @@ function RegisterPage() {
             search: { email },
           });
         },
-        onError: (error: any) => {
-          const errorMessage =
-            error.response?.data?.detail || 'Registration failed. Please try again.';
+        onError: (error: unknown) => {
+          const errorMessage = getErrorMessage(error) || 'Registration failed. Please try again.';
           setErrors({ form: errorMessage });
         },
       }
@@ -101,10 +101,7 @@ function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label
-                htmlFor="email"
-                className={`mb-2 block text-sm font-medium text-gray-700`}
-              >
+              <label htmlFor="email" className={`mb-2 block text-sm font-medium text-gray-700`}>
                 Email Address
               </label>
               <input
@@ -137,10 +134,7 @@ function RegisterPage() {
 
             {/* Password Field */}
             <div>
-              <label
-                htmlFor="password"
-                className={`mb-2 block text-sm font-medium text-gray-700`}
-              >
+              <label htmlFor="password" className={`mb-2 block text-sm font-medium text-gray-700`}>
                 Password
               </label>
               <div className="relative">

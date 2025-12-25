@@ -1,37 +1,8 @@
 import * as React from 'react';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-
-const progressVariants = cva(`
-  relative w-full overflow-hidden rounded-full bg-secondary
-`, {
-  variants: {
-    size: {
-      default: 'h-4',
-      sm: 'h-2',
-      lg: 'h-6',
-    },
-  },
-  defaultVariants: {
-    size: 'default',
-  },
-});
-
-const progressIndicatorVariants = cva('h-full w-full flex-1 transition-all', {
-  variants: {
-    variant: {
-      default: 'bg-primary',
-      success: 'bg-success',
-      danger: 'bg-danger',
-      warning: 'bg-warning',
-      info: 'bg-info',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
+import { progressVariants, progressIndicatorVariants } from './variants/progress-variants.ts';
 
 export interface ProgressProps
   extends
@@ -55,10 +26,12 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
         />
       </ProgressPrimitive.Root>
       {showValue && (
-        <span className={`
-          absolute top-0 right-0 -translate-y-full pb-1 text-xs
-          text-text-secondary
-        `}>
+        <span
+          className={`
+            absolute top-0 right-0 -translate-y-full pb-1 text-xs
+            text-text-secondary
+          `}
+        >
           {value}%
         </span>
       )}
@@ -121,9 +94,12 @@ function CircularProgress({
         />
       </svg>
       {showValue && (
-        <span className={`
-          absolute inset-0 flex items-center justify-center text-xs font-medium
-        `}>
+        <span
+          className={`
+            absolute inset-0 flex items-center justify-center text-xs
+            font-medium
+          `}
+        >
           {Math.round(value)}%
         </span>
       )}
@@ -131,4 +107,6 @@ function CircularProgress({
   );
 }
 
-export { Progress, CircularProgress, progressVariants, progressIndicatorVariants };
+export { Progress, CircularProgress };
+// eslint-disable-next-line react-refresh/only-export-components
+export { progressVariants, progressIndicatorVariants } from './variants/progress-variants.ts';

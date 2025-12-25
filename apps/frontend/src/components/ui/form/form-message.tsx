@@ -1,30 +1,8 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react';
-
-const formMessageVariants = cva('flex items-start gap-2 text-sm', {
-  variants: {
-    variant: {
-      default: 'text-text-secondary',
-      error: 'text-danger',
-      success: 'text-success',
-      warning: 'text-warning',
-      info: 'text-info',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
-
-const messageIcons = {
-  default: Info,
-  error: AlertCircle,
-  success: CheckCircle2,
-  warning: AlertTriangle,
-  info: Info,
-};
+import { AlertCircle } from 'lucide-react';
+import { formMessageVariants, messageIcons } from '../variants/form-message-variants.ts';
 
 export interface FormMessageProps
   extends React.HTMLAttributes<HTMLParagraphElement>, VariantProps<typeof formMessageVariants> {
@@ -88,4 +66,6 @@ function FormErrorSummary({ errors, className }: FormErrorSummaryProps) {
   );
 }
 
-export { FormMessage, FormDescription, FormErrorSummary, formMessageVariants };
+export { FormMessage, FormDescription, FormErrorSummary };
+// eslint-disable-next-line react-refresh/only-export-components
+export { formMessageVariants } from '../variants/form-message-variants.ts';

@@ -21,9 +21,7 @@ function ResetPasswordPage() {
         `}
       >
         <div className="w-full max-w-md">
-          <div
-            className={`space-y-6 rounded-lg bg-white p-8 text-center shadow-xl`}
-          >
+          <div className={`space-y-6 rounded-lg bg-white p-8 text-center shadow-xl`}>
             <div className="text-red-500">
               <svg
                 className="mx-auto h-12 w-12"

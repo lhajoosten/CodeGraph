@@ -138,9 +138,11 @@ export const TwoFactorSettings = () => {
           </div>
         </div>
 
-        <div className={`
-          grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-4 font-mono text-sm
-        `}>
+        <div
+          className={`
+            grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-4 font-mono text-sm
+          `}
+        >
           {backupCodes.map((code, index) => (
             <div key={index} className="rounded bg-white p-2 text-center">
               {code}
@@ -169,7 +171,7 @@ export const TwoFactorSettings = () => {
             hover:bg-blue-700
           `}
         >
-          I've saved my backup codes
+          I&apos;ve saved my backup codes
         </button>
       </div>
     );
@@ -178,9 +180,11 @@ export const TwoFactorSettings = () => {
   // Check if 2FA feature is available
   if (statusQuery.isError) {
     return (
-      <div className={`
-        rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
-      `}>
+      <div
+        className={`
+          rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
+        `}
+      >
         <svg
           className="mx-auto h-12 w-12 text-gray-400"
           fill="none"
@@ -205,9 +209,11 @@ export const TwoFactorSettings = () => {
   if (statusQuery.isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className={`
-          h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
-        `}></div>
+        <div
+          className={`
+            h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
+          `}
+        ></div>
       </div>
     );
   }
@@ -246,9 +252,12 @@ export const TwoFactorSettings = () => {
         </div>
 
         {error && (
-          <div className={`
-            rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
-          `}>
+          <div
+            className={`
+              rounded-lg border border-red-200 bg-red-50 p-3 text-sm
+              text-red-700
+            `}
+          >
             {error}
           </div>
         )}
@@ -306,9 +315,12 @@ export const TwoFactorSettings = () => {
         />
 
         {error && (
-          <div className={`
-            rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
-          `}>
+          <div
+            className={`
+              rounded-lg border border-red-200 bg-red-50 p-3 text-sm
+              text-red-700
+            `}
+          >
             {error}
           </div>
         )}
@@ -351,17 +363,21 @@ export const TwoFactorSettings = () => {
         className={`
           flex items-center justify-between rounded-lg p-4
           ${
-          isEnabled ? 'border border-green-200 bg-green-50' : `
+            isEnabled
+              ? 'border border-green-200 bg-green-50'
+              : `
             border border-gray-200 bg-gray-50
           `
-        }
+          }
         `}
       >
         <div className="flex items-center gap-3">
-          <div className={`
-            rounded-full p-2
-            ${isEnabled ? 'bg-green-100' : `bg-gray-200`}
-          `}>
+          <div
+            className={`
+              rounded-full p-2
+              ${isEnabled ? 'bg-green-100' : `bg-gray-200`}
+            `}
+          >
             <svg
               className={`
                 h-5 w-5
@@ -380,10 +396,12 @@ export const TwoFactorSettings = () => {
             </svg>
           </div>
           <div>
-            <p className={`
-              font-medium
-              ${isEnabled ? 'text-green-800' : `text-gray-900`}
-            `}>
+            <p
+              className={`
+                font-medium
+                ${isEnabled ? 'text-green-800' : `text-gray-900`}
+              `}
+            >
               {isEnabled ? 'Enabled' : 'Disabled'}
             </p>
             <p className="text-sm text-gray-500">

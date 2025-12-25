@@ -101,15 +101,19 @@ function SettingsPage() {
 
       {/* Content */}
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className={`
-          flex flex-col gap-8
-          md:flex-row
-        `}>
+        <div
+          className={`
+            flex flex-col gap-8
+            md:flex-row
+          `}
+        >
           {/* Sidebar Navigation */}
-          <div className={`
-            w-full
-            md:w-64
-          `}>
+          <div
+            className={`
+              w-full
+              md:w-64
+            `}
+          >
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
@@ -119,13 +123,13 @@ function SettingsPage() {
                     flex w-full items-center gap-3 rounded-lg px-4 py-3
                     text-left text-sm font-medium transition
                     ${
-                    activeTab === tab.id
-                      ? 'bg-blue-50 text-blue-700'
-                      : `
-                        text-gray-600
-                        hover:bg-gray-100 hover:text-gray-900
-                      `
-                  }
+                      activeTab === tab.id
+                        ? 'bg-blue-50 text-blue-700'
+                        : `
+                          text-gray-600
+                          hover:bg-gray-100 hover:text-gray-900
+                        `
+                    }
                   `}
                 >
                   {tab.icon}

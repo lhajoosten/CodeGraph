@@ -41,9 +41,11 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
         className
       )}
     >
-      <CardHeader className={`
+      <CardHeader
+        className={`
         flex flex-row items-start justify-between gap-4 pb-2
-      `}>
+      `}
+      >
         <div className="min-w-0 flex-1 space-y-1">
           <Link
             to="/tasks/$id"

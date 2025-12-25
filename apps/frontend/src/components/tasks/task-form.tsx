@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export function TaskForm({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<TaskCreateFormData>({
     resolver: zodResolver(taskCreateSchema),
@@ -50,7 +50,7 @@ export function TaskForm({
     },
   });
 
-  const priority = watch('priority');
+  const priority = useWatch({ control, name: 'priority' });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-6', className)}>

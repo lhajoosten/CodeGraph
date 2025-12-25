@@ -30,9 +30,12 @@ function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={cn(`
+      className={cn(
+        `
         flex flex-col items-center justify-center px-4 py-12 text-center
-      `, className)}
+      `,
+        className
+      )}
     >
       <div className="mb-4 rounded-full bg-secondary p-4">
         <Icon className="h-8 w-8 text-text-tertiary" />

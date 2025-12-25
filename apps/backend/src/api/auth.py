@@ -8,10 +8,11 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user, get_db
+from src.api.deps import get_current_user
 from src.core.config import settings
 from src.core.cookies import clear_auth_cookies, set_auth_cookies
 from src.core.csrf import generate_csrf_token
+from src.core.database import get_db
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
@@ -260,9 +261,9 @@ async def login(
 @router.post("/auth/logout")
 async def logout(
     response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
     refresh_token: Annotated[str | None, Cookie()] = None,
-    current_user: Annotated[User, Depends(get_current_user)] = None,
-    db: Annotated[AsyncSession, Depends(get_db)] = None,
+    current_user: Annotated[User | None, Depends(get_current_user)] = None,
 ) -> dict[str, str]:
     """
     Logout user, clears cookies and revokes refresh token.
@@ -277,7 +278,7 @@ async def logout(
         dict: Success message
     """
     # Revoke refresh token if present
-    if refresh_token:
+    if refresh_token and current_user:
         token_hash = hash_token(refresh_token)
         result = await db.execute(
             select(RefreshToken).where(
@@ -302,8 +303,8 @@ async def logout(
 async def refresh(
     response: Response,
     request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
     refresh_token: Annotated[str | None, Cookie()] = None,
-    db: Annotated[AsyncSession, Depends(get_db)] = None,
 ) -> dict[str, str]:
     """
     Refresh access token using refresh token from cookie.
@@ -372,8 +373,8 @@ async def refresh(
         )
 
     # Get user
-    result = await db.execute(select(User).where(User.id == int(user_id)))
-    user = result.scalar_one_or_none()
+    user_result = await db.execute(select(User).where(User.id == int(user_id)))
+    user = user_result.scalar_one_or_none()
 
     if not user or not user.is_active:
         raise HTTPException(

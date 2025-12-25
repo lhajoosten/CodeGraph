@@ -452,8 +452,8 @@ class OAuthService:
         )
         other_oauth = result.scalars().all()
 
-        result = await self.db.execute(select(User).where(User.id == user_id))
-        user = result.scalar_one()
+        user_result = await self.db.execute(select(User).where(User.id == user_id))
+        user: User = user_result.scalar_one()
 
         # User must have either a password or another OAuth account
         has_password = not user.hashed_password.startswith("$2b$")  # Check if it's a random hash

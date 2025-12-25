@@ -39,19 +39,25 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className={`
-          flex min-h-screen items-center justify-center bg-gradient-to-br
-          from-red-50 to-orange-50 px-4 py-12
-        `}>
-          <div className={`
-            w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow-xl
-          `}>
+        <div
+          className={`
+            flex min-h-screen items-center justify-center bg-gradient-to-br
+            from-red-50 to-orange-50 px-4 py-12
+          `}
+        >
+          <div
+            className={`
+              w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow-xl
+            `}
+          >
             <div className="space-y-3">
               <div className="flex items-center justify-center">
-                <div className={`
-                  flex h-12 w-12 items-center justify-center rounded-full
-                  bg-red-100
-                `}>
+                <div
+                  className={`
+                    flex h-12 w-12 items-center justify-center rounded-full
+                    bg-red-100
+                  `}
+                >
                   <svg
                     className="h-6 w-6 text-red-600"
                     fill="none"
@@ -71,8 +77,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 Oops! Something went wrong
               </h1>
               <p className="text-center text-sm text-text-secondary">
-                We encountered an unexpected error. Our team has been notified and we're working on
-                a fix.
+                We encountered an unexpected error. Our team has been notified and we&apos;re
+                working on a fix.
               </p>
             </div>
 

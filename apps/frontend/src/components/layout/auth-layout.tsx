@@ -28,10 +28,12 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         {/* Logo */}
         <div className="flex flex-col items-center">
           <Link to="/" className="flex items-center gap-3">
-            <div className={`
-              flex h-12 w-12 items-center justify-center rounded-xl bg-primary
-              shadow-lg
-            `}>
+            <div
+              className={`
+                flex h-12 w-12 items-center justify-center rounded-xl bg-primary
+                shadow-lg
+              `}
+            >
               <span className="text-2xl font-bold text-text-button">C</span>
             </div>
             <span className="text-3xl font-bold text-primary">{APP_NAME}</span>
@@ -39,9 +41,11 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         </div>
 
         {/* Content */}
-        <div className={`
-          rounded-auth border border-border bg-background-2 p-8 shadow-card
-        `}>
+        <div
+          className={`
+            rounded-auth border border-border bg-background-2 p-8 shadow-card
+          `}
+        >
           {children}
         </div>
 

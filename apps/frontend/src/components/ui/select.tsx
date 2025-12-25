@@ -27,10 +27,12 @@ const SelectTrigger = React.forwardRef<
       'focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
       'disabled:cursor-not-allowed disabled:opacity-50',
       '[&>span]:line-clamp-1',
-      error ? `
-        border-danger
-        focus:ring-danger
-      ` : 'border-border',
+      error
+        ? `
+          border-danger
+          focus:ring-danger
+        `
+        : 'border-border',
       className
     )}
     {...props}
@@ -163,9 +165,11 @@ const SelectItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className={`
+    <span
+      className={`
       absolute left-2 flex h-3.5 w-3.5 items-center justify-center
-    `}>
+    `}
+    >
       <SelectPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </SelectPrimitive.ItemIndicator>

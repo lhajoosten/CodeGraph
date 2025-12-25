@@ -53,7 +53,8 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                     isCompleted && 'border-success bg-success text-white',
                     isRunning && 'border-info bg-info/10 text-info',
                     isFailed && 'border-danger bg-danger/10 text-danger',
-                    isPending && `
+                    isPending &&
+                      `
                       border-border bg-background-2 text-text-tertiary
                     `
                   )}
@@ -86,9 +87,14 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                     )}
                   </div>
                   {isRunning && (
-                    <Progress value={step.progress} size="sm" variant="info" className={`
+                    <Progress
+                      value={step.progress}
+                      size="sm"
+                      variant="info"
+                      className={`
                       mt-2
-                    `} />
+                    `}
+                    />
                   )}
                 </div>
               </div>

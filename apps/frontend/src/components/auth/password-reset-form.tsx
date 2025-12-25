@@ -8,6 +8,14 @@ interface PasswordResetFormProps {
   onSuccess?: () => void;
 }
 
+interface ApiErrorResponse extends Error {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+}
+
 export const PasswordResetForm = ({ token, onSuccess }: PasswordResetFormProps) => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -31,7 +39,7 @@ export const PasswordResetForm = ({ token, onSuccess }: PasswordResetFormProps) 
         navigate({ to: '/login', search: { redirect: '/' } });
       }
     },
-    onError: (error: any) => {
+    onError: (error: ApiErrorResponse) => {
       setError(error.response?.data?.detail || 'Failed to reset password. Please try again.');
     },
   });

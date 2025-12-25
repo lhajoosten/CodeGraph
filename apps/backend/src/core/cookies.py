@@ -1,5 +1,7 @@
 """Cookie management utilities for authentication."""
 
+from typing import Literal, cast
+
 from fastapi import Response
 
 from src.core.config import settings
@@ -20,6 +22,11 @@ def set_auth_cookies(
         refresh_token: JWT refresh token
         csrf_token: CSRF protection token
     """
+    samesite: Literal["lax", "strict", "none"] | None = cast(
+        Literal["lax", "strict", "none"],
+        settings.cookie_samesite,
+    )
+
     # Access token cookie (15 minutes)
     # HTTP-only, secure, SameSite protection
     response.set_cookie(
@@ -28,7 +35,7 @@ def set_auth_cookies(
         max_age=settings.access_token_expire_minutes * 60,
         httponly=True,
         secure=settings.cookie_secure,
-        samesite=settings.cookie_samesite,
+        samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
         path="/api",
     )
@@ -41,7 +48,7 @@ def set_auth_cookies(
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         httponly=True,
         secure=settings.cookie_secure,
-        samesite=settings.cookie_samesite,
+        samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
         path="/api/v1/auth/refresh",
     )
@@ -54,7 +61,7 @@ def set_auth_cookies(
         max_age=settings.refresh_token_expire_days * 24 * 60 * 60,
         httponly=False,  # Frontend needs to read this
         secure=settings.cookie_secure,
-        samesite=settings.cookie_samesite,
+        samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
         path="/",
     )
@@ -67,25 +74,29 @@ def clear_auth_cookies(response: Response) -> None:
     Args:
         response: FastAPI response object
     """
-    cookie_params = {
-        "httponly": True,
-        "secure": settings.cookie_secure,
-        "samesite": settings.cookie_samesite,
-        "domain": settings.cookie_domain if settings.cookie_domain != "localhost" else None,
-    }
+    samesite: Literal["lax", "strict", "none"] | None = cast(
+        Literal["lax", "strict", "none"],
+        settings.cookie_samesite,
+    )
 
     # Clear access token
     response.delete_cookie(
         key="access_token",
         path="/api",
-        **cookie_params,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite=samesite,
+        domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
     )
 
     # Clear refresh token
     response.delete_cookie(
         key="refresh_token",
         path="/api/v1/auth/refresh",
-        **cookie_params,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite=samesite,
+        domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
     )
 
     # Clear CSRF token (not HTTP-only)
@@ -94,7 +105,7 @@ def clear_auth_cookies(response: Response) -> None:
         path="/",
         httponly=False,
         secure=settings.cookie_secure,
-        samesite=settings.cookie_samesite,
+        samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
     )
 

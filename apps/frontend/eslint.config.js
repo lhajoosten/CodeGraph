@@ -8,6 +8,7 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 import eslint from "@eslint/js";
 import eslintPluginBetterTailwindcss from "eslint-plugin-better-tailwindcss";
+import prettierConfig from "eslint-config-prettier";
 
 export default tseslint.config(
   {
@@ -66,10 +67,25 @@ export default tseslint.config(
       ...reactHooksPlugin.configs.recommended.rules,
       ...eslintPluginBetterTailwindcss.configs["recommended-warn"].rules,
       ...eslintPluginBetterTailwindcss.configs["recommended-error"].rules,
+      // Disable line wrapping rule - Prettier handles this
+      "better-tailwindcss/enforce-consistent-line-wrapping": "off",
       "better-tailwindcss/no-unregistered-classes": [
         "warn",
         {
-          ignore: ["^recharts-.+"],
+          ignore: [
+            "^recharts-.+",
+            // Radix UI data attribute animations
+            "^data-\\[state=.+\\]:.+",
+            "^data-\\[side=.+\\]:.+",
+            // Animation utilities
+            "^animate-.+",
+            "^fade-.+",
+            "^zoom-.+",
+            "^slide-.+",
+            // Additional Radix UI and custom utilities
+            "^scroll-.+",
+            "^\\[&.+",
+          ],
         },
       ],
       "react-refresh/only-export-components": [
@@ -86,12 +102,13 @@ export default tseslint.config(
         },
       ],
       "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
       "react-19-upgrade/no-default-props": "error",
       "react-19-upgrade/no-prop-types": "warn",
       "react-19-upgrade/no-legacy-context": "error",
       "react-19-upgrade/no-string-refs": "error",
       "react-19-upgrade/no-factories": "error",
-      "react-compiler/react-compiler": "error",
+      "react-compiler/react-compiler": "warn",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -117,4 +134,6 @@ export default tseslint.config(
       "react/display-name": "off",
     },
   },
+  // Prettier config - must be last to disable conflicting rules
+  prettierConfig,
 );

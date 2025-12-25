@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { client } from '@/openapi/client.gen';
 
@@ -12,6 +13,14 @@ interface OAuthAccount {
 
 interface ConnectedAccountsResponse {
   accounts: OAuthAccount[];
+}
+
+/**
+ * Navigate to external OAuth authorization URL
+ */
+function navigateToOAuthProvider(provider: string): void {
+  const authUrl = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize`;
+  window.location.href = authUrl;
 }
 
 const providerInfo = {
@@ -90,13 +99,20 @@ export const ConnectedAccounts = () => {
     },
   });
 
+  // Define handlers before early returns
+  const handleConnect = useCallback((provider: string) => {
+    navigateToOAuthProvider(provider);
+  }, []);
+
   // Check if OAuth feature is available
   if (accountsQuery.isError) {
     return (
       <div className="space-y-4">
-        <div className={`
-          rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
-        `}>
+        <div
+          className={`
+            rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
+          `}
+        >
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
             fill="none"
@@ -122,9 +138,11 @@ export const ConnectedAccounts = () => {
   if (accountsQuery.isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className={`
-          h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
-        `}></div>
+        <div
+          className={`
+            h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
+          `}
+        ></div>
       </div>
     );
   }
@@ -136,11 +154,6 @@ export const ConnectedAccounts = () => {
 
   const getAccount = (provider: string) =>
     connectedAccounts.find((acc) => acc.provider === provider);
-
-  const handleConnect = (provider: string) => {
-    // Redirect to OAuth authorization endpoint
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize`;
-  };
 
   const handleUnlink = (provider: string) => {
     if (
@@ -170,19 +183,19 @@ export const ConnectedAccounts = () => {
               className={`
                 flex items-center justify-between rounded-lg border p-4
                 ${
-                connected ? 'border-green-200 bg-green-50' : `
+                  connected
+                    ? 'border-green-200 bg-green-50'
+                    : `
                   border-gray-200 bg-white
                 `
-              }
+                }
               `}
             >
               <div className="flex items-center gap-4">
                 <div
                   className={`
                     flex h-10 w-10 items-center justify-center rounded-lg
-                    ${
-                    provider === 'github' ? 'bg-gray-900 text-white' : ''
-                  }
+                    ${provider === 'github' ? 'bg-gray-900 text-white' : ''}
                   `}
                 >
                   {info.icon}

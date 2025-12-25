@@ -1,33 +1,8 @@
 import * as React from 'react';
 import * as LabelPrimitive from '@radix-ui/react-label';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-
-const labelVariants = cva(
-  `
-    text-sm leading-none font-medium
-    peer-disabled:cursor-not-allowed peer-disabled:opacity-70
-  `,
-  {
-    variants: {
-      variant: {
-        default: 'text-text-primary',
-        secondary: 'text-text-secondary',
-        error: 'text-danger',
-        success: 'text-success',
-      },
-      size: {
-        default: 'text-sm',
-        sm: 'text-xs',
-        lg: 'text-base',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  }
-);
+import { labelVariants } from './variants/label-variants.ts';
 
 export interface LabelProps
   extends
@@ -50,4 +25,6 @@ const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, Lab
 );
 Label.displayName = LabelPrimitive.Root.displayName;
 
-export { Label, labelVariants };
+export { Label };
+// eslint-disable-next-line react-refresh/only-export-components
+export { labelVariants } from './variants/label-variants.ts';

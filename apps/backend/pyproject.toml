@@ -45,6 +45,7 @@ types-passlib = "^1.7.7.20250602"
 aiosqlite = "^0.22.0"
 testcontainers = "^4.13.3"
 psycopg2-binary = "^2.9.11"
+types-qrcode = "^8.2.0.20250914"
 
 [build-system]
 requires = ["poetry-core"]
@@ -58,6 +59,8 @@ include = '\.pyi?$'
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -76,7 +79,7 @@ ignore = [
 [tool.mypy]
 python_version = "3.12"
 strict = true
-pythonpath = ["."]
+mypy_path = "."
 namespace_packages = true
 warn_return_any = true
 warn_unused_configs = true

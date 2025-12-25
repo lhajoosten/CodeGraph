@@ -1,22 +1,8 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-
-const spinnerVariants = cva('animate-spin text-primary', {
-  variants: {
-    size: {
-      default: 'h-6 w-6',
-      xs: 'h-3 w-3',
-      sm: 'h-4 w-4',
-      lg: 'h-8 w-8',
-      xl: 'h-12 w-12',
-    },
-  },
-  defaultVariants: {
-    size: 'default',
-  },
-});
+import { spinnerVariants } from './variants/spinner-variants.ts';
 
 export interface SpinnerProps
   extends React.HTMLAttributes<SVGSVGElement>, VariantProps<typeof spinnerVariants> {}
@@ -40,10 +26,12 @@ function Loading({ text, fullScreen, className, ...props }: LoadingProps) {
 
   if (fullScreen) {
     return (
-      <div className={`
-        fixed inset-0 z-50 flex items-center justify-center bg-background/80
-        backdrop-blur-sm
-      `}>
+      <div
+        className={`
+          fixed inset-0 z-50 flex items-center justify-center bg-background/80
+          backdrop-blur-sm
+        `}
+      >
         {content}
       </div>
     );
@@ -52,4 +40,6 @@ function Loading({ text, fullScreen, className, ...props }: LoadingProps) {
   return content;
 }
 
-export { Spinner, Loading, spinnerVariants };
+export { Spinner, Loading };
+// eslint-disable-next-line react-refresh/only-export-components
+export { spinnerVariants } from './variants/spinner-variants.ts';

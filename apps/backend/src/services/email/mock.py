@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
@@ -16,7 +17,7 @@ class MockEmailService(EmailService):
     Useful for development and testing without a real SMTP server.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize mock email service with Jinja2 template environment."""
         template_dir = Path(__file__).parent / "templates"
         self.env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
@@ -26,7 +27,7 @@ class MockEmailService(EmailService):
         to: str,
         subject: str,
         template: str,
-        context: dict,
+        context: dict[str, Any],
     ) -> bool:
         """Log an email instead of sending it.
 
@@ -56,7 +57,7 @@ class MockEmailService(EmailService):
             logger.error(f"Failed to log email to {to}: {str(e)}")
             return False
 
-    def _render_template(self, template: str, context: dict) -> str:
+    def _render_template(self, template: str, context: dict[str, Any]) -> str:
         """Render a Jinja2 template with the given context.
 
         Args:

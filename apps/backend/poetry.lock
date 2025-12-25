@@ -1913,7 +1913,7 @@ version = "12.0.0"
 description = "Python Imaging Library (fork)"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pillow-12.0.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:3adfb466bbc544b926d50fe8f4a4e6abd8c6bffd28a26177594e6e9b2b76572b"},
     {file = "pillow-12.0.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1ac11e8ea4f611c3c0147424eae514028b5e9077dd99ab91e1bd7bc33ff145e1"},
@@ -2967,6 +2967,21 @@ files = [
 types-pyasn1 = "*"
 
 [[package]]
+name = "types-qrcode"
+version = "8.2.0.20250914"
+description = "Typing stubs for qrcode"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "types_qrcode-8.2.0.20250914-py3-none-any.whl", hash = "sha256:6b992d62f05c2df0422507c5307ddd969c0a4d2ab23863c4217f96226710c308"},
+    {file = "types_qrcode-8.2.0.20250914.tar.gz", hash = "sha256:fc82e0112095c60c0ef3e403ab2a604a9ae1929c70fb0e708bc1ebfe8ca5c45e"},
+]
+
+[package.dependencies]
+Pillow = ">=10.3.0"
+
+[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
@@ -3720,4 +3735,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "c8a636b8eb8709bc6a4e8644bb0a1660848cbf34b0642d5ee70ef5fef5a8acdb"
+content-hash = "f53d7b8c4230d82d5ea5ebeda9e44b38759b688097a39a2546a0457f0917c4da"

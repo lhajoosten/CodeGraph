@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { client } from '@/openapi/client.gen';
 import { useAuthStore } from '@/stores/auth-store';
@@ -25,9 +25,19 @@ function OAuthCallback() {
   const { provider } = useParams({ from: '/_public/oauth/callback/$provider' });
   const search = useSearch({ from: '/_public/oauth/callback/$provider' });
   const { code, state, error, error_description } = search;
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMessage, setErrorMessage] = useState('');
+
+  // Initialize status based on URL parameters
+  const initialStatus = error || !code || !state ? 'error' : 'loading';
+  const initialError = error
+    ? error_description || error
+    : !code || !state
+      ? 'Missing required OAuth parameters'
+      : '';
+
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(initialStatus);
+  const [errorMessage, setErrorMessage] = useState(initialError);
   const { login } = useAuthStore();
+  const processedRef = useRef(false);
 
   const callbackMutation = useMutation({
     mutationFn: async () => {
@@ -66,24 +76,13 @@ function OAuthCallback() {
   });
 
   useEffect(() => {
-    // Handle OAuth errors from provider
-    if (error) {
-      setStatus('error');
-      setErrorMessage(error_description || error);
-      return;
-    }
-
-    // Validate required parameters
-    if (!code || !state) {
-      setStatus('error');
-      setErrorMessage('Missing required OAuth parameters');
-      return;
-    }
+    // Only process once and only if we have valid parameters
+    if (processedRef.current || error || !code || !state) return;
+    processedRef.current = true;
 
     // Process the callback
     callbackMutation.mutate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [error, code, state, callbackMutation]);
 
   const getProviderName = () => {
     switch (provider) {
@@ -116,9 +115,12 @@ function OAuthCallback() {
           {status === 'loading' && (
             <>
               <div className="mb-4 flex justify-center">
-                <div className={`
-                  h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600
-                `}></div>
+                <div
+                  className={`
+                    h-12 w-12 animate-spin rounded-full border-b-2
+                    border-blue-600
+                  `}
+                ></div>
               </div>
               <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
                 Connecting to {getProviderName()}

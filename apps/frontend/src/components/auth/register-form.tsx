@@ -1,6 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -48,7 +48,7 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
     },
   });
 
-  const password = watch('password');
+  const password = useWatch({ control, name: 'password' });
   const passwordStrength = password ? getPasswordStrength(password) : null;
   const strengthPercent =
     passwordStrength === 'weak' ? 33 : passwordStrength === 'medium' ? 66 : 100;
@@ -168,9 +168,11 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
                 `}
                 tabIndex={-1}
               >
-                {showPassword.isOpen ? <EyeOff className="h-4 w-4" /> : <Eye className={`
-                  h-4 w-4
-                `} />}
+                {showPassword.isOpen ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className={`h-4 w-4`} />
+                )}
               </button>
             }
             variant={errors.password ? 'error' : 'default'}
@@ -251,17 +253,23 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
               )}
             >
               I agree to the{' '}
-              <a href="/terms" className={`
-                text-primary
-                hover:underline
-              `}>
+              <a
+                href="/terms"
+                className={`
+                  text-primary
+                  hover:underline
+                `}
+              >
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="/privacy" className={`
-                text-primary
-                hover:underline
-              `}>
+              <a
+                href="/privacy"
+                className={`
+                  text-primary
+                  hover:underline
+                `}
+              >
                 Privacy Policy
               </a>
             </label>

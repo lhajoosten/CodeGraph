@@ -1,28 +1,7 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-
-const cardVariants = cva('rounded-lg bg-background-2 text-text-primary', {
-  variants: {
-    variant: {
-      default: 'border border-border',
-      elevated: 'shadow-card',
-      ghost: 'bg-transparent',
-      primary: 'border border-primary bg-background-primary',
-    },
-    padding: {
-      default: '',
-      none: '',
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    padding: 'default',
-  },
-});
+import { cardVariants } from './variants/card-variants.ts';
 
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
@@ -76,4 +55,6 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants };
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+// eslint-disable-next-line react-refresh/only-export-components
+export { cardVariants } from './variants/card-variants.ts';

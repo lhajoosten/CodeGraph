@@ -4,7 +4,6 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.security import get_password_hash
-from src.models.backup_code import BackupCode
 from src.models.user import User
 from src.services.two_factor_service import TwoFactorService
 

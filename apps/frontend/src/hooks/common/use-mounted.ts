@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useSyncExternalStore, useMemo, useRef, useCallback } from 'react';
 
 /**
  * Tracks whether the component is mounted.
@@ -33,6 +33,31 @@ export function useIsMounted(): () => boolean {
 }
 
 /**
+ * Store for tracking mounted state
+ */
+const createMountedStore = () => {
+  let mounted = false;
+  const listeners = new Set<() => void>();
+
+  return {
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    getSnapshot() {
+      return mounted;
+    },
+    getServerSnapshot() {
+      return false;
+    },
+    setMounted() {
+      mounted = true;
+      listeners.forEach((listener) => listener());
+    },
+  };
+};
+
+/**
  * Returns true only after the first render is complete.
  * Useful for hydration-safe rendering.
  *
@@ -48,11 +73,17 @@ export function useIsMounted(): () => boolean {
  * ```
  */
 export function useHasMounted(): boolean {
-  const [hasMounted, setHasMounted] = useState(false);
+  const store = useMemo(() => createMountedStore(), []);
+
+  const hasMounted = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getServerSnapshot
+  );
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    store.setMounted();
+  }, [store]);
 
   return hasMounted;
 }

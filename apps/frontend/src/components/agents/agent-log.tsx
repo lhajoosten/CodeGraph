@@ -45,9 +45,15 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
   }, [updates.length]);
 
   return (
-    <div ref={logRef} className={cn(`
+    <div
+      ref={logRef}
+      className={cn(
+        `
       scroll-area max-h-64 space-y-2 overflow-y-auto
-    `, className)}>
+    `,
+        className
+      )}
+    >
       {displayedUpdates.map((update, index) => {
         const AgentIcon = agentIcons[update.agent as AgentType] || Brain;
         const StatusIcon = statusIcons[update.status as AgentStatus] || Loader2;
@@ -63,7 +69,10 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               isRunning && 'border-info/30 bg-info/5',
               isCompleted && 'border-success/30 bg-success/5',
               isFailed && 'border-danger/30 bg-danger/5',
-              !isRunning && !isCompleted && !isFailed && `
+              !isRunning &&
+                !isCompleted &&
+                !isFailed &&
+                `
                 border-border bg-secondary/50
               `
             )}
@@ -74,7 +83,10 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                 isRunning && 'bg-info/10 text-info',
                 isCompleted && 'bg-success/10 text-success',
                 isFailed && 'bg-danger/10 text-danger',
-                !isRunning && !isCompleted && !isFailed && `
+                !isRunning &&
+                  !isCompleted &&
+                  !isFailed &&
+                  `
                   bg-secondary text-text-secondary
                 `
               )}
@@ -84,9 +96,11 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className={`
+                <span
+                  className={`
                   text-sm font-medium text-text-primary capitalize
-                `}>
+                `}
+                >
                   {update.agent} Agent
                 </span>
                 <StatusIcon

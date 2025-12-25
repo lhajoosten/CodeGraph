@@ -83,8 +83,8 @@ export const EmailChangeForm = () => {
             <div>
               <p className="font-medium text-green-800">Verification email sent!</p>
               <p className="mt-1 text-sm text-green-700">
-                We've sent a verification email to <strong>{newEmail}</strong>. Please check your
-                inbox and click the link to confirm your new email address.
+                We&apos;ve sent a verification email to <strong>{newEmail}</strong>. Please check
+                your inbox and click the link to confirm your new email address.
               </p>
             </div>
           </div>
@@ -101,10 +101,12 @@ export const EmailChangeForm = () => {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className={`
-              rounded-lg border border-red-200 bg-red-50 p-3 text-sm
-              text-red-700
-            `}>
+            <div
+              className={`
+                rounded-lg border border-red-200 bg-red-50 p-3 text-sm
+                text-red-700
+              `}
+            >
               {error}
             </div>
           )}

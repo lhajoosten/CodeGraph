@@ -57,8 +57,8 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
           </div>
           <h2 className="mb-2 text-2xl font-bold">Check Your Email</h2>
           <p className="mb-6 text-gray-600">
-            If an account exists for {email}, we've sent a password reset link. Please check your
-            email and follow the link to reset your password.
+            If an account exists for {email}, we&apos;ve sent a password reset link. Please check
+            your email and follow the link to reset your password.
           </p>
           <button
             onClick={() => setSubmitted(false)}
@@ -78,7 +78,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
     <div className="rounded-lg bg-white p-6 shadow-md">
       <h2 className="mb-6 text-2xl font-bold">Reset Your Password</h2>
       <p className="mb-6 text-gray-600">
-        Enter your email address and we'll send you a link to reset your password.
+        Enter your email address and we&apos;ll send you a link to reset your password.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

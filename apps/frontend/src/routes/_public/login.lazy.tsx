@@ -100,10 +100,7 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label
-                htmlFor="email"
-                className={`mb-2 block text-sm font-medium text-gray-700`}
-              >
+              <label htmlFor="email" className={`mb-2 block text-sm font-medium text-gray-700`}>
                 Email Address
               </label>
               <input
@@ -125,10 +122,7 @@ function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label
-                htmlFor="password"
-                className={`mb-2 block text-sm font-medium text-gray-700`}
-              >
+              <label htmlFor="password" className={`mb-2 block text-sm font-medium text-gray-700`}>
                 Password
               </label>
               <div className="relative">
@@ -311,7 +305,7 @@ function LoginPage() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">Don't have an account?</span>
+              <span className="bg-white px-2 text-gray-500">Don&apos;t have an account?</span>
             </div>
           </div>
 

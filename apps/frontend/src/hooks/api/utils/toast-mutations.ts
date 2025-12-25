@@ -200,6 +200,14 @@ export function withToastNotification<
   } as Partial<UseMutationOptions<TData, TError, TVariables, TContext>>;
 }
 
+interface ApiErrorWithResponse extends Error {
+  response?: {
+    data?: {
+      detail?: string | Array<{ msg: string }>;
+    };
+  };
+}
+
 /**
  * Helper to extract error message from API error response.
  * Handles both string and array error responses from FastAPI.
@@ -216,7 +224,7 @@ export function getErrorMessage(error: unknown): string {
 
   if (error instanceof Error) {
     // Check for API error response structure
-    const apiError = error as any;
+    const apiError = error as ApiErrorWithResponse;
     if (apiError.response?.data?.detail) {
       const detail = apiError.response.data.detail;
       if (typeof detail === 'string') {
