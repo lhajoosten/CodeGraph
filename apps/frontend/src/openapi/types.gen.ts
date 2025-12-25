@@ -120,22 +120,6 @@ export type OAuthAccountResponse = {
 };
 
 /**
- * OAuthCallbackRequest
- *
- * Request body for OAuth callback.
- */
-export type OAuthCallbackRequest = {
-  /**
-   * Code
-   */
-  code: string;
-  /**
-   * State
-   */
-  state: string;
-};
-
-/**
  * RegenerateBackupCodesRequest
  *
  * Request to regenerate backup codes.
@@ -1329,41 +1313,43 @@ export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses = {
   200: unknown;
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackPostData = {
-  body: OAuthCallbackRequest;
+export type OauthCallbackApiV1OauthProviderCallbackGetData = {
+  body?: never;
   path: {
     /**
      * Provider
      */
     provider: string;
   };
-  query?: never;
+  query: {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * State
+     */
+    state: string;
+  };
   url: '/api/v1/oauth/{provider}/callback';
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackPostErrors = {
+export type OauthCallbackApiV1OauthProviderCallbackGetErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackPostError =
-  OauthCallbackApiV1OauthProviderCallbackPostErrors[keyof OauthCallbackApiV1OauthProviderCallbackPostErrors];
+export type OauthCallbackApiV1OauthProviderCallbackGetError =
+  OauthCallbackApiV1OauthProviderCallbackGetErrors[keyof OauthCallbackApiV1OauthProviderCallbackGetErrors];
 
-export type OauthCallbackApiV1OauthProviderCallbackPostResponses = {
+export type OauthCallbackApiV1OauthProviderCallbackGetResponses = {
   /**
-   * Response Oauth Callback Api V1 Oauth  Provider  Callback Post
-   *
    * Successful Response
    */
-  200: {
-    [key: string]: unknown;
-  };
+  200: unknown;
 };
-
-export type OauthCallbackApiV1OauthProviderCallbackPostResponse =
-  OauthCallbackApiV1OauthProviderCallbackPostResponses[keyof OauthCallbackApiV1OauthProviderCallbackPostResponses];
 
 export type GetConnectedAccountsApiV1OauthAccountsGetData = {
   body?: never;

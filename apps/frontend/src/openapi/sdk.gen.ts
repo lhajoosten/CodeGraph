@@ -58,9 +58,9 @@ import type {
   OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
   OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors,
   OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses,
-  OauthCallbackApiV1OauthProviderCallbackPostData,
-  OauthCallbackApiV1OauthProviderCallbackPostErrors,
-  OauthCallbackApiV1OauthProviderCallbackPostResponses,
+  OauthCallbackApiV1OauthProviderCallbackGetData,
+  OauthCallbackApiV1OauthProviderCallbackGetErrors,
+  OauthCallbackApiV1OauthProviderCallbackGetResponses,
   RefreshApiV1AuthRefreshPostData,
   RefreshApiV1AuthRefreshPostErrors,
   RefreshApiV1AuthRefreshPostResponses,
@@ -905,32 +905,30 @@ export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet = <
  * Handle OAuth callback.
  *
  * Exchanges the authorization code for tokens and creates/links user account.
+ * Then redirects to frontend with success/error status.
  *
  * Args:
  * provider: OAuth provider name.
- * request: Contains code and state from OAuth callback.
+ * code: Authorization code from OAuth provider.
+ * state: CSRF protection state.
  *
  * Returns:
- * User info and redirect URL.
+ * Redirect to frontend.
  *
  * Raises:
  * HTTPException: If callback fails.
  */
-export const oauthCallbackApiV1OauthProviderCallbackPost = <ThrowOnError extends boolean = false>(
-  options: Options<OauthCallbackApiV1OauthProviderCallbackPostData, ThrowOnError>
+export const oauthCallbackApiV1OauthProviderCallbackGet = <ThrowOnError extends boolean = false>(
+  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData, ThrowOnError>
 ) =>
-  (options.client ?? client).post<
-    OauthCallbackApiV1OauthProviderCallbackPostResponses,
-    OauthCallbackApiV1OauthProviderCallbackPostErrors,
+  (options.client ?? client).get<
+    OauthCallbackApiV1OauthProviderCallbackGetResponses,
+    OauthCallbackApiV1OauthProviderCallbackGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     url: '/api/v1/oauth/{provider}/callback',
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
   });
 
 /**

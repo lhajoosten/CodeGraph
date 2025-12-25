@@ -240,7 +240,7 @@ function LoginPage() {
           <div className="grid grid-cols-3 gap-3">
             {/* GitHub */}
             <a
-              href={`${import.meta.env.VITE_API_URL}/api/v1/oauth/github/authorize?redirect_url=/oauth/callback/github`}
+              href={`${import.meta.env.VITE_API_URL}/oauth/github/authorize?redirect_url=/oauth/callback/github`}
               className={`
                 flex items-center justify-center rounded-lg border
                 border-gray-300 px-4 py-2 transition
@@ -254,7 +254,7 @@ function LoginPage() {
 
             {/* Google */}
             <a
-              href={`${import.meta.env.VITE_API_URL}/api/v1/oauth/google/authorize?redirect_url=/oauth/callback/google`}
+              href={`${import.meta.env.VITE_API_URL}/oauth/google/authorize?redirect_url=/oauth/callback/google`}
               className={`
                 flex items-center justify-center rounded-lg border
                 border-gray-300 px-4 py-2 transition

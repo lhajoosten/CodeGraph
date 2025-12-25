@@ -19,7 +19,7 @@ interface ConnectedAccountsResponse {
  * Navigate to external OAuth authorization URL
  */
 function navigateToOAuthProvider(provider: string): void {
-  const authUrl = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize?redirect_url=/oauth/callback/${provider}`;
+  const authUrl = `${import.meta.env.VITE_API_URL}/oauth/${provider}/authorize?redirect_url=/oauth/callback/${provider}`;
   window.location.href = authUrl;
 }
 

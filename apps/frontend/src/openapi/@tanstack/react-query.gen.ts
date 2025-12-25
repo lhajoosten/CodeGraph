@@ -30,7 +30,7 @@ import {
   logoutApiV1AuthLogoutPost,
   oauthAuthorizeApiV1OauthProviderAuthorizeGet,
   oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet,
-  oauthCallbackApiV1OauthProviderCallbackPost,
+  oauthCallbackApiV1OauthProviderCallbackGet,
   type Options,
   refreshApiV1AuthRefreshPost,
   regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost,
@@ -98,9 +98,8 @@ import type {
   OauthAuthorizeApiV1OauthProviderAuthorizeGetError,
   OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
   OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError,
-  OauthCallbackApiV1OauthProviderCallbackPostData,
-  OauthCallbackApiV1OauthProviderCallbackPostError,
-  OauthCallbackApiV1OauthProviderCallbackPostResponse,
+  OauthCallbackApiV1OauthProviderCallbackGetData,
+  OauthCallbackApiV1OauthProviderCallbackGetError,
   RefreshApiV1AuthRefreshPostData,
   RefreshApiV1AuthRefreshPostError,
   RefreshApiV1AuthRefreshPostResponse,
@@ -1299,46 +1298,49 @@ export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetOptions = (
     queryKey: oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey(options),
   });
 
+export const oauthCallbackApiV1OauthProviderCallbackGetQueryKey = (
+  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData>
+) => createQueryKey('oauthCallbackApiV1OauthProviderCallbackGet', options);
+
 /**
  * Oauth Callback
  *
  * Handle OAuth callback.
  *
  * Exchanges the authorization code for tokens and creates/links user account.
+ * Then redirects to frontend with success/error status.
  *
  * Args:
  * provider: OAuth provider name.
- * request: Contains code and state from OAuth callback.
+ * code: Authorization code from OAuth provider.
+ * state: CSRF protection state.
  *
  * Returns:
- * User info and redirect URL.
+ * Redirect to frontend.
  *
  * Raises:
  * HTTPException: If callback fails.
  */
-export const oauthCallbackApiV1OauthProviderCallbackPostMutation = (
-  options?: Partial<Options<OauthCallbackApiV1OauthProviderCallbackPostData>>
-): UseMutationOptions<
-  OauthCallbackApiV1OauthProviderCallbackPostResponse,
-  AxiosError<OauthCallbackApiV1OauthProviderCallbackPostError>,
-  Options<OauthCallbackApiV1OauthProviderCallbackPostData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    OauthCallbackApiV1OauthProviderCallbackPostResponse,
-    AxiosError<OauthCallbackApiV1OauthProviderCallbackPostError>,
-    Options<OauthCallbackApiV1OauthProviderCallbackPostData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await oauthCallbackApiV1OauthProviderCallbackPost({
+export const oauthCallbackApiV1OauthProviderCallbackGetOptions = (
+  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData>
+) =>
+  queryOptions<
+    unknown,
+    AxiosError<OauthCallbackApiV1OauthProviderCallbackGetError>,
+    unknown,
+    ReturnType<typeof oauthCallbackApiV1OauthProviderCallbackGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await oauthCallbackApiV1OauthProviderCallbackGet({
         ...options,
-        ...fnOptions,
+        ...queryKey[0],
+        signal,
         throwOnError: true,
       });
       return data;
     },
-  };
-  return mutationOptions;
-};
+    queryKey: oauthCallbackApiV1OauthProviderCallbackGetQueryKey(options),
+  });
 
 export const getConnectedAccountsApiV1OauthAccountsGetQueryKey = (
   options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData>

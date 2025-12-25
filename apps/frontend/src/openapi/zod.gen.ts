@@ -55,16 +55,6 @@ export const zConnectedAccountsResponse = z.object({
 });
 
 /**
- * OAuthCallbackRequest
- *
- * Request body for OAuth callback.
- */
-export const zOAuthCallbackRequest = z.object({
-  code: z.string(),
-  state: z.string(),
-});
-
-/**
  * RegenerateBackupCodesRequest
  *
  * Request to regenerate backup codes.
@@ -652,23 +642,16 @@ export const zOauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData = z.objec
   ),
 });
 
-export const zOauthCallbackApiV1OauthProviderCallbackPostData = z.object({
-  body: zOAuthCallbackRequest,
+export const zOauthCallbackApiV1OauthProviderCallbackGetData = z.object({
+  body: z.optional(z.never()),
   path: z.object({
     provider: z.string(),
   }),
-  query: z.optional(z.never()),
+  query: z.object({
+    code: z.string(),
+    state: z.string(),
+  }),
 });
-
-/**
- * Response Oauth Callback Api V1 Oauth  Provider  Callback Post
- *
- * Successful Response
- */
-export const zOauthCallbackApiV1OauthProviderCallbackPostResponse = z.record(
-  z.string(),
-  z.unknown()
-);
 
 export const zGetConnectedAccountsApiV1OauthAccountsGetData = z.object({
   body: z.optional(z.never()),

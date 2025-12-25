@@ -153,23 +153,6 @@ export const OAuthAccountResponseSchema = {
   description: 'Response for a linked OAuth account.',
 } as const;
 
-export const OAuthCallbackRequestSchema = {
-  properties: {
-    code: {
-      type: 'string',
-      title: 'Code',
-    },
-    state: {
-      type: 'string',
-      title: 'State',
-    },
-  },
-  type: 'object',
-  required: ['code', 'state'],
-  title: 'OAuthCallbackRequest',
-  description: 'Request body for OAuth callback.',
-} as const;
-
 export const RegenerateBackupCodesRequestSchema = {
   properties: {
     password: {
