@@ -34,20 +34,29 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
   return (
     <Card
       className={cn(
-        'transition-all duration-200 hover:shadow-card hover:border-primary/50',
+        `
+          transition-all duration-200
+          hover:border-primary/50 hover:shadow-card
+        `,
         className
       )}
     >
-      <CardHeader className="flex flex-row items-start justify-between gap-4 pb-2">
-        <div className="space-y-1 flex-1 min-w-0">
+      <CardHeader className={`
+        flex flex-row items-start justify-between gap-4 pb-2
+      `}>
+        <div className="min-w-0 flex-1 space-y-1">
           <Link
             to="/tasks/$id"
             params={{ id: String(task.id) }}
-            className="text-lg font-semibold text-text-primary hover:text-primary transition-colors line-clamp-1"
+            className={`
+              line-clamp-1 text-lg font-semibold text-text-primary
+              transition-colors
+              hover:text-primary
+            `}
           >
             {task.title}
           </Link>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             <TaskStatusBadge status={task.status} size="sm" />
             {task.priority && <TaskPriorityBadge priority={task.priority} size="sm" />}
           </div>
@@ -90,7 +99,7 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
 
       {task.description && (
         <CardContent className="py-2">
-          <p className="text-sm text-text-secondary line-clamp-2">
+          <p className="line-clamp-2 text-sm text-text-secondary">
             {truncate(task.description, 150)}
           </p>
         </CardContent>

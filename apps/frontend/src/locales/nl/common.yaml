@@ -1,0 +1,49 @@
+# Common UI strings (Dutch)
+
+# Navigation
+nav:
+  dashboard: 'Dashboard'
+  tasks: 'Taken'
+  settings: 'Instellingen'
+  logout: 'Afmelden'
+
+# Buttons
+button:
+  submit: 'Verzenden'
+  cancel: 'Annuleren'
+  save: 'Opslaan'
+  delete: 'Verwijderen'
+  confirm: 'Bevestigen'
+  create: 'Maken'
+  update: 'Bijwerken'
+  close: 'Sluiten'
+  back: 'Terug'
+  next: 'Volgende'
+  loading: 'Laden...'
+
+# Common labels
+label:
+  email: 'E-mailadres'
+  password: 'Wachtwoord'
+  name: 'Naam'
+  description: 'Beschrijving'
+  status: 'Status'
+  priority: 'Prioriteit'
+  language: 'Taal'
+  theme: 'Thema'
+
+# Messages
+message:
+  success: 'Succes'
+  error: 'Fout'
+  warning: 'Waarschuwing'
+  info: 'Informatie'
+  loading: 'Laden...'
+  noData: 'Geen gegevens beschikbaar'
+  required: 'Dit veld is verplicht'
+
+# Language names
+languages:
+  en: 'Engels'
+  nl: 'Nederlands'
+  de: 'Duits'

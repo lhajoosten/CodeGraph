@@ -63,11 +63,11 @@ export const EmailVerification = () => {
   return (
     <div
       className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
     >
       <div className="w-full max-w-md">
         {/* Logo/Header */}
@@ -81,8 +81,9 @@ export const EmailVerification = () => {
               <div className="mb-4 flex justify-center">
                 <div
                   className={`
-                  h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600
-                `}
+                    h-12 w-12 animate-spin rounded-full border-b-2
+                    border-blue-600
+                  `}
                 ></div>
               </div>
               <h1 className="mb-2 text-center text-2xl font-bold text-gray-900">Verifying Email</h1>

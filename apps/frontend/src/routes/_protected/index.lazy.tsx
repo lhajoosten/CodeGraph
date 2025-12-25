@@ -1,6 +1,5 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
-import { useTasks } from '@/hooks/api/use-tasks';
-import { useCurrentUser } from '@/hooks';
+import { useCurrentUser, useTasks } from '@/hooks';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,7 +39,10 @@ function DashboardPage() {
     <AppLayout>
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className={`
+          flex flex-col gap-4
+          md:flex-row md:items-center md:justify-between
+        `}>
           <div>
             <h1 className="text-3xl font-bold text-text-primary">Welcome back, {userName}!</h1>
             <p className="mt-1 text-text-secondary">
@@ -56,9 +58,15 @@ function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className={`
+          grid gap-4
+          md:grid-cols-2
+          lg:grid-cols-4
+        `}>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className={`
+              flex flex-row items-center justify-between pb-2
+            `}>
               <CardTitle className="text-sm font-medium text-text-secondary">Total Tasks</CardTitle>
               <ListTodo className="h-4 w-4 text-text-tertiary" />
             </CardHeader>
@@ -69,7 +77,9 @@ function DashboardPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className={`
+              flex flex-row items-center justify-between pb-2
+            `}>
               <CardTitle className="text-sm font-medium text-text-secondary">Pending</CardTitle>
               <Clock className="h-4 w-4 text-yellow-500" />
             </CardHeader>
@@ -80,7 +90,9 @@ function DashboardPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className={`
+              flex flex-row items-center justify-between pb-2
+            `}>
               <CardTitle className="text-sm font-medium text-text-secondary">In Progress</CardTitle>
               <AlertCircle className="h-4 w-4 text-blue-500" />
             </CardHeader>
@@ -91,7 +103,9 @@ function DashboardPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className={`
+              flex flex-row items-center justify-between pb-2
+            `}>
               <CardTitle className="text-sm font-medium text-text-secondary">Completed</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
             </CardHeader>
@@ -103,14 +117,23 @@ function DashboardPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className={`
+          grid gap-6
+          lg:grid-cols-3
+        `}>
           {/* Recent Tasks */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className={`
+            space-y-4
+            lg:col-span-2
+          `}>
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-text-primary">Recent Tasks</h2>
               <Link
                 to="/tasks"
-                className="flex items-center gap-1 text-sm text-primary hover:underline"
+                className={`
+                  flex items-center gap-1 text-sm text-primary
+                  hover:underline
+                `}
               >
                 View all
                 <ArrowRight className="h-4 w-4" />
@@ -122,7 +145,7 @@ function DashboardPage() {
                 {[1, 2, 3].map((i) => (
                   <Card key={i}>
                     <CardContent className="p-6">
-                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="mb-2 h-6 w-3/4" />
                       <Skeleton className="h-4 w-1/2" />
                     </CardContent>
                   </Card>
@@ -136,15 +159,17 @@ function DashboardPage() {
               </div>
             ) : (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <ListTodo className="h-12 w-12 text-text-tertiary mb-4" />
-                  <h3 className="text-lg font-medium text-text-primary mb-2">No tasks yet</h3>
-                  <p className="text-text-secondary mb-4">
+                <CardContent className={`
+                  flex flex-col items-center justify-center py-12 text-center
+                `}>
+                  <ListTodo className="mb-4 h-12 w-12 text-text-tertiary" />
+                  <h3 className="mb-2 text-lg font-medium text-text-primary">No tasks yet</h3>
+                  <p className="mb-4 text-text-secondary">
                     Create your first task and let our AI agents help you code.
                   </p>
                   <Link to="/tasks">
                     <Button>
-                      <PlusCircle className="h-4 w-4 mr-2" />
+                      <PlusCircle className="mr-2 h-4 w-4" />
                       Create Task
                     </Button>
                   </Link>
@@ -163,19 +188,25 @@ function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link to="/tasks" className="block">
-                  <Button variant="outline" className="w-full justify-start gap-3">
+                  <Button variant="outline" className={`
+                    w-full justify-start gap-3
+                  `}>
                     <PlusCircle className="h-4 w-4" />
                     Create New Task
                   </Button>
                 </Link>
                 <Link to="/tasks" className="block">
-                  <Button variant="outline" className="w-full justify-start gap-3">
+                  <Button variant="outline" className={`
+                    w-full justify-start gap-3
+                  `}>
                     <ListTodo className="h-4 w-4" />
                     View All Tasks
                   </Button>
                 </Link>
                 <Link to="/settings" className="block">
-                  <Button variant="outline" className="w-full justify-start gap-3">
+                  <Button variant="outline" className={`
+                    w-full justify-start gap-3
+                  `}>
                     <Settings className="h-4 w-4" />
                     Account Settings
                   </Button>
@@ -193,28 +224,36 @@ function DashboardPage() {
                 <CardDescription>Your autonomous coding assistants</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
+                <div className={`
+                  flex items-center justify-between rounded-lg bg-secondary p-3
+                `}>
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Planning Agent</span>
                   </div>
                   <span className="text-xs text-text-tertiary">Ready</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
+                <div className={`
+                  flex items-center justify-between rounded-lg bg-secondary p-3
+                `}>
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Coding Agent</span>
                   </div>
                   <span className="text-xs text-text-tertiary">Ready</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
+                <div className={`
+                  flex items-center justify-between rounded-lg bg-secondary p-3
+                `}>
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Testing Agent</span>
                   </div>
                   <span className="text-xs text-text-tertiary">Ready</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg bg-secondary p-3">
+                <div className={`
+                  flex items-center justify-between rounded-lg bg-secondary p-3
+                `}>
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Review Agent</span>
@@ -230,11 +269,9 @@ function DashboardPage() {
                 <CardTitle className="text-primary">Getting Started</CardTitle>
                 <CardDescription>New to CodeGraph?</CardDescription>
               </CardHeader>
-              <CardContent className="text-sm text-text-secondary space-y-2">
-                <p>
-                  CodeGraph uses AI agents to help you code faster. Here's how to get started:
-                </p>
-                <ol className="list-decimal list-inside space-y-1">
+              <CardContent className="space-y-2 text-sm text-text-secondary">
+                <p>CodeGraph uses AI agents to help you code faster. Here's how to get started:</p>
+                <ol className="list-inside list-decimal space-y-1">
                   <li>Create a new task with your coding requirements</li>
                   <li>Our Planning Agent will break it into steps</li>
                   <li>The Coding Agent will implement the solution</li>

@@ -14,16 +14,28 @@ const Checkbox = React.forwardRef<
     className={cn(
       'peer h-4 w-4 shrink-0 rounded-sm border',
       'ring-offset-background-2 transition-colors',
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+      `
+        focus-visible:ring-2 focus-visible:ring-primary
+        focus-visible:ring-offset-2 focus-visible:outline-none
+      `,
       'disabled:cursor-not-allowed disabled:opacity-50',
-      'data-[state=checked]:bg-primary data-[state=checked]:text-text-button data-[state=checked]:border-primary',
-      'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-text-button data-[state=indeterminate]:border-primary',
+      `
+        data-[state=checked]:border-primary data-[state=checked]:bg-primary
+        data-[state=checked]:text-text-button
+      `,
+      `
+        data-[state=indeterminate]:border-primary
+        data-[state=indeterminate]:bg-primary
+        data-[state=indeterminate]:text-text-button
+      `,
       error ? 'border-danger' : 'border-border',
       className
     )}
     {...props}
   >
-    <CheckboxPrimitive.Indicator className={cn('flex items-center justify-center text-current')}>
+    <CheckboxPrimitive.Indicator className={cn(`
+      flex items-center justify-center text-current
+    `)}>
       {props.checked === 'indeterminate' ? (
         <Minus className="h-3 w-3" />
       ) : (
@@ -57,7 +69,7 @@ const CheckboxWithLabel = React.forwardRef<
         <label
           htmlFor={checkboxId}
           className={cn(
-            'text-sm font-medium leading-none cursor-pointer',
+            'cursor-pointer text-sm leading-none font-medium',
             'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
             error ? 'text-danger' : 'text-text-primary'
           )}

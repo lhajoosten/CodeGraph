@@ -65,8 +65,8 @@ export const PasswordResetForm = ({ token, onSuccess }: PasswordResetFormProps) 
       {error && (
         <div
           className={`
-          mb-4 rounded border border-red-200 bg-red-50 p-4 text-red-700
-        `}
+            mb-4 rounded border border-red-200 bg-red-50 p-4 text-red-700
+          `}
         >
           {error}
         </div>

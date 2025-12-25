@@ -7,25 +7,63 @@ import { Loader2 } from 'lucide-react';
 const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
-    'whitespace-nowrap rounded-md text-sm font-medium',
+    'rounded-md text-sm font-medium whitespace-nowrap',
     'ring-offset-background-2 transition-all duration-200',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    `
+      focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-offset-2 focus-visible:outline-none
+    `,
     'disabled:pointer-events-none disabled:opacity-50',
     'cursor-pointer',
   ],
   {
     variants: {
       variant: {
-        default: 'bg-primary text-text-button hover:bg-primary-600 active:bg-primary-700',
-        destructive: 'bg-danger text-white hover:bg-danger-600 active:bg-danger-700',
+        default: `
+          bg-primary text-text-button
+          hover:bg-primary-600
+          active:bg-primary-700
+        `,
+        destructive: `
+          bg-danger text-white
+          hover:bg-danger-600
+          active:bg-danger-700
+        `,
         outline:
-          'border border-border bg-transparent text-text-primary hover:bg-secondary active:bg-tertiary',
-        secondary: 'bg-secondary text-text-primary hover:bg-tertiary active:bg-gray-300',
-        ghost: 'text-text-button-ghost hover:bg-secondary active:bg-tertiary',
-        link: 'text-primary underline-offset-4 hover:underline',
-        success: 'bg-success text-white hover:bg-success-600 active:bg-success-700',
-        warning: 'bg-warning text-text-button hover:bg-warning-600 active:bg-warning-700',
-        info: 'bg-info text-white hover:bg-info-600 active:bg-info-700',
+          `
+            border border-border bg-transparent text-text-primary
+            hover:bg-secondary
+            active:bg-tertiary
+          `,
+        secondary: `
+          bg-secondary text-text-primary
+          hover:bg-tertiary
+          active:bg-gray-300
+        `,
+        ghost: `
+          text-text-button-ghost
+          hover:bg-secondary
+          active:bg-tertiary
+        `,
+        link: `
+          text-primary underline-offset-4
+          hover:underline
+        `,
+        success: `
+          bg-success text-white
+          hover:bg-success-600
+          active:bg-success-700
+        `,
+        warning: `
+          bg-warning text-text-button
+          hover:bg-warning-600
+          active:bg-warning-700
+        `,
+        info: `
+          bg-info text-white
+          hover:bg-info-600
+          active:bg-info-700
+        `,
       },
       size: {
         default: 'h-10 px-4 py-2',

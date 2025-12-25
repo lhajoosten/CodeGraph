@@ -32,8 +32,8 @@ function MobileNav({ className }: MobileNavProps) {
   return (
     <nav
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around',
-        'border-t border-border bg-background-2 py-2 px-4',
+        'fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around',
+        'border-t border-border bg-background-2 px-4 py-2',
         'lg:hidden', // Only show on mobile
         className
       )}
@@ -45,8 +45,14 @@ function MobileNav({ className }: MobileNavProps) {
             key={item.href}
             to={item.href}
             className={cn(
-              'flex flex-col items-center gap-1 px-3 py-2 text-xs transition-colors',
-              active ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
+              `
+                flex flex-col items-center gap-1 px-3 py-2 text-xs
+                transition-colors
+              `,
+              active ? 'text-primary' : `
+                text-text-secondary
+                hover:text-text-primary
+              `
             )}
           >
             <item.icon className={cn('h-5 w-5', active && 'text-primary')} />

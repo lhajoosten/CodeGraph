@@ -32,7 +32,7 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
       {/* Step indicators */}
       <div className="relative">
         {/* Connector line */}
-        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border" />
+        <div className="absolute top-0 bottom-0 left-4 w-0.5 bg-border" />
 
         <div className="space-y-4">
           {steps.map((step, index) => {
@@ -46,11 +46,16 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                 {/* Step indicator */}
                 <div
                   className={cn(
-                    'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2',
+                    `
+                      relative z-10 flex h-8 w-8 shrink-0 items-center
+                      justify-center rounded-full border-2
+                    `,
                     isCompleted && 'border-success bg-success text-white',
                     isRunning && 'border-info bg-info/10 text-info',
                     isFailed && 'border-danger bg-danger/10 text-danger',
-                    isPending && 'border-border bg-background-2 text-text-tertiary'
+                    isPending && `
+                      border-border bg-background-2 text-text-tertiary
+                    `
                   )}
                 >
                   {isCompleted ? (
@@ -81,7 +86,9 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                     )}
                   </div>
                   {isRunning && (
-                    <Progress value={step.progress} size="sm" variant="info" className="mt-2" />
+                    <Progress value={step.progress} size="sm" variant="info" className={`
+                      mt-2
+                    `} />
                   )}
                 </div>
               </div>

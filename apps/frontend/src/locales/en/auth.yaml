@@ -1,0 +1,53 @@
+# Authentication strings (English)
+
+login:
+  title: 'Sign in to your account'
+  email: 'Email Address'
+  password: 'Password'
+  forgotPassword: 'Forgot password?'
+  submit: 'Sign in'
+  noAccount: "Don't have an account?"
+  register: 'Sign up'
+  successMessage: 'Welcome back! You have successfully logged in.'
+  successTitle: 'Login Successful'
+  failureTitle: 'Login Failed'
+
+register:
+  title: 'Create your account'
+  email: 'Email Address'
+  password: 'Password'
+  confirmPassword: 'Confirm Password'
+  passwordHint: 'At least 8 characters'
+  submit: 'Create account'
+  haveAccount: 'Already have an account?'
+  login: 'Sign in'
+  successMessage: 'Account created! Please check your email to verify your account.'
+  successTitle: 'Registration Successful'
+  failureTitle: 'Registration Failed'
+
+logout:
+  successMessage: 'You have been logged out successfully.'
+  successTitle: 'Logged Out'
+  failureTitle: 'Logout Failed'
+
+verification:
+  title: 'Verify your email'
+  message: 'We have sent a verification link to your email address'
+  resend: 'Resend verification email'
+  pending: 'Verification pending'
+
+forgotPassword:
+  title: 'Reset your password'
+  message: 'Enter your email address and we will send you a link to reset your password'
+  submit: 'Send reset link'
+
+resetPassword:
+  title: 'Reset your password'
+  newPassword: 'New Password'
+  confirmPassword: 'Confirm Password'
+  submit: 'Reset Password'
+
+validation:
+  invalidEmail: 'Please enter a valid email'
+  passwordTooShort: 'Password must be at least 8 characters'
+  passwordMismatch: 'Passwords do not match'

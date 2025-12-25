@@ -14,17 +14,15 @@ function ResetPasswordPage() {
     return (
       <div
         className={`
-        flex min-h-screen items-center justify-center bg-gradient-to-br
-        from-blue-500 to-blue-600 px-4 py-12
-        sm:px-6
-        lg:px-8
-      `}
+          flex min-h-screen items-center justify-center bg-gradient-to-br
+          from-blue-500 to-blue-600 px-4 py-12
+          sm:px-6
+          lg:px-8
+        `}
       >
         <div className="w-full max-w-md">
           <div
-            className={`
-            space-y-6 rounded-lg bg-white p-8 text-center shadow-xl
-          `}
+            className={`space-y-6 rounded-lg bg-white p-8 text-center shadow-xl`}
           >
             <div className="text-red-500">
               <svg
@@ -63,11 +61,11 @@ function ResetPasswordPage() {
   return (
     <div
       className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
     >
       <div className="w-full max-w-md space-y-8">
         {/* Logo/Header */}
@@ -91,9 +89,9 @@ function ResetPasswordPage() {
               to="/login"
               search={{ redirect: '/' }}
               className={`
-              text-sm font-medium text-blue-600
-              hover:text-blue-700
-            `}
+                text-sm font-medium text-blue-600
+                hover:text-blue-700
+              `}
             >
               ← Back to sign in
             </Link>
@@ -107,9 +105,9 @@ function ResetPasswordPage() {
             to="/login"
             search={{ redirect: '/' }}
             className={`
-            underline
-            hover:text-white
-          `}
+              underline
+              hover:text-white
+            `}
           >
             Sign in
           </Link>

@@ -1,0 +1,53 @@
+# Authentication strings (German)
+
+login:
+  title: 'Melden Sie sich bei Ihrem Konto an'
+  email: 'E-Mail-Adresse'
+  password: 'Passwort'
+  forgotPassword: 'Passwort vergessen?'
+  submit: 'Anmelden'
+  noAccount: 'Haben Sie noch kein Konto?'
+  register: 'Registrieren'
+  successMessage: 'Willkommen zurück! Sie haben sich erfolgreich angemeldet.'
+  successTitle: 'Anmeldung erfolgreich'
+  failureTitle: 'Anmeldung fehlgeschlagen'
+
+register:
+  title: 'Erstellen Sie ein Konto'
+  email: 'E-Mail-Adresse'
+  password: 'Passwort'
+  confirmPassword: 'Passwort bestätigen'
+  passwordHint: 'Mindestens 8 Zeichen'
+  submit: 'Konto erstellen'
+  haveAccount: 'Haben Sie bereits ein Konto?'
+  login: 'Melden Sie sich an'
+  successMessage: 'Konto erstellt! Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren.'
+  successTitle: 'Registrierung erfolgreich'
+  failureTitle: 'Registrierung fehlgeschlagen'
+
+logout:
+  successMessage: 'Sie haben sich erfolgreich abgemeldet.'
+  successTitle: 'Abgemeldet'
+  failureTitle: 'Abmeldung fehlgeschlagen'
+
+verification:
+  title: 'Überprüfen Sie Ihre E-Mail'
+  message: 'Wir haben einen Verifizierungslink an Ihre E-Mail-Adresse gesendet'
+  resend: 'Verifizierungs-E-Mail erneut senden'
+  pending: 'Verifizierung läuft'
+
+forgotPassword:
+  title: 'Setzen Sie Ihr Passwort zurück'
+  message: 'Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link zum Zurücksetzen des Passworts'
+  submit: 'Zurücksetzen-Link senden'
+
+resetPassword:
+  title: 'Setzen Sie Ihr Passwort zurück'
+  newPassword: 'Neues Passwort'
+  confirmPassword: 'Passwort bestätigen'
+  submit: 'Passwort zurücksetzen'
+
+validation:
+  invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
+  passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein'
+  passwordMismatch: 'Passwörter stimmen nicht überein'

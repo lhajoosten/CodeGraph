@@ -1,15 +1,33 @@
 /**
  * API hooks - queries and mutations for backend API operations.
- * Auto-generated from OpenAPI spec via @hey-api/openapi-ts.
+ * Organized by feature with separated queries and mutations.
  */
 
-export { useCurrentUser, useLogin, useLogout, useRegister } from './use-auth';
-
+// Auth hooks
 export {
-  useTasks,
-  useTask,
+  useFetchCurrentUser,
+  useLogin,
+  useLogout,
+  useRegister,
+  type UseLoginOptions,
+  type UseLogoutOptions,
+  type UseRegisterOptions,
+} from './auth';
+
+// Task hooks
+export {
+  useFetchTasks,
+  useFetchTask,
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
   taskQueryKeys,
-} from './use-tasks';
+  type UseFetchTasksOptions,
+  type UseCreateTaskOptions,
+  type UseUpdateTaskOptions,
+  type UseDeleteTaskOptions,
+} from './tasks';
+
+// Backward compatibility aliases
+export { useFetchCurrentUser as useCurrentUser } from './auth';
+export { useFetchTasks as useTasks, useFetchTask as useTask } from './tasks';

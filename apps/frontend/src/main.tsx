@@ -10,6 +10,9 @@ import { RouteContext } from '@/lib/types.ts';
 // Initialize API client configuration (must be imported before any API calls)
 import '@/lib/api-client';
 
+// Initialize i18n (must be imported before rendering)
+import '@/locales/config';
+
 if (import.meta.env.VITE_ENABLE_SCAN === 'true') {
   import('react-scan').then(({ scan }) => {
     scan({ enabled: true });

@@ -8,20 +8,32 @@ const inputVariants = cva(
     'ring-offset-background-2 transition-colors duration-200',
     'file:border-0 file:bg-transparent file:text-sm file:font-medium',
     'placeholder:text-text-tertiary',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    `
+      focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-offset-2 focus-visible:outline-none
+    `,
     'disabled:cursor-not-allowed disabled:opacity-50',
   ],
   {
     variants: {
       variant: {
-        default: 'border-border focus-visible:border-primary',
-        error: 'border-danger focus-visible:ring-danger',
-        success: 'border-success focus-visible:ring-success',
+        default: `
+          border-border
+          focus-visible:border-primary
+        `,
+        error: `
+          border-danger
+          focus-visible:ring-danger
+        `,
+        success: `
+          border-success
+          focus-visible:ring-success
+        `,
       },
       inputSize: {
         default: 'h-10',
-        sm: 'h-9 text-xs px-2',
-        lg: 'h-11 text-base px-4',
+        sm: 'h-9 px-2 text-xs',
+        lg: 'h-11 px-4 text-base',
       },
     },
     defaultVariants: {
@@ -45,7 +57,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return (
         <div className="relative flex items-center">
           {leftIcon && (
-            <div className="pointer-events-none absolute left-3 flex items-center text-text-tertiary">
+            <div className={`
+              pointer-events-none absolute left-3 flex items-center
+              text-text-tertiary
+            `}>
               {leftIcon}
             </div>
           )}
@@ -61,7 +76,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 flex items-center text-text-tertiary">{rightIcon}</div>
+            <div className={`
+              absolute right-3 flex items-center text-text-tertiary
+            `}>{rightIcon}</div>
           )}
         </div>
       );

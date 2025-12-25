@@ -45,7 +45,9 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
   }, [updates.length]);
 
   return (
-    <div ref={logRef} className={cn('max-h-64 overflow-y-auto scroll-area space-y-2', className)}>
+    <div ref={logRef} className={cn(`
+      scroll-area max-h-64 space-y-2 overflow-y-auto
+    `, className)}>
       {displayedUpdates.map((update, index) => {
         const AgentIcon = agentIcons[update.agent as AgentType] || Brain;
         const StatusIcon = statusIcons[update.status as AgentStatus] || Loader2;
@@ -61,7 +63,9 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               isRunning && 'border-info/30 bg-info/5',
               isCompleted && 'border-success/30 bg-success/5',
               isFailed && 'border-danger/30 bg-danger/5',
-              !isRunning && !isCompleted && !isFailed && 'border-border bg-secondary/50'
+              !isRunning && !isCompleted && !isFailed && `
+                border-border bg-secondary/50
+              `
             )}
           >
             <div
@@ -70,15 +74,19 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                 isRunning && 'bg-info/10 text-info',
                 isCompleted && 'bg-success/10 text-success',
                 isFailed && 'bg-danger/10 text-danger',
-                !isRunning && !isCompleted && !isFailed && 'bg-secondary text-text-secondary'
+                !isRunning && !isCompleted && !isFailed && `
+                  bg-secondary text-text-secondary
+                `
               )}
             >
               <AgentIcon className="h-4 w-4" />
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-text-primary capitalize">
+                <span className={`
+                  text-sm font-medium text-text-primary capitalize
+                `}>
                   {update.agent} Agent
                 </span>
                 <StatusIcon
@@ -93,7 +101,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               <p className="text-sm text-text-secondary">{update.message}</p>
             </div>
 
-            <span className="text-xs text-text-tertiary shrink-0">
+            <span className="shrink-0 text-xs text-text-tertiary">
               {formatTime(update.timestamp)}
             </span>
           </div>

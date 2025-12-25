@@ -39,7 +39,7 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
 
     return (
       <p ref={ref} className={cn(formMessageVariants({ variant }), className)} {...props}>
-        {showIcon && <IconComponent className="h-4 w-4 shrink-0 mt-0.5" />}
+        {showIcon && <IconComponent className="mt-0.5 h-4 w-4 shrink-0" />}
         <span>{children}</span>
       </p>
     );
@@ -75,11 +75,11 @@ function FormErrorSummary({ errors, className }: FormErrorSummaryProps) {
       role="alert"
       aria-live="polite"
     >
-      <div className="flex items-center gap-2 text-danger font-medium mb-2">
+      <div className="mb-2 flex items-center gap-2 font-medium text-danger">
         <AlertCircle className="h-4 w-4" />
         <span>Please fix the following errors:</span>
       </div>
-      <ul className="list-disc list-inside text-sm text-danger-800 space-y-1">
+      <ul className="list-inside list-disc space-y-1 text-sm text-danger-800">
         {errorMessages.map(({ field, message }) => (
           <li key={field}>{message}</li>
         ))}

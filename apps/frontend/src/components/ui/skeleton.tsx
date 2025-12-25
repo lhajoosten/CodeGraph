@@ -38,10 +38,10 @@ function SkeletonText({ lines = 3, className }: { lines?: number; className?: st
 
 function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div className={cn('rounded-lg border border-border p-6 space-y-4', className)}>
+    <div className={cn('space-y-4 rounded-lg border border-border p-6', className)}>
       <div className="flex items-center space-x-4">
         <Skeleton variant="circular" className="h-12 w-12" />
-        <div className="space-y-2 flex-1">
+        <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-1/3" />
           <Skeleton className="h-3 w-1/4" />
         </div>
@@ -83,7 +83,7 @@ function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; columns?: num
   return (
     <div className="w-full space-y-2">
       {/* Header */}
-      <div className="flex gap-4 pb-2 border-b border-border">
+      <div className="flex gap-4 border-b border-border pb-2">
         {Array.from({ length: columns }).map((_, i) => (
           <Skeleton key={`header-${i}`} className="h-4 flex-1" />
         ))}

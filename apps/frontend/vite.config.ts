@@ -5,11 +5,13 @@ import {defineConfig} from "vite"
 import {tanstackRouter} from "@tanstack/router-vite-plugin";
 import {visualizer} from "rollup-plugin-visualizer";
 import tailwindcss from "@tailwindcss/vite";
+import yaml from "@rollup/plugin-yaml";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [
+    yaml(),
     tailwindcss(),
     react(),
     tanstackRouter({
@@ -43,6 +45,10 @@ export default defineConfig({
     include: [
       'react',
       'react-dom',
+      // i18n dependencies
+      'i18next',
+      'react-i18next',
+      'i18next-browser-languagedetector',
       // Radix UI components
       '@radix-ui/react-avatar',
       '@radix-ui/react-separator',

@@ -13,7 +13,7 @@ const badgeVariants = cva(
         danger: 'border-transparent bg-danger text-white',
         warning: 'border-transparent bg-warning text-text-button',
         info: 'border-transparent bg-info text-white',
-        outline: 'border-border text-text-primary bg-transparent',
+        outline: 'border-border bg-transparent text-text-primary',
         ghost: 'border-transparent bg-transparent text-text-secondary',
       },
       size: {
@@ -40,7 +40,9 @@ function Badge({ className, variant, size, dot, dotColor, children, ...props }: 
     <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
       {dot && (
         <span
-          className={cn('mr-1.5 h-1.5 w-1.5 rounded-full', dotColor || 'bg-current')}
+          className={cn('mr-1.5 h-1.5 w-1.5 rounded-full', dotColor || `
+            bg-current
+          `)}
           aria-hidden="true"
         />
       )}

@@ -1,0 +1,53 @@
+# Authentication strings (Dutch)
+
+login:
+  title: 'Meld je aan bij je account'
+  email: 'E-mailadres'
+  password: 'Wachtwoord'
+  forgotPassword: 'Wachtwoord vergeten?'
+  submit: 'Aanmelden'
+  noAccount: 'Heb je nog geen account?'
+  register: 'Registreer je'
+  successMessage: 'Welkom terug! Je bent succesvol aangemeld.'
+  successTitle: 'Aanmelden gelukt'
+  failureTitle: 'Aanmelden mislukt'
+
+register:
+  title: 'Maak een account aan'
+  email: 'E-mailadres'
+  password: 'Wachtwoord'
+  confirmPassword: 'Bevestig wachtwoord'
+  passwordHint: 'Minimaal 8 tekens'
+  submit: 'Account maken'
+  haveAccount: 'Heb je al een account?'
+  login: 'Meld je aan'
+  successMessage: 'Account gemaakt! Controleer je e-mail om je account te verifiëren.'
+  successTitle: 'Registratie gelukt'
+  failureTitle: 'Registratie mislukt'
+
+logout:
+  successMessage: 'Je bent succesvol afgemeld.'
+  successTitle: 'Afgemeld'
+  failureTitle: 'Afmelden mislukt'
+
+verification:
+  title: 'Verifieer je e-mail'
+  message: 'We hebben een verificatielink naar je e-mailadres gestuurd'
+  resend: 'Verificatie-e-mail opnieuw verzenden'
+  pending: 'Verificatie in behandeling'
+
+forgotPassword:
+  title: 'Reset je wachtwoord'
+  message: 'Voer je e-mailadres in en we sturen je een link om je wachtwoord opnieuw in te stellen'
+  submit: 'Verzend reset link'
+
+resetPassword:
+  title: 'Reset je wachtwoord'
+  newPassword: 'Nieuw wachtwoord'
+  confirmPassword: 'Bevestig wachtwoord'
+  submit: 'Reset wachtwoord'
+
+validation:
+  invalidEmail: 'Voer alstublieft een geldig e-mailadres in'
+  passwordTooShort: 'Wachtwoord moet minimaal 8 tekens bevatten'
+  passwordMismatch: 'Wachtwoorden komen niet overeen'

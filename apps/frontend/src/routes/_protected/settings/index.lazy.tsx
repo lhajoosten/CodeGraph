@@ -79,7 +79,11 @@ function SettingsPage() {
             </div>
             <Link
               to="/"
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+              className={`
+                flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm
+                font-medium text-gray-700 transition
+                hover:bg-gray-200
+              `}
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -97,19 +101,32 @@ function SettingsPage() {
 
       {/* Content */}
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="flex flex-col gap-8 md:flex-row">
+        <div className={`
+          flex flex-col gap-8
+          md:flex-row
+        `}>
           {/* Sidebar Navigation */}
-          <div className="w-full md:w-64">
+          <div className={`
+            w-full
+            md:w-64
+          `}>
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition ${
+                  className={`
+                    flex w-full items-center gap-3 rounded-lg px-4 py-3
+                    text-left text-sm font-medium transition
+                    ${
                     activeTab === tab.id
                       ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
+                      : `
+                        text-gray-600
+                        hover:bg-gray-100 hover:text-gray-900
+                      `
+                  }
+                  `}
                 >
                   {tab.icon}
                   {tab.label}

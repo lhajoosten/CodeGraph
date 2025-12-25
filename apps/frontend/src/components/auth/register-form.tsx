@@ -162,10 +162,15 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
               <button
                 type="button"
                 onClick={showPassword.toggle}
-                className="text-text-tertiary hover:text-text-primary"
+                className={`
+                  text-text-tertiary
+                  hover:text-text-primary
+                `}
                 tabIndex={-1}
               >
-                {showPassword.isOpen ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword.isOpen ? <EyeOff className="h-4 w-4" /> : <Eye className={`
+                  h-4 w-4
+                `} />}
               </button>
             }
             variant={errors.password ? 'error' : 'default'}
@@ -213,7 +218,10 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
               <button
                 type="button"
                 onClick={showConfirmPassword.toggle}
-                className="text-text-tertiary hover:text-text-primary"
+                className={`
+                  text-text-tertiary
+                  hover:text-text-primary
+                `}
                 tabIndex={-1}
               >
                 {showConfirmPassword.isOpen ? (
@@ -238,16 +246,22 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
             <label
               htmlFor="acceptTerms"
               className={cn(
-                'text-sm cursor-pointer leading-tight',
+                'cursor-pointer text-sm leading-tight',
                 errors.acceptTerms ? 'text-danger' : 'text-text-secondary'
               )}
             >
               I agree to the{' '}
-              <a href="/terms" className="text-primary hover:underline">
+              <a href="/terms" className={`
+                text-primary
+                hover:underline
+              `}>
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="/privacy" className="text-primary hover:underline">
+              <a href="/privacy" className={`
+                text-primary
+                hover:underline
+              `}>
                 Privacy Policy
               </a>
             </label>
@@ -267,7 +281,10 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
         <Link
           to="/login"
           search={{ redirect: '/' }}
-          className="text-primary hover:underline font-medium"
+          className={`
+            font-medium text-primary
+            hover:underline
+          `}
         >
           Sign in
         </Link>

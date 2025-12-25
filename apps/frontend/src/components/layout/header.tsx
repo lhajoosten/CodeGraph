@@ -56,7 +56,11 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background-2 px-4 lg:px-6',
+        `
+          sticky top-0 z-30 flex h-16 items-center justify-between border-b
+          border-border bg-background-2 px-4
+          lg:px-6
+        `,
         className
       )}
     >
@@ -72,8 +76,13 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         )}
 
         {/* Mobile logo - only show when sidebar is hidden */}
-        <Link to="/" className="flex items-center gap-2 lg:hidden">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+        <Link to="/" className={`
+          flex items-center gap-2
+          lg:hidden
+        `}>
+          <div className={`
+            flex h-8 w-8 items-center justify-center rounded-lg bg-primary
+          `}>
             <span className="text-lg font-bold text-text-button">C</span>
           </div>
           <span className="text-xl font-bold text-primary">{APP_NAME}</span>
@@ -99,14 +108,16 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+            <Button variant="ghost" className={`
+              relative h-10 w-10 rounded-full p-0
+            `}>
               <UserAvatar name={userName} size="default" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{userName}</p>
+                <p className="text-sm leading-none font-medium">{userName}</p>
                 <p className="text-xs leading-none text-text-tertiary">{user?.email}</p>
               </div>
             </DropdownMenuLabel>

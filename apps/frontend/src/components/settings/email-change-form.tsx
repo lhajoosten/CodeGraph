@@ -90,7 +90,10 @@ export const EmailChangeForm = () => {
           </div>
           <button
             onClick={() => setSuccess(false)}
-            className="mt-4 text-sm font-medium text-green-700 hover:text-green-800"
+            className={`
+              mt-4 text-sm font-medium text-green-700
+              hover:text-green-800
+            `}
           >
             Change to a different email
           </button>
@@ -98,7 +101,10 @@ export const EmailChangeForm = () => {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            <div className={`
+              rounded-lg border border-red-200 bg-red-50 p-3 text-sm
+              text-red-700
+            `}>
               {error}
             </div>
           )}
@@ -111,7 +117,11 @@ export const EmailChangeForm = () => {
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`
+                w-full rounded-lg border border-gray-300 px-4 py-2
+                focus:border-transparent focus:ring-2 focus:ring-blue-500
+                focus:outline-none
+              `}
               placeholder="Enter new email address"
               disabled={changeMutation.isPending}
             />
@@ -125,7 +135,11 @@ export const EmailChangeForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`
+                w-full rounded-lg border border-gray-300 px-4 py-2
+                focus:border-transparent focus:ring-2 focus:ring-blue-500
+                focus:outline-none
+              `}
               placeholder="Enter your password"
               disabled={changeMutation.isPending}
             />
@@ -137,7 +151,12 @@ export const EmailChangeForm = () => {
           <button
             type="submit"
             disabled={changeMutation.isPending}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className={`
+              w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+              transition
+              hover:bg-blue-700
+              disabled:cursor-not-allowed disabled:opacity-50
+            `}
           >
             {changeMutation.isPending ? 'Sending verification...' : 'Change Email'}
           </button>

@@ -97,7 +97,10 @@ export function TaskList({ onCreateTask, className }: TaskListProps) {
   return (
     <div className={className}>
       {/* Header with filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className={`
+        mb-6 flex flex-col gap-4
+        sm:flex-row
+      `}>
         <div className="flex-1">
           <TaskFilters
             search={search}
@@ -117,7 +120,11 @@ export function TaskList({ onCreateTask, className }: TaskListProps) {
 
       {/* Loading state */}
       {isLoading && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`
+          grid gap-4
+          md:grid-cols-2
+          lg:grid-cols-3
+        `}>
           {Array.from({ length: 6 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -154,7 +161,11 @@ export function TaskList({ onCreateTask, className }: TaskListProps) {
 
       {/* Task grid */}
       {!isLoading && !error && filteredTasks.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`
+          grid gap-4
+          md:grid-cols-2
+          lg:grid-cols-3
+        `}>
           {filteredTasks.map((task) => (
             <TaskCard key={task.id} task={task} onDelete={handleDeleteClick} />
           ))}

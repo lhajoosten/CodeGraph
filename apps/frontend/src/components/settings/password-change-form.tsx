@@ -65,13 +65,18 @@ export const PasswordChangeForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div className={`
+          rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
+        `}>
           {error}
         </div>
       )}
 
       {success && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+        <div className={`
+          rounded-lg border border-green-200 bg-green-50 p-3 text-sm
+          text-green-700
+        `}>
           Password changed successfully!
         </div>
       )}
@@ -82,7 +87,11 @@ export const PasswordChangeForm = () => {
           type="password"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className={`
+            w-full rounded-lg border border-gray-300 px-4 py-2
+            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            focus:outline-none
+          `}
           placeholder="Enter current password"
           disabled={changeMutation.isPending}
         />
@@ -94,7 +103,11 @@ export const PasswordChangeForm = () => {
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className={`
+            w-full rounded-lg border border-gray-300 px-4 py-2
+            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            focus:outline-none
+          `}
           placeholder="Enter new password"
           disabled={changeMutation.isPending}
         />
@@ -107,7 +120,11 @@ export const PasswordChangeForm = () => {
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className={`
+            w-full rounded-lg border border-gray-300 px-4 py-2
+            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            focus:outline-none
+          `}
           placeholder="Confirm new password"
           disabled={changeMutation.isPending}
         />
@@ -116,7 +133,12 @@ export const PasswordChangeForm = () => {
       <button
         type="submit"
         disabled={changeMutation.isPending}
-        className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className={`
+          w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+          transition
+          hover:bg-blue-700
+          disabled:cursor-not-allowed disabled:opacity-50
+        `}
       >
         {changeMutation.isPending ? 'Changing Password...' : 'Change Password'}
       </button>

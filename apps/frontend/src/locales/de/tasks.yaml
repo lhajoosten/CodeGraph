@@ -1,0 +1,52 @@
+# Task management strings (German)
+
+tasks:
+  title: 'Aufgaben'
+  subtitle: 'Verwalten Sie Ihre KI-gestützten Codierungsaufgaben'
+  newTask: 'Neue Aufgabe'
+  createTask: 'Aufgabe erstellen'
+  noneYet: 'Noch keine Aufgaben'
+  successCreateMessage: 'Aufgabe erfolgreich erstellt. Unsere Agenten sind bereit, daran zu arbeiten!'
+  successCreateTitle: 'Aufgabe erstellt'
+  failureCreateTitle: 'Aufgabenerstellung fehlgeschlagen'
+  successUpdateMessage: 'Aufgabe erfolgreich aktualisiert.'
+  successUpdateTitle: 'Aufgabe aktualisiert'
+  failureUpdateTitle: 'Aufgabenaktualisierung fehlgeschlagen'
+  successDeleteMessage: 'Aufgabe erfolgreich gelöscht.'
+  successDeleteTitle: 'Aufgabe gelöscht'
+  failureDeleteTitle: 'Aufgabenlöschung fehlgeschlagen'
+
+taskForm:
+  title: 'Aufgabentitel'
+  description: 'Aufgabenbeschreibung'
+  priority: 'Priorität'
+  status: 'Status'
+  submit: 'Aufgabe erstellen'
+
+taskCard:
+  status: 'Status'
+  priority: 'Priorität'
+  createdAt: 'Erstellt'
+  updatedAt: 'Aktualisiert'
+  delete: 'Aufgabe löschen'
+
+taskDetail:
+  title: 'Aufgabendetails'
+  back: 'Zurück zu Aufgaben'
+  edit: 'Bearbeiten'
+  delete: 'Löschen'
+  confirmDelete: 'Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?'
+
+status:
+  pending: 'Ausstehend'
+  planning: 'Planung'
+  in_progress: 'In Bearbeitung'
+  testing: 'Testen'
+  reviewing: 'Überprüfung'
+  completed: 'Abgeschlossen'
+
+priority:
+  low: 'Niedrig'
+  medium: 'Mittel'
+  high: 'Hoch'
+  urgent: 'Dringend'

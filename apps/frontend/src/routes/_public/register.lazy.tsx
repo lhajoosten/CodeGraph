@@ -1,6 +1,6 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useRegister } from '@/hooks/api/use-auth';
+import { useRegister } from '@/hooks';
 
 export const Route = createLazyFileRoute('/_public/register')({
   component: RegisterPage,
@@ -75,11 +75,11 @@ function RegisterPage() {
   return (
     <div
       className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
     >
       <div className="w-full max-w-md space-y-8">
         {/* Logo/Header */}
@@ -103,9 +103,7 @@ function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className={`
-                mb-2 block text-sm font-medium text-gray-700
-              `}
+                className={`mb-2 block text-sm font-medium text-gray-700`}
               >
                 Email Address
               </label>
@@ -123,13 +121,13 @@ function RegisterPage() {
                   ${
                     errors.email
                       ? `
-                      border-red-300
-                      focus:ring-red-500
-                    `
+                        border-red-300
+                        focus:ring-red-500
+                      `
                       : `
-                      border-gray-300
-                      focus:ring-blue-500
-                    `
+                        border-gray-300
+                        focus:ring-blue-500
+                      `
                   }
                 `}
                 required
@@ -141,9 +139,7 @@ function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className={`
-                mb-2 block text-sm font-medium text-gray-700
-              `}
+                className={`mb-2 block text-sm font-medium text-gray-700`}
               >
                 Password
               </label>
@@ -162,13 +158,13 @@ function RegisterPage() {
                     ${
                       errors.password
                         ? `
-                        border-red-300
-                        focus:ring-red-500
-                      `
+                          border-red-300
+                          focus:ring-red-500
+                        `
                         : `
-                        border-gray-300
-                        focus:ring-blue-500
-                      `
+                          border-gray-300
+                          focus:ring-blue-500
+                        `
                     }
                   `}
                   required
@@ -229,13 +225,13 @@ function RegisterPage() {
                     ${
                       errors.confirmPassword
                         ? `
-                        border-red-300
-                        focus:ring-red-500
-                      `
+                          border-red-300
+                          focus:ring-red-500
+                        `
                         : `
-                        border-gray-300
-                        focus:ring-blue-500
-                      `
+                          border-gray-300
+                          focus:ring-blue-500
+                        `
                     }
                   `}
                   required
@@ -345,9 +341,9 @@ function RegisterPage() {
           <a
             href="#"
             className={`
-            underline
-            hover:text-white
-          `}
+              underline
+              hover:text-white
+            `}
           >
             Terms of Service
           </a>

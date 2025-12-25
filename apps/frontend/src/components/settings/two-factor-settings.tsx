@@ -138,7 +138,9 @@ export const TwoFactorSettings = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-4 font-mono text-sm">
+        <div className={`
+          grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-4 font-mono text-sm
+        `}>
           {backupCodes.map((code, index) => (
             <div key={index} className="rounded bg-white p-2 text-center">
               {code}
@@ -150,14 +152,22 @@ export const TwoFactorSettings = () => {
           onClick={() => {
             navigator.clipboard.writeText(backupCodes.join('\n'));
           }}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50"
+          className={`
+            w-full rounded-lg border border-gray-300 px-4 py-2 font-medium
+            text-gray-700 transition
+            hover:bg-gray-50
+          `}
         >
           Copy to clipboard
         </button>
 
         <button
           onClick={() => setBackupCodes([])}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+          className={`
+            w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+            transition
+            hover:bg-blue-700
+          `}
         >
           I've saved my backup codes
         </button>
@@ -168,7 +178,9 @@ export const TwoFactorSettings = () => {
   // Check if 2FA feature is available
   if (statusQuery.isError) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
+      <div className={`
+        rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
+      `}>
         <svg
           className="mx-auto h-12 w-12 text-gray-400"
           fill="none"
@@ -193,7 +205,9 @@ export const TwoFactorSettings = () => {
   if (statusQuery.isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        <div className={`
+          h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
+        `}></div>
       </div>
     );
   }
@@ -220,14 +234,21 @@ export const TwoFactorSettings = () => {
             type="text"
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-center font-mono text-lg tracking-widest focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className={`
+              w-full rounded-lg border border-gray-300 px-4 py-2 text-center
+              font-mono text-lg tracking-widest
+              focus:border-transparent focus:ring-2 focus:ring-blue-500
+              focus:outline-none
+            `}
             placeholder="000000"
             maxLength={6}
           />
         </div>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <div className={`
+            rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
+          `}>
             {error}
           </div>
         )}
@@ -239,14 +260,23 @@ export const TwoFactorSettings = () => {
               setQrCode(null);
               setVerificationCode('');
             }}
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50"
+            className={`
+              flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium
+              text-gray-700 transition
+              hover:bg-gray-50
+            `}
           >
             Cancel
           </button>
           <button
             onClick={() => enableMutation.mutate(verificationCode)}
             disabled={verificationCode.length !== 6 || enableMutation.isPending}
-            className="flex-1 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className={`
+              flex-1 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+              transition
+              hover:bg-blue-700
+              disabled:cursor-not-allowed disabled:opacity-50
+            `}
           >
             {enableMutation.isPending ? 'Verifying...' : 'Enable 2FA'}
           </button>
@@ -267,12 +297,18 @@ export const TwoFactorSettings = () => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className={`
+            w-full rounded-lg border border-gray-300 px-4 py-2
+            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            focus:outline-none
+          `}
           placeholder="Enter your password"
         />
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <div className={`
+            rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
+          `}>
             {error}
           </div>
         )}
@@ -283,14 +319,23 @@ export const TwoFactorSettings = () => {
               setShowDisable(false);
               setPassword('');
             }}
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50"
+            className={`
+              flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium
+              text-gray-700 transition
+              hover:bg-gray-50
+            `}
           >
             Cancel
           </button>
           <button
             onClick={() => disableMutation.mutate(password)}
             disabled={!password || disableMutation.isPending}
-            className="flex-1 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className={`
+              flex-1 rounded-lg bg-red-600 px-4 py-2 font-medium text-white
+              transition
+              hover:bg-red-700
+              disabled:cursor-not-allowed disabled:opacity-50
+            `}
           >
             {disableMutation.isPending ? 'Disabling...' : 'Disable 2FA'}
           </button>
@@ -303,14 +348,25 @@ export const TwoFactorSettings = () => {
   return (
     <div className="space-y-4">
       <div
-        className={`flex items-center justify-between rounded-lg p-4 ${
-          isEnabled ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'
-        }`}
+        className={`
+          flex items-center justify-between rounded-lg p-4
+          ${
+          isEnabled ? 'border border-green-200 bg-green-50' : `
+            border border-gray-200 bg-gray-50
+          `
+        }
+        `}
       >
         <div className="flex items-center gap-3">
-          <div className={`rounded-full p-2 ${isEnabled ? 'bg-green-100' : 'bg-gray-200'}`}>
+          <div className={`
+            rounded-full p-2
+            ${isEnabled ? 'bg-green-100' : `bg-gray-200`}
+          `}>
             <svg
-              className={`h-5 w-5 ${isEnabled ? 'text-green-600' : 'text-gray-500'}`}
+              className={`
+                h-5 w-5
+                ${isEnabled ? 'text-green-600' : `text-gray-500`}
+              `}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -324,7 +380,10 @@ export const TwoFactorSettings = () => {
             </svg>
           </div>
           <div>
-            <p className={`font-medium ${isEnabled ? 'text-green-800' : 'text-gray-900'}`}>
+            <p className={`
+              font-medium
+              ${isEnabled ? 'text-green-800' : `text-gray-900`}
+            `}>
               {isEnabled ? 'Enabled' : 'Disabled'}
             </p>
             <p className="text-sm text-gray-500">
@@ -340,7 +399,11 @@ export const TwoFactorSettings = () => {
         <div className="space-y-3">
           <button
             onClick={() => setShowDisable(true)}
-            className="w-full rounded-lg border border-red-300 px-4 py-2 font-medium text-red-600 transition hover:bg-red-50"
+            className={`
+              w-full rounded-lg border border-red-300 px-4 py-2 font-medium
+              text-red-600 transition
+              hover:bg-red-50
+            `}
           >
             Disable Two-Factor Authentication
           </button>
@@ -349,7 +412,11 @@ export const TwoFactorSettings = () => {
               const pwd = prompt('Enter your password to regenerate backup codes:');
               if (pwd) regenerateMutation.mutate(pwd);
             }}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50"
+            className={`
+              w-full rounded-lg border border-gray-300 px-4 py-2 font-medium
+              text-gray-700 transition
+              hover:bg-gray-50
+            `}
           >
             Regenerate Backup Codes
           </button>
@@ -358,7 +425,12 @@ export const TwoFactorSettings = () => {
         <button
           onClick={() => setupMutation.mutate()}
           disabled={setupMutation.isPending}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`
+            w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+            transition
+            hover:bg-blue-700
+            disabled:cursor-not-allowed disabled:opacity-50
+          `}
         >
           {setupMutation.isPending ? 'Setting up...' : 'Enable Two-Factor Authentication'}
         </button>

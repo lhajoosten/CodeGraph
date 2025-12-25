@@ -9,11 +9,11 @@ function ForgotPasswordPage() {
   return (
     <div
       className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
     >
       <div className="w-full max-w-md space-y-8">
         {/* Logo/Header */}
@@ -32,9 +32,9 @@ function ForgotPasswordPage() {
               to="/login"
               search={{ redirect: '/' }}
               className={`
-              text-sm font-medium text-blue-600
-              hover:text-blue-700
-            `}
+                text-sm font-medium text-blue-600
+                hover:text-blue-700
+              `}
             >
               ← Back to sign in
             </Link>
@@ -48,9 +48,9 @@ function ForgotPasswordPage() {
             to="/login"
             search={{ redirect: '/' }}
             className={`
-            underline
-            hover:text-white
-          `}
+              underline
+              hover:text-white
+            `}
           >
             Sign in
           </Link>

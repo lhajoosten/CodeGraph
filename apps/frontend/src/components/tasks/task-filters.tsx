@@ -38,7 +38,10 @@ export function TaskFilters({
   className,
 }: TaskFiltersProps) {
   return (
-    <div className={cn('flex flex-col sm:flex-row gap-3', className)}>
+    <div className={cn(`
+      flex flex-col gap-3
+      sm:flex-row
+    `, className)}>
       {/* Search input */}
       <div className="relative flex-1">
         <Input
@@ -64,7 +67,10 @@ export function TaskFilters({
 
       {/* Status filter */}
       <Select value={status} onValueChange={(value) => onStatusChange(value as TaskStatus | 'all')}>
-        <SelectTrigger className="w-full sm:w-[160px]">
+        <SelectTrigger className={`
+          w-full
+          sm:w-[160px]
+        `}>
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -82,7 +88,10 @@ export function TaskFilters({
         value={priority}
         onValueChange={(value) => onPriorityChange(value as TaskPriority | 'all')}
       >
-        <SelectTrigger className="w-full sm:w-[140px]">
+        <SelectTrigger className={`
+          w-full
+          sm:w-[140px]
+        `}>
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>

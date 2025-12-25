@@ -102,7 +102,10 @@ export function AgentMonitor({ taskId, enabled = true, className }: AgentMonitor
       </Card>
 
       {/* Agent cards */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className={`
+        grid gap-4
+        md:grid-cols-2
+      `}>
         {agents.map((agent) => (
           <AgentCard
             key={agent.type}

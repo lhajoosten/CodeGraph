@@ -1,7 +1,8 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
-
+import { Toaster } from 'sonner';
 import React, { Suspense } from 'react';
 import { RouteContext } from '@/lib/types.ts';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -17,12 +18,13 @@ const TanStackRouterDevtools =
 
 function Root() {
   return (
-    <>
+    <ErrorBoundary>
       <Outlet />
+      <Toaster richColors position="top-right" theme="system" visibleToasts={3} closeButton />
       <Suspense>
         <TanStackRouterDevtools />
       </Suspense>
-    </>
+    </ErrorBoundary>
   );
 }
 

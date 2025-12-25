@@ -101,11 +101,11 @@ function OAuthCallback() {
   return (
     <div
       className={`
-      flex min-h-screen items-center justify-center bg-gradient-to-br
-      from-blue-500 to-blue-600 px-4 py-12
-      sm:px-6
-      lg:px-8
-    `}
+        flex min-h-screen items-center justify-center bg-gradient-to-br
+        from-blue-500 to-blue-600 px-4 py-12
+        sm:px-6
+        lg:px-8
+      `}
     >
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
@@ -116,7 +116,9 @@ function OAuthCallback() {
           {status === 'loading' && (
             <>
               <div className="mb-4 flex justify-center">
-                <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                <div className={`
+                  h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600
+                `}></div>
               </div>
               <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
                 Connecting to {getProviderName()}
@@ -169,7 +171,10 @@ function OAuthCallback() {
               <div className="space-y-3">
                 <button
                   onClick={() => navigate({ to: '/login', search: { redirect: '/' } })}
-                  className="w-full rounded-lg bg-blue-600 py-2 text-white transition hover:bg-blue-700"
+                  className={`
+                    w-full rounded-lg bg-blue-600 py-2 text-white transition
+                    hover:bg-blue-700
+                  `}
                 >
                   Back to Login
                 </button>
@@ -178,7 +183,11 @@ function OAuthCallback() {
                     setStatus('loading');
                     callbackMutation.mutate();
                   }}
-                  className="w-full rounded-lg border border-gray-300 py-2 text-gray-700 transition hover:bg-gray-50"
+                  className={`
+                    w-full rounded-lg border border-gray-300 py-2 text-gray-700
+                    transition
+                    hover:bg-gray-50
+                  `}
                 >
                   Try Again
                 </button>

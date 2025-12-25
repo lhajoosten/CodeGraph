@@ -13,8 +13,14 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
   return (
     <div
       className={cn(
-        'flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12',
-        'sm:px-6 lg:px-8',
+        `
+          flex min-h-screen flex-col items-center justify-center bg-background
+          px-4 py-12
+        `,
+        `
+          sm:px-6
+          lg:px-8
+        `,
         className
       )}
     >
@@ -22,7 +28,10 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         {/* Logo */}
         <div className="flex flex-col items-center">
           <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg">
+            <div className={`
+              flex h-12 w-12 items-center justify-center rounded-xl bg-primary
+              shadow-lg
+            `}>
               <span className="text-2xl font-bold text-text-button">C</span>
             </div>
             <span className="text-3xl font-bold text-primary">{APP_NAME}</span>
@@ -30,7 +39,9 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         </div>
 
         {/* Content */}
-        <div className="rounded-auth border border-border bg-background-2 p-8 shadow-card">
+        <div className={`
+          rounded-auth border border-border bg-background-2 p-8 shadow-card
+        `}>
           {children}
         </div>
 
@@ -40,7 +51,10 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
             <Link
               to="/login"
               search={{ redirect: '/' }}
-              className="text-sm text-text-secondary hover:text-primary transition-colors"
+              className={`
+                text-sm text-text-secondary transition-colors
+                hover:text-primary
+              `}
             >
               &larr; Back to login
             </Link>
@@ -60,7 +74,7 @@ interface AuthTitleProps {
 
 function AuthTitle({ title, description, className }: AuthTitleProps) {
   return (
-    <div className={cn('text-center space-y-2 mb-6', className)}>
+    <div className={cn('mb-6 space-y-2 text-center', className)}>
       <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
       {description && <p className="text-sm text-text-secondary">{description}</p>}
     </div>

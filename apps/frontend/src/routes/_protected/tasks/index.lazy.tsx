@@ -7,10 +7,7 @@ function TasksPage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <PageHeader
-          title="Tasks"
-          description="Manage your AI-powered development tasks"
-        />
+        <PageHeader title="Tasks" description="Manage your AI-powered development tasks" />
         <TaskList />
       </div>
     </AppLayout>

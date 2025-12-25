@@ -1,0 +1,49 @@
+# Common UI strings (English)
+
+# Navigation
+nav:
+  dashboard: 'Dashboard'
+  tasks: 'Tasks'
+  settings: 'Settings'
+  logout: 'Logout'
+
+# Buttons
+button:
+  submit: 'Submit'
+  cancel: 'Cancel'
+  save: 'Save'
+  delete: 'Delete'
+  confirm: 'Confirm'
+  create: 'Create'
+  update: 'Update'
+  close: 'Close'
+  back: 'Back'
+  next: 'Next'
+  loading: 'Loading...'
+
+# Common labels
+label:
+  email: 'Email'
+  password: 'Password'
+  name: 'Name'
+  description: 'Description'
+  status: 'Status'
+  priority: 'Priority'
+  language: 'Language'
+  theme: 'Theme'
+
+# Messages
+message:
+  success: 'Success'
+  error: 'Error'
+  warning: 'Warning'
+  info: 'Information'
+  loading: 'Loading...'
+  noData: 'No data available'
+  required: 'This field is required'
+
+# Language names
+languages:
+  en: 'English'
+  nl: 'Dutch'
+  de: 'German'
