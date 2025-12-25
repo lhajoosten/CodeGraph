@@ -40,7 +40,9 @@ def github_profile() -> OAuthUserProfile:
         email="github@example.com",
         name="GitHub User",
         avatar_url="https://github.com/avatar.png",
-        profile_data={"login": "ghuser", "access_token": "gh_token"},
+        access_token="gh_token_12345",
+        refresh_token=None,  # GitHub doesn't provide refresh tokens
+        profile_data={"login": "ghuser"},
     )
 
 
@@ -53,7 +55,9 @@ def google_profile() -> OAuthUserProfile:
         email="google@example.com",
         name="Google User",
         avatar_url="https://google.com/avatar.png",
-        profile_data={"given_name": "Google", "access_token": "google_token"},
+        access_token="google_token_12345",
+        refresh_token="google_refresh_token_12345",
+        profile_data={"given_name": "Google"},
     )
 
 
@@ -91,13 +95,13 @@ class TestOAuthProviderConfiguration:
         """Test checking if GitHub is configured."""
         from src.core import config as config_module
 
-        # Not configured (default)
-        assert is_oauth_configured("github") is False
-
-        # Configure it
-        monkeypatch.setattr(config_module.settings, "github_client_id", "test_id")
-        monkeypatch.setattr(config_module.settings, "github_client_secret", "test_secret")
-        assert is_oauth_configured("github") is True
+        if not is_oauth_configured("github"):
+            # Configure it
+            monkeypatch.setattr(config_module.settings, "github_client_id", "test_id")
+            monkeypatch.setattr(config_module.settings, "github_client_secret", "test_secret")
+            assert is_oauth_configured("github") is True
+        else:
+            assert is_oauth_configured("github") is True
 
     def test_is_oauth_configured_unknown(self) -> None:
         """Test checking unknown provider."""

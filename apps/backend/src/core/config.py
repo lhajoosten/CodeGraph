@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
+    # Encryption Key (for OAuth tokens, sensitive data)
+    # IMPORTANT: Should be unique per environment, stored securely
+    # Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+    encryption_key: str | None = None
+
     # Cookie Settings
     cookie_domain: str = "localhost"
     cookie_secure: bool = False  # Set to True in production with HTTPS
@@ -52,7 +57,8 @@ class Settings(BaseSettings):
     session_expire_hours: int = 168  # 7 days
     max_sessions_per_user: int = 5
 
-    # Frontend URL (for email links and redirects)
+    # URLs
+    backend_url: str = "http://localhost:8000"
     frontend_url: str = "http://localhost:5173"
 
     # CORS

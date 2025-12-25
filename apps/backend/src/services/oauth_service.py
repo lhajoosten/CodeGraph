@@ -28,6 +28,8 @@ class OAuthUserProfile:
     email: str
     name: str | None
     avatar_url: str | None
+    access_token: str | None
+    refresh_token: str | None
     profile_data: dict[str, Any]
 
 
@@ -67,7 +69,7 @@ class GitHubOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get GitHub authorization URL."""
         client_id = settings.github_client_id
-        redirect_uri = f"{settings.frontend_url}/oauth/callback/github"
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/github/callback"
         scope = "user:email"
 
         return (
@@ -80,6 +82,8 @@ class GitHubOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle GitHub OAuth callback."""
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/github/callback"
+
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
             token_response = await client.post(
@@ -89,6 +93,7 @@ class GitHubOAuth(OAuthProvider):
                     "client_id": settings.github_client_id,
                     "client_secret": settings.github_client_secret,
                     "code": code,
+                    "redirect_uri": redirect_uri,
                 },
             )
             token_data = token_response.json()
@@ -123,12 +128,13 @@ class GitHubOAuth(OAuthProvider):
                 email=email or "",
                 name=user_data.get("name") or user_data.get("login"),
                 avatar_url=user_data.get("avatar_url"),
+                access_token=access_token,
+                refresh_token=None,  # GitHub doesn't return refresh tokens
                 profile_data={
                     "login": user_data.get("login"),
                     "bio": user_data.get("bio"),
                     "company": user_data.get("company"),
                     "location": user_data.get("location"),
-                    "access_token": access_token,
                 },
             )
 
@@ -141,7 +147,7 @@ class GoogleOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get Google authorization URL."""
         client_id = settings.google_client_id
-        redirect_uri = f"{settings.frontend_url}/oauth/callback/google"
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/google/callback"
         scope = "openid email profile"
 
         return (
@@ -157,7 +163,7 @@ class GoogleOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle Google OAuth callback."""
-        redirect_uri = f"{settings.frontend_url}/oauth/callback/google"
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/google/callback"
 
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
@@ -190,12 +196,12 @@ class GoogleOAuth(OAuthProvider):
                 email=user_data.get("email", ""),
                 name=user_data.get("name"),
                 avatar_url=user_data.get("picture"),
+                access_token=access_token,
+                refresh_token=token_data.get("refresh_token"),
                 profile_data={
                     "given_name": user_data.get("given_name"),
                     "family_name": user_data.get("family_name"),
                     "locale": user_data.get("locale"),
-                    "access_token": access_token,
-                    "refresh_token": token_data.get("refresh_token"),
                 },
             )
 
@@ -208,7 +214,7 @@ class MicrosoftOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get Microsoft authorization URL."""
         client_id = settings.microsoft_client_id
-        redirect_uri = f"{settings.frontend_url}/oauth/callback/microsoft"
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/microsoft/callback"
         scope = "openid email profile User.Read"
 
         return (
@@ -223,7 +229,7 @@ class MicrosoftOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle Microsoft OAuth callback."""
-        redirect_uri = f"{settings.frontend_url}/oauth/callback/microsoft"
+        redirect_uri = f"{settings.backend_url}/api/v1/oauth/microsoft/callback"
 
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
@@ -256,11 +262,11 @@ class MicrosoftOAuth(OAuthProvider):
                 email=user_data.get("mail") or user_data.get("userPrincipalName", ""),
                 name=user_data.get("displayName"),
                 avatar_url=None,  # Microsoft requires separate API call for photo
+                access_token=access_token,
+                refresh_token=token_data.get("refresh_token"),
                 profile_data={
                     "job_title": user_data.get("jobTitle"),
                     "office_location": user_data.get("officeLocation"),
-                    "access_token": access_token,
-                    "refresh_token": token_data.get("refresh_token"),
                 },
             )
 
@@ -342,9 +348,9 @@ class OAuthService:
                 user_id=existing_oauth.user_id,
             )
             # Update tokens
-            existing_oauth.access_token = profile.profile_data.get("access_token")
-            existing_oauth.refresh_token = profile.profile_data.get("refresh_token")
-            if profile.profile_data.get("refresh_token"):
+            existing_oauth.access_token = profile.access_token
+            existing_oauth.refresh_token = profile.refresh_token
+            if profile.access_token:
                 existing_oauth.token_expires_at = datetime.now(UTC) + timedelta(hours=1)
             await self.db.commit()
 
@@ -368,10 +374,11 @@ class OAuthService:
                 return existing_user, False
 
         # Create new user
+        # OAuth emails are already verified by the provider
         new_user = User(
             email=profile.email or f"{profile.provider}_{profile.provider_user_id}@oauth.local",
             hashed_password=get_password_hash(secrets.token_urlsafe(32)),
-            email_verified=bool(profile.email),  # OAuth emails are verified
+            email_verified=True,  # OAuth provider has verified the email
             is_active=True,
         )
         self.db.add(new_user)
@@ -456,15 +463,14 @@ class OAuthService:
         user: User = user_result.scalar_one()
 
         # User must have either a password or another OAuth account
-        has_password = not user.hashed_password.startswith("$2b$")  # Check if it's a random hash
-        if not other_oauth and not has_password:
-            # Actually, we should check if they have a real password set
-            # For now, we'll allow unlinking if they have other OAuth accounts
-            if not other_oauth:
-                raise ValueError(
-                    "Cannot unlink the only authentication method. "
-                    "Please set a password or link another account first."
-                )
+        # Check if user has a real bcrypt password (starts with $2b$ or $2a$ or $2y$)
+        has_real_password = user.hashed_password.startswith(("$2b$", "$2a$", "$2y$"))
+
+        if not other_oauth and not has_real_password:
+            raise ValueError(
+                "Cannot unlink the only authentication method. "
+                "Please set a password or link another account first."
+            )
 
         await self.db.delete(oauth_account)
         await self.db.commit()
@@ -502,12 +508,10 @@ class OAuthService:
             email=profile.email,
             name=profile.name,
             avatar_url=profile.avatar_url,
-            access_token=profile.profile_data.get("access_token"),
-            refresh_token=profile.profile_data.get("refresh_token"),
+            access_token=profile.access_token,
+            refresh_token=profile.refresh_token,
             token_expires_at=(
-                datetime.now(UTC) + timedelta(hours=1)
-                if profile.profile_data.get("access_token")
-                else None
+                datetime.now(UTC) + timedelta(hours=1) if profile.access_token else None
             ),
             profile_data=profile.profile_data,
         )

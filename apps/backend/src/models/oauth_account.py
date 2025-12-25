@@ -3,10 +3,11 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.core.encryption import EncryptedString
 from src.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
@@ -22,13 +23,16 @@ class OAuthAccount(Base, TimestampMixin):
     Stores OAuth provider connections for users, allowing them to log in
     via GitHub, Google, Microsoft, etc.
 
+    OAuth tokens are stored encrypted using Fernet symmetric encryption.
+    Encryption/decryption is transparent and happens automatically.
+
     Attributes:
         id (int): Primary key.
         user_id (int): Foreign key to the linked user.
         provider (str): OAuth provider name (e.g., 'github', 'google', 'microsoft').
         provider_user_id (str): User ID from the OAuth provider.
-        access_token (str | None): Encrypted OAuth access token.
-        refresh_token (str | None): Encrypted OAuth refresh token.
+        access_token (str | None): Encrypted OAuth access token (auto-decrypted on read).
+        refresh_token (str | None): Encrypted OAuth refresh token (auto-decrypted on read).
         token_expires_at (datetime | None): When the access token expires.
         profile_data (dict): Additional profile data from the provider.
 
@@ -51,9 +55,10 @@ class OAuthAccount(Base, TimestampMixin):
     provider: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     provider_user_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    # OAuth tokens (should be encrypted in production)
-    access_token: Mapped[str | None] = mapped_column(Text())
-    refresh_token: Mapped[str | None] = mapped_column(Text())
+    # OAuth tokens - stored encrypted using Fernet symmetric encryption
+    # Encryption is transparent - automatically encrypted on write, decrypted on read
+    access_token: Mapped[str | None] = mapped_column(EncryptedString())
+    refresh_token: Mapped[str | None] = mapped_column(EncryptedString())
     token_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Profile data from OAuth provider

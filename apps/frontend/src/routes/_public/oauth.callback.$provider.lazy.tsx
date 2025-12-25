@@ -1,88 +1,98 @@
 import { createLazyFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { client } from '@/openapi/client.gen';
 import { useAuthStore } from '@/stores/auth-store';
+import { getErrorMessage, type ApiError } from '@/lib/error-handler';
 
 export const Route = createLazyFileRoute('/_public/oauth/callback/$provider')({
   component: OAuthCallback,
 });
 
-interface OAuthCallbackResponse {
-  success: boolean;
-  message?: string;
-  is_new_user?: boolean;
-  user?: {
-    id: number;
-    email: string;
-    email_verified: boolean;
-  };
-  redirect_url: string;
+interface CurrentUserResponse {
+  id: number;
+  email: string;
+  email_verified: boolean;
 }
 
 function OAuthCallback() {
   const navigate = useNavigate();
   const { provider } = useParams({ from: '/_public/oauth/callback/$provider' });
   const search = useSearch({ from: '/_public/oauth/callback/$provider' });
-  const { code, state, error, error_description } = search;
+  const { error: oauthError, error_description } = search;
 
-  // Initialize status based on URL parameters
-  const initialStatus = error || !code || !state ? 'error' : 'loading';
-  const initialError = error
-    ? error_description || error
-    : !code || !state
-      ? 'Missing required OAuth parameters'
-      : '';
-
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(initialStatus);
-  const [errorMessage, setErrorMessage] = useState(initialError);
   const { login } = useAuthStore();
   const processedRef = useRef(false);
 
-  const callbackMutation = useMutation({
-    mutationFn: async () => {
-      const response = await client.post<OAuthCallbackResponse>({
-        url: `/api/v1/oauth/${provider}/callback`,
-        body: { code, state },
+  // Fetch current user to complete authentication
+  const {
+    data: currentUser,
+    isError,
+    error: fetchError,
+    isLoading,
+  } = useQuery({
+    queryKey: ['current-user-oauth'],
+    queryFn: async () => {
+      const response = await client.get<CurrentUserResponse>({
+        url: '/api/v1/users/me',
       });
       return response.data;
     },
-    onSuccess: (data) => {
-      setStatus('success');
-
-      if (!data) {
-        navigate({ to: '/' });
-        return;
-      }
-
-      // If this was a login (not account linking)
-      if (data.user) {
-        login({
-          id: data.user.id,
-          email: data.user.email,
-          email_verified: data.user.email_verified,
-        });
-      }
-
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate({ to: data.redirect_url || '/' });
-      }, 1500);
-    },
-    onError: (err: Error & { response?: { data?: { detail?: string } } }) => {
-      setStatus('error');
-      setErrorMessage(err.response?.data?.detail || 'Failed to complete authentication');
-    },
+    enabled: !oauthError, // Only fetch if no OAuth error
+    retry: 1,
   });
 
+  // Derive status and error message from OAuth params and query state
+  const status: 'loading' | 'success' | 'error' = (() => {
+    if (oauthError) return 'error';
+    if (isError) return 'error';
+    if (currentUser) return 'success';
+    return 'loading';
+  })();
+
+  const errorMessage = (() => {
+    if (oauthError) {
+      return error_description || oauthError;
+    }
+    if (isError && fetchError) {
+      return getErrorMessage(fetchError as ApiError);
+    }
+    return 'Failed to complete authentication';
+  })();
+
   useEffect(() => {
-    // Only process once and only if we have valid parameters
-    if (processedRef.current || error || !code || !state) return;
+    // Only process once
+    if (processedRef.current) return;
+
+    // Wait for query to complete (either success or error)
+    if (!oauthError && isLoading) return;
+
+    // If we have an OAuth error, don't process auth
+    if (oauthError) {
+      processedRef.current = true;
+      return;
+    }
+
+    // If fetch errored or no user, don't process
+    if (isError || !currentUser) {
+      processedRef.current = true;
+      return;
+    }
+
     processedRef.current = true;
 
-    // Process the callback
-    callbackMutation.mutate();
-  }, [error, code, state, callbackMutation]);
+    // Authentication successful - update auth store
+    login({
+      id: currentUser.id,
+      email: currentUser.email,
+      email_verified: currentUser.email_verified,
+    });
+
+    // Redirect to home after a short delay
+    setTimeout(() => {
+      navigate({ to: '/' });
+    }, 1500);
+  }, [currentUser, isError, oauthError, isLoading, login, navigate]);
 
   const getProviderName = () => {
     switch (provider) {
@@ -181,10 +191,7 @@ function OAuthCallback() {
                   Back to Login
                 </button>
                 <button
-                  onClick={() => {
-                    setStatus('loading');
-                    callbackMutation.mutate();
-                  }}
+                  onClick={() => window.location.reload()}
                   className={`
                     w-full rounded-lg border border-gray-300 py-2 text-gray-700
                     transition

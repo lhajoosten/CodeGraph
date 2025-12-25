@@ -4,12 +4,13 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.deps import get_current_user
+from src.core.config import settings
 from src.core.cookies import set_auth_cookies
 from src.core.database import get_db
 from src.core.logging import get_logger
@@ -46,13 +47,6 @@ class ConnectedAccountsResponse(BaseModel):
     accounts: list[OAuthAccountResponse]
 
 
-class OAuthCallbackRequest(BaseModel):
-    """Request body for OAuth callback."""
-
-    code: str
-    state: str
-
-
 @router.get("/oauth/providers")
 async def get_oauth_providers() -> dict[str, bool]:
     """Get available OAuth providers and their configuration status.
@@ -70,7 +64,6 @@ async def get_oauth_providers() -> dict[str, bool]:
 @router.get("/oauth/{provider}/authorize")
 async def oauth_authorize(
     provider: str,
-    request: Request,
     redirect_url: str | None = Query(default=None),
 ) -> RedirectResponse:
     """Start OAuth authorization flow.
@@ -171,56 +164,50 @@ async def oauth_authorize_link(
     return RedirectResponse(url=authorization_url)
 
 
-@router.post("/oauth/{provider}/callback")
+@router.get("/oauth/{provider}/callback")
 async def oauth_callback(
     provider: str,
-    request: OAuthCallbackRequest,
-    response: Response,
+    code: str = Query(...),
+    state: str = Query(...),
     db: AsyncSession = Depends(get_db),
-) -> dict[str, Any]:
+) -> RedirectResponse:
     """Handle OAuth callback.
 
     Exchanges the authorization code for tokens and creates/links user account.
+    Then redirects to frontend with success/error status.
 
     Args:
         provider: OAuth provider name.
-        request: Contains code and state from OAuth callback.
+        code: Authorization code from OAuth provider.
+        state: CSRF protection state.
 
     Returns:
-        User info and redirect URL.
+        Redirect to frontend.
 
     Raises:
         HTTPException: If callback fails.
     """
     # Validate state
-    state_data = oauth_states.pop(request.state, None)
+    state_data = oauth_states.pop(state, None)
     if not state_data:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired OAuth state.",
-        )
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=invalid_state"
+        return RedirectResponse(url=error_url)
 
     if state_data["provider"] != provider:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Provider mismatch.",
-        )
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=provider_mismatch"
+        return RedirectResponse(url=error_url)
 
     try:
         oauth_provider = get_oauth_provider(provider)
-        profile = await oauth_provider.handle_callback(request.code)
+        profile = await oauth_provider.handle_callback(code)
     except ValueError as e:
         logger.error("oauth_callback_failed", provider=provider, error=str(e))
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"OAuth callback failed: {e}",
-        ) from e
-    except Exception as e:
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=oauth_failed"
+        return RedirectResponse(url=error_url)
+    except Exception:
         logger.exception("oauth_callback_error", provider=provider)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to complete OAuth authentication.",
-        ) from e
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=server_error"
+        return RedirectResponse(url=error_url)
 
     oauth_service = OAuthService(db)
 
@@ -233,27 +220,32 @@ async def oauth_callback(
                 provider=provider,
                 user_id=state_data["user_id"],
             )
-            return {
-                "success": True,
-                "message": f"{provider.capitalize()} account linked successfully.",
-                "redirect_url": state_data["redirect_url"],
-            }
+            success_url = (
+                f"{settings.frontend_url}{state_data['redirect_url']}"
+                f"?oauth_linked=true&provider={provider}"
+            )
+            return RedirectResponse(url=success_url)
         except ValueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=str(e),
-            ) from e
+            error_url = (
+                f"{settings.frontend_url}/oauth/callback/{provider}"
+                f"?error=link_failed&error_description={str(e)}"
+            )
+            return RedirectResponse(url=error_url)
 
     # Get or create user
     user, is_new = await oauth_service.get_or_create_user(profile)
+
+    # Create response with redirect
+    redirect_url = f"{settings.frontend_url}{state_data['redirect_url']}"
+    response = RedirectResponse(url=redirect_url)
 
     # Set auth cookies
     from src.core.csrf import generate_csrf_token
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    refresh_token_str = create_refresh_token(data={"sub": str(user.id)})
     csrf_token = generate_csrf_token()
-    set_auth_cookies(response, access_token, refresh_token, csrf_token)
+    set_auth_cookies(response, access_token, refresh_token_str, csrf_token)
 
     logger.info(
         "oauth_login_success",
@@ -262,16 +254,7 @@ async def oauth_callback(
         is_new_user=is_new,
     )
 
-    return {
-        "success": True,
-        "is_new_user": is_new,
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "email_verified": user.email_verified,
-        },
-        "redirect_url": state_data["redirect_url"],
-    }
+    return response
 
 
 @router.get("/oauth/accounts", response_model=ConnectedAccountsResponse)
