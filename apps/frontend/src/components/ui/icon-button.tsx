@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { iconButtonVariants } from './variants/icon-button-variants.ts';
 
 export interface IconButtonProps
@@ -35,7 +35,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         {...props}
       >
         {isLoading ? (
-          <Loader2 className={cn('animate-spin', iconSizes[size || 'default'])} />
+          <ArrowPathIcon className={cn('animate-spin', iconSizes[size || 'default'])} />
         ) : (
           <span className={iconSizes[size || 'default']}>{icon}</span>
         )}

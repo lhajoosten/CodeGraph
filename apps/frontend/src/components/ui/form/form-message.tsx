@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { AlertCircle } from 'lucide-react';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { formMessageVariants, messageIcons } from '../variants/form-message-variants.ts';
 
 export interface FormMessageProps
@@ -54,7 +54,7 @@ function FormErrorSummary({ errors, className }: FormErrorSummaryProps) {
       aria-live="polite"
     >
       <div className="mb-2 flex items-center gap-2 font-medium text-danger">
-        <AlertCircle className="h-4 w-4" />
+        <ExclamationCircleIcon className="h-4 w-4" />
         <span>Please fix the following errors:</span>
       </div>
       <ul className="list-inside list-disc space-y-1 text-sm text-danger-800">

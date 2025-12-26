@@ -163,6 +163,66 @@ export const OAuthAccountResponseSchema = {
   description: 'Response for a linked OAuth account.',
 } as const;
 
+export const ProfileUpdateRequestSchema = {
+  properties: {
+    first_name: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 100,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'First Name',
+      description: "User's first name",
+    },
+    last_name: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 100,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Last Name',
+      description: "User's last name",
+    },
+    display_name: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 200,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Display Name',
+      description: "User's display name",
+    },
+    avatar_url: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 512,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Avatar Url',
+      description: "URL to user's profile picture",
+    },
+  },
+  type: 'object',
+  title: 'ProfileUpdateRequest',
+  description: 'Schema for updating user profile information.',
+} as const;
+
 export const RegenerateBackupCodesRequestSchema = {
   properties: {
     password: {
@@ -586,6 +646,32 @@ export const UserCreateSchema = {
       title: 'Password',
       description: 'User password (minimum 8 characters)',
     },
+    first_name: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 100,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'First Name',
+      description: "User's first name",
+    },
+    last_name: {
+      anyOf: [
+        {
+          type: 'string',
+          maxLength: 100,
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Last Name',
+      description: "User's last name",
+    },
   },
   type: 'object',
   required: ['email', 'password'],
@@ -639,6 +725,54 @@ export const UserResponseSchema = {
       type: 'boolean',
       title: 'Email Verified',
     },
+    first_name: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'First Name',
+    },
+    last_name: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Last Name',
+    },
+    display_name: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Display Name',
+    },
+    avatar_url: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Avatar Url',
+    },
+    profile_completed: {
+      type: 'boolean',
+      title: 'Profile Completed',
+    },
     created_at: {
       type: 'string',
       format: 'date-time',
@@ -657,6 +791,7 @@ export const UserResponseSchema = {
     'is_active',
     'is_superuser',
     'email_verified',
+    'profile_completed',
     'created_at',
     'updated_at',
   ],
@@ -705,4 +840,22 @@ export const VerifyEmailRequestSchema = {
   required: ['token'],
   title: 'VerifyEmailRequest',
   description: 'Request to verify email with token.',
+} as const;
+
+export const VerifyEmailResponseSchema = {
+  properties: {
+    message: {
+      type: 'string',
+      title: 'Message',
+    },
+    requires_2fa_setup: {
+      type: 'boolean',
+      title: 'Requires 2Fa Setup',
+      default: false,
+    },
+  },
+  type: 'object',
+  required: ['message'],
+  title: 'VerifyEmailResponse',
+  description: 'Response after email verification.',
 } as const;

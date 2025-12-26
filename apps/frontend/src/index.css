@@ -44,7 +44,7 @@ body {
 
 @theme {
   /* Font Family */
-  --font-family-sans: 'Roboto Variable', sans-serif;
+  --font-family-sans: 'Inter', 'Roboto Variable', sans-serif;
 
   /* Border Radius */
   --radius-xs: 2px;
@@ -264,6 +264,40 @@ body {
 
   /* Default color */
   --color-default: #f3f3f3;
+
+  /* === LUMINOUS TECHNICAL DESIGN TOKENS === */
+  /* Font Families */
+  --font-family-mono: 'JetBrains Mono', monospace;
+
+  /* Brand Colors */
+  --color-brand-cyan: #22d3ee;
+  --color-brand-teal: #2dd4bf;
+  --color-brand-lime: #84cc16;
+
+  /* Backgrounds (Luminous) */
+  --color-bg-primary-lum: #070b16;
+  --color-bg-secondary-lum: #0e1424;
+  --color-bg-elevated-lum: #151c32;
+  --color-bg-steel: #1e293b;
+
+  /* Text (Luminous) */
+  --color-text-primary-lum: #e6eaf2;
+  --color-text-secondary-lum: #a9b0c2;
+  --color-text-muted-lum: #6b7280;
+
+  /* Borders (Luminous) */
+  --color-border-steel: rgba(255, 255, 255, 0.1);
+  --color-border-default-lum: rgba(51, 65, 85, 1);
+
+  /* Shadows & Effects */
+  --shadow-glow-cyan: 0 0 12px rgba(34, 211, 238, 0.4);
+  --shadow-glow-teal: 0 0 12px rgba(45, 212, 191, 0.4);
+  --shadow-glass: 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+  /* Semantic State Colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
 
 @layer utilities {
@@ -332,5 +366,19 @@ body {
 
     /* Default color */
     --color-default: #5c5c5c;
+  }
+
+  /* Scoped Luminous Theme */
+  .luminous-theme {
+    --color-background: var(--color-bg-primary-lum);
+    --color-foreground: var(--color-text-primary-lum);
+    background: var(--color-bg-primary-lum);
+    color: var(--color-text-primary-lum);
+    font-family: var(--font-family-sans);
+  }
+
+  /* Hide theme toggle on luminous pages */
+  .luminous-theme .theme-toggle {
+    display: none;
   }
 }

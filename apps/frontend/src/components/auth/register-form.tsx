@@ -1,301 +1,217 @@
-import { Link, useNavigate } from '@tanstack/react-router';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { useRegister, useToggle } from '@/hooks';
 import {
-  registerSchema,
-  type RegisterFormData,
-  getPasswordStrength,
-  getPasswordStrengthColor,
-  getPasswordStrengthLabel,
-} from '@/lib/validators';
-import { addToast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
+  EnvelopeIcon,
+  LockClosedIcon,
+  ArrowPathIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from '@heroicons/react/24/outline';
+import { AuthInput } from './auth-input';
+import { PasswordStrengthIndicator } from './password-strength-indicator';
+import { registerSchema } from '@/lib/validators';
+import { useRegister } from '@/hooks/api/auth/mutations/use-register';
+import { useTranslationNamespace } from '@/hooks/useTranslation';
+
+type RegisterFormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  acceptTerms: boolean;
+};
 
 interface RegisterFormProps {
-  className?: string;
-  onSuccess?: () => void;
+  onSuccess?: (email: string) => void;
 }
 
-export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
-  const navigate = useNavigate();
+/**
+ * Register Form - User account creation
+ * - Multi-field form validation with React Hook Form + Zod
+ * - Real-time password strength indicator
+ * - Terms of service checkbox
+ * - Auto-toast notifications via useRegister hook
+ * - Loading states during submission
+ * - i18n translations
+ */
+export function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { t } = useTranslationNamespace('auth');
   const registerMutation = useRegister();
-  const showPassword = useToggle(false);
-  const showConfirmPassword = useToggle(false);
 
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isSubmitting },
+    reset,
+    control,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      firstName: '',
-      lastName: '',
-      acceptTerms: false,
-    },
+    mode: 'onBlur',
   });
 
-  const password = useWatch({ control, name: 'password' });
-  const passwordStrength = password ? getPasswordStrength(password) : null;
-  const strengthPercent =
-    passwordStrength === 'weak' ? 33 : passwordStrength === 'medium' ? 66 : 100;
-
   const onSubmit = async (data: RegisterFormData) => {
-    registerMutation.mutate(
-      {
-        body: {
-          email: data.email,
-          password: data.password,
-        },
+    await registerMutation.mutateAsync({
+      body: {
+        email: data.email,
+        password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName,
       },
-      {
-        onSuccess: () => {
-          addToast({
-            title: 'Account created!',
-            description: 'Please check your email to verify your account.',
-            color: 'success',
-          });
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            navigate({ to: '/verify-email-pending', search: { email: data.email } });
-          }
-        },
-        onError: (error: Error) => {
-          addToast({
-            title: 'Registration failed',
-            description: error.message || 'Please try again.',
-            color: 'danger',
-          });
-        },
-      }
-    );
+    });
+
+    reset();
+    onSuccess?.(data.email);
   };
 
+  const passwordValue = useWatch({ control, name: 'password' });
+  const confirmPasswordValue = useWatch({ control, name: 'confirmPassword' });
+  const firstNameValue = useWatch({ control, name: 'firstName' });
+  const lastNameValue = useWatch({ control, name: 'lastName' });
+  const emailValue = useWatch({ control, name: 'email' });
+  const acceptTermsValue = useWatch({ control, name: 'acceptTerms' });
+
+  const isFormValid =
+    firstNameValue &&
+    lastNameValue &&
+    emailValue &&
+    passwordValue &&
+    confirmPasswordValue &&
+    acceptTermsValue &&
+    passwordValue === confirmPasswordValue;
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
-      {registerMutation.error && (
-        <Alert variant="danger">
-          <AlertDescription>
-            {registerMutation.error.message || 'Registration failed. Please try again.'}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="space-y-4">
-        {/* Name fields */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName" required>
-              First Name
-            </Label>
-            <Input
-              id="firstName"
-              type="text"
-              placeholder="John"
-              autoComplete="given-name"
-              leftIcon={<User className="h-4 w-4" />}
-              variant={errors.firstName ? 'error' : 'default'}
-              {...register('firstName')}
-            />
-            {errors.firstName && <p className="text-xs text-danger">{errors.firstName.message}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lastName" required>
-              Last Name
-            </Label>
-            <Input
-              id="lastName"
-              type="text"
-              placeholder="Doe"
-              autoComplete="family-name"
-              variant={errors.lastName ? 'error' : 'default'}
-              {...register('lastName')}
-            />
-            {errors.lastName && <p className="text-xs text-danger">{errors.lastName.message}</p>}
-          </div>
-        </div>
-
-        {/* Email field */}
-        <div className="space-y-2">
-          <Label htmlFor="email" required>
-            Email Address
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
-            leftIcon={<Mail className="h-4 w-4" />}
-            variant={errors.email ? 'error' : 'default'}
-            {...register('email')}
-          />
-          {errors.email && <p className="text-xs text-danger">{errors.email.message}</p>}
-        </div>
-
-        {/* Password field */}
-        <div className="space-y-2">
-          <Label htmlFor="password" required>
-            Password
-          </Label>
-          <Input
-            id="password"
-            type={showPassword.isOpen ? 'text' : 'password'}
-            placeholder="Create a strong password"
-            autoComplete="new-password"
-            leftIcon={<Lock className="h-4 w-4" />}
-            rightIcon={
-              <button
-                type="button"
-                onClick={showPassword.toggle}
-                className={`
-                  text-text-tertiary
-                  hover:text-text-primary
-                `}
-                tabIndex={-1}
-              >
-                {showPassword.isOpen ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className={`h-4 w-4`} />
-                )}
-              </button>
-            }
-            variant={errors.password ? 'error' : 'default'}
-            {...register('password')}
-          />
-          {password && (
-            <div className="space-y-1">
-              <Progress
-                value={strengthPercent}
-                size="sm"
-                className="h-1"
-                variant={
-                  passwordStrength === 'weak'
-                    ? 'danger'
-                    : passwordStrength === 'medium'
-                      ? 'warning'
-                      : 'success'
-                }
-              />
-              <p
-                className={cn(
-                  'text-xs',
-                  getPasswordStrengthColor(passwordStrength!).replace('bg-', 'text-')
-                )}
-              >
-                Password strength: {getPasswordStrengthLabel(passwordStrength!)}
-              </p>
-            </div>
-          )}
-          {errors.password && <p className="text-xs text-danger">{errors.password.message}</p>}
-        </div>
-
-        {/* Confirm password field */}
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" required>
-            Confirm Password
-          </Label>
-          <Input
-            id="confirmPassword"
-            type={showConfirmPassword.isOpen ? 'text' : 'password'}
-            placeholder="Confirm your password"
-            autoComplete="new-password"
-            leftIcon={<Lock className="h-4 w-4" />}
-            rightIcon={
-              <button
-                type="button"
-                onClick={showConfirmPassword.toggle}
-                className={`
-                  text-text-tertiary
-                  hover:text-text-primary
-                `}
-                tabIndex={-1}
-              >
-                {showConfirmPassword.isOpen ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            }
-            variant={errors.confirmPassword ? 'error' : 'default'}
-            {...register('confirmPassword')}
-          />
-          {errors.confirmPassword && (
-            <p className="text-xs text-danger">{errors.confirmPassword.message}</p>
-          )}
-        </div>
-
-        {/* Terms acceptance */}
-        <div className="space-y-2">
-          <div className="flex items-start space-x-2">
-            <Checkbox id="acceptTerms" error={!!errors.acceptTerms} {...register('acceptTerms')} />
-            <label
-              htmlFor="acceptTerms"
-              className={cn(
-                'cursor-pointer text-sm leading-tight',
-                errors.acceptTerms ? 'text-danger' : 'text-text-secondary'
-              )}
-            >
-              I agree to the{' '}
-              <a
-                href="/terms"
-                className={`
-                  text-primary
-                  hover:underline
-                `}
-              >
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a
-                href="/privacy"
-                className={`
-                  text-primary
-                  hover:underline
-                `}
-              >
-                Privacy Policy
-              </a>
-            </label>
-          </div>
-          {errors.acceptTerms && (
-            <p className="text-xs text-danger">{errors.acceptTerms.message}</p>
-          )}
-        </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Name Fields */}
+      <div className="grid grid-cols-2 gap-4">
+        <AuthInput
+          label={t('luminous.signup.firstName')}
+          placeholder="John"
+          disabled={isSubmitting || registerMutation.isPending}
+          error={errors.firstName?.message}
+          {...register('firstName')}
+        />
+        <AuthInput
+          label={t('luminous.signup.lastName')}
+          placeholder="Doe"
+          disabled={isSubmitting || registerMutation.isPending}
+          error={errors.lastName?.message}
+          {...register('lastName')}
+        />
       </div>
 
-      <Button type="submit" fullWidth isLoading={isSubmitting || registerMutation.isPending}>
-        Create Account
-      </Button>
+      {/* Email Field */}
+      <AuthInput
+        label={t('luminous.signup.email')}
+        type="email"
+        placeholder="you@example.com"
+        icon={EnvelopeIcon}
+        disabled={isSubmitting || registerMutation.isPending}
+        error={errors.email?.message}
+        helperText={t('luminous.signup.emailHint')}
+        {...register('email')}
+      />
 
-      <p className="text-center text-sm text-text-secondary">
-        Already have an account?{' '}
-        <Link
-          to="/login"
-          search={{ redirect: '/' }}
-          className={`
-            font-medium text-primary
-            hover:underline
-          `}
+      <div className="space-y-2">
+        <div className="relative">
+          <AuthInput
+            label={t('luminous.signup.password')}
+            type={showPassword ? 'text' : 'password'}
+            placeholder={t('luminous.signup.passwordPlaceholder')}
+            icon={LockClosedIcon}
+            disabled={isSubmitting || registerMutation.isPending}
+            error={errors.password?.message}
+            className="pr-10"
+            {...register('password')}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute top-[32px] right-3 text-text-muted-lum transition-colors hover:text-text-secondary-lum"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {passwordValue && (
+          <div className="mt-2">
+            <PasswordStrengthIndicator password={passwordValue} showLabel={true} />
+          </div>
+        )}
+      </div>
+
+      <div className="relative">
+        <AuthInput
+          label={t('luminous.signup.confirmPassword')}
+          type={showConfirmPassword ? 'text' : 'password'}
+          placeholder={t('luminous.signup.confirmPassword')}
+          icon={LockClosedIcon}
+          disabled={isSubmitting || registerMutation.isPending}
+          error={
+            errors.confirmPassword?.message ||
+            (confirmPasswordValue && passwordValue !== confirmPasswordValue
+              ? t('validation.passwordMismatch')
+              : undefined)
+          }
+          className="pr-10"
+          {...register('confirmPassword')}
+        />
+        <button
+          type="button"
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          className="absolute top-[32px] right-3 text-text-muted-lum transition-colors hover:text-text-secondary-lum"
+          tabIndex={-1}
         >
-          Sign in
-        </Link>
+          {showConfirmPassword ? (
+            <EyeIcon className="h-5 w-5" />
+          ) : (
+            <EyeSlashIcon className="h-5 w-5" />
+          )}
+        </button>
+      </div>
+
+      <label className="flex cursor-pointer items-start gap-3">
+        <input
+          type="checkbox"
+          className="mt-1 cursor-pointer rounded border-border-steel"
+          disabled={isSubmitting || registerMutation.isPending}
+          {...register('acceptTerms')}
+        />
+        <span className="text-sm text-text-secondary-lum">{t('luminous.signup.acceptTerms')}</span>
+      </label>
+
+      {errors.acceptTerms && <p className="text-xs text-error">{errors.acceptTerms.message}</p>}
+
+      <button
+        type="submit"
+        disabled={isSubmitting || registerMutation.isPending || !isFormValid}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-cyan py-3 font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting || registerMutation.isPending ? (
+          <>
+            <ArrowPathIcon className="h-[18px] w-[18px] animate-spin" />
+            {t('common:forms.creatingAccount')}
+          </>
+        ) : isFormValid ? (
+          <>
+            <CheckCircleIcon className="h-[18px] w-[18px]" />
+            {t('luminous.signup.submit')}
+          </>
+        ) : (
+          t('luminous.signup.submit')
+        )}
+      </button>
+
+      <p className="text-center text-sm text-text-secondary-lum">
+        {t('luminous.signup.haveAccount')}{' '}
+        <a href="/login" className="text-brand-cyan hover:text-brand-teal">
+          {t('luminous.signup.signin')}
+        </a>
       </p>
     </form>
   );

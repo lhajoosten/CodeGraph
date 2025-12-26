@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
 
@@ -30,14 +30,14 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
                   hover:text-text-primary
                 `}
               >
-                <Home className="h-4 w-4" />
+                <HomeIcon className="h-4 w-4" />
                 <span className="sr-only">Home</span>
               </Link>
             </li>
             {breadcrumbs.map((item, index) => (
               <React.Fragment key={index}>
                 <li>
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
                 </li>
                 <li>
                   {item.href ? (

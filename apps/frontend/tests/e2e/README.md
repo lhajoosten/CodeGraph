@@ -1,17 +1,17 @@
-# E2E Tests for CodeGraph Frontend
+# E2E Authentication Tests
 
-End-to-end tests for the CodeGraph frontend authentication flows using [Playwright](https://playwright.dev/).
+Comprehensive end-to-end tests for the CodeGraph authentication system using [Playwright](https://playwright.dev/).
 
 ## Overview
 
-These tests verify complete user journeys through the authentication system, including:
+These tests verify complete user journeys through the authentication system with **141 total tests** covering:
 
-- **Registration Flow** - User registration, validation, and email verification
-- **Login Flow** - User login and navigation to dashboard/verification page
-- **Forgot Password** - Password reset request and confirmation
-- **Form Validation** - Real-time validation and error handling
-- **Loading States** - Visual feedback during form submission
-- **Accessibility** - Keyboard navigation and screen reader compatibility
+- **Registration Flow** (32 tests) - User registration, validation, email verification pending
+- **Login Flow** (18 tests) - Login, invalid credentials, remember me, session persistence
+- **2FA Flow** (21 tests) - Setup, verification, QR codes, backup codes, OTP input
+- **Email Verification** (20 tests) - Token validation, resend, rate limiting
+- **OAuth Flow** (25 tests) - Google, GitHub, Microsoft authentication
+- **Password Reset** (25 tests) - Request, reset, validation, security
 
 ## Installation
 
@@ -90,47 +90,150 @@ npx playwright test --verbose
 
 ## Test Structure
 
-### Test Files
-- `auth.spec.ts` - All authentication flow tests
+```
+tests/e2e/
+├── fixtures/           # Test data and mock responses
+│   ├── users.ts       # User test data constants
+│   ├── oauth-mocks.ts # OAuth provider mock responses
+│   ├── api-stubs.ts   # API response templates
+│   └── index.ts       # Central exports
+├── helpers/           # Reusable test utilities
+│   ├── auth-helpers.ts    # Authentication flow helpers
+│   ├── page-helpers.ts    # Page interaction helpers
+│   ├── assertions.ts      # Common assertion functions
+│   ├── mock-utils.ts      # API mocking utilities
+│   └── index.ts           # Central exports
+└── specs/            # Test specifications
+    ├── auth-registration.spec.ts       # Registration flow tests (32 tests)
+    ├── auth-login.spec.ts              # Login flow tests (18 tests)
+    ├── auth-2fa.spec.ts                # 2FA flow tests (21 tests)
+    ├── auth-email-verification.spec.ts # Email verification tests (20 tests)
+    ├── auth-oauth.spec.ts              # OAuth flow tests (25 tests)
+    └── auth-password-reset.spec.ts     # Password reset tests (25 tests)
+```
 
 ### Test Categories
 
-1. **Registration Flow** (3 tests)
-   - Complete registration with form submission and navigation
-   - Error handling for invalid data
-   - Validation of all required fields
+#### Registration Flow (32 tests)
+- Display registration form
+- Successful registration
+- Email/password validation (empty, invalid format, weak password)
+- Password confirmation matching
+- Terms acceptance requirement
+- Email already exists error
+- Special characters in names
+- Password strength indicator
+- Password visibility toggle
+- Submit button states
+- Email verification pending page
+- Resend verification email
+- Rate limiting
 
-2. **Login Flow** (3 tests)
-   - Complete login flow with navigation
-   - Invalid credentials handling
-   - Redirect URL preservation
+#### Login Flow (18 tests)
+- Display login form
+- Successful login
+- Invalid credentials error
+- Unverified email error
+- 2FA redirect
+- Email/password validation
+- Remember me functionality
+- Password visibility toggle
+- Submit button states
+- Protected route access
+- Redirect after login
+- Session persistence across reloads/tabs
+- OAuth button display
 
-3. **Remember Me** (1 test)
-   - Remember me checkbox functionality
+#### 2FA Flow (21 tests)
+- Display 2FA setup introduction
+- Skip 2FA option
+- QR code display
+- Successful verification and enablement
+- Invalid verification code errors
+- Backup codes display and copying
+- 2FA verification during login
+- Valid/invalid login codes
+- Auto-submit on complete input
+- OTP input behavior (focus, advance, backspace, paste)
+- Backup code login option
+- 2FA management in settings
 
-4. **Form Validation** (2 tests)
-   - Real-time email validation
-   - Error clearing on correction
+#### Email Verification (20 tests)
+- Successful verification with valid token
+- Invalid token error
+- Expired token error
+- Already verified message
+- Resend verification option
+- Redirect to 2FA setup after verification
+- Skip to dashboard option
+- Email verification pending display
+- Resend with rate limiting
+- Email change verification
+- Network/server error handling
+- Missing token parameter
+- Accessibility (ARIA labels, keyboard navigation)
 
-5. **Loading States** (2 tests)
-   - Login form loading state
-   - Registration form loading state
+#### OAuth Flow (25 tests)
+- Display all OAuth provider buttons
+- Google OAuth (login, register, error, cancellation)
+- GitHub OAuth (login, register, error)
+- Microsoft OAuth (login, register, error)
+- Profile completion for new OAuth users
+- State parameter validation
+- Missing code parameter
+- Already authenticated handling
+- Network/server error handling
+- Provider-specific errors
+- OAuth from registration page
 
-6. **Accessibility** (2 tests)
-   - Keyboard-only navigation in login
-   - Keyboard-only navigation in registration
-
-7. **Forgot Password** (2 tests)
-   - Forgot password flow
-   - Ability to reset another email
+#### Password Reset (25 tests)
+- Display forgot password form
+- Successful reset request
+- Email validation
+- Non-existent email handling (security)
+- Rate limiting
+- Submit button states
+- Sent confirmation screen
+- Resend reset email
+- Display reset form with token
+- Successful password reset
+- Password validation (empty, weak, mismatch)
+- Invalid/expired/used token errors
+- Password strength indicator
+- Password visibility toggle
+- Missing token parameter
+- Post-reset login with new password
+- Old password invalidation
+- Network/server error handling
 
 ## Test Data
 
-Tests use various email addresses for testing:
-- `john.doe@example.com` - Registration tests
-- `jane.smith@example.com` - Login tests
-- `test@example.com` - Generic tests
-- `nonexistent@example.com` - Error handling tests
+All test data is in `fixtures/users.ts`:
+
+```typescript
+// Primary test users
+VALID_USER                  // Standard valid user
+EXISTING_USER              // User already in system
+USER_WITH_2FA              // User with 2FA enabled
+USER_UNVERIFIED_EMAIL      // User with unverified email
+OAUTH_USER_GOOGLE          // Google OAuth user
+OAUTH_USER_GITHUB          // GitHub OAuth user
+OAUTH_USER_MICROSOFT       // Microsoft OAuth user
+
+// Edge cases
+USER_WITH_SPECIAL_CHARS    // Special characters in name
+USER_WITH_MAX_LENGTH       // Maximum length fields
+
+// Test codes
+TEST_2FA_CODES.valid       // "000000"
+TEST_2FA_CODES.invalid     // "999999"
+TEST_VERIFICATION_TOKENS   // Email verification tokens
+TEST_RESET_TOKENS          // Password reset tokens
+
+// Invalid data
+WEAK_PASSWORDS             // Various weak passwords
+INVALID_EMAILS             // Various invalid email formats
+```
 
 ## Configuration
 
@@ -140,42 +243,121 @@ Configuration is in `playwright.config.ts`:
 - **Dev Server**: Automatically started before tests
 - **Timeout**: 30 seconds per test
 
+## Usage Patterns
+
+### Using Fixtures
+
+```typescript
+import { VALID_USER, EXISTING_USER, TEST_2FA_CODES } from '../fixtures/users';
+import { GOOGLE_OAUTH } from '../fixtures/oauth-mocks';
+import { LOGIN_STUBS } from '../fixtures/api-stubs';
+
+// Use in tests
+await page.getByLabel(/email/i).fill(VALID_USER.email);
+await fill2FACode(page, TEST_2FA_CODES.valid);
+```
+
+### Using Helpers
+
+```typescript
+import {
+  registerUser,
+  loginWithCredentials,
+  setup2FA,
+  verifyEmail,
+} from '../helpers/auth-helpers';
+
+// Encapsulate entire flows
+await registerUser(page, VALID_USER);
+await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
+await setup2FA(page);
+await verifyEmail(page, TEST_VERIFICATION_TOKENS.valid);
+```
+
+### Using Assertions
+
+```typescript
+import {
+  assertRedirectToDashboard,
+  assertSuccessToast,
+  assertFieldHasError,
+  assert2FAQRCodeDisplayed,
+} from '../helpers/assertions';
+
+// Common assertions
+await assertRedirectToDashboard(page);
+await assertSuccessToast(page, /login successful/i);
+await assertFieldHasError(page, /email/i, /required/i);
+await assert2FAQRCodeDisplayed(page);
+```
+
+### Using Mocks
+
+```typescript
+import {
+  mockLoginSuccess,
+  mockRegisterEmailTaken,
+  setup2FAFlowMocks,
+  setupOAuthFlowMocks,
+} from '../helpers/mock-utils';
+
+// Mock API responses
+await mockLoginSuccess(page, EXISTING_USER);
+await mockRegisterEmailTaken(page);
+await setup2FAFlowMocks(page, user);
+await setupOAuthFlowMocks(page, 'google', OAUTH_USER_GOOGLE);
+```
+
 ## Best Practices
 
-### Writing Tests
+### Do's
+- ✅ Use deterministic test data from fixtures
+- ✅ Test user behavior, not implementation details
+- ✅ Use semantic locators (role, label, text)
+- ✅ Handle async properly with `await`
+- ✅ Mock external dependencies (API calls)
+- ✅ Test error states and edge cases
+- ✅ Keep tests independent
+- ✅ Use helper functions to avoid duplication
+- ✅ Write descriptive test names with "should"
 
-1. **Use semantic selectors**
+### Don'ts
+- ❌ Don't use random data
+- ❌ Don't test implementation details
+- ❌ Don't use brittle selectors (class names, IDs)
+- ❌ Don't create test interdependencies
+- ❌ Don't skip error testing
+- ❌ Don't make real API calls
+- ❌ Don't use hard timeouts (`waitForTimeout`)
+
+### Writing New Tests
+
+1. **Choose appropriate fixture data**
    ```typescript
-   // Good - uses accessible labels
-   await page.fill('input[type="email"]', 'user@example.com');
-
-   // Avoid - uses implementation details
-   await page.fill('input.email-field', 'user@example.com');
+   import { VALID_USER } from '../fixtures/users';
    ```
 
-2. **Create reusable helpers**
+2. **Use helper functions**
    ```typescript
-   async function fillAndSubmitLoginForm(page, email, password) {
-     // Helper logic
-   }
+   await loginWithCredentials(page, email, password);
    ```
 
-3. **Use explicit waits**
+3. **Mock API responses**
    ```typescript
-   // Good
-   await expect(page.locator('text=Check Your Email')).toBeVisible();
-
-   // Avoid
-   await page.waitForTimeout(1000);
+   await mockLoginSuccess(page, EXISTING_USER);
    ```
 
-4. **Test user behavior, not implementation**
+4. **Write descriptive test names**
    ```typescript
-   // Good - tests what user sees
-   await expect(page).toHaveURL('/verify-email-pending');
+   test('should show error for invalid credentials', async ({ page }) => {
+     // Test implementation
+   });
+   ```
 
-   // Avoid - tests internal state
-   await expect(store.isAuthenticated).toBe(true);
+5. **Test error paths**
+   ```typescript
+   await mockLoginInvalidCredentials(page);
+   await assertErrorToast(page, /invalid email or password/i);
    ```
 
 ## Debugging

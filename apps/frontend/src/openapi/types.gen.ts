@@ -128,6 +128,38 @@ export type OAuthAccountResponse = {
 };
 
 /**
+ * ProfileUpdateRequest
+ *
+ * Schema for updating user profile information.
+ */
+export type ProfileUpdateRequest = {
+  /**
+   * First Name
+   *
+   * User's first name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   *
+   * User's last name
+   */
+  last_name?: string | null;
+  /**
+   * Display Name
+   *
+   * User's display name
+   */
+  display_name?: string | null;
+  /**
+   * Avatar Url
+   *
+   * URL to user's profile picture
+   */
+  avatar_url?: string | null;
+};
+
+/**
  * RegenerateBackupCodesRequest
  *
  * Request to regenerate backup codes.
@@ -458,6 +490,18 @@ export type UserCreate = {
    * User password (minimum 8 characters)
    */
   password: string;
+  /**
+   * First Name
+   *
+   * User's first name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   *
+   * User's last name
+   */
+  last_name?: string | null;
 };
 
 /**
@@ -507,6 +551,26 @@ export type UserResponse = {
    */
   email_verified: boolean;
   /**
+   * First Name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   */
+  last_name?: string | null;
+  /**
+   * Display Name
+   */
+  display_name?: string | null;
+  /**
+   * Avatar Url
+   */
+  avatar_url?: string | null;
+  /**
+   * Profile Completed
+   */
+  profile_completed: boolean;
+  /**
    * Created At
    */
   created_at: string;
@@ -544,6 +608,22 @@ export type VerifyEmailRequest = {
    * Token
    */
   token: string;
+};
+
+/**
+ * VerifyEmailResponse
+ *
+ * Response after email verification.
+ */
+export type VerifyEmailResponse = {
+  /**
+   * Message
+   */
+  message: string;
+  /**
+   * Requires 2Fa Setup
+   */
+  requires_2fa_setup?: boolean;
 };
 
 export type HealthCheckHealthGetData = {
@@ -756,13 +836,9 @@ export type VerifyEmailApiV1AuthVerifyEmailPostError =
 
 export type VerifyEmailApiV1AuthVerifyEmailPostResponses = {
   /**
-   * Response Verify Email Api V1 Auth Verify Email Post
-   *
    * Successful Response
    */
-  200: {
-    [key: string]: string;
-  };
+  200: VerifyEmailResponse;
 };
 
 export type VerifyEmailApiV1AuthVerifyEmailPostResponse =
@@ -922,6 +998,33 @@ export type ChangeEmailApiV1AuthChangeEmailPostResponses = {
 
 export type ChangeEmailApiV1AuthChangeEmailPostResponse =
   ChangeEmailApiV1AuthChangeEmailPostResponses[keyof ChangeEmailApiV1AuthChangeEmailPostResponses];
+
+export type UpdateProfileApiV1AuthProfilePutData = {
+  body: ProfileUpdateRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/profile';
+};
+
+export type UpdateProfileApiV1AuthProfilePutErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type UpdateProfileApiV1AuthProfilePutError =
+  UpdateProfileApiV1AuthProfilePutErrors[keyof UpdateProfileApiV1AuthProfilePutErrors];
+
+export type UpdateProfileApiV1AuthProfilePutResponses = {
+  /**
+   * Successful Response
+   */
+  200: UserResponse;
+};
+
+export type UpdateProfileApiV1AuthProfilePutResponse =
+  UpdateProfileApiV1AuthProfilePutResponses[keyof UpdateProfileApiV1AuthProfilePutResponses];
 
 export type GetCurrentUserInfoApiV1UsersMeGetData = {
   body?: never;

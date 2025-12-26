@@ -1,18 +1,23 @@
 import { Link, useLocation } from '@tanstack/react-router';
-import { LayoutDashboard, CheckSquare, Bot, Settings, type LucideIcon } from 'lucide-react';
+import {
+  Squares2X2Icon,
+  CheckIcon,
+  RocketLaunchIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/tasks', label: 'Tasks', icon: CheckSquare },
-  { href: '/agents', label: 'Agents', icon: Bot },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/', label: 'Dashboard', icon: Squares2X2Icon },
+  { href: '/tasks', label: 'Tasks', icon: CheckIcon },
+  { href: '/agents', label: 'Agents', icon: RocketLaunchIcon },
+  { href: '/settings', label: 'Settings', icon: Cog6ToothIcon },
 ];
 
 interface MobileNavProps {

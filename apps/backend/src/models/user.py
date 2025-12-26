@@ -32,6 +32,11 @@ class User(Base, TimestampMixin):
         last_login_ip (str | None): IP address of the last successful login.
         failed_login_attempts (int): Count of consecutive failed login attempts.
         locked_until (datetime | None): Timestamp until which the account is locked due to failed logins.
+        first_name (str | None): First name of the user.
+        last_name (str | None): Last name of the user.
+        display_name (str | None): Full or preferred name of the user.
+        avatar_url (str | None): URL to user's profile picture.
+        profile_completed (bool): Flag indicating if user profile is complete.
 
     Relationships:
         tasks (list[Task]): List of tasks created by the user.
@@ -61,6 +66,13 @@ class User(Base, TimestampMixin):
     # Two-factor authentication fields
     two_factor_enabled: Mapped[bool] = mapped_column(default=False, nullable=False)
     two_factor_secret: Mapped[str | None] = mapped_column(String(32))
+
+    # Profile fields
+    first_name: Mapped[str | None] = mapped_column(String(100))
+    last_name: Mapped[str | None] = mapped_column(String(100))
+    display_name: Mapped[str | None] = mapped_column(String(200))
+    avatar_url: Mapped[str | None] = mapped_column(String(512))
+    profile_completed: Mapped[bool] = mapped_column(default=True, nullable=False)
 
     # Relationships
     tasks: Mapped[list["Task"]] = relationship(

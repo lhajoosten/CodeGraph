@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { type LucideIcon, FileQuestion, Inbox, Search, AlertCircle } from 'lucide-react';
+import {
+  QuestionMarkCircleIcon,
+  InboxIcon,
+  MagnifyingGlassIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 
 interface EmptyStateProps {
-  icon?: LucideIcon;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   title: string;
   description?: string;
   action?: {
@@ -20,7 +25,7 @@ interface EmptyStateProps {
 }
 
 function EmptyState({
-  icon: Icon = Inbox,
+  icon: Icon = InboxIcon,
   title,
   description,
   action,
@@ -66,7 +71,7 @@ function NoDataEmptyState({
 }: Partial<EmptyStateProps>) {
   return (
     <EmptyState
-      icon={Inbox}
+      icon={InboxIcon}
       title={title}
       description={description}
       action={action}
@@ -83,7 +88,7 @@ function NoSearchResultsEmptyState({
 }: Partial<EmptyStateProps>) {
   return (
     <EmptyState
-      icon={Search}
+      icon={MagnifyingGlassIcon}
       title={title}
       description={description}
       action={action}
@@ -100,7 +105,7 @@ function ErrorEmptyState({
 }: Partial<EmptyStateProps>) {
   return (
     <EmptyState
-      icon={AlertCircle}
+      icon={ExclamationCircleIcon}
       title={title}
       description={description}
       action={action || { label: 'Try again', onClick: () => window.location.reload() }}
@@ -117,7 +122,7 @@ function NotFoundEmptyState({
 }: Partial<EmptyStateProps>) {
   return (
     <EmptyState
-      icon={FileQuestion}
+      icon={QuestionMarkCircleIcon}
       title={title}
       description={description}
       action={action}

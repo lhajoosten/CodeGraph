@@ -1,4 +1,4 @@
-import { Check, Loader2 } from 'lucide-react';
+import { CheckIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Progress } from '@/components/ui/progress';
 import type { AgentType, AgentStatus } from '@/lib/guards';
 import { AGENT_TYPE_LABELS } from '@/lib/guards';
@@ -60,9 +60,9 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                   )}
                 >
                   {isCompleted ? (
-                    <Check className="h-4 w-4" />
+                    <CheckIcon className="h-4 w-4" />
                   ) : isRunning ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
                   ) : (
                     <span className="text-xs font-semibold">{index + 1}</span>
                   )}

@@ -15,14 +15,11 @@ function VerifyEmailPendingPage() {
   const baseMutation = resendVerificationApiV1AuthResendVerificationPostMutation();
   const resendMutation = useMutation({
     mutationFn: baseMutation.mutationFn,
-    onSuccess: (data) => {
-      console.info('[EmailVerification] Resend successful:', data);
+    onSuccess: (_data) => {
       setMessage('Verification email sent! Check your inbox.');
       setError('');
     },
     onError: (err: Error) => {
-      console.error('[EmailVerification] Resend failed:', err);
-      // Extract error message from response
       const errorMessage = err?.message || 'Failed to resend verification email. Please try again.';
       setError(errorMessage);
       setMessage('');
@@ -30,7 +27,6 @@ function VerifyEmailPendingPage() {
   });
 
   const handleResend = () => {
-    console.debug('[EmailVerification] Resending verification email to:', email);
     setMessage('');
     setError('');
     resendMutation.mutate({ body: { email } });

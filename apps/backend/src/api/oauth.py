@@ -4,7 +4,7 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +14,8 @@ from src.core.config import settings
 from src.core.cookies import set_auth_cookies, set_partial_auth_cookies
 from src.core.csrf import generate_csrf_token
 from src.core.database import get_db
+from src.core.error_codes import AuthErrorCode
+from src.core.exceptions import ValidationException
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
@@ -86,17 +88,17 @@ async def oauth_authorize(
         HTTPException: If provider is not supported or not configured.
     """
     if not is_oauth_configured(provider):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"OAuth provider '{provider}' is not configured.",
+        raise ValidationException(
+            message=f"OAuth provider '{provider}' is not configured.",
+            error_code=AuthErrorCode.OAUTH_PROVIDER_NOT_CONFIGURED,
         )
 
     try:
         oauth_provider = get_oauth_provider(provider)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+        raise ValidationException(
+            message=str(e),
+            error_code=AuthErrorCode.OAUTH_PROVIDER_NOT_CONFIGURED,
         ) from e
 
     # Generate state for CSRF protection
@@ -138,17 +140,17 @@ async def oauth_authorize_link(
         Redirect to the OAuth provider.
     """
     if not is_oauth_configured(provider):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"OAuth provider '{provider}' is not configured.",
+        raise ValidationException(
+            message=f"OAuth provider '{provider}' is not configured.",
+            error_code=AuthErrorCode.OAUTH_PROVIDER_NOT_CONFIGURED,
         )
 
     try:
         oauth_provider = get_oauth_provider(provider)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+        raise ValidationException(
+            message=str(e),
+            error_code=AuthErrorCode.OAUTH_PROVIDER_NOT_CONFIGURED,
         ) from e
 
     state = secrets.token_urlsafe(32)
@@ -195,11 +197,11 @@ async def oauth_callback(
     # Validate state
     state_data = oauth_states.pop(state, None)
     if not state_data:
-        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=invalid_state"
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error_code={AuthErrorCode.OAUTH_STATE_INVALID.value}&message=Invalid+OAuth+state"
         return RedirectResponse(url=error_url)
 
     if state_data["provider"] != provider:
-        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=provider_mismatch"
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error_code={AuthErrorCode.OAUTH_PROVIDER_MISMATCH.value}&message=Provider+mismatch"
         return RedirectResponse(url=error_url)
 
     try:
@@ -207,11 +209,11 @@ async def oauth_callback(
         profile = await oauth_provider.handle_callback(code)
     except ValueError as e:
         logger.error("oauth_callback_failed", provider=provider, error=str(e))
-        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=oauth_failed"
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error_code={AuthErrorCode.OAUTH_CALLBACK_FAILED.value}&message=OAuth+authentication+failed"
         return RedirectResponse(url=error_url)
     except Exception:
         logger.exception("oauth_callback_error", provider=provider)
-        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error=server_error"
+        error_url = f"{settings.frontend_url}/oauth/callback/{provider}?error_code={AuthErrorCode.OAUTH_CALLBACK_FAILED.value}&message=Server+error"
         return RedirectResponse(url=error_url)
 
     oauth_service = OAuthService(db)
@@ -233,7 +235,7 @@ async def oauth_callback(
         except ValueError as e:
             error_url = (
                 f"{settings.frontend_url}/oauth/callback/{provider}"
-                f"?error=link_failed&error_description={str(e)}"
+                f"?error_code={AuthErrorCode.OAUTH_LINK_FAILED.value}&message={str(e)}"
             )
             return RedirectResponse(url=error_url)
 
@@ -270,6 +272,24 @@ async def oauth_callback(
 
         logger.info(
             "oauth_login_2fa_setup_required",
+            provider=provider,
+            user_id=user.id,
+        )
+
+        return response
+
+    # Check if profile needs completion (for new OAuth users)
+    if is_new and not user.profile_completed:
+        # User needs to complete their profile
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+
+        redirect_url = f"{settings.frontend_url}/complete-profile?oauth=true&provider={provider}"
+        response = RedirectResponse(url=redirect_url)
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(
+            "oauth_profile_completion_required",
             provider=provider,
             user_id=user.id,
         )
@@ -360,9 +380,9 @@ async def unlink_oauth_account(
         logger.info("oauth_account_unlinked", provider=provider, user_id=current_user.id)
         return {"message": f"{provider.capitalize()} account unlinked successfully."}
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+        raise ValidationException(
+            message=str(e),
+            error_code=AuthErrorCode.OAUTH_LINK_FAILED,
         ) from e
 
 

@@ -4,6 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { client } from '@/openapi/client.gen';
 import { useAuthStore } from '@/stores/auth-store';
 import { getErrorMessage, type ApiError } from '@/lib/error-handler';
+import { ERROR_CODE_TO_I18N_KEY } from '@/lib/error-codes';
+import i18n from '@/locales/config';
+import { useQueryClient } from '@tanstack/react-query';
+import { useHandle2FARouting } from '@/hooks/api/auth/use-handle-two-factor';
+import { addToast } from '@/lib/toast';
+import { LoginResponse } from '@/openapi';
 
 export const Route = createLazyFileRoute('/_public/oauth/callback/$provider')({
   component: OAuthCallback,
@@ -15,14 +21,30 @@ interface CurrentUserResponse {
   email_verified: boolean;
 }
 
+interface TwoFactorStatusResponse {
+  enabled: boolean;
+  backup_codes_remaining?: number;
+}
+
 function OAuthCallback() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { provider } = useParams({ from: '/_public/oauth/callback/$provider' });
   const search = useSearch({ from: '/_public/oauth/callback/$provider' });
-  const { error: oauthError, error_description } = search;
+  const searchParams = search as {
+    code?: string;
+    error_code?: string;
+    error?: string;
+    error_description?: string;
+  };
+  const oauthErrorCode = searchParams.error_code;
+  const oauthErrorMessage = searchParams.error_description;
+  const oauthError = oauthErrorCode || searchParams.error;
 
-  const { login } = useAuthStore();
+  const { login, isAuthenticated } = useAuthStore();
+  const handle2FARouting = useHandle2FARouting();
   const processedRef = useRef(false);
+  const isLinkFlow = isAuthenticated;
 
   // Fetch current user to complete authentication
   const {
@@ -38,7 +60,20 @@ function OAuthCallback() {
       });
       return response.data;
     },
-    enabled: !oauthError, // Only fetch if no OAuth error
+    enabled: !oauthError && !isLinkFlow, // Only fetch if no OAuth error and not linking
+    retry: 1,
+  });
+
+  // Fetch 2FA status for login flow (not for linking)
+  const { data: twoFactorStatus, isLoading: twoFactorLoading } = useQuery({
+    queryKey: ['two-factor-status-oauth'],
+    queryFn: async () => {
+      const response = await client.get<TwoFactorStatusResponse>({
+        url: '/api/v1/two-factor/status',
+      });
+      return response.data;
+    },
+    enabled: !oauthError && !isLinkFlow && !!currentUser, // Only fetch after user is fetched, in login flow
     retry: 1,
   });
 
@@ -51,8 +86,20 @@ function OAuthCallback() {
   })();
 
   const errorMessage = (() => {
+    if (oauthErrorCode && ERROR_CODE_TO_I18N_KEY[oauthErrorCode]) {
+      // New format with error code
+      const i18nKey = ERROR_CODE_TO_I18N_KEY[oauthErrorCode];
+      const t = i18n.t;
+      return t(i18nKey, {
+        defaultValue: oauthErrorMessage || 'OAuth authentication failed.',
+        provider: provider
+          ? provider.charAt(0).toUpperCase() + provider.slice(1)
+          : 'OAuth provider',
+      });
+    }
     if (oauthError) {
-      return error_description || oauthError;
+      // Legacy error format (fallback)
+      return oauthErrorMessage || oauthError;
     }
     if (isError && fetchError) {
       return getErrorMessage(fetchError as ApiError);
@@ -66,6 +113,9 @@ function OAuthCallback() {
 
     // Wait for query to complete (either success or error)
     if (!oauthError && isLoading) return;
+
+    // For login flow, also wait for 2FA status to load
+    if (!oauthError && !isLinkFlow && (twoFactorLoading || !twoFactorStatus)) return;
 
     // If we have an OAuth error, don't process auth
     if (oauthError) {
@@ -81,21 +131,75 @@ function OAuthCallback() {
 
     processedRef.current = true;
 
-    // Authentication successful - update auth store with provider
-    login(
-      {
-        id: currentUser.id,
-        email: currentUser.email,
-        email_verified: currentUser.email_verified,
-      },
-      provider // Store which OAuth provider was used
-    );
+    if (isLinkFlow) {
+      // Link flow: User was already authenticated, just linking an additional provider
+      // Invalidate the oauth-accounts query to refresh the connected accounts list
+      queryClient.invalidateQueries({ queryKey: ['oauth-accounts'] });
+      // Redirect back to dashboard
+      navigate({ to: '/' });
+    } else {
+      // Login flow: User is logging in for the first time or switching providers
+      // Set the basic auth state first
+      login(
+        {
+          id: currentUser.id,
+          email: currentUser.email,
+          email_verified: currentUser.email_verified,
+        },
+        provider
+      );
 
-    // Store provider in localStorage for future re-authentication
-    localStorage.setItem('last_oauth_provider', provider);
+      // Check 2FA status and handle routing
+      if (twoFactorStatus) {
+        // 2FA status is available - use it to determine routing
+        // Create a routing response object for handle2FARouting
+        const routingResponse = {
+          requires_two_factor: true,
+          two_factor_enabled: twoFactorStatus.enabled,
+        };
 
-    navigate({ to: '/' });
-  }, [currentUser, isError, oauthError, isLoading, login, navigate, provider]);
+        const { shouldRoute, destination } = handle2FARouting(
+          routingResponse as unknown as LoginResponse
+        );
+
+        if (shouldRoute && destination) {
+          // Route to 2FA setup or verification
+          navigate({ to: destination });
+          return;
+        }
+      }
+
+      // No 2FA routing needed - complete login normally
+      addToast({
+        title: 'Login Successful',
+        description: 'Welcome back! You have successfully logged in.',
+        color: 'success',
+      });
+
+      // Store provider in localStorage for future re-authentication
+      localStorage.setItem('last_oauth_provider', provider);
+
+      // Invalidate current user query to fetch fresh data
+      queryClient.invalidateQueries({
+        queryKey: ['getCurrentUserInfoApiV1UsersMeGet'],
+      });
+
+      navigate({ to: '/' });
+    }
+  }, [
+    currentUser,
+    isError,
+    oauthError,
+    isLoading,
+    login,
+    navigate,
+    provider,
+    isLinkFlow,
+    queryClient,
+    twoFactorStatus,
+    twoFactorLoading,
+    handle2FARouting,
+  ]);
 
   const getProviderName = () => {
     switch (provider) {
@@ -136,10 +240,11 @@ function OAuthCallback() {
                 ></div>
               </div>
               <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
-                Connecting to {getProviderName()}
+                {isLinkFlow ? 'Linking' : 'Connecting to'} {getProviderName()}
               </h2>
               <p className="text-center text-gray-600">
-                Please wait while we complete your authentication...
+                Please wait while we{' '}
+                {isLinkFlow ? 'link your account' : 'complete your authentication'}...
               </p>
             </>
           )}
@@ -159,9 +264,11 @@ function OAuthCallback() {
                 </div>
               </div>
               <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
-                Successfully Connected!
+                {isLinkFlow ? 'Account Linked Successfully!' : 'Successfully Connected!'}
               </h2>
-              <p className="text-center text-gray-600">Redirecting you now...</p>
+              <p className="text-center text-gray-600">
+                Redirecting you {isLinkFlow ? 'back to settings' : 'to your dashboard'}...
+              </p>
             </>
           )}
 

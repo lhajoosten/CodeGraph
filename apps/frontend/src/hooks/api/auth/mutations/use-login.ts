@@ -22,18 +22,20 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
 import { loginUserApiV1AuthLoginPostMutation } from '@/openapi/@tanstack/react-query.gen';
 import { useAuthStore } from '@/stores/auth-store';
 import type { LoginResponse } from '@/openapi/types.gen';
 import type { InferHeyApiMutationOptions } from '@/lib/types';
 import { addToast } from '@/lib/toast';
 import { getErrorMessage } from '@/hooks/api/utils';
+import { useHandle2FARouting } from '../use-handle-two-factor';
+import { useNavigate } from '@tanstack/react-router';
 
 export const useLogin = () => {
   const { login, setTwoFactorStatus } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const handle2FARouting = useHandle2FARouting();
 
   return useMutation({
     ...loginUserApiV1AuthLoginPostMutation(),
@@ -42,32 +44,20 @@ export const useLogin = () => {
       // Cast to the actual response type until OpenAPI schema is fixed.
       const data = rawData as unknown as LoginResponse;
 
-      // Check if 2FA is required
-      if (data.requires_two_factor) {
-        const twoFactorEnabled = data.two_factor_enabled ?? false;
-        setTwoFactorStatus(
-          twoFactorEnabled,
-          false, // Not verified yet
-          !twoFactorEnabled // Requires setup if not enabled
-        );
-
-        if (!twoFactorEnabled) {
-          // Redirect to 2FA setup
-          addToast({
-            title: '2FA Setup Required',
-            description: 'Please set up two-factor authentication to continue.',
-            color: 'warning',
-          });
-          navigate({ to: '/setup-2fa' });
-        } else {
-          // Redirect to 2FA verification
-          addToast({
-            title: '2FA Verification Required',
-            description: 'Please enter your 2FA code to continue.',
-            color: 'info',
-          });
-          navigate({ to: '/verify-2fa' });
-        }
+      // Check if 2FA routing is needed
+      const { shouldRoute, destination } = handle2FARouting(data);
+      if (shouldRoute && destination) {
+        // Set auth state first so the 2FA route guards pass
+        login({
+          id: data.user.id,
+          email: data.user.email,
+          email_verified: data.email_verified,
+        });
+        // Invalidate current user query to fetch fresh data
+        queryClient.invalidateQueries({
+          queryKey: ['getCurrentUserInfoApiV1UsersMeGet'],
+        });
+        navigate({ to: destination });
         return;
       }
 

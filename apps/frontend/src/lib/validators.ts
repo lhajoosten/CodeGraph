@@ -111,6 +111,17 @@ export const changePasswordSchema = z
     path: ['newPassword'],
   });
 
+export const profileCompletionSchema = z.object({
+  firstName: nameSchema.optional().or(z.literal('')),
+  lastName: nameSchema.optional().or(z.literal('')),
+  displayName: z
+    .string()
+    .max(200, 'Display name must be at most 200 characters')
+    .optional()
+    .or(z.literal('')),
+  avatarUrl: urlSchema.optional().or(z.literal('')),
+});
+
 /**
  * Task-related schemas
  */
@@ -201,6 +212,7 @@ export type RegisterFormData = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+export type ProfileCompletionFormData = z.infer<typeof profileCompletionSchema>;
 export type TaskFormData = z.infer<typeof taskSchema>;
 export type TaskCreateFormData = z.infer<typeof taskCreateSchema>;
 export type TaskUpdateFormData = z.infer<typeof taskUpdateSchema>;

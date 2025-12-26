@@ -10,8 +10,6 @@ updates:
     labels:
       - "dependencies"
       - "backend"
-    reviewers:
-      - "lhajoosten"
 
   # Frontend dependencies
   - package-ecosystem: "npm"
@@ -23,8 +21,6 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
-    reviewers:
-      - "lhajoosten"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -35,4 +31,3 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-

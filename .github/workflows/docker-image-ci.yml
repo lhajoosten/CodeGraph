@@ -1,0 +1,21 @@
+name: Docker image CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t codegraph-postgres -f docker/postgres.Dockerfile .
+
+      - name: Verify init script exists and is executable
+        run: |
+          docker run --rm codegraph-postgres stat -c "%a %U %G" /docker-entrypoint-initdb.d/init-postgres.sh
+
+      - name: Check no CRLF line endings
+        run: |
+          docker run --rm codegraph-postgres sh -lc "if grep -q $'\\r' /docker-entrypoint-initdb.d/init-postgres.sh; then echo 'CRLF found' && exit 1; else echo 'No CRLF'; fi"

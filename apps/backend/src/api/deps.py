@@ -2,12 +2,14 @@
 
 from typing import Annotated
 
-from fastapi import Cookie, Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_db
+from src.core.error_codes import AuthErrorCode
+from src.core.exceptions import AuthenticationException, AuthorizationException, CodeGraphException
 from src.core.security import decode_token
 from src.models.user import User
 
@@ -43,10 +45,9 @@ async def get_token_from_cookie(
         return credentials.credentials
 
     # No authentication found
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Not authenticated",
-        headers={"WWW-Authenticate": "Bearer"},
+    raise AuthenticationException(
+        message="Not authenticated",
+        error_code=AuthErrorCode.NOT_AUTHENTICATED,
     )
 
 
@@ -72,25 +73,24 @@ async def get_current_user(
     payload = decode_token(token)
 
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Reject partial tokens (2FA verification step only)
     if payload.get("type") == "partial":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="2fa_verification_required",
+        raise AuthorizationException(
+            message="2FA verification required (2fa_verification_required). Please verify your 2FA code.",
+            error_code=AuthErrorCode.TWO_FACTOR_REQUIRED,
+            details={"reason": "2fa_verification_required"},
         )
 
     user_id = payload.get("sub")
     if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Fetch user from database
@@ -98,16 +98,15 @@ async def get_current_user(
     user = result.scalar_one_or_none()
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="User not found",
+            error_code=AuthErrorCode.USER_NOT_FOUND,
         )
 
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is inactive",
+        raise AuthenticationException(
+            message="User account is inactive",
+            error_code=AuthErrorCode.ACCOUNT_INACTIVE,
         )
 
     return user
@@ -134,7 +133,7 @@ async def get_current_user_optional(
     try:
         token = await get_token_from_cookie(access_token, credentials)
         return await get_current_user(token, db)
-    except HTTPException:
+    except (HTTPException, CodeGraphException):
         return None
 
 
@@ -154,9 +153,9 @@ async def get_current_active_user(
         HTTPException: If user is inactive
     """
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Inactive user",
+        raise AuthenticationException(
+            message="User account is inactive",
+            error_code=AuthErrorCode.ACCOUNT_INACTIVE,
         )
     return current_user
 
@@ -184,26 +183,23 @@ async def get_current_user_partial(
     payload = decode_token(token)
 
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Only accept partial tokens
     if payload.get("type") != "partial":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type for this operation",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid token type for this operation",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     user_id = payload.get("sub")
     if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Fetch user from database
@@ -211,16 +207,15 @@ async def get_current_user_partial(
     user = result.scalar_one_or_none()
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="User not found",
+            error_code=AuthErrorCode.USER_NOT_FOUND,
         )
 
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is inactive",
+        raise AuthenticationException(
+            message="User account is inactive",
+            error_code=AuthErrorCode.ACCOUNT_INACTIVE,
         )
 
     return user
@@ -249,27 +244,24 @@ async def get_current_user_or_partial(
     payload = decode_token(token)
 
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Accept both full and partial tokens
     token_type = payload.get("type")
     if token_type not in ["access", "partial"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid token type",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     user_id = payload.get("sub")
     if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="Invalid authentication credentials",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Fetch user from database
@@ -277,16 +269,15 @@ async def get_current_user_or_partial(
     user = result.scalar_one_or_none()
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
+        raise AuthenticationException(
+            message="User not found",
+            error_code=AuthErrorCode.USER_NOT_FOUND,
         )
 
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is inactive",
+        raise AuthenticationException(
+            message="User account is inactive",
+            error_code=AuthErrorCode.ACCOUNT_INACTIVE,
         )
 
     return user

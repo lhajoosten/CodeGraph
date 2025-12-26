@@ -27,6 +27,34 @@ export const inputVariants = cva(
           border-success
           focus-visible:ring-success
         `,
+        luminous: `
+          border
+          border-border-default-lum
+          bg-[rgba(15,23,42,0.5)] text-text-primary-lum
+          backdrop-blur-sm
+          transition-all
+          placeholder:text-text-muted-lum
+          focus-visible:border-brand-cyan
+          focus-visible:shadow-[0_0_8px_rgba(34,211,238,0.3)]
+        `,
+        luminousError: `
+          border
+          border-error
+          bg-[rgba(15,23,42,0.5)] text-text-primary-lum
+          backdrop-blur-sm
+          transition-all
+          placeholder:text-text-muted-lum
+          focus-visible:shadow-[0_0_8px_rgba(239,68,68,0.3)]
+        `,
+        luminousSuccess: `
+          border
+          border-success
+          bg-[rgba(15,23,42,0.5)] text-text-primary-lum
+          backdrop-blur-sm
+          transition-all
+          placeholder:text-text-muted-lum
+          focus-visible:shadow-[0_0_8px_rgba(34,197,94,0.3)]
+        `,
       },
       inputSize: {
         default: 'h-10',

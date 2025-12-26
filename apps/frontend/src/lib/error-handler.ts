@@ -5,6 +5,7 @@
 
 import i18n from '@/locales/config';
 import { addToast } from '@/lib/toast';
+import { ERROR_CODE_TO_I18N_KEY } from '@/lib/error-codes';
 
 /**
  * Error type for API errors with response data.
@@ -13,10 +14,61 @@ export interface ApiError {
   response?: {
     status?: number;
     data?: {
+      // New structured error format
+      error_code?: string;
+      message?: string;
+      details?: Record<string, unknown>;
+      validation_errors?: Array<{
+        loc: string[];
+        msg: string;
+        type: string;
+      }>;
+      // Legacy support
       detail?: string | Array<{ msg: string }>;
     };
   };
   message?: string;
+}
+
+/**
+ * Extract error code from API error response.
+ */
+export function getErrorCode(error: unknown): string | null {
+  const apiError = error as ApiError;
+  return apiError.response?.data?.error_code || null;
+}
+
+/**
+ * Extract error details from API error response.
+ */
+export function getErrorDetails(error: unknown): Record<string, unknown> | null {
+  const apiError = error as ApiError;
+  return apiError.response?.data?.details || null;
+}
+
+/**
+ * Extract validation errors from API error response.
+ */
+export function getValidationErrors(
+  error: unknown
+): Array<{ loc: string[]; msg: string; type: string }> | null {
+  const apiError = error as ApiError;
+  return apiError.response?.data?.validation_errors || null;
+}
+
+/**
+ * Extract all validation error messages as strings.
+ */
+export function getValidationErrorMessages(error: unknown): string[] {
+  const validationErrors = getValidationErrors(error);
+  if (!validationErrors || validationErrors.length === 0) {
+    return [];
+  }
+
+  return validationErrors.map((err) => {
+    const field = err.loc.join('.');
+    return `${field}: ${err.msg}`;
+  });
 }
 
 /**
@@ -29,8 +81,46 @@ export function getErrorMessage(error: unknown): string {
   }
 
   const apiError = error as ApiError;
+  const t = i18n.t;
 
-  // Try to extract from API response detail
+  // Try new error code format first
+  const errorCode = getErrorCode(error);
+  if (errorCode && ERROR_CODE_TO_I18N_KEY[errorCode]) {
+    const i18nKey = ERROR_CODE_TO_I18N_KEY[errorCode];
+    const details = getErrorDetails(error);
+
+    // Handle special cases with interpolation
+    if (errorCode === 'ACCOUNT_LOCKED' && details?.locked_until) {
+      const lockedUntil = new Date(details.locked_until as string);
+      const now = new Date();
+      const diffMs = lockedUntil.getTime() - now.getTime();
+      const diffMins = Math.ceil(diffMs / 60000);
+
+      if (diffMins <= 0) {
+        return t(i18nKey, {
+          defaultValue: 'Account is temporarily locked. Please try again later.',
+        });
+      }
+
+      const minuteStr = diffMins === 1 ? 'minute' : 'minutes';
+      return t(i18nKey, {
+        defaultValue: `Account is locked. Try again in ${diffMins} ${minuteStr}.`,
+        time: `in ${diffMins} ${minuteStr}`,
+      });
+    }
+
+    // Return translated message with fallback
+    return t(i18nKey, {
+      defaultValue: apiError.response?.data?.message || 'An error occurred',
+    });
+  }
+
+  // Legacy: Try to extract from API response message field (new format)
+  if (apiError.response?.data?.message) {
+    return apiError.response.data.message;
+  }
+
+  // Legacy: Try to extract from API response detail field (old format)
   if (apiError.response?.data?.detail) {
     const detail = apiError.response.data.detail;
     if (typeof detail === 'string') {

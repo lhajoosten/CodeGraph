@@ -24,7 +24,7 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         className
       )}
     >
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-xl space-y-8">
         {/* Logo */}
         <div className="flex flex-col items-center">
           <Link to="/" className="flex items-center gap-3">

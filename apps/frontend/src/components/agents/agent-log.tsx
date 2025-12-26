@@ -1,30 +1,28 @@
 import * as React from 'react';
 import {
-  Brain,
-  Code,
-  TestTube,
-  CheckCircle,
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
-} from 'lucide-react';
+  CodeBracketIcon,
+  BeakerIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  ArrowPathIcon,
+} from '@heroicons/react/24/outline';
 import type { AgentUpdate } from '@/hooks';
 import type { AgentType, AgentStatus } from '@/lib/guards';
 import { formatTime } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
 const agentIcons: Record<AgentType, React.ComponentType<{ className?: string }>> = {
-  planning: Brain,
-  coding: Code,
-  testing: TestTube,
-  review: CheckCircle,
+  planning: CodeBracketIcon,
+  coding: CodeBracketIcon,
+  testing: BeakerIcon,
+  review: CheckCircleIcon,
 };
 
 const statusIcons: Record<AgentStatus, React.ComponentType<{ className?: string }>> = {
-  idle: Loader2,
-  running: Loader2,
-  completed: CheckCircle2,
-  failed: AlertCircle,
+  idle: ArrowPathIcon,
+  running: ArrowPathIcon,
+  completed: CheckCircleIcon,
+  failed: ExclamationCircleIcon,
 };
 
 interface AgentLogProps {
@@ -55,8 +53,8 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
       )}
     >
       {displayedUpdates.map((update, index) => {
-        const AgentIcon = agentIcons[update.agent as AgentType] || Brain;
-        const StatusIcon = statusIcons[update.status as AgentStatus] || Loader2;
+        const AgentIcon = agentIcons[update.agent as AgentType] || CodeBracketIcon;
+        const StatusIcon = statusIcons[update.status as AgentStatus] || ArrowPathIcon;
         const isRunning = update.status === 'running';
         const isCompleted = update.status === 'completed';
         const isFailed = update.status === 'failed';

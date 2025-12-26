@@ -126,6 +126,9 @@ docker-build:
 
 docker-full:
 	@echo "$(COLOR_GREEN)Rebuilding and restarting full Docker stack...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Cleaning up old volumes (including node_modules cache)...$(COLOR_RESET)"
+	@cd $(DOCKER_DIR) && docker-compose down -v 2>/dev/null || true
+	@echo "$(COLOR_GREEN)Building Docker containers...$(COLOR_RESET)"
 	@$(MAKE) docker-build
 	@cd $(DOCKER_DIR) && docker-compose up -d
 	@sleep 5

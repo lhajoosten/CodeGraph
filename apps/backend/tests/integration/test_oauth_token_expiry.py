@@ -416,10 +416,10 @@ class TestRememberMeFunctionality:
         )
         assert login_response.status_code == 200
 
-        # Rollback and refresh to see changes committed by the API
-        await db_session.rollback()
+        # Commit to ensure we see changes from the API call
+        await db_session.commit()
 
-        # Get user (fresh query after rollback)
+        # Get user (fresh query after commit)
         result = await db_session.execute(
             select(User).where(User.email == "test_refresh_4h@example.com")
         )
@@ -428,9 +428,7 @@ class TestRememberMeFunctionality:
 
         # Get original RefreshToken from DB
         token_result = await db_session.execute(
-            select(RefreshToken)
-            .where(RefreshToken.user_id == user.id)
-            .where(RefreshToken.revoked is False)
+            select(RefreshToken).where(RefreshToken.user_id == user.id)
         )
         original_token_record = token_result.scalar_one_or_none()
         assert original_token_record is not None
@@ -474,10 +472,10 @@ class TestRememberMeFunctionality:
         )
         assert login_response.status_code == 200
 
-        # Rollback and refresh to see changes committed by the API
-        await db_session.rollback()
+        # Commit to ensure we see changes from the API call
+        await db_session.commit()
 
-        # Get user (fresh query after rollback)
+        # Get user (fresh query after commit)
         result = await db_session.execute(
             select(User).where(User.email == "test_refresh_7d@example.com")
         )
@@ -486,9 +484,7 @@ class TestRememberMeFunctionality:
 
         # Get original RefreshToken from DB
         token_result = await db_session.execute(
-            select(RefreshToken)
-            .where(RefreshToken.user_id == user.id)
-            .where(RefreshToken.revoked is False)
+            select(RefreshToken).where(RefreshToken.user_id == user.id)
         )
         original_token_record = token_result.scalar_one_or_none()
         assert original_token_record is not None

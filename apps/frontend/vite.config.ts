@@ -78,12 +78,14 @@ export default defineConfig({
       '@radix-ui/react-portal',
       '@radix-ui/react-presence',
       '@radix-ui/primitive',
+      // Icon system
+      '@heroicons/react',
+      '@iconify/react',
       // Other dependencies
       'class-variance-authority',
       'clsx',
       'tailwind-merge',
       'zod',
-      'lucide-react',
       'axios',
       '@tanstack/react-query',
       '@hookform/resolvers',

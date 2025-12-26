@@ -19,6 +19,27 @@ from src.models.user import User
 logger = get_logger(__name__)
 
 
+def split_full_name(full_name: str | None) -> tuple[str | None, str | None]:
+    """Split a full name into first and last name.
+
+    Args:
+        full_name: The full name to split (e.g., "John Doe").
+
+    Returns:
+        Tuple of (first_name, last_name). If name cannot be split, returns (full_name, None).
+    """
+    if not full_name or not full_name.strip():
+        return None, None
+
+    parts = full_name.strip().split(maxsplit=1)
+    if len(parts) == 2:
+        return parts[0], parts[1]
+    elif len(parts) == 1:
+        return parts[0], None
+
+    return None, None
+
+
 @dataclass
 class OAuthUserProfile:
     """User profile data from OAuth provider."""
@@ -373,13 +394,37 @@ class OAuthService:
                 )
                 return existing_user, False
 
-        # Create new user
+        # Create new user with profile data from OAuth provider
+        # Extract name from provider profile
+        first_name = None
+        last_name = None
+        display_name = None
+
+        if profile.provider == "google":
+            # Google provides given_name and family_name
+            first_name = profile.profile_data.get("given_name")
+            last_name = profile.profile_data.get("family_name")
+            display_name = profile.name
+        elif profile.provider in ("github", "microsoft"):
+            # GitHub and Microsoft provide full name only
+            if profile.name:
+                first_name, last_name = split_full_name(profile.name)
+                display_name = profile.name
+
+        # Determine if profile is complete
+        profile_completed = bool(first_name or display_name)
+
         # OAuth emails are already verified by the provider
         new_user = User(
             email=profile.email or f"{profile.provider}_{profile.provider_user_id}@oauth.local",
             hashed_password=get_password_hash(secrets.token_urlsafe(32)),
             email_verified=True,  # OAuth provider has verified the email
             is_active=True,
+            first_name=first_name,
+            last_name=last_name,
+            display_name=display_name,
+            avatar_url=profile.avatar_url,
+            profile_completed=profile_completed,
         )
         self.db.add(new_user)
         await self.db.flush()
@@ -392,6 +437,7 @@ class OAuthService:
             "oauth_user_created",
             provider=profile.provider,
             user_id=new_user.id,
+            profile_completed=profile_completed,
         )
         return new_user, True
 

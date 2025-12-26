@@ -59,6 +59,35 @@ export const buttonVariants = cva(
           hover:bg-info-600
           active:bg-info-700
         `,
+        luminous: `
+          bg-brand-cyan font-semibold text-white
+          shadow-[0_0_12px_rgba(34,211,238,0.4)]
+          transition-shadow
+          hover:shadow-[0_0_20px_rgba(34,211,238,0.6)]
+          active:opacity-90
+        `,
+        luminousGhost: `
+          border border-brand-teal
+          bg-transparent text-brand-teal
+          transition-shadow
+          hover:shadow-[0_0_12px_rgba(45,212,191,0.4)]
+          active:opacity-80
+        `,
+        luminousSecondary: `
+          border border-border-steel
+          bg-bg-elevated-lum text-text-primary-lum
+          shadow-glass
+          transition-all
+          hover:bg-bg-steel
+          active:opacity-90
+        `,
+        luminousDanger: `
+          bg-error text-white
+          shadow-[0_0_12px_rgba(239,68,68,0.4)]
+          transition-shadow
+          hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]
+          active:opacity-90
+        `,
       },
       size: {
         default: 'h-10 px-4 py-2',

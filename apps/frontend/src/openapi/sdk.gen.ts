@@ -85,6 +85,9 @@ import type {
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors,
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses,
+  UpdateProfileApiV1AuthProfilePutData,
+  UpdateProfileApiV1AuthProfilePutErrors,
+  UpdateProfileApiV1AuthProfilePutResponses,
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchErrors,
   UpdateTaskApiV1TasksTaskIdPatchResponses,
@@ -324,12 +327,15 @@ export const getCurrentUserInfoApiV1AuthMeGet = <ThrowOnError extends boolean = 
  *
  * Verify user email with verification token.
  *
+ * If 2FA is mandatory and not enabled, issues a partial token for 2FA setup.
+ *
  * Args:
  * request_data: Email verification token
+ * response: FastAPI response object for setting cookies
  * db: Database session
  *
  * Returns:
- * dict: Success message
+ * VerifyEmailResponse: Success message and 2FA setup requirement
  *
  * Raises:
  * HTTPException: If token is invalid or expired
@@ -507,6 +513,39 @@ export const changeEmailApiV1AuthChangeEmailPost = <ThrowOnError extends boolean
   >({
     responseType: 'json',
     url: '/api/v1/auth/change-email',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Update Profile
+ *
+ * Update user profile information.
+ *
+ * Args:
+ * profile_data: Profile fields to update
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * UserResponse: Updated user data
+ *
+ * Raises:
+ * HTTPException: If update fails
+ */
+export const updateProfileApiV1AuthProfilePut = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateProfileApiV1AuthProfilePutData, ThrowOnError>
+) =>
+  (options.client ?? client).put<
+    UpdateProfileApiV1AuthProfilePutResponses,
+    UpdateProfileApiV1AuthProfilePutErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/profile',
     ...options,
     headers: {
       'Content-Type': 'application/json',

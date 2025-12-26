@@ -55,6 +55,18 @@ export const zConnectedAccountsResponse = z.object({
 });
 
 /**
+ * ProfileUpdateRequest
+ *
+ * Schema for updating user profile information.
+ */
+export const zProfileUpdateRequest = z.object({
+  first_name: z.optional(z.union([z.string().max(100), z.null()])),
+  last_name: z.optional(z.union([z.string().max(100), z.null()])),
+  display_name: z.optional(z.union([z.string().max(200), z.null()])),
+  avatar_url: z.optional(z.union([z.string().max(512), z.null()])),
+});
+
+/**
  * RegenerateBackupCodesRequest
  *
  * Request to regenerate backup codes.
@@ -253,6 +265,8 @@ export const zTwoFactorVerifyResponse = z.object({
 export const zUserCreate = z.object({
   email: z.email(),
   password: z.string().min(8),
+  first_name: z.optional(z.union([z.string().max(100), z.null()])),
+  last_name: z.optional(z.union([z.string().max(100), z.null()])),
 });
 
 /**
@@ -277,6 +291,11 @@ export const zUserResponse = z.object({
   is_active: z.boolean(),
   is_superuser: z.boolean(),
   email_verified: z.boolean(),
+  first_name: z.optional(z.union([z.string(), z.null()])),
+  last_name: z.optional(z.union([z.string(), z.null()])),
+  display_name: z.optional(z.union([z.string(), z.null()])),
+  avatar_url: z.optional(z.union([z.string(), z.null()])),
+  profile_completed: z.boolean(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
 });
@@ -317,6 +336,16 @@ export const zHttpValidationError = z.object({
  */
 export const zVerifyEmailRequest = z.object({
   token: z.string(),
+});
+
+/**
+ * VerifyEmailResponse
+ *
+ * Response after email verification.
+ */
+export const zVerifyEmailResponse = z.object({
+  message: z.string(),
+  requires_2fa_setup: z.optional(z.boolean()).default(false),
 });
 
 export const zHealthCheckHealthGetData = z.object({
@@ -409,11 +438,9 @@ export const zVerifyEmailApiV1AuthVerifyEmailPostData = z.object({
 });
 
 /**
- * Response Verify Email Api V1 Auth Verify Email Post
- *
  * Successful Response
  */
-export const zVerifyEmailApiV1AuthVerifyEmailPostResponse = z.record(z.string(), z.string());
+export const zVerifyEmailApiV1AuthVerifyEmailPostResponse = zVerifyEmailResponse;
 
 export const zResendVerificationApiV1AuthResendVerificationPostData = z.object({
   body: zForgotPasswordRequest,
@@ -482,6 +509,17 @@ export const zChangeEmailApiV1AuthChangeEmailPostData = z.object({
  * Successful Response
  */
 export const zChangeEmailApiV1AuthChangeEmailPostResponse = z.record(z.string(), z.string());
+
+export const zUpdateProfileApiV1AuthProfilePutData = z.object({
+  body: zProfileUpdateRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zUpdateProfileApiV1AuthProfilePutResponse = zUserResponse;
 
 export const zGetCurrentUserInfoApiV1UsersMeGetData = z.object({
   body: z.optional(z.never()),

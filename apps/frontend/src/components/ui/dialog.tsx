@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 const Dialog = DialogPrimitive.Root;
@@ -88,7 +88,7 @@ const DialogContent = React.forwardRef<
             data-[state=open]:bg-secondary
           `}
         >
-          <X className="h-4 w-4" />
+          <XMarkIcon className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       )}

@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { Brain, Code, TestTube, CheckCircle } from 'lucide-react';
+import { CodeBracketIcon, BeakerIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { AgentStatusBadge } from './agent-status-badge';
 import { CircularProgress } from '@/components/ui/progress';
@@ -7,10 +7,10 @@ import type { AgentType, AgentStatus } from '@/lib/guards';
 import { cn } from '@/lib/utils';
 
 const agentIcons: Record<AgentType, ComponentType<{ className?: string }>> = {
-  planning: Brain,
-  coding: Code,
-  testing: TestTube,
-  review: CheckCircle,
+  planning: CodeBracketIcon,
+  coding: CodeBracketIcon,
+  testing: BeakerIcon,
+  review: CheckCircleIcon,
 };
 
 const agentDescriptions: Record<AgentType, string> = {

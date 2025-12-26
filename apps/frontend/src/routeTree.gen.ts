@@ -20,6 +20,7 @@ import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password'
+import { Route as PublicCompleteProfileRouteImport } from './routes/_public/complete-profile'
 import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
 import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
 import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
@@ -95,6 +96,13 @@ const PublicForgotPasswordRoute = PublicForgotPasswordRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_public/forgot-password.lazy').then((d) => d.Route),
 )
+const PublicCompleteProfileRoute = PublicCompleteProfileRouteImport.update({
+  id: '/_public/complete-profile',
+  path: '/complete-profile',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_public/complete-profile.lazy').then((d) => d.Route),
+)
 const ProtectedTasksIndexRoute = ProtectedTasksIndexRouteImport.update({
   id: '/_protected/tasks/',
   path: '/tasks/',
@@ -130,6 +138,7 @@ const PublicOauthCallbackProviderRoute =
 export interface FileRoutesByFullPath {
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
+  '/complete-profile': typeof PublicCompleteProfileRoute
   '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
@@ -147,6 +156,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
+  '/complete-profile': typeof PublicCompleteProfileRoute
   '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
@@ -165,6 +175,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/$404': typeof R404Route
   '/unauthorized': typeof UnauthorizedRoute
+  '/_public/complete-profile': typeof PublicCompleteProfileRoute
   '/_public/forgot-password': typeof PublicForgotPasswordRoute
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/$404'
     | '/unauthorized'
+    | '/complete-profile'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
   to:
     | '/$404'
     | '/unauthorized'
+    | '/complete-profile'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -218,6 +231,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/$404'
     | '/unauthorized'
+    | '/_public/complete-profile'
     | '/_public/forgot-password'
     | '/_public/login'
     | '/_public/register'
@@ -236,6 +250,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   R404Route: typeof R404Route
   UnauthorizedRoute: typeof UnauthorizedRoute
+  PublicCompleteProfileRoute: typeof PublicCompleteProfileRoute
   PublicForgotPasswordRoute: typeof PublicForgotPasswordRoute
   PublicLoginRoute: typeof PublicLoginRoute
   PublicRegisterRoute: typeof PublicRegisterRoute
@@ -330,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/complete-profile': {
+      id: '/_public/complete-profile'
+      path: '/complete-profile'
+      fullPath: '/complete-profile'
+      preLoaderRoute: typeof PublicCompleteProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/tasks/': {
       id: '/_protected/tasks/'
       path: '/tasks'
@@ -364,6 +386,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   R404Route: R404Route,
   UnauthorizedRoute: UnauthorizedRoute,
+  PublicCompleteProfileRoute: PublicCompleteProfileRoute,
   PublicForgotPasswordRoute: PublicForgotPasswordRoute,
   PublicLoginRoute: PublicLoginRoute,
   PublicRegisterRoute: PublicRegisterRoute,

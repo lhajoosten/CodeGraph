@@ -40,6 +40,7 @@ import {
   sendTestEmailApiV1TestSendTestEmailPost,
   setupTwoFactorApiV1TwoFactorSetupPost,
   unlinkOauthAccountApiV1OauthProviderUnlinkDelete,
+  updateProfileApiV1AuthProfilePut,
   updateTaskApiV1TasksTaskIdPatch,
   verifyEmailApiV1AuthVerifyEmailPost,
   verifyTwoFactorApiV1TwoFactorVerifyPost,
@@ -125,6 +126,9 @@ import type {
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError,
   UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
+  UpdateProfileApiV1AuthProfilePutData,
+  UpdateProfileApiV1AuthProfilePutError,
+  UpdateProfileApiV1AuthProfilePutResponse,
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchError,
   UpdateTaskApiV1TasksTaskIdPatchResponse,
@@ -454,12 +458,15 @@ export const getCurrentUserInfoApiV1AuthMeGetOptions = (
  *
  * Verify user email with verification token.
  *
+ * If 2FA is mandatory and not enabled, issues a partial token for 2FA setup.
+ *
  * Args:
  * request_data: Email verification token
+ * response: FastAPI response object for setting cookies
  * db: Database session
  *
  * Returns:
- * dict: Success message
+ * VerifyEmailResponse: Success message and 2FA setup requirement
  *
  * Raises:
  * HTTPException: If token is invalid or expired
@@ -674,6 +681,46 @@ export const changeEmailApiV1AuthChangeEmailPostMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await changeEmailApiV1AuthChangeEmailPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Update Profile
+ *
+ * Update user profile information.
+ *
+ * Args:
+ * profile_data: Profile fields to update
+ * current_user: Current authenticated user
+ * db: Database session
+ *
+ * Returns:
+ * UserResponse: Updated user data
+ *
+ * Raises:
+ * HTTPException: If update fails
+ */
+export const updateProfileApiV1AuthProfilePutMutation = (
+  options?: Partial<Options<UpdateProfileApiV1AuthProfilePutData>>
+): UseMutationOptions<
+  UpdateProfileApiV1AuthProfilePutResponse,
+  AxiosError<UpdateProfileApiV1AuthProfilePutError>,
+  Options<UpdateProfileApiV1AuthProfilePutData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateProfileApiV1AuthProfilePutResponse,
+    AxiosError<UpdateProfileApiV1AuthProfilePutError>,
+    Options<UpdateProfileApiV1AuthProfilePutData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await updateProfileApiV1AuthProfilePut({
         ...options,
         ...fnOptions,
         throwOnError: true,

@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -54,13 +54,13 @@ export function TaskFilters({
           placeholder="Search tasks..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          leftIcon={<Search className="h-4 w-4" />}
+          leftIcon={<MagnifyingGlassIcon className="h-4 w-4" />}
           rightIcon={
             search ? (
               <IconButton
                 variant="ghost"
                 size="xs"
-                icon={<X />}
+                icon={<XMarkIcon />}
                 aria-label="Clear search"
                 onClick={() => onSearchChange('')}
               />

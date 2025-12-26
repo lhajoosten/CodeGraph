@@ -13,6 +13,13 @@ from src.core.config import settings
 from src.core.cookies import clear_auth_cookies, set_auth_cookies, set_partial_auth_cookies
 from src.core.csrf import generate_csrf_token
 from src.core.database import get_db
+from src.core.error_codes import AuthErrorCode
+from src.core.exceptions import (
+    AuthenticationException,
+    AuthorizationException,
+    BadRequestException,
+    ValidationException,
+)
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
@@ -27,7 +34,7 @@ from src.core.security import (
 from src.models.refresh_token import RefreshToken
 from src.models.user import User
 from src.models.user_session import UserSession
-from src.schemas.user import UserCreate, UserLogin, UserResponse
+from src.schemas.user import ProfileUpdateRequest, UserCreate, UserLogin, UserResponse
 from src.services.email.service import EmailSendingService, EmailTokenService
 from src.services.two_factor_service import TwoFactorService
 
@@ -41,6 +48,13 @@ class VerifyEmailRequest(BaseModel):
     """Request to verify email with token."""
 
     token: str
+
+
+class VerifyEmailResponse(BaseModel):
+    """Response after email verification."""
+
+    message: str
+    requires_2fa_setup: bool = False
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -100,19 +114,34 @@ async def register(
     existing_user = result.scalar_one_or_none()
 
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
+        raise ValidationException(
+            message="Email already registered",
+            error_code=AuthErrorCode.EMAIL_ALREADY_REGISTERED,
         )
 
     # Create new user with hashed password
     hashed_password = get_password_hash(user_data.password)
+
+    # Determine if profile is complete
+    profile_completed = bool(user_data.first_name or user_data.last_name)
+
+    # Generate display name if name fields are provided
+    display_name = None
+    if user_data.first_name and user_data.last_name:
+        display_name = f"{user_data.first_name} {user_data.last_name}"
+    elif user_data.first_name:
+        display_name = user_data.first_name
+
     new_user = User(
         email=user_data.email,
         hashed_password=hashed_password,
         is_active=True,
         is_superuser=False,
         email_verified=False,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        display_name=display_name,
+        profile_completed=profile_completed,
     )
 
     db.add(new_user)
@@ -177,16 +206,24 @@ async def login(
     user = result.scalar_one_or_none()
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+        raise AuthenticationException(
+            message="Incorrect email or password",
+            error_code=AuthErrorCode.INVALID_CREDENTIALS,
         )
 
     # Check if account is locked
     if user.locked_until and user.locked_until > datetime.now(user.locked_until.tzinfo):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Account locked until {user.locked_until.isoformat()}",
+        remaining_seconds = (
+            user.locked_until - datetime.now(user.locked_until.tzinfo)
+        ).total_seconds()
+        remaining_minutes = int(remaining_seconds / 60)
+        raise AuthenticationException(
+            message="Account is temporarily locked due to too many failed login attempts",
+            error_code=AuthErrorCode.ACCOUNT_LOCKED,
+            details={
+                "locked_until": user.locked_until.isoformat(),
+                "remaining_minutes": remaining_minutes,
+            },
         )
 
     # Verify password
@@ -202,16 +239,16 @@ async def login(
 
         await db.commit()
 
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+        raise AuthenticationException(
+            message="Incorrect email or password",
+            error_code=AuthErrorCode.INVALID_CREDENTIALS,
         )
 
     # Check if user is active
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is inactive",
+        raise AuthorizationException(
+            message="User account is inactive",
+            error_code=AuthErrorCode.ACCOUNT_INACTIVE,
         )
 
     # Reset failed login attempts on successful login
@@ -364,9 +401,9 @@ async def verify_two_factor_login(
     is_valid = await service.verify_2fa(current_user, request_data.code)
 
     if not is_valid:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid 2FA code",
+        raise AuthenticationException(
+            message="Invalid 2FA code",
+            error_code=AuthErrorCode.TWO_FACTOR_CODE_INVALID,
         )
 
     # Update user last login info
@@ -512,17 +549,17 @@ async def refresh(
         HTTPException: If refresh token is invalid, expired, or revoked
     """
     if not refresh_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token not found",
+        raise AuthenticationException(
+            message="Refresh token not found",
+            error_code=AuthErrorCode.REFRESH_TOKEN_NOT_FOUND,
         )
 
     # Decode refresh token
     payload = decode_token(refresh_token)
     if payload is None or payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
+        raise AuthenticationException(
+            message="Invalid refresh token",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Check if this is an OAuth token (doesn't have DB record)
@@ -532,17 +569,16 @@ async def refresh(
             "oauth_token_refresh_attempt",
             user_id=payload.get("sub"),
         )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="oauth_reauthentication_required",
-            headers={"X-Auth-Method": "oauth"},
+        raise AuthenticationException(
+            message="oauth_reauthentication_required",
+            error_code=AuthErrorCode.OAUTH_REAUTHENTICATION_REQUIRED,
         )
 
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
+        raise AuthenticationException(
+            message="Invalid refresh token",
+            error_code=AuthErrorCode.TOKEN_INVALID,
         )
 
     # Check if refresh token exists and is not revoked (traditional auth only)
@@ -561,21 +597,21 @@ async def refresh(
             user_id=user_id,
             has_oauth_flag=is_oauth_token,
         )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token not found",
+        raise AuthenticationException(
+            message="Refresh token not found",
+            error_code=AuthErrorCode.REFRESH_TOKEN_NOT_FOUND,
         )
 
     if refresh_token_record.revoked:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token has been revoked",
+        raise AuthenticationException(
+            message="Refresh token has been revoked",
+            error_code=AuthErrorCode.REFRESH_TOKEN_REVOKED,
         )
 
     if refresh_token_record.expires_at < datetime.now(refresh_token_record.expires_at.tzinfo):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token has expired",
+        raise AuthenticationException(
+            message="Refresh token has expired",
+            error_code=AuthErrorCode.TOKEN_EXPIRED,
         )
 
     # Get user
@@ -583,9 +619,9 @@ async def refresh(
     user = user_result.scalar_one_or_none()
 
     if not user or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive",
+        raise AuthenticationException(
+            message="User not found or inactive",
+            error_code=AuthErrorCode.USER_NOT_FOUND,
         )
 
     # Detect if this was a remember_me session by checking original expiry
@@ -649,20 +685,24 @@ async def get_current_user_info(
     return current_user
 
 
-@router.post("/auth/verify-email")
+@router.post("/auth/verify-email", response_model=VerifyEmailResponse)
 async def verify_email(
     request_data: VerifyEmailRequest,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
-) -> dict[str, str]:
+) -> VerifyEmailResponse:
     """
     Verify user email with verification token.
 
+    If 2FA is mandatory and not enabled, issues a partial token for 2FA setup.
+
     Args:
         request_data: Email verification token
+        response: FastAPI response object for setting cookies
         db: Database session
 
     Returns:
-        dict: Success message
+        VerifyEmailResponse: Success message and 2FA setup requirement
 
     Raises:
         HTTPException: If token is invalid or expired
@@ -674,9 +714,9 @@ async def verify_email(
 
     if not is_valid or not user:
         logger.debug("Email verification failed: invalid or expired token")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired verification token",
+        raise BadRequestException(
+            message="Invalid or expired verification token",
+            error_code=AuthErrorCode.VERIFICATION_TOKEN_INVALID,
         )
 
     logger.info(f"Email verified successfully for user_id={user.id}")
@@ -688,7 +728,21 @@ async def verify_email(
     except Exception as e:
         logger.error(f"Failed to send welcome email to {user.email}: {str(e)}")
 
-    return {"message": "Email verified successfully"}
+    # Check if 2FA is mandatory but not enabled
+    requires_2fa_setup = settings.two_factor_mandatory and not user.two_factor_enabled
+
+    if requires_2fa_setup:
+        # Issue partial token for 2FA setup
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(f"Partial token issued for 2FA setup, user_id={user.id}")
+
+    return VerifyEmailResponse(
+        message="Email verified successfully",
+        requires_2fa_setup=requires_2fa_setup,
+    )
 
 
 @router.post("/auth/resend-verification")
@@ -714,9 +768,9 @@ async def resend_verification(
     user = result.scalar_one_or_none()
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+        raise ValidationException(
+            message="User not found",
+            error_code=AuthErrorCode.USER_NOT_FOUND,
         )
 
     if user.email_verified:
@@ -797,9 +851,9 @@ async def reset_password(
     is_valid, user = await email_service.verify_password_reset_token(db, request_data.token)
 
     if not is_valid or not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
+        raise BadRequestException(
+            message="Invalid or expired reset token",
+            error_code=AuthErrorCode.RESET_TOKEN_INVALID,
         )
 
     # Update password
@@ -833,9 +887,9 @@ async def change_password(
     """
     # Verify current password
     if not verify_password(request_data.current_password, current_user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Current password is incorrect",
+        raise AuthenticationException(
+            message="Current password is incorrect",
+            error_code=AuthErrorCode.PASSWORD_INCORRECT,
         )
 
     # Update password
@@ -869,9 +923,9 @@ async def change_email(
     """
     # Verify password
     if not verify_password(request_data.password, current_user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Password is incorrect",
+        raise AuthenticationException(
+            message="Password is incorrect",
+            error_code=AuthErrorCode.PASSWORD_INCORRECT,
         )
 
     # Check if new email already registered
@@ -879,9 +933,9 @@ async def change_email(
     existing_user = result.scalar_one_or_none()
 
     if existing_user and existing_user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
+        raise BadRequestException(
+            message="Email already registered",
+            error_code=AuthErrorCode.EMAIL_ALREADY_REGISTERED,
         )
 
     # Generate and send email change confirmation
@@ -902,3 +956,54 @@ async def change_email(
         ) from e
 
     return {"message": "Verification email sent to new address"}
+
+
+@router.put("/auth/profile", response_model=UserResponse)
+async def update_profile(
+    profile_data: ProfileUpdateRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """
+    Update user profile information.
+
+    Args:
+        profile_data: Profile fields to update
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        UserResponse: Updated user data
+
+    Raises:
+        HTTPException: If update fails
+    """
+    # Update provided fields
+    if profile_data.first_name is not None:
+        current_user.first_name = profile_data.first_name
+    if profile_data.last_name is not None:
+        current_user.last_name = profile_data.last_name
+    if profile_data.display_name is not None:
+        current_user.display_name = profile_data.display_name
+    if profile_data.avatar_url is not None:
+        current_user.avatar_url = profile_data.avatar_url
+
+    # Auto-generate display_name if name fields are updated but display_name is not provided
+    if (profile_data.first_name or profile_data.last_name) and profile_data.display_name is None:
+        if current_user.first_name and current_user.last_name:
+            current_user.display_name = f"{current_user.first_name} {current_user.last_name}"
+        elif current_user.first_name:
+            current_user.display_name = current_user.first_name
+
+    # Mark profile as completed
+    current_user.profile_completed = True
+
+    await db.commit()
+    await db.refresh(current_user)
+
+    logger.info(
+        "user_profile_updated",
+        user_id=current_user.id,
+    )
+
+    return current_user

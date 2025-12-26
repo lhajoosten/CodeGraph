@@ -1,14 +1,19 @@
 import * as React from 'react';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { spinnerVariants } from './variants/spinner-variants.ts';
 
 export interface SpinnerProps
   extends React.HTMLAttributes<SVGSVGElement>, VariantProps<typeof spinnerVariants> {}
 
 function Spinner({ className, size, ...props }: SpinnerProps) {
-  return <Loader2 className={cn(spinnerVariants({ size }), className)} {...props} />;
+  return (
+    <ArrowPathIcon
+      className={cn(spinnerVariants({ size }), 'animate-spin', className)}
+      {...props}
+    />
+  );
 }
 
 export interface LoadingProps extends SpinnerProps {

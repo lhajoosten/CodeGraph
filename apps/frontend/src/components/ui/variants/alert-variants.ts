@@ -1,5 +1,10 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { CheckCircle2, Info, XCircle, AlertTriangle } from 'lucide-react';
+import {
+  CheckCircleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
 
 export const alertVariants = cva(
   `
@@ -37,11 +42,11 @@ export const alertVariants = cva(
 );
 
 export const alertIcons = {
-  default: Info,
-  info: Info,
-  success: CheckCircle2,
-  warning: AlertTriangle,
-  danger: XCircle,
+  default: InformationCircleIcon,
+  info: InformationCircleIcon,
+  success: CheckCircleIcon,
+  warning: ExclamationTriangleIcon,
+  danger: XCircleIcon,
 };
 
 export type AlertVariants = VariantProps<typeof alertVariants>;

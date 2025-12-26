@@ -15,12 +15,30 @@ error:
   apiError: 'An error occurred while communicating with the server.'
   apiTimeout: 'The server did not respond in time. Please try again.'
 
-  # Auth errors
+  # Authentication errors
   invalidCredentials: 'Invalid email or password.'
+  invalidPassword: 'Incorrect password.'
   accountNotFound: 'Account not found.'
   accountAlreadyExists: 'An account with this email already exists.'
+  accountLocked: 'Account is locked. Try again {{time}}.'
+  accountInactive: 'Your account is inactive. Please contact support.'
   emailNotVerified: 'Please verify your email address before logging in.'
   invalidToken: 'This link has expired or is invalid.'
+  tokenExpired: 'Your session has expired. Please log in again.'
+
+  # Password reset
+  # (reuses invalidToken for reset token errors)
+
+  # 2FA errors
+  twoFactorRequired: '2FA verification required.'
+  twoFactorSetupRequired: '2FA setup required.'
+  twoFactorCodeInvalid: 'Invalid 2FA code. Please try again.'
+
+  # OAuth errors
+  oauthProviderNotConfigured: 'This OAuth provider is not configured.'
+  oauthStateInvalid: 'OAuth state validation failed. Please try again.'
+  oauthCallbackFailed: 'OAuth authentication failed. Please try again.'
+  oauthReauthRequired: 'Please log in again with {{provider}}.'
 
   # Task errors
   taskNotFound: 'Task not found.'

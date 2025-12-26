@@ -85,6 +85,8 @@ export default tseslint.config(
             // Additional Radix UI and custom utilities
             "^scroll-.+",
             "^\\[&.+",
+            // Storybook custom theme
+            "^luminous-theme$",
           ],
         },
       ],
@@ -119,7 +121,20 @@ export default tseslint.config(
     },
   },
   {
+    files: [".storybook/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-misused-promises": "off",
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}", "vitest.config.ts", "vite.config.ts"],
+    ignores: [".storybook/**"],
     languageOptions: {
       parserOptions: {
         project: ["./tsconfig.eslint.json"],

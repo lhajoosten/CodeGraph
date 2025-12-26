@@ -36,3 +36,6 @@ export * from './icon-button';
 
 // Form system
 export * from './form';
+
+// Icon system
+export * from '../icons';

@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Menu, Bell, Sun, Moon, LogOut, User, Settings } from 'lucide-react';
+import {
+  Bars3Icon,
+  BellIcon,
+  SunIcon,
+  MoonIcon,
+  ArrowLeftOnRectangleIcon,
+  UserIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { IconButton } from '@/components/ui/icon-button';
@@ -63,7 +71,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         {showMenuButton && (
           <IconButton
             variant="ghost"
-            icon={<Menu />}
+            icon={<Bars3Icon />}
             aria-label="Toggle menu"
             onClick={onMenuClick}
             className="lg:hidden"
@@ -93,7 +101,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         {/* Theme toggle */}
         <IconButton
           variant="ghost"
-          icon={isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          icon={isDark ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
           aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           onClick={toggleTheme}
         />
@@ -101,7 +109,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         {/* Notifications */}
         <IconButton
           variant="ghost"
-          icon={<Bell className="h-5 w-5" />}
+          icon={<BellIcon className="h-5 w-5" />}
           aria-label="View notifications"
         />
 
@@ -127,19 +135,19 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/settings" className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
+                <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/settings" className="cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
+                <Cog6ToothIcon className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer" destructive>
-              <LogOut className="mr-2 h-4 w-4" />
+              <ArrowLeftOnRectangleIcon className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

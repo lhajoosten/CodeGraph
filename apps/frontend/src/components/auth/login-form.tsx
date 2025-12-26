@@ -1,178 +1,147 @@
-import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  EnvelopeIcon,
+  LockClosedIcon,
+  ArrowPathIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from '@heroicons/react/24/outline';
+import { AuthInput } from './auth-input';
+import { loginSchema } from '@/lib/validators';
+import { useLogin } from '@/hooks/api/auth/mutations/use-login';
+import { useTranslationNamespace } from '@/hooks/useTranslation';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useLogin, useToggle } from '@/hooks';
-import { loginSchema, type LoginFormData } from '@/lib/validators';
-import { addToast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
+type LoginFormData = {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+};
 
 interface LoginFormProps {
-  className?: string;
   onSuccess?: () => void;
 }
 
-export function LoginForm({ className, onSuccess }: LoginFormProps) {
-  const navigate = useNavigate();
-  const search = useSearch({ strict: false }) as { redirect?: string };
+/**
+ * Login Form - Email and password authentication
+ * - Form validation with React Hook Form + Zod
+ * - Auto-toast notifications on success/error (via useLogin hook)
+ * - OAuth integration ready
+ * - Loading states during submission
+ * - i18n translations
+ */
+export function LoginForm({ onSuccess }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslationNamespace('auth');
   const loginMutation = useLogin();
-  const showPassword = useToggle(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      rememberMe: false,
-    },
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    loginMutation.mutate(
-      {
+    try {
+      await loginMutation.mutateAsync({
         body: {
           email: data.email,
           password: data.password,
-          remember_me: data.rememberMe ?? false,
+          remember_me: data.rememberMe,
         },
-      },
-      {
-        onSuccess: () => {
-          addToast({
-            title: 'Welcome back!',
-            description: 'You have successfully logged in.',
-            color: 'success',
-          });
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            const redirectTo = search?.redirect || '/';
-            navigate({ to: redirectTo });
-          }
-        },
-        onError: (error: Error) => {
-          addToast({
-            title: 'Login failed',
-            description: error.message || 'Please check your credentials and try again.',
-            color: 'danger',
-          });
-        },
+      });
+
+      // Store remember me preference
+      if (data.rememberMe) {
+        localStorage.setItem('rememberMe', data.email);
       }
-    );
+
+      reset();
+      onSuccess?.();
+    } catch (error) {
+      // Error handled by useLogin mutation (auto-toast)
+      console.error('Login failed:', error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
-      {loginMutation.error && (
-        <Alert variant="danger">
-          <AlertDescription>
-            {loginMutation.error.message || 'Invalid email or password'}
-          </AlertDescription>
-        </Alert>
-      )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <AuthInput
+        label={t('luminous.signin.email')}
+        type="email"
+        placeholder="you@example.com"
+        icon={EnvelopeIcon}
+        disabled={isSubmitting || loginMutation.isPending}
+        error={errors.email?.message}
+        {...register('email')}
+      />
 
-      <div className="space-y-4">
-        {/* Email field */}
-        <div className="space-y-2">
-          <Label htmlFor="email" required>
-            Email Address
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
-            leftIcon={<Mail className="h-4 w-4" />}
-            variant={errors.email ? 'error' : 'default'}
-            {...register('email')}
-          />
-          {errors.email && <p className="text-xs text-danger">{errors.email.message}</p>}
-        </div>
-
-        {/* Password field */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password" required>
-              Password
-            </Label>
-            <Link
-              to="/forgot-password"
-              className={`
-                text-xs text-primary
-                hover:underline
-              `}
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <Input
-            id="password"
-            type={showPassword.isOpen ? 'text' : 'password'}
+      <div className="space-y-2">
+        <div className="relative">
+          <AuthInput
+            label={t('luminous.signin.password')}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
-            autoComplete="current-password"
-            leftIcon={<Lock className="h-4 w-4" />}
-            rightIcon={
-              <button
-                type="button"
-                onClick={showPassword.toggle}
-                className={`
-                  text-text-tertiary
-                  hover:text-text-primary
-                `}
-                tabIndex={-1}
-              >
-                {showPassword.isOpen ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className={`h-4 w-4`} />
-                )}
-              </button>
-            }
-            variant={errors.password ? 'error' : 'default'}
+            icon={LockClosedIcon}
+            disabled={isSubmitting || loginMutation.isPending}
+            error={errors.password?.message}
+            className="pr-10"
             {...register('password')}
           />
-          {errors.password && <p className="text-xs text-danger">{errors.password.message}</p>}
-        </div>
-
-        {/* Remember me */}
-        <div className="flex items-center space-x-2">
-          <Checkbox {...register('rememberMe')} id="rememberMe" />
-          <label
-            htmlFor="rememberMe"
-            className={`
-            cursor-pointer text-sm text-text-secondary
-          `}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute top-[32px] right-3 text-text-muted-lum transition-colors hover:text-text-secondary-lum"
+            tabIndex={-1}
           >
-            Remember me
-          </label>
+            {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
+          </button>
         </div>
       </div>
 
-      <Button type="submit" fullWidth isLoading={isSubmitting || loginMutation.isPending}>
-        Sign In
-      </Button>
-
-      <p className="text-center text-sm text-text-secondary">
-        Don&apos;t have an account?{' '}
-        <Link
-          to="/register"
-          className={`
-            font-medium text-primary
-            hover:underline
-          `}
+      <div className="flex items-center justify-between text-sm">
+        <label className="flex cursor-pointer items-center gap-2">
+          <input
+            type="checkbox"
+            className="cursor-pointer rounded border-border-steel"
+            disabled={isSubmitting || loginMutation.isPending}
+            {...register('rememberMe')}
+          />
+          <span className="text-text-secondary-lum">{t('luminous.signin.rememberMe')}</span>
+        </label>
+        <a
+          href="/forgot-password"
+          className="text-brand-cyan transition-colors hover:text-brand-teal"
         >
-          Sign up
-        </Link>
+          {t('luminous.signin.forgotPassword')}
+        </a>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting || loginMutation.isPending}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-cyan py-3 font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting || loginMutation.isPending ? (
+          <>
+            <ArrowPathIcon className="h-[18px] w-[18px] animate-spin" />
+            {t('common:forms.signingIn')}
+          </>
+        ) : (
+          t('luminous.signin.submit')
+        )}
+      </button>
+
+      <p className="text-center text-sm text-text-secondary-lum">
+        {t('luminous.signin.noAccount')}{' '}
+        <a href="/register" className="text-brand-cyan hover:text-brand-teal">
+          {t('luminous.signin.signup')}
+        </a>
       </p>
     </form>
   );

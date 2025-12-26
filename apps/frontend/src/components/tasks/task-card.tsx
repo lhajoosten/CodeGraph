@@ -1,5 +1,10 @@
 import { Link } from '@tanstack/react-router';
-import { MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-react';
+import {
+  EllipsisHorizontalIcon,
+  PencilIcon,
+  TrashIcon,
+  EyeIcon,
+} from '@heroicons/react/24/outline';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { IconButton } from '@/components/ui/icon-button';
 import {
@@ -69,20 +74,20 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
             <IconButton
               variant="ghost"
               size="sm"
-              icon={<MoreHorizontal />}
+              icon={<EllipsisHorizontalIcon />}
               aria-label="Task actions"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <Link to="/tasks/$id" params={{ id: String(task.id) }}>
-                <Eye className="mr-2 h-4 w-4" />
+                <EyeIcon className="mr-2 h-4 w-4" />
                 View
               </Link>
             </DropdownMenuItem>
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(task.id)}>
-                <Pencil className="mr-2 h-4 w-4" />
+                <PencilIcon className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
             )}
@@ -90,7 +95,7 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => onDelete(task.id)} destructive>
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <TrashIcon className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
               </>

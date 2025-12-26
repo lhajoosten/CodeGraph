@@ -1,13 +1,12 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import {
-  LayoutDashboard,
-  CheckSquare,
-  Bot,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  type LucideIcon,
-} from 'lucide-react';
+  Squares2X2Icon,
+  CheckIcon,
+  RocketLaunchIcon,
+  Cog6ToothIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { SimpleTooltip, TooltipProvider } from '@/components/ui/tooltip';
@@ -17,17 +16,17 @@ import { APP_NAME } from '@/lib/constants';
 interface NavItem {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   badge?: string | number;
 }
 
 const mainNavItems: NavItem[] = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/tasks', label: 'Tasks', icon: CheckSquare },
-  { href: '/agents', label: 'Agents', icon: Bot },
+  { href: '/', label: 'Dashboard', icon: Squares2X2Icon },
+  { href: '/tasks', label: 'Tasks', icon: CheckIcon },
+  { href: '/agents', label: 'Agents', icon: RocketLaunchIcon },
 ];
 
-const bottomNavItems: NavItem[] = [{ href: '/settings', label: 'Settings', icon: Settings }];
+const bottomNavItems: NavItem[] = [{ href: '/settings', label: 'Settings', icon: Cog6ToothIcon }];
 
 interface SidebarProps {
   isOpen: boolean;
@@ -164,11 +163,11 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
           >
             {isOpen ? (
               <>
-                <ChevronLeft className="mr-2 h-4 w-4" />
+                <ChevronLeftIcon className="mr-2 h-4 w-4" />
                 <span>Collapse</span>
               </>
             ) : (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4" />
             )}
           </Button>
         </div>

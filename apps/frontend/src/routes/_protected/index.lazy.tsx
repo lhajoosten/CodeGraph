@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button';
 import { TaskCard } from '@/components/tasks/task-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  PlusCircle,
-  ListTodo,
-  Settings,
-  Bot,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  ArrowRight,
-} from 'lucide-react';
+  PlusIcon,
+  Squares2X2Icon,
+  Cog6ToothIcon,
+  RocketLaunchIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ExclamationCircleIcon,
+  ArrowRightIcon,
+} from '@heroicons/react/24/outline';
 
 function DashboardPage() {
   const { data: user } = useCurrentUser();
@@ -53,7 +53,7 @@ function DashboardPage() {
           </div>
           <Link to="/tasks">
             <Button className="gap-2">
-              <PlusCircle className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               New Task
             </Button>
           </Link>
@@ -74,7 +74,7 @@ function DashboardPage() {
             `}
             >
               <CardTitle className="text-sm font-medium text-text-secondary">Total Tasks</CardTitle>
-              <ListTodo className="h-4 w-4 text-text-tertiary" />
+              <Squares2X2Icon className="h-4 w-4 text-text-tertiary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.total}</div>
@@ -89,7 +89,7 @@ function DashboardPage() {
             `}
             >
               <CardTitle className="text-sm font-medium text-text-secondary">Pending</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-500" />
+              <ClockIcon className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.pending}</div>
@@ -104,7 +104,7 @@ function DashboardPage() {
             `}
             >
               <CardTitle className="text-sm font-medium text-text-secondary">In Progress</CardTitle>
-              <AlertCircle className="h-4 w-4 text-blue-500" />
+              <ExclamationCircleIcon className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.inProgress}</div>
@@ -119,7 +119,7 @@ function DashboardPage() {
             `}
             >
               <CardTitle className="text-sm font-medium text-text-secondary">Completed</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <CheckCircleIcon className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.completed}</div>
@@ -152,7 +152,7 @@ function DashboardPage() {
                 `}
               >
                 View all
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
 
@@ -180,14 +180,14 @@ function DashboardPage() {
                     flex flex-col items-center justify-center py-12 text-center
                   `}
                 >
-                  <ListTodo className="mb-4 h-12 w-12 text-text-tertiary" />
+                  <Squares2X2Icon className="mb-4 h-12 w-12 text-text-tertiary" />
                   <h3 className="mb-2 text-lg font-medium text-text-primary">No tasks yet</h3>
                   <p className="mb-4 text-text-secondary">
                     Create your first task and let our AI agents help you code.
                   </p>
                   <Link to="/tasks">
                     <Button>
-                      <PlusCircle className="mr-2 h-4 w-4" />
+                      <PlusIcon className="mr-2 h-4 w-4" />
                       Create Task
                     </Button>
                   </Link>
@@ -212,7 +212,7 @@ function DashboardPage() {
                     w-full justify-start gap-3
                   `}
                   >
-                    <PlusCircle className="h-4 w-4" />
+                    <PlusIcon className="h-4 w-4" />
                     Create New Task
                   </Button>
                 </Link>
@@ -223,7 +223,7 @@ function DashboardPage() {
                     w-full justify-start gap-3
                   `}
                   >
-                    <ListTodo className="h-4 w-4" />
+                    <Squares2X2Icon className="h-4 w-4" />
                     View All Tasks
                   </Button>
                 </Link>
@@ -234,7 +234,7 @@ function DashboardPage() {
                     w-full justify-start gap-3
                   `}
                   >
-                    <Settings className="h-4 w-4" />
+                    <Cog6ToothIcon className="h-4 w-4" />
                     Account Settings
                   </Button>
                 </Link>
@@ -245,7 +245,7 @@ function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Bot className="h-5 w-5" />
+                  <RocketLaunchIcon className="h-5 w-5" />
                   AI Agents
                 </CardTitle>
                 <CardDescription>Your autonomous coding assistants</CardDescription>

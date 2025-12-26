@@ -5,6 +5,11 @@ interface UserData {
   id: number;
   email: string;
   email_verified: boolean;
+  first_name?: string | null;
+  last_name?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  profile_completed?: boolean;
 }
 
 interface AuthState {

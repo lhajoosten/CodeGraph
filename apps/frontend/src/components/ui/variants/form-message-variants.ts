@@ -1,5 +1,10 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react';
+import {
+  ExclamationCircleIcon,
+  CheckCircleIcon,
+  InformationCircleIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
 
 export const formMessageVariants = cva('flex items-start gap-2 text-sm', {
   variants: {
@@ -17,11 +22,11 @@ export const formMessageVariants = cva('flex items-start gap-2 text-sm', {
 });
 
 export const messageIcons = {
-  default: Info,
-  error: AlertCircle,
-  success: CheckCircle2,
-  warning: AlertTriangle,
-  info: Info,
+  default: InformationCircleIcon,
+  error: ExclamationCircleIcon,
+  success: CheckCircleIcon,
+  warning: ExclamationTriangleIcon,
+  info: InformationCircleIcon,
 };
 
 export type FormMessageVariants = VariantProps<typeof formMessageVariants>;

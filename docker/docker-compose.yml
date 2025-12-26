@@ -1,22 +1,29 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    build:
+      context: ..
+      dockerfile: docker/postgres.Dockerfile
     container_name: codegraph-postgres
     environment:
       POSTGRES_USER: codegraph
       POSTGRES_PASSWORD: codegraph
       POSTGRES_DB: codegraph
-      POSTGRES_INITDB_ARGS: "-c pg_hba_conf_parameters='host all all 0.0.0.0/0 md5'"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U codegraph"]
       interval: 10s
       timeout: 5s
       retries: 5
+    # Ensure mounted init scripts are executable in dev (no-op if not needed)
+    command:
+      [
+        "sh",
+        "-c",
+        "chmod +x /docker-entrypoint-initdb.d/* 2>/dev/null || true; exec docker-entrypoint.sh postgres",
+      ]
 
   redis:
     image: redis:7-alpine
@@ -71,6 +78,25 @@ services:
     depends_on:
       - backend
     command: npm run dev
+
+  # Storybook service for development — runs Storybook in a container with live reload
+  storybook:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+      target: development
+    container_name: codegraph-storybook
+    environment:
+      VITE_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "6006:6006"
+    volumes:
+      - ../apps/frontend:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - backend
+    # Host Storybook on 0.0.0.0 so it's accessible from host machine
+    command: npm run storybook -- --host 0.0.0.0 -p 6006
 
 volumes:
   postgres_data:

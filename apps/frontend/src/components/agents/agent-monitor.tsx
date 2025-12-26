@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { WifiIcon, ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -72,9 +72,9 @@ export function AgentMonitor({ taskId, enabled = true, className }: AgentMonitor
             {isConnecting ? (
               <Spinner size="sm" />
             ) : isConnected ? (
-              <Wifi className="h-5 w-5 text-success" />
+              <WifiIcon className="h-5 w-5 text-success" />
             ) : (
-              <WifiOff className="h-5 w-5 text-danger" />
+              <ExclamationCircleIcon className="h-5 w-5 text-danger" />
             )}
             <div>
               <h3 className="font-semibold text-text-primary">Agent Activity</h3>
@@ -93,7 +93,7 @@ export function AgentMonitor({ taskId, enabled = true, className }: AgentMonitor
               variant="outline"
               size="sm"
               onClick={reconnect}
-              leftIcon={<RefreshCw className="h-4 w-4" />}
+              leftIcon={<ArrowPathIcon className="h-4 w-4" />}
             >
               Reconnect
             </Button>

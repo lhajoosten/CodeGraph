@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { buttonVariants } from './variants/button-variants.ts';
 
 export interface ButtonProps
@@ -41,7 +41,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <ArrowPathIcon className="h-4 w-4 animate-spin" />
             <span>{children}</span>
           </>
         ) : (

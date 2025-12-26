@@ -16,10 +16,11 @@ interface ConnectedAccountsResponse {
 }
 
 /**
- * Navigate to external OAuth authorization URL
+ * Navigate to external OAuth authorization URL for linking
+ * (when user is already authenticated)
  */
-function navigateToOAuthProvider(provider: string): void {
-  const authUrl = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize?redirect_url=/oauth/callback/${provider}`;
+function navigateToOAuthProviderLink(provider: string): void {
+  const authUrl = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize/link?redirect_url=/settings/account`;
   window.location.href = authUrl;
 }
 
@@ -100,7 +101,7 @@ export const ConnectedAccounts = () => {
 
   // Define handlers before early returns
   const handleConnect = useCallback((provider: string) => {
-    navigateToOAuthProvider(provider);
+    navigateToOAuthProviderLink(provider);
   }, []);
 
   // Check if OAuth feature is available

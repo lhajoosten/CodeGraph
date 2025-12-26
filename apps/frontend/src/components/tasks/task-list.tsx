@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { TaskCard } from './task-card';
 import { TaskFilters } from './task-filters';
 import { Button } from '@/components/ui/button';
@@ -114,7 +114,7 @@ export function TaskList({ onCreateTask, className }: TaskListProps) {
           />
         </div>
         {onCreateTask && (
-          <Button onClick={onCreateTask} leftIcon={<Plus className="h-4 w-4" />}>
+          <Button onClick={onCreateTask} leftIcon={<PlusIcon className="h-4 w-4" />}>
             New Task
           </Button>
         )}
