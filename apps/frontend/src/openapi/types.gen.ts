@@ -85,6 +85,14 @@ export type LoginResponse = {
    * Email Verified
    */
   email_verified: boolean;
+  /**
+   * Requires Two Factor
+   */
+  requires_two_factor?: boolean;
+  /**
+   * Two Factor Enabled
+   */
+  two_factor_enabled?: boolean;
 };
 
 /**
@@ -363,6 +371,22 @@ export type TwoFactorEnableResponse = {
 };
 
 /**
+ * TwoFactorLoginRequest
+ *
+ * Request to verify 2FA code during login.
+ */
+export type TwoFactorLoginRequest = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Remember Me
+   */
+  remember_me?: boolean;
+};
+
+/**
  * TwoFactorSetupResponse
  *
  * Response for 2FA setup initiation.
@@ -450,6 +474,10 @@ export type UserLogin = {
    * Password
    */
   password: string;
+  /**
+   * Remember Me
+   */
+  remember_me?: boolean;
 };
 
 /**
@@ -592,6 +620,33 @@ export type LoginUserApiV1AuthLoginPostResponses = {
 
 export type LoginUserApiV1AuthLoginPostResponse =
   LoginUserApiV1AuthLoginPostResponses[keyof LoginUserApiV1AuthLoginPostResponses];
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostData = {
+  body: TwoFactorLoginRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/verify-2fa';
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostError =
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors[keyof VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors];
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: LoginResponse;
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse =
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses[keyof VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses];
 
 export type LogoutApiV1AuthLogoutPostData = {
   body?: never;

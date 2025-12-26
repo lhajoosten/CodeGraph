@@ -3,7 +3,9 @@
   "include": [
     "src",
     "vitest.config.ts",
-    "vite.config.ts"
+    "vite.config.ts",
+    "playwright.config.ts",
+    "tests/**/*"
   ],
   "exclude": [
     "node_modules",
@@ -11,4 +13,3 @@
     "coverage"
   ]
 }
-

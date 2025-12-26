@@ -51,6 +51,12 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs" if settings.debug else None,
     redoc_url="/redoc" if settings.debug else None,
+    servers=[
+        {
+            "url": "http://localhost:8000",
+            "description": "Development server",
+        }
+    ],
 )
 
 # Configure CORS

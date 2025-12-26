@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user
+from src.api.deps import get_current_user, get_current_user_or_partial
 from src.core.database import get_db
 from src.core.logging import get_logger
 from src.core.security import verify_password
@@ -97,13 +97,15 @@ async def get_two_factor_status(
 
 @router.post("/two-factor/setup", response_model=TwoFactorSetupResponse)
 async def setup_two_factor(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_or_partial),
     db: AsyncSession = Depends(get_db),
 ) -> TwoFactorSetupResponse:
     """Start the 2FA setup process.
 
     Generates a TOTP secret and QR code for the user to scan with their
     authenticator app.
+
+    Can be called during login (with partial token) or from settings (with full token).
 
     Returns:
         TwoFactorSetupResponse with QR code and secret.
@@ -128,13 +130,15 @@ async def setup_two_factor(
 @router.post("/two-factor/enable", response_model=TwoFactorEnableResponse)
 async def enable_two_factor(
     request: TwoFactorEnableRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_or_partial),
     db: AsyncSession = Depends(get_db),
 ) -> TwoFactorEnableResponse:
     """Enable 2FA after verifying the TOTP code.
 
     The user must first call /two-factor/setup and scan the QR code before
     calling this endpoint with the code from their authenticator app.
+
+    Can be called during login (with partial token) or from settings (with full token).
 
     Args:
         request: Contains the 6-digit TOTP code.

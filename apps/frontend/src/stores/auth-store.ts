@@ -11,9 +11,14 @@ interface AuthState {
   isAuthenticated: boolean;
   emailVerified: boolean;
   user: UserData | null;
-  login: (user?: UserData) => void;
+  oauthProvider: string | null; // OAuth provider used for login (github, google, microsoft)
+  twoFactorEnabled: boolean; // Does user have 2FA enabled?
+  twoFactorVerified: boolean; // Has user completed 2FA this session?
+  requiresTwoFactorSetup: boolean; // Must user set up 2FA before proceeding?
+  login: (user?: UserData, oauthProvider?: string | null) => void;
   logout: () => void;
   setEmailVerified: (verified: boolean) => void;
+  setTwoFactorStatus: (enabled: boolean, verified: boolean, requiresSetup: boolean) => void;
 }
 
 /**
@@ -28,19 +33,34 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       emailVerified: false,
       user: null,
-      login: (user) =>
+      oauthProvider: null,
+      twoFactorEnabled: false,
+      twoFactorVerified: false,
+      requiresTwoFactorSetup: false,
+      login: (user, oauthProvider = null) =>
         set({
           isAuthenticated: true,
           emailVerified: user?.email_verified ?? false,
           user: user ?? null,
+          oauthProvider: oauthProvider,
         }),
       logout: () =>
         set({
           isAuthenticated: false,
           emailVerified: false,
           user: null,
+          oauthProvider: null,
+          twoFactorEnabled: false,
+          twoFactorVerified: false,
+          requiresTwoFactorSetup: false,
         }),
       setEmailVerified: (verified) => set({ emailVerified: verified }),
+      setTwoFactorStatus: (enabled, verified, requiresSetup) =>
+        set({
+          twoFactorEnabled: enabled,
+          twoFactorVerified: verified,
+          requiresTwoFactorSetup: requiresSetup,
+        }),
     }),
     {
       name: 'auth-storage',

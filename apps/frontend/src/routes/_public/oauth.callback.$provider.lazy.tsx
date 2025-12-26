@@ -81,18 +81,21 @@ function OAuthCallback() {
 
     processedRef.current = true;
 
-    // Authentication successful - update auth store
-    login({
-      id: currentUser.id,
-      email: currentUser.email,
-      email_verified: currentUser.email_verified,
-    });
+    // Authentication successful - update auth store with provider
+    login(
+      {
+        id: currentUser.id,
+        email: currentUser.email,
+        email_verified: currentUser.email_verified,
+      },
+      provider // Store which OAuth provider was used
+    );
 
-    // Redirect to home after a short delay
-    setTimeout(() => {
-      navigate({ to: '/' });
-    }, 1500);
-  }, [currentUser, isError, oauthError, isLoading, login, navigate]);
+    // Store provider in localStorage for future re-authentication
+    localStorage.setItem('last_oauth_provider', provider);
+
+    navigate({ to: '/' });
+  }, [currentUser, isError, oauthError, isLoading, login, navigate, provider]);
 
   const getProviderName = () => {
     switch (provider) {

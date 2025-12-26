@@ -67,6 +67,51 @@ def set_auth_cookies(
     )
 
 
+def set_partial_auth_cookies(
+    response: Response,
+    partial_token: str,
+    csrf_token: str,
+) -> None:
+    """
+    Set partial authentication cookies (5-minute expiry for 2FA verification step).
+
+    Args:
+        response: FastAPI response object
+        partial_token: JWT partial access token
+        csrf_token: CSRF protection token
+    """
+    samesite: Literal["lax", "strict", "none"] | None = cast(
+        Literal["lax", "strict", "none"],
+        settings.cookie_samesite,
+    )
+
+    # Partial access token cookie (5 minutes)
+    # HTTP-only, secure, SameSite protection
+    response.set_cookie(
+        key="access_token",
+        value=partial_token,
+        max_age=300,  # 5 minutes
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite=samesite,
+        domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
+        path="/api",
+    )
+
+    # CSRF token cookie (readable by JavaScript)
+    # Not HTTP-only so frontend can read and include in headers
+    response.set_cookie(
+        key="csrf_token",
+        value=csrf_token,
+        max_age=300,  # 5 minutes
+        httponly=False,  # Frontend needs to read this
+        secure=settings.cookie_secure,
+        samesite=samesite,
+        domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
+        path="/",
+    )
+
+
 def clear_auth_cookies(response: Response) -> None:
     """
     Clear all authentication cookies from the response.

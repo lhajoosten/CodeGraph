@@ -39,7 +39,13 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
 
   const onSubmit = async (data: LoginFormData) => {
     loginMutation.mutate(
-      { body: { email: data.email, password: data.password } },
+      {
+        body: {
+          email: data.email,
+          password: data.password,
+          remember_me: data.rememberMe ?? false,
+        },
+      },
       {
         onSuccess: () => {
           addToast({
@@ -140,7 +146,7 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
 
         {/* Remember me */}
         <div className="flex items-center space-x-2">
-          <Checkbox id="rememberMe" {...register('rememberMe')} />
+          <Checkbox {...register('rememberMe')} id="rememberMe" />
           <label
             htmlFor="rememberMe"
             className={`

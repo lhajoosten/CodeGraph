@@ -8,14 +8,15 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user
+from src.api.deps import get_current_user, get_current_user_optional, get_current_user_partial
 from src.core.config import settings
-from src.core.cookies import clear_auth_cookies, set_auth_cookies
+from src.core.cookies import clear_auth_cookies, set_auth_cookies, set_partial_auth_cookies
 from src.core.csrf import generate_csrf_token
 from src.core.database import get_db
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
+    create_partial_access_token,
     create_refresh_token,
     create_session_token,
     decode_token,
@@ -28,6 +29,7 @@ from src.models.user import User
 from src.models.user_session import UserSession
 from src.schemas.user import UserCreate, UserLogin, UserResponse
 from src.services.email.service import EmailSendingService, EmailTokenService
+from src.services.two_factor_service import TwoFactorService
 
 logger = get_logger(__name__)
 
@@ -66,6 +68,13 @@ class ChangeEmailRequest(BaseModel):
 
     new_email: EmailStr
     password: str
+
+
+class TwoFactorLoginRequest(BaseModel):
+    """Request to verify 2FA code during login."""
+
+    code: str  # TOTP or backup code
+    remember_me: bool = False
 
 
 @router.post("/auth/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -137,6 +146,8 @@ class LoginResponse(BaseModel):
     message: str
     user: UserResponse
     email_verified: bool
+    requires_two_factor: bool = False
+    two_factor_enabled: bool = False
 
 
 @router.post("/auth/login", response_model=LoginResponse)
@@ -209,19 +220,82 @@ async def login(
     user.last_login_at = datetime.now(datetime.now().astimezone().tzinfo)
     user.last_login_ip = request.client.host if request.client else None
 
+    # Check if 2FA is enabled
+    if user.two_factor_enabled:
+        # User has 2FA - require verification
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+
+        await db.commit()  # Save user updates
+        await db.refresh(user)  # Refresh to load all fields for response
+
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(
+            "user_login_2fa_verification_required",
+            user_id=user.id,
+        )
+
+        return LoginResponse(
+            message="2FA verification required",
+            user=UserResponse.model_validate(user),
+            email_verified=user.email_verified,
+            requires_two_factor=True,
+            two_factor_enabled=True,
+        )
+
+    # Check if 2FA is mandatory but not enabled
+    if settings.two_factor_mandatory and not user.two_factor_enabled:
+        # User must set up 2FA
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+
+        await db.commit()  # Save user updates
+        await db.refresh(user)  # Refresh to load all fields for response
+
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(
+            "user_login_2fa_setup_required",
+            user_id=user.id,
+        )
+
+        return LoginResponse(
+            message="2FA setup required",
+            user=UserResponse.model_validate(user),
+            email_verified=user.email_verified,
+            requires_two_factor=True,
+            two_factor_enabled=False,
+        )
+
+    # 2FA not enabled and not mandatory - proceed with full login
+    # Calculate token expiry based on remember_me flag
+    if user_data.remember_me:
+        # Extended session: 7 days
+        refresh_expires_delta = timedelta(days=settings.refresh_token_expire_days)
+        session_expires_delta = timedelta(days=settings.refresh_token_expire_days)
+        logger.debug(f"Creating extended session for user {user.id} (remember_me=True)")
+    else:
+        # Default session: 4 hours
+        refresh_expires_delta = timedelta(hours=settings.refresh_token_expire_hours)
+        session_expires_delta = timedelta(hours=settings.refresh_token_expire_hours)
+        logger.debug(f"Creating standard session for user {user.id} (remember_me=False)")
+
     # Create tokens
     access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token_str = create_refresh_token(data={"sub": str(user.id)})
+    refresh_token_str = create_refresh_token(
+        data={"sub": str(user.id)},
+        expires_delta=refresh_expires_delta,
+    )
     csrf_token = generate_csrf_token()
     session_token = create_session_token()
 
-    # Store refresh token in database
+    # Store refresh token in database with calculated expiry
     token_hash = hash_token(refresh_token_str)
     refresh_token_record = RefreshToken(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.now(datetime.now().astimezone().tzinfo)
-        + timedelta(days=settings.refresh_token_expire_days),
+        expires_at=datetime.now(datetime.now().astimezone().tzinfo) + refresh_expires_delta,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("User-Agent"),
     )
@@ -234,8 +308,7 @@ async def login(
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("User-Agent"),
         last_activity=datetime.now(datetime.now().astimezone().tzinfo),
-        expires_at=datetime.now(datetime.now().astimezone().tzinfo)
-        + timedelta(hours=settings.session_expire_hours),
+        expires_at=datetime.now(datetime.now().astimezone().tzinfo) + session_expires_delta,
     )
     db.add(user_session)
 
@@ -255,6 +328,112 @@ async def login(
         message="Login successful",
         user=UserResponse.model_validate(user),
         email_verified=user.email_verified,
+        requires_two_factor=False,
+        two_factor_enabled=False,
+    )
+
+
+@router.post("/auth/verify-2fa", response_model=LoginResponse)
+async def verify_two_factor_login(
+    request_data: TwoFactorLoginRequest,
+    request: Request,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user_partial)],
+) -> LoginResponse:
+    """
+    Verify 2FA code during login and issue full tokens.
+
+    Requires a partial access token (valid only during 2FA verification step).
+
+    Args:
+        request_data: Request containing 2FA code and remember_me flag
+        request: FastAPI request object (for IP address)
+        response: FastAPI response object (to set cookies)
+        db: Database session
+        current_user: Current user from partial token
+
+    Returns:
+        LoginResponse: Success message with user data and email verification status
+
+    Raises:
+        HTTPException: If 2FA code is invalid
+    """
+    # Verify 2FA code
+    service = TwoFactorService(db)
+    is_valid = await service.verify_2fa(current_user, request_data.code)
+
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid 2FA code",
+        )
+
+    # Update user last login info
+    current_user.last_login_at = datetime.now(datetime.now().astimezone().tzinfo)
+    current_user.last_login_ip = request.client.host if request.client else None
+
+    # Calculate token expiry based on remember_me flag
+    if request_data.remember_me:
+        # Extended session: 7 days
+        refresh_expires_delta = timedelta(days=settings.refresh_token_expire_days)
+        session_expires_delta = timedelta(days=settings.refresh_token_expire_days)
+        logger.debug(f"Creating extended session for user {current_user.id} (remember_me=True)")
+    else:
+        # Default session: 4 hours
+        refresh_expires_delta = timedelta(hours=settings.refresh_token_expire_hours)
+        session_expires_delta = timedelta(hours=settings.refresh_token_expire_hours)
+        logger.debug(f"Creating standard session for user {current_user.id} (remember_me=False)")
+
+    # Create full tokens
+    access_token = create_access_token(data={"sub": str(current_user.id)})
+    refresh_token_str = create_refresh_token(
+        data={"sub": str(current_user.id)},
+        expires_delta=refresh_expires_delta,
+    )
+    csrf_token = generate_csrf_token()
+    session_token = create_session_token()
+
+    # Store refresh token in database with calculated expiry
+    token_hash = hash_token(refresh_token_str)
+    refresh_token_record = RefreshToken(
+        user_id=current_user.id,
+        token_hash=token_hash,
+        expires_at=datetime.now(datetime.now().astimezone().tzinfo) + refresh_expires_delta,
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("User-Agent"),
+    )
+    db.add(refresh_token_record)
+
+    # Create session record
+    user_session = UserSession(
+        user_id=current_user.id,
+        session_token=session_token,
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("User-Agent"),
+        last_activity=datetime.now(datetime.now().astimezone().tzinfo),
+        expires_at=datetime.now(datetime.now().astimezone().tzinfo) + session_expires_delta,
+    )
+    db.add(user_session)
+
+    await db.commit()
+    await db.refresh(current_user)
+
+    # Set HTTP-only cookies for full authenticated session
+    set_auth_cookies(response, access_token, refresh_token_str, csrf_token)
+
+    logger.info(
+        "user_login_2fa_verified",
+        user_id=current_user.id,
+        email_verified=current_user.email_verified,
+    )
+
+    return LoginResponse(
+        message="Login successful",
+        user=UserResponse.model_validate(current_user),
+        email_verified=current_user.email_verified,
+        requires_two_factor=False,
+        two_factor_enabled=True,
     )
 
 
@@ -263,15 +442,17 @@ async def logout(
     response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
     refresh_token: Annotated[str | None, Cookie()] = None,
-    current_user: Annotated[User | None, Depends(get_current_user)] = None,
+    current_user: Annotated[User | None, Depends(get_current_user_optional)] = None,
 ) -> dict[str, str]:
     """
     Logout user, clears cookies and revokes refresh token.
 
+    Works even if access token is expired (uses optional authentication).
+
     Args:
         response: FastAPI response object (to clear cookies)
         refresh_token: Refresh token from cookie
-        current_user: Current authenticated user
+        current_user: Current authenticated user (if any)
         db: Database session
 
     Returns:
@@ -292,9 +473,16 @@ async def logout(
             refresh_token_record.revoked = True
             refresh_token_record.revoked_at = datetime.now(datetime.now().astimezone().tzinfo)
             await db.commit()
+            logger.info(f"Revoked refresh token for user {current_user.id}")
 
-    # Clear authentication cookies
+    # Clear authentication cookies (always, even if user not authenticated)
     clear_auth_cookies(response)
+
+    logger.info(
+        "user_logout",
+        user_id=current_user.id if current_user else None,
+        had_refresh_token=refresh_token is not None,
+    )
 
     return {"message": "Logout successful"}
 
@@ -337,6 +525,19 @@ async def refresh(
             detail="Invalid refresh token",
         )
 
+    # Check if this is an OAuth token (doesn't have DB record)
+    is_oauth_token = payload.get("oauth", False)
+    if is_oauth_token:
+        logger.info(
+            "oauth_token_refresh_attempt",
+            user_id=payload.get("sub"),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="oauth_reauthentication_required",
+            headers={"X-Auth-Method": "oauth"},
+        )
+
     user_id = payload.get("sub")
     if not user_id:
         raise HTTPException(
@@ -344,7 +545,7 @@ async def refresh(
             detail="Invalid refresh token",
         )
 
-    # Check if refresh token exists and is not revoked
+    # Check if refresh token exists and is not revoked (traditional auth only)
     token_hash = hash_token(refresh_token)
     result = await db.execute(
         select(RefreshToken).where(
@@ -355,6 +556,11 @@ async def refresh(
     refresh_token_record = result.scalar_one_or_none()
 
     if not refresh_token_record:
+        logger.warning(
+            "refresh_token_not_found",
+            user_id=user_id,
+            has_oauth_flag=is_oauth_token,
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token not found",
@@ -382,22 +588,38 @@ async def refresh(
             detail="User not found or inactive",
         )
 
+    # Detect if this was a remember_me session by checking original expiry
+    original_expiry_hours = (
+        refresh_token_record.expires_at - refresh_token_record.created_at
+    ).total_seconds() / 3600
+    is_remember_me_session = original_expiry_hours > 24  # > 1 day = extended session
+
+    # Preserve session type
+    if is_remember_me_session:
+        new_refresh_expires_delta = timedelta(days=settings.refresh_token_expire_days)
+        logger.debug(f"Rotating remember_me session for user {user.id}")
+    else:
+        new_refresh_expires_delta = timedelta(hours=settings.refresh_token_expire_hours)
+        logger.debug(f"Rotating standard session for user {user.id}")
+
     # Revoke old refresh token (token rotation)
     refresh_token_record.revoked = True
     refresh_token_record.revoked_at = datetime.now(datetime.now().astimezone().tzinfo)
 
-    # Create new tokens
+    # Create new tokens with preserved expiry
     new_access_token = create_access_token(data={"sub": str(user.id)})
-    new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    new_refresh_token = create_refresh_token(
+        data={"sub": str(user.id)},
+        expires_delta=new_refresh_expires_delta,
+    )
     new_csrf_token = generate_csrf_token()
 
-    # Store new refresh token
+    # Store new refresh token with appropriate expiry
     new_token_hash = hash_token(new_refresh_token)
     new_refresh_token_record = RefreshToken(
         user_id=user.id,
         token_hash=new_token_hash,
-        expires_at=datetime.now(datetime.now().astimezone().tzinfo)
-        + timedelta(days=settings.refresh_token_expire_days),
+        expires_at=datetime.now(datetime.now().astimezone().tzinfo) + new_refresh_expires_delta,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("User-Agent"),
     )

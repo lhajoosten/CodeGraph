@@ -43,6 +43,7 @@ import {
   updateTaskApiV1TasksTaskIdPatch,
   verifyEmailApiV1AuthVerifyEmailPost,
   verifyTwoFactorApiV1TwoFactorVerifyPost,
+  verifyTwoFactorLoginApiV1AuthVerify2FaPost,
 } from '../sdk.gen';
 import type {
   ChangeEmailApiV1AuthChangeEmailPostData,
@@ -133,6 +134,9 @@ import type {
   VerifyTwoFactorApiV1TwoFactorVerifyPostData,
   VerifyTwoFactorApiV1TwoFactorVerifyPostError,
   VerifyTwoFactorApiV1TwoFactorVerifyPostResponse,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostData,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostError,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse,
 } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
@@ -283,14 +287,60 @@ export const loginUserApiV1AuthLoginPostMutation = (
 };
 
 /**
+ * Verify Two Factor Login
+ *
+ * Verify 2FA code during login and issue full tokens.
+ *
+ * Requires a partial access token (valid only during 2FA verification step).
+ *
+ * Args:
+ * request_data: Request containing 2FA code and remember_me flag
+ * request: FastAPI request object (for IP address)
+ * response: FastAPI response object (to set cookies)
+ * db: Database session
+ * current_user: Current user from partial token
+ *
+ * Returns:
+ * LoginResponse: Success message with user data and email verification status
+ *
+ * Raises:
+ * HTTPException: If 2FA code is invalid
+ */
+export const verifyTwoFactorLoginApiV1AuthVerify2FaPostMutation = (
+  options?: Partial<Options<VerifyTwoFactorLoginApiV1AuthVerify2FaPostData>>
+): UseMutationOptions<
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse,
+  AxiosError<VerifyTwoFactorLoginApiV1AuthVerify2FaPostError>,
+  Options<VerifyTwoFactorLoginApiV1AuthVerify2FaPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse,
+    AxiosError<VerifyTwoFactorLoginApiV1AuthVerify2FaPostError>,
+    Options<VerifyTwoFactorLoginApiV1AuthVerify2FaPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await verifyTwoFactorLoginApiV1AuthVerify2FaPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
  * Logout
  *
  * Logout user, clears cookies and revokes refresh token.
  *
+ * Works even if access token is expired (uses optional authentication).
+ *
  * Args:
  * response: FastAPI response object (to clear cookies)
  * refresh_token: Refresh token from cookie
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (if any)
  * db: Database session
  *
  * Returns:
@@ -995,6 +1045,8 @@ export const getTwoFactorStatusApiV1TwoFactorStatusGetOptions = (
  * Generates a TOTP secret and QR code for the user to scan with their
  * authenticator app.
  *
+ * Can be called during login (with partial token) or from settings (with full token).
+ *
  * Returns:
  * TwoFactorSetupResponse with QR code and secret.
  *
@@ -1032,6 +1084,8 @@ export const setupTwoFactorApiV1TwoFactorSetupPostMutation = (
  *
  * The user must first call /two-factor/setup and scan the QR code before
  * calling this endpoint with the code from their authenticator app.
+ *
+ * Can be called during login (with partial token) or from settings (with full token).
  *
  * Args:
  * request: Contains the 6-digit TOTP code.

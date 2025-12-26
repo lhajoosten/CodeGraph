@@ -1,76 +1,11 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import { useLogin } from '@/hooks';
-import type { LoginResponse } from '@/openapi/types.gen';
+import { createLazyFileRoute } from '@tanstack/react-router';
+import { LoginForm } from '@/components/auth/login-form';
 
 export const Route = createLazyFileRoute('/_public/login')({
   component: LoginPage,
 });
 
 function LoginPage() {
-  const navigate = useNavigate();
-  const loginMutation = useLogin();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    loginMutation.mutate(
-      {
-        body: {
-          email,
-          password,
-        },
-      },
-      {
-        onSuccess: (rawData) => {
-          // Note: API returns LoginResponse but generated types say TokenResponse
-          const data = rawData as unknown as LoginResponse;
-          console.info('[Login] Login successful, email_verified:', data.email_verified);
-
-          // Check if email is verified
-          if (!data.email_verified) {
-            // Redirect to verify email page
-            navigate({
-              to: '/verify-email-pending',
-              search: { email: data.user.email },
-            });
-          } else {
-            // Email verified, go to home/dashboard
-            navigate({ to: '/' });
-          }
-        },
-        onError: (err) => {
-          // Extract error message from axios error response
-          const axiosError = err as {
-            response?: { data?: { detail?: string | Array<{ msg: string }> } };
-          };
-          let errorMessage = 'Login failed. Please try again.';
-          if (axiosError.response?.data?.detail) {
-            const detail = axiosError.response.data.detail;
-            if (typeof detail === 'string') {
-              errorMessage = detail;
-            } else if (Array.isArray(detail) && detail.length > 0) {
-              errorMessage = detail[0].msg;
-            }
-          }
-          setError(errorMessage);
-          // Clear password on error for security
-          setPassword('');
-        },
-      }
-    );
-  };
-
   return (
     <div
       className={`
@@ -89,142 +24,8 @@ function LoginPage() {
 
         {/* Card */}
         <div className="space-y-6 rounded-lg bg-white p-8 shadow-xl">
-          {/* Error Alert */}
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <p className="text-sm font-medium text-red-700">{error}</p>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className={`mb-2 block text-sm font-medium text-gray-700`}>
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                disabled={loginMutation.isPending}
-                className={`
-                  w-full rounded-lg border border-gray-300 px-4 py-2
-                  focus:border-transparent focus:ring-2 focus:ring-blue-500
-                  focus:outline-none
-                  disabled:cursor-not-allowed disabled:bg-gray-50
-                `}
-                required
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className={`mb-2 block text-sm font-medium text-gray-700`}>
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  disabled={loginMutation.isPending}
-                  className={`
-                    w-full rounded-lg border border-gray-300 px-4 py-2
-                    focus:border-transparent focus:ring-2 focus:ring-blue-500
-                    focus:outline-none
-                    disabled:cursor-not-allowed disabled:bg-gray-50
-                  `}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={`
-                    absolute top-1/2 right-3 -translate-y-1/2 text-gray-500
-                    hover:text-gray-700
-                  `}
-                >
-                  {showPassword ? (
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                      <path
-                        fillRule="evenodd"
-                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-4.803m5.596-3.856a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM19.5 13a8.956 8.956 0 01-4.312 5.25m-5.312.75a9.03 9.03 0 012.25.25"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Forgot Password Link */}
-            <div className="flex justify-end">
-              <Link
-                to="/forgot-password"
-                className={`
-                  text-sm font-medium text-blue-600
-                  hover:text-blue-700
-                `}
-              >
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loginMutation.isPending}
-              className={`
-                w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
-                transition
-                hover:bg-blue-700
-                disabled:cursor-not-allowed disabled:opacity-50
-              `}
-            >
-              {loginMutation.isPending ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : (
-                'Sign in'
-              )}
-            </button>
-          </form>
+          {/* Use LoginForm component */}
+          <LoginForm />
 
           {/* OAuth Divider */}
           <div className="relative">
@@ -240,7 +41,7 @@ function LoginPage() {
           <div className="grid grid-cols-3 gap-3">
             {/* GitHub */}
             <a
-              href={`${import.meta.env.VITE_API_URL}/oauth/github/authorize?redirect_url=/oauth/callback/github`}
+              href={`${import.meta.env.VITE_API_URL}/api/v1/oauth/github/authorize?redirect_url=/oauth/callback/github`}
               className={`
                 flex items-center justify-center rounded-lg border
                 border-gray-300 px-4 py-2 transition
@@ -254,7 +55,7 @@ function LoginPage() {
 
             {/* Google */}
             <a
-              href={`${import.meta.env.VITE_API_URL}/oauth/google/authorize?redirect_url=/oauth/callback/google`}
+              href={`${import.meta.env.VITE_API_URL}/api/v1/oauth/google/authorize?redirect_url=/oauth/callback/google`}
               className={`
                 flex items-center justify-center rounded-lg border
                 border-gray-300 px-4 py-2 transition
@@ -298,28 +99,6 @@ function LoginPage() {
               </svg>
             </a>
           </div>
-
-          {/* Register Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">Don&apos;t have an account?</span>
-            </div>
-          </div>
-
-          {/* Register Link */}
-          <Link
-            to="/register"
-            className={`
-              block w-full rounded-lg bg-gray-100 px-4 py-2 text-center
-              font-medium text-gray-900 transition
-              hover:bg-gray-200
-            `}
-          >
-            Sign up
-          </Link>
         </div>
 
         {/* Footer */}

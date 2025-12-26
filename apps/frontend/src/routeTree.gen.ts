@@ -14,6 +14,8 @@ import { Route as R404RouteImport } from './routes/$404'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
 import { Route as PublicVerifyEmailPendingRouteImport } from './routes/_public/verify-email-pending'
 import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
+import { Route as PublicVerify2faRouteImport } from './routes/_public/verify-2fa'
+import { Route as PublicSetup2faRouteImport } from './routes/_public/setup-2fa'
 import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
@@ -53,6 +55,20 @@ const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicVerify2faRoute = PublicVerify2faRouteImport.update({
+  id: '/_public/verify-2fa',
+  path: '/verify-2fa',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_public/verify-2fa.lazy').then((d) => d.Route),
+)
+const PublicSetup2faRoute = PublicSetup2faRouteImport.update({
+  id: '/_public/setup-2fa',
+  path: '/setup-2fa',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_public/setup-2fa.lazy').then((d) => d.Route),
+)
 const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
   id: '/_public/reset-password',
   path: '/reset-password',
@@ -118,6 +134,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/reset-password': typeof PublicResetPasswordRoute
+  '/setup-2fa': typeof PublicSetup2faRoute
+  '/verify-2fa': typeof PublicVerify2faRoute
   '/verify-email': typeof PublicVerifyEmailRoute
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
@@ -133,6 +151,8 @@ export interface FileRoutesByTo {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/reset-password': typeof PublicResetPasswordRoute
+  '/setup-2fa': typeof PublicSetup2faRoute
+  '/verify-2fa': typeof PublicVerify2faRoute
   '/verify-email': typeof PublicVerifyEmailRoute
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
@@ -149,6 +169,8 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_public/reset-password': typeof PublicResetPasswordRoute
+  '/_public/setup-2fa': typeof PublicSetup2faRoute
+  '/_public/verify-2fa': typeof PublicVerify2faRoute
   '/_public/verify-email': typeof PublicVerifyEmailRoute
   '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/_protected/': typeof ProtectedIndexRoute
@@ -166,6 +188,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/setup-2fa'
+    | '/verify-2fa'
     | '/verify-email'
     | '/verify-email-pending'
     | '/'
@@ -181,6 +205,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/setup-2fa'
+    | '/verify-2fa'
     | '/verify-email'
     | '/verify-email-pending'
     | '/'
@@ -196,6 +222,8 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/_public/register'
     | '/_public/reset-password'
+    | '/_public/setup-2fa'
+    | '/_public/verify-2fa'
     | '/_public/verify-email'
     | '/_public/verify-email-pending'
     | '/_protected/'
@@ -212,6 +240,8 @@ export interface RootRouteChildren {
   PublicLoginRoute: typeof PublicLoginRoute
   PublicRegisterRoute: typeof PublicRegisterRoute
   PublicResetPasswordRoute: typeof PublicResetPasswordRoute
+  PublicSetup2faRoute: typeof PublicSetup2faRoute
+  PublicVerify2faRoute: typeof PublicVerify2faRoute
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
@@ -256,6 +286,20 @@ declare module '@tanstack/react-router' {
       path: '/verify-email'
       fullPath: '/verify-email'
       preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/verify-2fa': {
+      id: '/_public/verify-2fa'
+      path: '/verify-2fa'
+      fullPath: '/verify-2fa'
+      preLoaderRoute: typeof PublicVerify2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/setup-2fa': {
+      id: '/_public/setup-2fa'
+      path: '/setup-2fa'
+      fullPath: '/setup-2fa'
+      preLoaderRoute: typeof PublicSetup2faRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/reset-password': {
@@ -324,6 +368,8 @@ const rootRouteChildren: RootRouteChildren = {
   PublicLoginRoute: PublicLoginRoute,
   PublicRegisterRoute: PublicRegisterRoute,
   PublicResetPasswordRoute: PublicResetPasswordRoute,
+  PublicSetup2faRoute: PublicSetup2faRoute,
+  PublicVerify2faRoute: PublicVerify2faRoute,
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicVerifyEmailPendingRoute: PublicVerifyEmailPendingRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,

@@ -11,10 +11,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.deps import get_current_user
 from src.core.config import settings
-from src.core.cookies import set_auth_cookies
+from src.core.cookies import set_auth_cookies, set_partial_auth_cookies
+from src.core.csrf import generate_csrf_token
 from src.core.database import get_db
 from src.core.logging import get_logger
-from src.core.security import create_access_token, create_refresh_token
+from src.core.security import (
+    create_access_token,
+    create_partial_access_token,
+    create_refresh_token,
+)
 from src.models.user import User
 from src.services.oauth_service import (
     OAuthService,
@@ -235,23 +240,69 @@ async def oauth_callback(
     # Get or create user
     user, is_new = await oauth_service.get_or_create_user(profile)
 
+    # Check if 2FA is enabled
+    if user.two_factor_enabled:
+        # User has 2FA - require verification
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+
+        redirect_url = f"{settings.frontend_url}/verify-2fa?oauth=true&provider={provider}"
+        response = RedirectResponse(url=redirect_url)
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(
+            "oauth_login_2fa_verification_required",
+            provider=provider,
+            user_id=user.id,
+        )
+
+        return response
+
+    # Check if 2FA is mandatory but not enabled
+    if settings.two_factor_mandatory and not user.two_factor_enabled:
+        # User must set up 2FA
+        partial_token = create_partial_access_token(data={"sub": str(user.id)})
+        csrf_token = generate_csrf_token()
+
+        redirect_url = f"{settings.frontend_url}/setup-2fa?oauth=true&provider={provider}"
+        response = RedirectResponse(url=redirect_url)
+        set_partial_auth_cookies(response, partial_token, csrf_token)
+
+        logger.info(
+            "oauth_login_2fa_setup_required",
+            provider=provider,
+            user_id=user.id,
+        )
+
+        return response
+
+    # 2FA not enabled and not mandatory - proceed with full OAuth login
     # Create response with redirect
     redirect_url = f"{settings.frontend_url}{state_data['redirect_url']}"
     response = RedirectResponse(url=redirect_url)
 
-    # Set auth cookies
-    from src.core.csrf import generate_csrf_token
-
+    # Set auth cookies (OAuth: NO database storage)
     access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token_str = create_refresh_token(data={"sub": str(user.id)})
+    # Create a short-lived refresh token in JWT only (not stored in DB)
+    # This allows the frontend to detect expiry and redirect to OAuth
+    refresh_token_str = create_refresh_token(
+        data={"sub": str(user.id), "oauth": True},  # Mark as OAuth token
+        expires_delta=timedelta(
+            minutes=settings.access_token_expire_minutes
+        ),  # Same as access token
+    )
     csrf_token = generate_csrf_token()
     set_auth_cookies(response, access_token, refresh_token_str, csrf_token)
+
+    # DO NOT create RefreshToken or UserSession DB records for OAuth users
+    # OAuth tokens are ephemeral - when they expire, user re-authenticates via provider
 
     logger.info(
         "oauth_login_success",
         provider=provider,
         user_id=user.id,
         is_new_user=is_new,
+        auth_method="oauth",
     )
 
     return response

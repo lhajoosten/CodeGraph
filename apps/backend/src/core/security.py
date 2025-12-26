@@ -94,22 +94,60 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     return encoded_jwt
 
 
-def create_refresh_token(data: dict[str, Any]) -> str:
+def create_refresh_token(
+    data: dict[str, Any],
+    expires_delta: timedelta | None = None,
+) -> str:
     """
     Create a JWT refresh token.
 
     Args:
         data: Data to encode in the token (typically user_id)
+        expires_delta: Optional custom expiration time.
+                      If None, uses default (4 hours)
 
     Returns:
         Encoded JWT refresh token string
     """
     to_encode = data.copy()
-    expire = datetime.now(UTC) + timedelta(days=settings.refresh_token_expire_days)
+
+    if expires_delta:
+        expire = datetime.now(UTC) + expires_delta
+    else:
+        # Default: 4 hours
+        expire = datetime.now(UTC) + timedelta(hours=settings.refresh_token_expire_hours)
 
     to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
-    logger.debug(f"Created refresh token for user_id={data.get('sub')}")
+    logger.debug(
+        f"Created refresh token for user_id={data.get('sub')}, "
+        f"expires_in={'custom' if expires_delta else 'default (4 hours)'}"
+    )
+    return encoded_jwt
+
+
+def create_partial_access_token(data: dict[str, Any]) -> str:
+    """
+    Create a limited JWT token for 2FA verification step (5 min expiry).
+
+    This token grants access ONLY to:
+    - /auth/verify-2fa
+    - /two-factor/setup
+    - /two-factor/enable
+
+    Cannot be used to access protected resources or user data.
+
+    Args:
+        data: Data to encode in the token (typically user_id)
+
+    Returns:
+        Encoded JWT token string with 5-minute expiration
+    """
+    to_encode = data.copy()
+    expire = datetime.now(UTC) + timedelta(minutes=5)
+    to_encode.update({"exp": expire, "type": "partial", "scope": "2fa_required"})
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    logger.debug(f"Created partial access token for user_id={data.get('sub')}")
     return encoded_jwt
 
 

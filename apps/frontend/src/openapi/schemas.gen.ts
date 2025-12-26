@@ -92,6 +92,16 @@ export const LoginResponseSchema = {
       type: 'boolean',
       title: 'Email Verified',
     },
+    requires_two_factor: {
+      type: 'boolean',
+      title: 'Requires Two Factor',
+      default: false,
+    },
+    two_factor_enabled: {
+      type: 'boolean',
+      title: 'Two Factor Enabled',
+      default: false,
+    },
   },
   type: 'object',
   required: ['message', 'user', 'email_verified'],
@@ -478,6 +488,24 @@ export const TwoFactorEnableResponseSchema = {
   description: 'Response for enabling 2FA.',
 } as const;
 
+export const TwoFactorLoginRequestSchema = {
+  properties: {
+    code: {
+      type: 'string',
+      title: 'Code',
+    },
+    remember_me: {
+      type: 'boolean',
+      title: 'Remember Me',
+      default: false,
+    },
+  },
+  type: 'object',
+  required: ['code'],
+  title: 'TwoFactorLoginRequest',
+  description: 'Request to verify 2FA code during login.',
+} as const;
+
 export const TwoFactorSetupResponseSchema = {
   properties: {
     qr_code: {
@@ -575,6 +603,11 @@ export const UserLoginSchema = {
     password: {
       type: 'string',
       title: 'Password',
+    },
+    remember_me: {
+      type: 'boolean',
+      title: 'Remember Me',
+      default: false,
     },
   },
   type: 'object',

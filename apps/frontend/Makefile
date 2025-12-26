@@ -1,4 +1,4 @@
-.PHONY: help install dev test clean lint lint-fix format format-check type-check check build api-generate
+.PHONY: help install dev test test-e2e clean lint lint-fix format format-check type-check check build api-generate
 
 # Colors for output
 COLOR_RESET=\033[0m
@@ -28,6 +28,7 @@ help:
 	@echo ""
 	@echo "$(COLOR_BOLD)Testing:$(COLOR_RESET)"
 	@echo "  make test              - Run all tests"
+	@echo "  make test-e2e          - Run end-to-end tests"
 	@echo "  make test-watch        - Run tests in watch mode"
 	@echo "  make test-cov          - Run tests with coverage report"
 	@echo ""
@@ -82,6 +83,10 @@ check: lint-fix format type-check
 test:
 	@echo "$(COLOR_GREEN)Running frontend tests...$(COLOR_RESET)"
 	@npm run test
+
+test-e2e:
+	@echo "$(COLOR_GREEN)Running frontend e2e tests...$(COLOR_RESET)"
+	@npm run e2e
 
 test-watch:
 	@echo "$(COLOR_GREEN)Running frontend tests in watch mode...$(COLOR_RESET)"

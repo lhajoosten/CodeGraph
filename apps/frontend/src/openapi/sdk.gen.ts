@@ -94,6 +94,9 @@ import type {
   VerifyTwoFactorApiV1TwoFactorVerifyPostData,
   VerifyTwoFactorApiV1TwoFactorVerifyPostErrors,
   VerifyTwoFactorApiV1TwoFactorVerifyPostResponses,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostData,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors,
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses,
 } from './types.gen';
 
 export type Options<
@@ -195,14 +198,53 @@ export const loginUserApiV1AuthLoginPost = <ThrowOnError extends boolean = false
   });
 
 /**
+ * Verify Two Factor Login
+ *
+ * Verify 2FA code during login and issue full tokens.
+ *
+ * Requires a partial access token (valid only during 2FA verification step).
+ *
+ * Args:
+ * request_data: Request containing 2FA code and remember_me flag
+ * request: FastAPI request object (for IP address)
+ * response: FastAPI response object (to set cookies)
+ * db: Database session
+ * current_user: Current user from partial token
+ *
+ * Returns:
+ * LoginResponse: Success message with user data and email verification status
+ *
+ * Raises:
+ * HTTPException: If 2FA code is invalid
+ */
+export const verifyTwoFactorLoginApiV1AuthVerify2FaPost = <ThrowOnError extends boolean = false>(
+  options: Options<VerifyTwoFactorLoginApiV1AuthVerify2FaPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses,
+    VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/auth/verify-2fa',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
  * Logout
  *
  * Logout user, clears cookies and revokes refresh token.
  *
+ * Works even if access token is expired (uses optional authentication).
+ *
  * Args:
  * response: FastAPI response object (to clear cookies)
  * refresh_token: Refresh token from cookie
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (if any)
  * db: Database session
  *
  * Returns:
@@ -667,6 +709,8 @@ export const getTwoFactorStatusApiV1TwoFactorStatusGet = <ThrowOnError extends b
  * Generates a TOTP secret and QR code for the user to scan with their
  * authenticator app.
  *
+ * Can be called during login (with partial token) or from settings (with full token).
+ *
  * Returns:
  * TwoFactorSetupResponse with QR code and secret.
  *
@@ -693,6 +737,8 @@ export const setupTwoFactorApiV1TwoFactorSetupPost = <ThrowOnError extends boole
  *
  * The user must first call /two-factor/setup and scan the QR code before
  * calling this endpoint with the code from their authenticator app.
+ *
+ * Can be called during login (with partial token) or from settings (with full token).
  *
  * Args:
  * request: Contains the 6-digit TOTP code.

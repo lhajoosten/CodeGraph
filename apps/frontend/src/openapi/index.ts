@@ -33,6 +33,7 @@ export {
   updateTaskApiV1TasksTaskIdPatch,
   verifyEmailApiV1AuthVerifyEmailPost,
   verifyTwoFactorApiV1TwoFactorVerifyPost,
+  verifyTwoFactorLoginApiV1AuthVerify2FaPost,
 } from './sdk.gen';
 export {
   type ChangeEmailApiV1AuthChangeEmailPostData,
@@ -184,6 +185,7 @@ export {
   type TwoFactorDisableRequest,
   type TwoFactorEnableRequest,
   type TwoFactorEnableResponse,
+  type TwoFactorLoginRequest,
   type TwoFactorSetupResponse,
   type TwoFactorStatusResponse,
   type TwoFactorVerifyRequest,
@@ -213,4 +215,9 @@ export {
   type VerifyTwoFactorApiV1TwoFactorVerifyPostErrors,
   type VerifyTwoFactorApiV1TwoFactorVerifyPostResponse,
   type VerifyTwoFactorApiV1TwoFactorVerifyPostResponses,
+  type VerifyTwoFactorLoginApiV1AuthVerify2FaPostData,
+  type VerifyTwoFactorLoginApiV1AuthVerify2FaPostError,
+  type VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors,
+  type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse,
+  type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses,
 } from './types.gen';

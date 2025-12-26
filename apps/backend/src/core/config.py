@@ -38,7 +38,11 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
-    refresh_token_expire_days: int = 7
+    refresh_token_expire_hours: int = 4  # Default expiry (without remember_me)
+    refresh_token_expire_days: int = 7  # Extended expiry (with remember_me)
+
+    # Two-Factor Authentication
+    two_factor_mandatory: bool = False  # Set True to enforce 2FA for all users
 
     # Encryption Key (for OAuth tokens, sensitive data)
     # IMPORTANT: Should be unique per environment, stored securely
@@ -51,7 +55,7 @@ class Settings(BaseSettings):
     cookie_samesite: str = "lax"  # 'strict', 'lax', or 'none'
 
     # CSRF Protection
-    csrf_secret_key: str
+    csrf_secret_key: str = "dev-csrf-secret-key-change-in-production"
 
     # Session Management
     session_expire_hours: int = 168  # 7 days

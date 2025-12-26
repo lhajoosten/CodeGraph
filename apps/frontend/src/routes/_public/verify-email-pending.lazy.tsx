@@ -74,9 +74,9 @@ function VerifyEmailPendingPage() {
 
           {/* Heading */}
           <div className="text-center">
-            <h2 className="mb-2 text-2xl font-bold text-gray-900">Check Your Email</h2>
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">Email Verification Pending</h2>
             <p className="text-gray-600">
-              We sent a verification link to <strong>{email}</strong>
+              Check Your Email - We sent a verification link to <strong>{email}</strong>
             </p>
           </div>
 

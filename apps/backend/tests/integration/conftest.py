@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from testcontainers.postgres import PostgresContainer
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.main import app
 from src.models import Base
@@ -98,7 +99,30 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     app.dependency_overrides[get_db] = override_get_db
 
+    # Disable 2FA mandatory by default for tests
+    # Individual tests can override this if needed
+    original_two_factor_mandatory = settings.two_factor_mandatory
+    settings.two_factor_mandatory = False
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
+    # Restore original setting
+    settings.two_factor_mandatory = original_two_factor_mandatory
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def settings_override():
+    """Override settings for testing."""
+
+    def override(**kwargs):
+        for key, value in kwargs.items():
+            if hasattr(settings, key):
+                setattr(settings, key, value)
+
+    yield override
+
+    # Reset settings after test
+    # Note: This is a simple implementation; in production you might want to restore original values
+    pass

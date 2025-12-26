@@ -198,6 +198,16 @@ export const zTwoFactorEnableResponse = z.object({
 });
 
 /**
+ * TwoFactorLoginRequest
+ *
+ * Request to verify 2FA code during login.
+ */
+export const zTwoFactorLoginRequest = z.object({
+  code: z.string(),
+  remember_me: z.optional(z.boolean()).default(false),
+});
+
+/**
  * TwoFactorSetupResponse
  *
  * Response for 2FA setup initiation.
@@ -253,6 +263,7 @@ export const zUserCreate = z.object({
 export const zUserLogin = z.object({
   email: z.email(),
   password: z.string(),
+  remember_me: z.optional(z.boolean()).default(false),
 });
 
 /**
@@ -279,6 +290,8 @@ export const zLoginResponse = z.object({
   message: z.string(),
   user: zUserResponse,
   email_verified: z.boolean(),
+  requires_two_factor: z.optional(z.boolean()).default(false),
+  two_factor_enabled: z.optional(z.boolean()).default(false),
 });
 
 /**
@@ -340,6 +353,17 @@ export const zLoginUserApiV1AuthLoginPostData = z.object({
  * Successful Response
  */
 export const zLoginUserApiV1AuthLoginPostResponse = zTokenResponse;
+
+export const zVerifyTwoFactorLoginApiV1AuthVerify2FaPostData = z.object({
+  body: zTwoFactorLoginRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zVerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse = zLoginResponse;
 
 export const zLogoutApiV1AuthLogoutPostData = z.object({
   body: z.optional(z.never()),
