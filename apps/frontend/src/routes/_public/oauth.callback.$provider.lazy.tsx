@@ -32,7 +32,10 @@ interface CallbackSearchParams {
 function createBackendFlowHandler(
   navigate: ReturnType<typeof useNavigate>,
   queryClient: ReturnType<typeof useQueryClient>,
-  login: (user?: { id: number; email: string; email_verified: boolean }, oauthProvider?: string | null) => void,
+  login: (
+    user?: { id: number; email: string; email_verified: boolean },
+    oauthProvider?: string | null
+  ) => void,
   isBackendFlow: boolean,
   backendStatus: string | undefined,
   isLinkFlow: boolean,
@@ -119,7 +122,10 @@ function createBackendFlowHandler(
 function createDirectFlowHandler(
   navigate: ReturnType<typeof useNavigate>,
   queryClient: ReturnType<typeof useQueryClient>,
-  login: (user?: { id: number; email: string; email_verified: boolean }, oauthProvider?: string | null) => void,
+  login: (
+    user?: { id: number; email: string; email_verified: boolean },
+    oauthProvider?: string | null
+  ) => void,
   handle2FARouting: ReturnType<typeof useHandle2FARouting>,
   provider: string,
   isLinkFlow: boolean

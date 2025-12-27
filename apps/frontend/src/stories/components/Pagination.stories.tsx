@@ -71,7 +71,11 @@ function DefaultPaginationWrapper() {
  * Default Pagination with all features
  */
 export const Default: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 1,
+    totalPages: 10,
+    onPageChange: () => {},
+  },
   render: () => <DefaultPaginationWrapper />,
 };
 
@@ -101,7 +105,11 @@ function ManyPagesPaginationWrapper() {
  * Pagination with many pages (shows ellipsis)
  */
 export const ManyPages: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 50,
+    totalPages: 100,
+    onPageChange: () => {},
+  },
   render: () => <ManyPagesPaginationWrapper />,
 };
 
@@ -124,7 +132,11 @@ function MinimalPaginationWrapper() {
  * Minimal Pagination (no first/last buttons)
  */
 export const Minimal: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 3,
+    totalPages: 8,
+    onPageChange: () => {},
+  },
   render: () => <MinimalPaginationWrapper />,
 };
 
@@ -132,7 +144,11 @@ export const Minimal: Story = {
  * Single page (navigation disabled)
  */
 export const SinglePage: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 1,
+    totalPages: 1,
+    onPageChange: () => {},
+  },
   render: () => (
     <Pagination
       currentPage={1}
@@ -150,7 +166,11 @@ export const SinglePage: Story = {
  * First page (previous disabled)
  */
 export const FirstPage: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 1,
+    totalPages: 20,
+    onPageChange: () => {},
+  },
   render: () => (
     <Pagination
       currentPage={1}
@@ -168,7 +188,11 @@ export const FirstPage: Story = {
  * Last page (next disabled)
  */
 export const LastPage: Story = {
-  // @ts-expect-error - Custom render without args
+  args: {
+    currentPage: 20,
+    totalPages: 20,
+    onPageChange: () => {},
+  },
   render: () => (
     <Pagination
       currentPage={20}

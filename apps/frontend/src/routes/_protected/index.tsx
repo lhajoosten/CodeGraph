@@ -26,6 +26,7 @@ export const Route = createFileRoute('/_protected/')({
     if (requiresTwoFactorSetup) {
       throw redirect({
         to: '/setup-2fa',
+        search: { oauth: undefined, provider: undefined, from: undefined },
       });
     }
 
@@ -33,6 +34,7 @@ export const Route = createFileRoute('/_protected/')({
     if (twoFactorEnabled && !twoFactorVerified) {
       throw redirect({
         to: '/verify-2fa',
+        search: { oauth: undefined, provider: undefined, from: undefined },
       });
     }
 

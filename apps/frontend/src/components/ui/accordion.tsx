@@ -3,13 +3,26 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
-type AccordionProps = Omit<
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>,
-  'type'
-> & {
-  type: 'single' | 'multiple';
+type AccordionSingleProps = {
+  type: 'single';
+  collapsible?: boolean;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
   className?: string;
+  children?: React.ReactNode;
 };
+
+type AccordionMultipleProps = {
+  type: 'multiple';
+  value?: string[];
+  defaultValue?: string[];
+  onValueChange?: (value: string[]) => void;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+type AccordionProps = AccordionSingleProps | AccordionMultipleProps;
 
 /**
  * Accordion Component - Collapsible sections
@@ -23,14 +36,36 @@ type AccordionProps = Omit<
 export const Accordion = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Root>,
   AccordionProps
->(({ className, type, ...props }, ref) => (
-  <AccordionPrimitive.Root
-    ref={ref}
-    type={type}
-    className={cn('space-y-2', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  if (props.type === 'single') {
+    return (
+      <AccordionPrimitive.Root
+        ref={ref}
+        type="single"
+        collapsible={props.collapsible}
+        value={props.value}
+        defaultValue={props.defaultValue}
+        onValueChange={props.onValueChange}
+        className={cn('space-y-2', className)}
+      >
+        {props.children}
+      </AccordionPrimitive.Root>
+    );
+  }
+
+  return (
+    <AccordionPrimitive.Root
+      ref={ref}
+      type="multiple"
+      value={props.value}
+      defaultValue={props.defaultValue}
+      onValueChange={props.onValueChange}
+      className={cn('space-y-2', className)}
+    >
+      {props.children}
+    </AccordionPrimitive.Root>
+  );
+});
 
 Accordion.displayName = 'Accordion';
 

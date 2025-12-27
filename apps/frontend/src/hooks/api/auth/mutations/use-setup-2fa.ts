@@ -118,7 +118,13 @@ export const useSetup2FA = (options: UseSetup2FAOptions = {}): UseSetup2FAReturn
 
   // Auto-start: trigger setup once on first render if enabled
   // Using state update to trigger mutation avoids ref access during render
-  if (autoStart && !hasAutoStarted && !setupMutation.isPending && !setupMutation.data && !setupMutation.error) {
+  if (
+    autoStart &&
+    !hasAutoStarted &&
+    !setupMutation.isPending &&
+    !setupMutation.data &&
+    !setupMutation.error
+  ) {
     setHasAutoStarted(true);
     // Schedule mutation for next microtask to avoid render-time side effects
     queueMicrotask(() => {
@@ -179,4 +185,3 @@ export const useSetup2FA = (options: UseSetup2FAOptions = {}): UseSetup2FAReturn
     startSetup,
   };
 };
-

@@ -4,10 +4,13 @@
  * Disables 2FA for the current user after password verification.
  * Automatically invalidates the 2FA status query on success.
  *
+ * @param options - Optional callbacks for success/error handling
  * @returns Mutation hook for disabling 2FA
  *
  * @example
- * const disableMutation = useDisableTwoFactor();
+ * const disableMutation = useDisableTwoFactor({
+ *   onSuccess: () => console.log('2FA disabled'),
+ * });
  * disableMutation.mutate({ body: { password: 'user-password' } });
  */
 
@@ -18,8 +21,14 @@ import {
 } from '@/openapi/@tanstack/react-query.gen';
 import { addToast } from '@/lib/toast';
 import { getErrorMessage } from '@/hooks/api/utils';
+import type { InferHeyApiMutationOptions } from '@/lib/types';
 
-export const useDisableTwoFactor = () => {
+export interface UseDisableTwoFactorOptions {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export const useDisableTwoFactor = (options: UseDisableTwoFactorOptions = {}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -35,6 +44,8 @@ export const useDisableTwoFactor = () => {
         description: 'Two-factor authentication has been disabled.',
         color: 'success',
       });
+
+      options.onSuccess?.();
     },
     onError: (error) => {
       const message = getErrorMessage(error) || 'Failed to disable 2FA. Check your password.';
@@ -43,6 +54,12 @@ export const useDisableTwoFactor = () => {
         description: message,
         color: 'danger',
       });
+
+      options.onError?.(error);
     },
   });
 };
+
+export type UseDisableTwoFactorMutationOptions = InferHeyApiMutationOptions<
+  typeof disableTwoFactorApiV1TwoFactorDisablePostMutation
+>;

@@ -87,6 +87,8 @@ export default tseslint.config(
             "^\\[&.+",
             // Storybook custom theme
             "^luminous-theme$",
+            // Test utility classes
+            "^custom-.+",
           ],
         },
       ],

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Setup2FAForm } from '@/components/auth/setup-2fa-form';
 import { useSetup2FA } from '@/hooks/api/auth/mutations/use-setup-2fa';
@@ -398,8 +398,7 @@ describe('Setup2FAForm', () => {
   });
 
   describe('Backup Code Copy Functionality', () => {
-    it('should allow copying individual backup codes', async () => {
-      const user = userEvent.setup();
+    it('should allow copying individual backup codes', () => {
       const mockCopyCode = vi.fn();
 
       mockUseSetup2FA.mockReturnValue(
@@ -481,8 +480,7 @@ describe('Setup2FAForm', () => {
       });
     });
 
-    it('should show warning if trying to complete without confirming backup codes', async () => {
-      const user = userEvent.setup();
+    it('should show warning if trying to complete without confirming backup codes', () => {
       const mockOnSuccess = vi.fn();
 
       mockUseSetup2FA.mockReturnValue(

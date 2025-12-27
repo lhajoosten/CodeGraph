@@ -32,7 +32,7 @@ export function Breadcrumbs({
   items,
   separator = <ChevronRightIcon className="h-4 w-4 text-text-secondary-lum" />,
   maxItems = 5,
-  _collapsedLabel = 'More',
+  collapsedLabel: _collapsedLabel = 'More',
   className,
   onCollapsedClick,
 }: BreadcrumbsProps) {

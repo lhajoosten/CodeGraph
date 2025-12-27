@@ -173,6 +173,25 @@ body {
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Extended Semantic Colors with variants */
+  --color-success-100: #dcfce7;
+  --color-success-800: #166534;
+  --color-warning-100: #fef3c7;
+  --color-warning-800: #92400e;
+  --color-danger: #ef4444;
+  --color-danger-100: #fee2e2;
+  --color-danger-800: #7f1d1d;
+  --color-info-100: #dbeafe;
+  --color-info-800: #1e40af;
+
+  /* Text Colors */
+  --color-text-tertiary: var(--color-text-tertiary-lum);
+  --color-text-button: var(--color-text-primary-lum);
+
+  /* Background Colors - semantic naming for Tailwind */
+  --color-secondary: var(--color-bg-secondary-lum);
 
   /* Aliases for variant compatibility */
   --color-primary: var(--color-brand-cyan);

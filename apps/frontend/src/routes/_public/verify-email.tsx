@@ -9,9 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getCurrentUserInfoApiV1UsersMeGetOptions } from '@/openapi/@tanstack/react-query.gen.ts';
 
 export const Route = createFileRoute('/_public/verify-email')({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, string>) => {
     return {
-      token: (search.token as string) || '',
+      token: search.token,
     };
   },
   component: EmailVerificationPage,
@@ -70,7 +70,10 @@ function EmailVerificationPage() {
               }
             })();
             // Navigate to 2FA setup (traditional auth flow, not OAuth)
-            navigate({ to: '/setup-2fa', search: { oauth: undefined, provider: undefined } });
+            navigate({
+              to: '/setup-2fa',
+              search: { oauth: undefined, provider: undefined, from: undefined },
+            });
           } else {
             // 2FA not mandatory: redirect to login
             navigate({ to: '/login', search: { redirect: '/' } });

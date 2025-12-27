@@ -4,13 +4,15 @@
  * Initiates email change process. After calling, the user will receive
  * a verification email at the new address to confirm the change.
  *
+ * @param options - Optional callbacks for success/error handling
  * @returns Mutation hook for changing email
  *
  * @example
- * const changeEmail = useChangeEmail();
+ * const changeEmail = useChangeEmail({
+ *   onSuccess: () => console.log('Email change initiated'),
+ * });
  * changeEmail.mutate({
- *   new_email: 'newemail@example.com',
- *   password: 'current-password'
+ *   body: { new_email: 'newemail@example.com', password: 'current-password' }
  * });
  */
 
@@ -20,7 +22,12 @@ import { addToast } from '@/lib/toast';
 import { getErrorMessage } from '@/hooks/api/utils';
 import type { InferHeyApiMutationOptions } from '@/lib/types';
 
-export const useChangeEmail = () => {
+export interface UseChangeEmailCallbackOptions {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export const useChangeEmail = (options: UseChangeEmailCallbackOptions = {}) => {
   return useMutation({
     ...changeEmailApiV1AuthChangeEmailPostMutation(),
     onSuccess: () => {
@@ -29,6 +36,8 @@ export const useChangeEmail = () => {
         description: 'Please check your new email address to confirm the change.',
         color: 'success',
       });
+
+      options.onSuccess?.();
     },
     onError: (error) => {
       const message = getErrorMessage(error) || 'Failed to change email';
@@ -37,6 +46,8 @@ export const useChangeEmail = () => {
         description: message,
         color: 'danger',
       });
+
+      options.onError?.(error);
     },
   });
 };
@@ -44,4 +55,3 @@ export const useChangeEmail = () => {
 export type UseChangeEmailOptions = InferHeyApiMutationOptions<
   typeof changeEmailApiV1AuthChangeEmailPostMutation
 >;
-

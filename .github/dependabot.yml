@@ -10,6 +10,10 @@ updates:
     labels:
       - "dependencies"
       - "backend"
+    groups:
+      python-all:
+        patterns:
+          - "*"
 
   # Frontend dependencies
   - package-ecosystem: "npm"
@@ -21,6 +25,10 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
+    groups:
+      npm-all:
+        patterns:
+          - "*"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -31,3 +39,7 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      actions-all:
+        patterns:
+          - "*"

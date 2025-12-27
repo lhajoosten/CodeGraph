@@ -14,7 +14,7 @@ interface TwoFactorStatusResponse {
 }
 
 export const Route = createFileRoute('/_public/verify-2fa')({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, string | boolean>) => {
     return {
       oauth: search.oauth === true || search.oauth === 'true' ? true : undefined,
       provider: search.provider as string | undefined,

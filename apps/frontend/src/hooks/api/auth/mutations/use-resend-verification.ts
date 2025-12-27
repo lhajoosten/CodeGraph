@@ -47,4 +47,3 @@ export const useResendVerification = () => {
 export type UseResendVerificationOptions = InferHeyApiMutationOptions<
   typeof resendVerificationApiV1AuthResendVerificationPostMutation
 >;
-

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthInput } from '@/components/auth/auth-input';
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 describe('AuthInput', () => {
   describe('Rendering', () => {

@@ -22,11 +22,11 @@ export const alertVariants = cva(
           [&>svg]:text-info
         `,
         success: `
-          bg-success-100 text-success-800 border-success
+          border-success bg-success-100 text-success-800
           [&>svg]:text-success
         `,
         warning: `
-          bg-warning-100 text-warning-800 border-warning
+          border-warning bg-warning-100 text-warning-800
           [&>svg]:text-warning
         `,
         danger: `

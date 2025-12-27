@@ -174,7 +174,6 @@ describe('useForgotPassword', () => {
 
     // Reset for second request
     vi.clearAllMocks();
-    const { addToast } = await import('@/lib/toast');
 
     // Second request
     result.current.mutate({ body: { email: 'test2@example.com' } });

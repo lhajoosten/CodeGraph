@@ -3,4 +3,7 @@
  * Handles OAuth account linking and unlinking operations.
  */
 
-export { useUnlinkOAuthAccount, type UseUnlinkOAuthAccountOptions } from './use-unlink-oauth-account';
+export {
+  useUnlinkOAuthAccount,
+  type UseUnlinkOAuthAccountOptions,
+} from './use-unlink-oauth-account';

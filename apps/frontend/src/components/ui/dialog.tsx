@@ -79,13 +79,13 @@ const DialogContent = React.forwardRef<
       {showCloseButton && (
         <DialogPrimitive.Close
           className={`
-            data-[state=open]:bg-secondary absolute top-4 right-4 rounded-sm
-            opacity-70 ring-offset-background-2
-            transition-opacity
-            hover:opacity-100 focus:ring-2 focus:ring-primary
-            focus:ring-offset-2
+            absolute top-4 right-4 rounded-sm opacity-70
+            ring-offset-background-2 transition-opacity
+            hover:opacity-100
+            focus:ring-2 focus:ring-primary focus:ring-offset-2
             focus:outline-none
             disabled:pointer-events-none
+            data-[state=open]:bg-secondary
           `}
         >
           <XMarkIcon className="h-4 w-4" />

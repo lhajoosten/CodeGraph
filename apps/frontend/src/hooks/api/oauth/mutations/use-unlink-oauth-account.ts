@@ -51,4 +51,3 @@ export const useUnlinkOAuthAccount = () => {
 export type UseUnlinkOAuthAccountOptions = InferHeyApiMutationOptions<
   typeof unlinkOauthAccountOauthProviderUnlinkDeleteMutation
 >;
-

@@ -62,7 +62,6 @@ export function TwoFactorSetupWizard({
     copyCode,
   } = useSetup2FA();
 
-
   const handleVerifyCode = () => {
     if (otp.length !== 6) {
       addToast({

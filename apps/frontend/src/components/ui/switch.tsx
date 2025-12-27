@@ -20,8 +20,8 @@ const Switch = React.forwardRef<
       `,
       'disabled:cursor-not-allowed disabled:opacity-50',
       `
-        data-[state=unchecked]:bg-secondary
         data-[state=checked]:bg-primary
+        data-[state=unchecked]:bg-secondary
       `,
       className
     )}
@@ -70,7 +70,7 @@ const SwitchWithLabel = React.forwardRef<
         >
           {label}
         </label>
-        {description && <p className="text-text-tertiary text-xs">{description}</p>}
+        {description && <p className="text-xs text-text-tertiary">{description}</p>}
       </div>
       <Switch ref={ref} id={switchId} {...props} />
     </div>

@@ -201,9 +201,7 @@ describe('PasswordStrengthIndicator', () => {
     });
 
     it('should show all requirements met for strong password', () => {
-      const { container } = render(
-        <PasswordStrengthIndicator password="Password1" />
-      );
+      render(<PasswordStrengthIndicator password="Password1" />);
 
       // Strong passwords don't show requirements, only success message
       expect(screen.queryByText(/At least 8 characters/i)).not.toBeInTheDocument();

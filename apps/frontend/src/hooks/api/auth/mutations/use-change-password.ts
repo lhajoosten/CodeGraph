@@ -4,10 +4,13 @@
  * Updates the user's password after validating the current password.
  * Provides automatic toast notifications for success/error feedback.
  *
+ * @param options - Optional callbacks for success/error handling
  * @returns Mutation hook for changing password
  *
  * @example
- * const changePassword = useChangePassword();
+ * const changePassword = useChangePassword({
+ *   onSuccess: () => console.log('Password changed'),
+ * });
  * changePassword.mutate({
  *   body: {
  *     current_password: 'old-password',
@@ -22,7 +25,12 @@ import { addToast } from '@/lib/toast';
 import { getErrorMessage } from '@/hooks/api/utils';
 import type { InferHeyApiMutationOptions } from '@/lib/types';
 
-export const useChangePassword = () => {
+export interface UseChangePasswordCallbackOptions {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export const useChangePassword = (options: UseChangePasswordCallbackOptions = {}) => {
   return useMutation({
     ...changePasswordApiV1AuthChangePasswordPostMutation(),
     onSuccess: () => {
@@ -31,6 +39,8 @@ export const useChangePassword = () => {
         description: 'Your password has been successfully updated.',
         color: 'success',
       });
+
+      options.onSuccess?.();
     },
     onError: (error) => {
       const message = getErrorMessage(error) || 'Failed to change password';
@@ -39,6 +49,8 @@ export const useChangePassword = () => {
         description: message,
         color: 'danger',
       });
+
+      options.onError?.(error);
     },
   });
 };
@@ -46,4 +58,3 @@ export const useChangePassword = () => {
 export type UseChangePasswordOptions = InferHeyApiMutationOptions<
   typeof changePasswordApiV1AuthChangePasswordPostMutation
 >;
-

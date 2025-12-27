@@ -9,7 +9,7 @@ function Skeleton({ className, variant = 'default', ...props }: SkeletonProps) {
   return (
     <div
       className={cn(
-        'bg-secondary animate-pulse',
+        'animate-pulse bg-secondary',
         {
           'rounded-md': variant === 'default',
           'rounded-full': variant === 'circular',

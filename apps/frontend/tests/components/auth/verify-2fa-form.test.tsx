@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Verify2FAForm } from '@/components/auth/verify-2fa-form';
 import { useVerify2FA } from '@/hooks/api/auth/mutations/use-verify-2fa';
@@ -96,7 +96,7 @@ describe('Verify2FAForm', () => {
     it('should enable verify button when OTP is 6 digits', () => {
       mockUseVerify2FA.mockReturnValue(createMockVerify2FAMutation());
 
-      const { rerender } = renderWithQueryClient(<Verify2FAForm />);
+      renderWithQueryClient(<Verify2FAForm />);
 
       // Simulate OTP input by re-rendering with different OTP value
       // Since this is hard to test without prop changes, we test the button state
@@ -325,8 +325,7 @@ describe('Verify2FAForm', () => {
   });
 
   describe('Success Callback', () => {
-    it('should call onSuccess when OTP is verified successfully', async () => {
-      const user = userEvent.setup();
+    it('should call onSuccess when OTP is verified successfully', () => {
       const handleSuccess = vi.fn();
       const mockMutate = vi.fn((_, callbacks) => {
         callbacks?.onSuccess?.();

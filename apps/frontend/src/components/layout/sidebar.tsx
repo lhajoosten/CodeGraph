@@ -134,7 +134,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
                 bg-primary
               `}
             >
-              <span className="text-text-button text-lg font-bold">C</span>
+              <span className="text-lg font-bold text-white">C</span>
             </Link>
           )}
         </div>

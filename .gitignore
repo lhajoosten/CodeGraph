@@ -248,4 +248,3 @@ apps/backend/.clinerules
 apps/frontend/.clinerules
 .clinerules
 CLAUDE.md
-/docker/init-postgres.sh

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const avatarVariants = cva(
   `
-  bg-secondary relative flex shrink-0 overflow-hidden rounded-full
+  relative flex shrink-0 overflow-hidden rounded-full bg-secondary
 `,
   {
     variants: {
