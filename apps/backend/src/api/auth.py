@@ -8,7 +8,11 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user, get_current_user_optional, get_current_user_partial
+from src.api.deps import (
+    get_current_user,
+    get_current_user_optional,
+    get_current_user_or_partial,
+)
 from src.core.config import settings
 from src.core.cookies import clear_auth_cookies, set_auth_cookies, set_partial_auth_cookies
 from src.core.csrf import generate_csrf_token
@@ -376,19 +380,21 @@ async def verify_two_factor_login(
     request: Request,
     response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user_partial)],
+    current_user: Annotated[User, Depends(get_current_user_or_partial)],
 ) -> LoginResponse:
     """
     Verify 2FA code during login and issue full tokens.
 
-    Requires a partial access token (valid only during 2FA verification step).
+    Accepts both partial tokens (traditional 2FA flow) and full tokens (OAuth flow).
+    - Partial token: Used during traditional login's 2FA verification step
+    - Full token: Used during OAuth login where user is already authenticated
 
     Args:
         request_data: Request containing 2FA code and remember_me flag
         request: FastAPI request object (for IP address)
         response: FastAPI response object (to set cookies)
         db: Database session
-        current_user: Current user from partial token
+        current_user: Current user from partial or full token
 
     Returns:
         LoginResponse: Success message with user data and email verification status

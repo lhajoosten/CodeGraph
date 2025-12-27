@@ -7,6 +7,8 @@ export const Route = createFileRoute('/_public/oauth/callback/$provider')({
       state: (search.state as string) || '',
       error: search.error as string | undefined,
       error_description: search.error_description as string | undefined,
+      oauth: search.oauth === true || search.oauth === 'true' ? true : undefined,
+      status: search.status as string | undefined,
     };
   },
 });

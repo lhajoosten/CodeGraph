@@ -3,8 +3,9 @@ import { useAuthStore } from '@/stores/auth-store';
 import { client } from '@/openapi/client.gen';
 
 interface VerifySearchParams {
-  oauth?: string;
+  oauth?: boolean;
   provider?: string;
+  from?: string;
 }
 
 interface TwoFactorStatusResponse {
@@ -15,14 +16,15 @@ interface TwoFactorStatusResponse {
 export const Route = createFileRoute('/_public/verify-2fa')({
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      oauth: search.oauth as string | undefined,
+      oauth: search.oauth === true || search.oauth === 'true' ? true : undefined,
       provider: search.provider as string | undefined,
+      from: search.from as string | undefined,
     };
   },
   beforeLoad: async ({ search }) => {
     const { twoFactorEnabled, twoFactorVerified, setTwoFactorStatus } = useAuthStore.getState();
     const searchParams = search as VerifySearchParams;
-    const isOAuthFlow = searchParams.oauth === 'true';
+    const isOAuthFlow = searchParams.oauth === true;
 
     // If already verified, redirect to dashboard
     if (twoFactorVerified) {
@@ -39,16 +41,23 @@ export const Route = createFileRoute('/_public/verify-2fa')({
           // Update auth store with correct 2FA status from server
           setTwoFactorStatus(response.data.enabled, false, !response.data.enabled);
         }
-      } catch (error) {
+      } catch {
         // If we can't fetch status, assume 2FA is enabled (we're on the verify page)
         setTwoFactorStatus(true, false, false);
       }
       return;
     }
 
-    // If 2FA is not enabled, redirect to setup
+    // If 2FA is not enabled, redirect to setup (preserving OAuth context if present)
     if (!twoFactorEnabled) {
-      throw redirect({ to: '/setup-2fa' });
+      throw redirect({
+        to: '/setup-2fa',
+        search: {
+          oauth: searchParams.oauth,
+          provider: searchParams.provider,
+          from: searchParams.from,
+        },
+      });
     }
   },
 });

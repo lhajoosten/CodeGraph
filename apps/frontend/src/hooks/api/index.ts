@@ -9,9 +9,26 @@ export {
   useLogin,
   useLogout,
   useRegister,
+  useChangePassword,
+  useChangeEmail,
+  useResendVerification,
+  useForgotPassword,
+  useResetPassword,
+  useSetup2FA,
+  useVerify2FA,
+  useVerifyEmail,
   type UseLoginOptions,
   type UseLogoutOptions,
   type UseRegisterOptions,
+  type UseChangePasswordOptions,
+  type UseChangeEmailOptions,
+  type UseResendVerificationOptions,
+  type UseForgotPasswordOptions,
+  type UseResetPasswordOptions,
+  type UseSetup2FAOptions,
+  type UseVerify2FAOptions,
+  type UseVerifyEmailOptions,
+  type SetupStep,
 } from './auth';
 
 // Task hooks
@@ -27,6 +44,24 @@ export {
   type UseUpdateTaskOptions,
   type UseDeleteTaskOptions,
 } from './tasks';
+
+// OAuth hooks
+export {
+  useFetchOAuthAccounts,
+  useUnlinkOAuthAccount,
+  oauthQueryKeys,
+  type UseUnlinkOAuthAccountOptions,
+} from './oauth';
+
+// Two-Factor Authentication hooks
+export {
+  useFetchTwoFactorStatus,
+  useDisableTwoFactor,
+  useRegenerateBackupCodes,
+  twoFactorQueryKeys,
+  type UseDisableTwoFactorOptions,
+  type UseRegenerateBackupCodesOptions,
+} from './two-factor';
 
 // Backward compatibility aliases
 export { useFetchCurrentUser as useCurrentUser } from './auth';

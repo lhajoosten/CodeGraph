@@ -90,7 +90,7 @@ class GitHubOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get GitHub authorization URL."""
         client_id = settings.github_client_id
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/github/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/github/callback"
         scope = "user:email"
 
         return (
@@ -103,7 +103,7 @@ class GitHubOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle GitHub OAuth callback."""
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/github/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/github/callback"
 
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
@@ -168,7 +168,7 @@ class GoogleOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get Google authorization URL."""
         client_id = settings.google_client_id
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/google/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/google/callback"
         scope = "openid email profile"
 
         return (
@@ -184,7 +184,7 @@ class GoogleOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle Google OAuth callback."""
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/google/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/google/callback"
 
         async with httpx.AsyncClient() as client:
             # Exchange code for access token
@@ -235,7 +235,7 @@ class MicrosoftOAuth(OAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         """Get Microsoft authorization URL."""
         client_id = settings.microsoft_client_id
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/microsoft/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/microsoft/callback"
         scope = "openid email profile User.Read"
 
         return (
@@ -250,7 +250,7 @@ class MicrosoftOAuth(OAuthProvider):
 
     async def handle_callback(self, code: str) -> OAuthUserProfile:
         """Handle Microsoft OAuth callback."""
-        redirect_uri = f"{settings.backend_url}/api/v1/oauth/microsoft/callback"
+        redirect_uri = f"{settings.backend_url}/oauth/microsoft/callback"
 
         async with httpx.AsyncClient() as client:
             # Exchange code for access token

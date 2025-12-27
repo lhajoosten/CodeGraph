@@ -1,13 +1,19 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { client } from '@/openapi/client.gen';
-
-interface TwoFactorStatus {
-  enabled: boolean;
-  backup_codes_remaining?: number;
-}
+import { useMutation } from '@tanstack/react-query';
+import {
+  useFetchTwoFactorStatus,
+  useDisableTwoFactor,
+  useRegenerateBackupCodes,
+  twoFactorQueryKeys,
+} from '@/hooks/api';
+import {
+  setupTwoFactorApiV1TwoFactorSetupPostMutation,
+  enableTwoFactorApiV1TwoFactorEnablePostMutation,
+} from '@/openapi/@tanstack/react-query.gen';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const TwoFactorSettings = () => {
+  const queryClient = useQueryClient();
   const [showSetup, setShowSetup] = useState(false);
   const [showDisable, setShowDisable] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
@@ -16,27 +22,12 @@ export const TwoFactorSettings = () => {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
 
-  // Check 2FA status
-  // Note: 2FA endpoints are not yet implemented in the backend
-  const statusQuery = useQuery({
-    queryKey: ['two-factor-status'],
-    queryFn: async () => {
-      const response = await client.get<TwoFactorStatus>({
-        url: '/api/v1/two-factor/status',
-      });
-      return response.data;
-    },
-    retry: false,
-  });
+  // Check 2FA status using extracted hook
+  const statusQuery = useFetchTwoFactorStatus();
 
   // Setup 2FA mutation
   const setupMutation = useMutation({
-    mutationFn: async () => {
-      const response = await client.post<{ qr_code: string; secret: string }>({
-        url: '/api/v1/two-factor/setup',
-      });
-      return response.data as { qr_code: string; secret: string } | undefined;
-    },
+    ...setupTwoFactorApiV1TwoFactorSetupPostMutation(),
     onSuccess: (data) => {
       if (data) {
         setQrCode(data.qr_code);
@@ -51,19 +42,13 @@ export const TwoFactorSettings = () => {
 
   // Enable 2FA mutation
   const enableMutation = useMutation({
-    mutationFn: async (code: string) => {
-      const response = await client.post<{ backup_codes: string[] }>({
-        url: '/api/v1/two-factor/enable',
-        body: { code },
-      });
-      return response.data as { backup_codes: string[] } | undefined;
-    },
+    ...enableTwoFactorApiV1TwoFactorEnablePostMutation(),
     onSuccess: (data) => {
       if (data) {
         setBackupCodes(data.backup_codes);
         setShowSetup(false);
         setVerificationCode('');
-        statusQuery.refetch();
+        queryClient.invalidateQueries({ queryKey: twoFactorQueryKeys() });
       }
     },
     onError: () => {
@@ -71,43 +56,19 @@ export const TwoFactorSettings = () => {
     },
   });
 
-  // Disable 2FA mutation
-  const disableMutation = useMutation({
-    mutationFn: async (password: string) => {
-      await client.post({
-        url: '/api/v1/two-factor/disable',
-        body: { password },
-      });
-    },
+  // Disable 2FA mutation using extracted hook
+  const disableMutation = useDisableTwoFactor({
     onSuccess: () => {
       setShowDisable(false);
       setPassword('');
-      statusQuery.refetch();
     },
     onError: () => {
       setError('Failed to disable 2FA. Check your password.');
     },
   });
 
-  // Regenerate backup codes
-  const regenerateMutation = useMutation({
-    mutationFn: async (password: string) => {
-      const response = await client.post<{ backup_codes: string[] }>({
-        url: '/api/v1/two-factor/regenerate-backup-codes',
-        body: { password },
-      });
-      return response.data as { backup_codes: string[] } | undefined;
-    },
-    onSuccess: (data) => {
-      if (data) {
-        setBackupCodes(data.backup_codes);
-        setPassword('');
-      }
-    },
-    onError: () => {
-      setError('Failed to regenerate backup codes');
-    },
-  });
+  // Regenerate backup codes using extracted hook
+  const regenerateMutation = useRegenerateBackupCodes();
 
   // Show backup codes modal
   if (backupCodes.length > 0) {
@@ -283,7 +244,7 @@ export const TwoFactorSettings = () => {
             Cancel
           </button>
           <button
-            onClick={() => enableMutation.mutate(verificationCode)}
+            onClick={() => enableMutation.mutate({ body: { code: verificationCode } })}
             disabled={verificationCode.length !== 6 || enableMutation.isPending}
             className={`
               flex-1 rounded-lg bg-brand-cyan px-4 py-2 font-medium text-white
@@ -346,7 +307,7 @@ export const TwoFactorSettings = () => {
             Cancel
           </button>
           <button
-            onClick={() => disableMutation.mutate(password)}
+            onClick={() => disableMutation.mutate({ body: { password } })}
             disabled={!password || disableMutation.isPending}
             className={`
               flex-1 rounded-lg bg-error px-4 py-2 font-medium text-white
@@ -434,7 +395,7 @@ export const TwoFactorSettings = () => {
           <button
             onClick={() => {
               const pwd = prompt('Enter your password to regenerate backup codes:');
-              if (pwd) regenerateMutation.mutate(pwd);
+              if (pwd) regenerateMutation.mutate({ body: { password: pwd } });
             }}
             className={`
               w-full rounded-lg border border-border-steel px-4 py-2 font-medium
@@ -447,7 +408,7 @@ export const TwoFactorSettings = () => {
         </div>
       ) : (
         <button
-          onClick={() => setupMutation.mutate()}
+          onClick={() => setupMutation.mutate({})}
           disabled={setupMutation.isPending}
           className={`
             w-full rounded-lg bg-brand-cyan px-4 py-2 font-medium text-white

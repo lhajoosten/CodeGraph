@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
+import { useEffect } from 'react';
 import { useSetup2FA } from '@/hooks/api/auth/mutations/use-setup-2fa';
 import { useTranslationNamespace } from '@/hooks/useTranslation';
 import { OTPInput } from './otp-input';
@@ -40,7 +41,13 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
     verifyOTP,
     downloadCodes,
     copyCode,
+    startSetup,
   } = useSetup2FA();
+
+  // Trigger 2FA setup when component mounts to fetch QR code
+  useEffect(() => {
+    startSetup();
+  }, [startSetup]);
 
   const handleComplete = () => {
     if (!codesConfirmed) {

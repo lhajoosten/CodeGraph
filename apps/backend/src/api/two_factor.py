@@ -227,12 +227,13 @@ async def disable_two_factor(
 @router.post("/two-factor/verify", response_model=TwoFactorVerifyResponse)
 async def verify_two_factor(
     request: TwoFactorVerifyRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_or_partial),
     db: AsyncSession = Depends(get_db),
 ) -> TwoFactorVerifyResponse:
     """Verify a 2FA code (TOTP or backup code).
 
-    This endpoint can be used during login or for sensitive operations.
+    Accepts both full and partial tokens (partial tokens during OAuth/login flows).
+    Can be used during login or for sensitive operations after 2FA setup.
 
     Args:
         request: Contains the TOTP or backup code.

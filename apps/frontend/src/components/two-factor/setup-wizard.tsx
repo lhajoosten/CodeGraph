@@ -12,8 +12,6 @@
  * - User settings (optional setup)
  */
 
-import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import {
   ClipboardIcon,
   ArrowDownTrayIcon,
@@ -21,10 +19,7 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import {
-  setupTwoFactorApiV1TwoFactorSetupPostMutation,
-  enableTwoFactorApiV1TwoFactorEnablePostMutation,
-} from '@/openapi/@tanstack/react-query.gen';
+import { useSetup2FA } from '@/hooks/api/auth/mutations/use-setup-2fa';
 import { addToast } from '@/lib/toast';
 
 export interface SetupWizardProps {
@@ -40,8 +35,6 @@ export interface SetupWizardProps {
   subtitle?: string;
 }
 
-type Step = 'qr' | 'verify' | 'backup';
-
 export function TwoFactorSetupWizard({
   onSuccess,
   onCancel,
@@ -49,40 +42,29 @@ export function TwoFactorSetupWizard({
   title = 'Enable Two-Factor Authentication',
   subtitle = 'Secure your account with 2FA',
 }: SetupWizardProps) {
-  const [step, setStep] = useState<Step>('qr');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [backupCodesConfirmed, setBackupCodesConfirmed] = useState(false);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  // Use the centralized useSetup2FA hook for all state and API calls
+  // Hook auto-starts on mount by default, so no useEffect needed
+  const {
+    step,
+    otp,
+    codesConfirmed,
+    copied,
+    qrData,
+    backupCodes,
+    isLoading,
+    isVerifying,
+    error,
+    setStep,
+    setOtp,
+    setCodesConfirmed,
+    verifyOTP,
+    downloadCodes,
+    copyCode,
+  } = useSetup2FA();
 
-  // Setup 2FA - generates QR code and stores secret on server
-  const setupMutation = useMutation({
-    ...setupTwoFactorApiV1TwoFactorSetupPostMutation(),
-  });
-
-  // Enable 2FA with verification code
-  const enableMutation = useMutation({
-    ...enableTwoFactorApiV1TwoFactorEnablePostMutation(),
-    onSuccess: () => {
-      setStep('backup');
-    },
-    onError: () => {
-      addToast({
-        title: 'Verification Failed',
-        description: 'Invalid code. Please try again.',
-        color: 'danger',
-      });
-      setVerificationCode('');
-    },
-  });
-
-  // Auto-trigger setup on component mount to fetch QR code
-  useEffect(() => {
-    setupMutation.mutate({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleVerifyCode = () => {
-    if (verificationCode.length !== 6) {
+    if (otp.length !== 6) {
       addToast({
         title: 'Invalid Code',
         description: 'Please enter a 6-digit code.',
@@ -91,30 +73,11 @@ export function TwoFactorSetupWizard({
       return;
     }
 
-    enableMutation.mutate({ body: { code: verificationCode } });
-  };
-
-  const handleCopyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
-  };
-
-  const handleDownloadCodes = () => {
-    if (!enableMutation.data?.backup_codes) return;
-
-    const content = `CodeGraph Backup Codes\n\nGenerated: ${new Date().toISOString()}\n\n${enableMutation.data.backup_codes.join('\n')}\n\nKeep these codes safe and secure!`;
-    const element = document.createElement('a');
-    element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`);
-    element.setAttribute('download', 'codegraph-backup-codes.txt');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    verifyOTP();
   };
 
   const handleComplete = () => {
-    if (!backupCodesConfirmed) {
+    if (!codesConfirmed) {
       addToast({
         title: 'Confirm Backup Codes',
         description: 'Please confirm that you have saved your backup codes.',
@@ -132,7 +95,7 @@ export function TwoFactorSetupWizard({
     onSuccess();
   };
 
-  if (setupMutation.isPending) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -143,7 +106,7 @@ export function TwoFactorSetupWizard({
     );
   }
 
-  if (setupMutation.isError) {
+  if (error && !qrData) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -153,9 +116,6 @@ export function TwoFactorSetupWizard({
       </div>
     );
   }
-
-  const qrData = setupMutation.data;
-  const backupCodes = enableMutation.data?.backup_codes || [];
 
   return (
     <div className="mx-auto w-full max-w-md">
@@ -239,29 +199,29 @@ export function TwoFactorSetupWizard({
             <input
               type="text"
               maxLength={6}
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
               className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-center font-mono text-2xl tracking-widest focus:border-blue-600 focus:outline-none"
               autoFocus
             />
-            <p className="text-xs text-gray-500">{verificationCode.length}/6 digits entered</p>
+            <p className="text-xs text-gray-500">{otp.length}/6 digits entered</p>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={() => setStep('qr')}
-              disabled={enableMutation.isPending}
+              disabled={isVerifying}
               className="flex-1 rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-900 transition hover:bg-gray-300 disabled:opacity-50"
             >
               Back
             </button>
             <button
               onClick={handleVerifyCode}
-              disabled={enableMutation.isPending || verificationCode.length !== 6}
+              disabled={isVerifying || otp.length !== 6}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50"
             >
-              {enableMutation.isPending ? (
+              {isVerifying ? (
                 <>
                   <ArrowPathIcon className="h-4 w-4 animate-spin" />
                   Verifying...
@@ -294,13 +254,13 @@ export function TwoFactorSetupWizard({
               >
                 <code className="font-mono text-sm text-gray-900">{code}</code>
                 <button
-                  onClick={() => handleCopyCode(code)}
+                  onClick={() => copyCode(code)}
                   className="opacity-0 transition group-hover:opacity-100"
                   title="Copy to clipboard"
                 >
                   <ClipboardIcon
                     className={`h-4 w-4 transition ${
-                      copiedCode === code ? 'text-green-500' : 'text-gray-400'
+                      copied === code ? 'text-green-500' : 'text-gray-400'
                     }`}
                   />
                 </button>
@@ -309,7 +269,7 @@ export function TwoFactorSetupWizard({
           </div>
 
           <button
-            onClick={handleDownloadCodes}
+            onClick={downloadCodes}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 font-medium text-gray-900 transition hover:bg-gray-200"
           >
             <ArrowDownTrayIcon className="h-4 w-4" />
@@ -319,8 +279,8 @@ export function TwoFactorSetupWizard({
           <label className="flex items-start gap-3">
             <input
               type="checkbox"
-              checked={backupCodesConfirmed}
-              onChange={(e) => setBackupCodesConfirmed(e.target.checked)}
+              checked={codesConfirmed}
+              onChange={(e) => setCodesConfirmed(e.target.checked)}
               className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">
@@ -331,7 +291,7 @@ export function TwoFactorSetupWizard({
 
           <button
             onClick={handleComplete}
-            disabled={!backupCodesConfirmed}
+            disabled={!codesConfirmed}
             className="w-full rounded-lg bg-green-600 px-4 py-2 font-medium text-white transition hover:bg-green-700 disabled:opacity-50"
           >
             Complete Setup

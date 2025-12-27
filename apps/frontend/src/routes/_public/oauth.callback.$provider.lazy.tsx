@@ -1,29 +1,175 @@
 import { createLazyFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { client } from '@/openapi/client.gen';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import { getErrorMessage, type ApiError } from '@/lib/error-handler';
 import { ERROR_CODE_TO_I18N_KEY } from '@/lib/error-codes';
 import i18n from '@/locales/config';
-import { useQueryClient } from '@tanstack/react-query';
 import { useHandle2FARouting } from '@/hooks/api/auth/use-handle-two-factor';
 import { addToast } from '@/lib/toast';
-import { LoginResponse } from '@/openapi';
+import type { LoginResponse, UserResponse, TwoFactorStatusResponse } from '@/openapi/types.gen';
+import { getCurrentUserInfoApiV1UsersMeGetOptions } from '@/openapi/@tanstack/react-query.gen';
+import { getTwoFactorStatusApiV1TwoFactorStatusGetOptions } from '@/openapi/@tanstack/react-query.gen';
 
 export const Route = createLazyFileRoute('/_public/oauth/callback/$provider')({
   component: OAuthCallback,
 });
 
-interface CurrentUserResponse {
-  id: number;
-  email: string;
-  email_verified: boolean;
+interface CallbackSearchParams {
+  code?: string;
+  state?: string;
+  error?: string;
+  error_code?: string;
+  error_description?: string;
+  oauth?: boolean;
+  status?: string;
 }
 
-interface TwoFactorStatusResponse {
-  enabled: boolean;
-  backup_codes_remaining?: number;
+/**
+ * Creates a handler for OAuth backend flow routing
+ * Routes user based on backend status (2FA required, setup required, etc.)
+ */
+function createBackendFlowHandler(
+  navigate: ReturnType<typeof useNavigate>,
+  queryClient: ReturnType<typeof useQueryClient>,
+  login: (user?: { id: number; email: string; email_verified: boolean }, oauthProvider?: string | null) => void,
+  isBackendFlow: boolean,
+  backendStatus: string | undefined,
+  isLinkFlow: boolean,
+  provider: string
+) {
+  return (isError: boolean, user: UserResponse | undefined) => {
+    if (!isBackendFlow || isError || !user) return false;
+
+    if (isLinkFlow) {
+      queryClient.invalidateQueries({ queryKey: ['oauth-accounts'] });
+      navigate({ to: '/' });
+      return true;
+    }
+
+    // Login flow: Update auth and route based on backend status
+    login(
+      {
+        id: user.id,
+        email: user.email,
+        email_verified: user.email_verified,
+      },
+      provider
+    );
+
+    switch (backendStatus) {
+      case '2fa_required':
+        addToast({
+          title: '2FA Verification Required',
+          description: 'Please verify your 2FA code to continue.',
+          color: 'info',
+        });
+        navigate({
+          to: '/verify-2fa',
+          search: { oauth: true, provider, from: 'oauth-callback' },
+        });
+        break;
+
+      case '2fa_setup_required':
+        addToast({
+          title: '2FA Setup Required',
+          description: 'Please set up two-factor authentication to continue.',
+          color: 'warning',
+        });
+        navigate({
+          to: '/setup-2fa',
+          search: { oauth: true, provider, from: 'oauth-callback' },
+        });
+        break;
+
+      case 'profile_completion_required':
+        addToast({
+          title: 'Profile Setup',
+          description: 'Please complete your profile to continue.',
+          color: 'info',
+        });
+        navigate({
+          to: '/complete-profile',
+          search: { oauth: true, provider, from: 'oauth-callback' },
+        });
+        break;
+
+      case 'success':
+      default:
+        addToast({
+          title: 'Login Successful',
+          description: 'Welcome back! You have successfully logged in.',
+          color: 'success',
+        });
+        localStorage.setItem('last_oauth_provider', provider);
+        queryClient.invalidateQueries({
+          queryKey: ['getCurrentUserInfoApiV1UsersMeGet'],
+        });
+        navigate({ to: '/' });
+    }
+
+    return true;
+  };
+}
+
+/**
+ * Creates a handler for direct OAuth provider flow routing
+ * Routes user based on 2FA status from API
+ */
+function createDirectFlowHandler(
+  navigate: ReturnType<typeof useNavigate>,
+  queryClient: ReturnType<typeof useQueryClient>,
+  login: (user?: { id: number; email: string; email_verified: boolean }, oauthProvider?: string | null) => void,
+  handle2FARouting: ReturnType<typeof useHandle2FARouting>,
+  provider: string,
+  isLinkFlow: boolean
+) {
+  return (currentUser: UserResponse, twoFactorStatus: TwoFactorStatusResponse | undefined) => {
+    if (isLinkFlow) {
+      queryClient.invalidateQueries({ queryKey: ['oauth-accounts'] });
+      navigate({ to: '/' });
+      return;
+    }
+
+    login(
+      {
+        id: currentUser.id,
+        email: currentUser.email,
+        email_verified: currentUser.email_verified,
+      },
+      provider
+    );
+
+    if (twoFactorStatus) {
+      const routingResponse = {
+        requires_two_factor: true,
+        two_factor_enabled: twoFactorStatus.enabled,
+      };
+
+      const { shouldRoute, destination } = handle2FARouting(
+        routingResponse as unknown as LoginResponse
+      );
+
+      if (shouldRoute && destination) {
+        navigate({
+          to: destination,
+          search: { oauth: true, provider, from: 'oauth-callback' },
+        });
+        return;
+      }
+    }
+
+    addToast({
+      title: 'Login Successful',
+      description: 'Welcome back! You have successfully logged in.',
+      color: 'success',
+    });
+    localStorage.setItem('last_oauth_provider', provider);
+    queryClient.invalidateQueries({
+      queryKey: ['getCurrentUserInfoApiV1UsersMeGet'],
+    });
+    navigate({ to: '/' });
+  };
 }
 
 function OAuthCallback() {
@@ -31,12 +177,12 @@ function OAuthCallback() {
   const queryClient = useQueryClient();
   const { provider } = useParams({ from: '/_public/oauth/callback/$provider' });
   const search = useSearch({ from: '/_public/oauth/callback/$provider' });
-  const searchParams = search as {
-    code?: string;
-    error_code?: string;
-    error?: string;
-    error_description?: string;
-  };
+  const searchParams = search as CallbackSearchParams;
+
+  // Check if this is a backend OAuth completion redirect (vs direct OAuth provider redirect)
+  const isBackendOAuthFlow = searchParams.oauth === true;
+  const backendStatus = searchParams.status;
+
   const oauthErrorCode = searchParams.error_code;
   const oauthErrorMessage = searchParams.error_description;
   const oauthError = oauthErrorCode || searchParams.error;
@@ -46,34 +192,25 @@ function OAuthCallback() {
   const processedRef = useRef(false);
   const isLinkFlow = isAuthenticated;
 
-  // Fetch current user to complete authentication
+  // Fetch current user to complete authentication using generated hook
+  // For backend OAuth flow: always fetch (cookies are already set by backend)
+  // For direct OAuth flow: only fetch if no OAuth error and not linking
   const {
     data: currentUser,
     isError,
     error: fetchError,
     isLoading,
   } = useQuery({
-    queryKey: ['current-user-oauth'],
-    queryFn: async () => {
-      const response = await client.get<CurrentUserResponse>({
-        url: '/api/v1/users/me',
-      });
-      return response.data;
-    },
-    enabled: !oauthError && !isLinkFlow, // Only fetch if no OAuth error and not linking
+    ...getCurrentUserInfoApiV1UsersMeGetOptions(),
+    enabled: isBackendOAuthFlow || (!oauthError && !isLinkFlow), // Backend flow always fetches, otherwise check errors
     retry: 1,
   });
 
-  // Fetch 2FA status for login flow (not for linking)
+  // Fetch 2FA status for login flow (not for linking) using generated hook
+  // For backend flow: use the status from backend, still fetch for confirmation
   const { data: twoFactorStatus, isLoading: twoFactorLoading } = useQuery({
-    queryKey: ['two-factor-status-oauth'],
-    queryFn: async () => {
-      const response = await client.get<TwoFactorStatusResponse>({
-        url: '/api/v1/two-factor/status',
-      });
-      return response.data;
-    },
-    enabled: !oauthError && !isLinkFlow && !!currentUser, // Only fetch after user is fetched, in login flow
+    ...getTwoFactorStatusApiV1TwoFactorStatusGetOptions(),
+    enabled: (isBackendOAuthFlow || !oauthError) && !isLinkFlow && !!currentUser, // Fetch after user is fetched, in login flow
     retry: 1,
   });
 
@@ -111,9 +248,34 @@ function OAuthCallback() {
     // Only process once
     if (processedRef.current) return;
 
-    // Wait for query to complete (either success or error)
-    if (!oauthError && isLoading) return;
+    // Wait for user query to complete (either success or error)
+    if (isLoading) return;
 
+    // For backend OAuth flow: route based on status param (no need to wait for 2FA status)
+    if (isBackendOAuthFlow) {
+      // If fetch errored or no user, don't process
+      if (isError || !currentUser) {
+        processedRef.current = true;
+        return;
+      }
+
+      processedRef.current = true;
+
+      const handleRouting = createBackendFlowHandler(
+        navigate,
+        queryClient,
+        login,
+        isBackendOAuthFlow,
+        backendStatus,
+        isLinkFlow,
+        provider
+      );
+
+      handleRouting(isError, currentUser);
+      return;
+    }
+
+    // Direct OAuth provider flow (not from backend)
     // For login flow, also wait for 2FA status to load
     if (!oauthError && !isLinkFlow && (twoFactorLoading || !twoFactorStatus)) return;
 
@@ -131,61 +293,16 @@ function OAuthCallback() {
 
     processedRef.current = true;
 
-    if (isLinkFlow) {
-      // Link flow: User was already authenticated, just linking an additional provider
-      // Invalidate the oauth-accounts query to refresh the connected accounts list
-      queryClient.invalidateQueries({ queryKey: ['oauth-accounts'] });
-      // Redirect back to dashboard
-      navigate({ to: '/' });
-    } else {
-      // Login flow: User is logging in for the first time or switching providers
-      // Set the basic auth state first
-      login(
-        {
-          id: currentUser.id,
-          email: currentUser.email,
-          email_verified: currentUser.email_verified,
-        },
-        provider
-      );
+    const handleRouting = createDirectFlowHandler(
+      navigate,
+      queryClient,
+      login,
+      handle2FARouting,
+      provider,
+      isLinkFlow
+    );
 
-      // Check 2FA status and handle routing
-      if (twoFactorStatus) {
-        // 2FA status is available - use it to determine routing
-        // Create a routing response object for handle2FARouting
-        const routingResponse = {
-          requires_two_factor: true,
-          two_factor_enabled: twoFactorStatus.enabled,
-        };
-
-        const { shouldRoute, destination } = handle2FARouting(
-          routingResponse as unknown as LoginResponse
-        );
-
-        if (shouldRoute && destination) {
-          // Route to 2FA setup or verification
-          navigate({ to: destination });
-          return;
-        }
-      }
-
-      // No 2FA routing needed - complete login normally
-      addToast({
-        title: 'Login Successful',
-        description: 'Welcome back! You have successfully logged in.',
-        color: 'success',
-      });
-
-      // Store provider in localStorage for future re-authentication
-      localStorage.setItem('last_oauth_provider', provider);
-
-      // Invalidate current user query to fetch fresh data
-      queryClient.invalidateQueries({
-        queryKey: ['getCurrentUserInfoApiV1UsersMeGet'],
-      });
-
-      navigate({ to: '/' });
-    }
+    handleRouting(currentUser, twoFactorStatus);
   }, [
     currentUser,
     isError,
@@ -199,6 +316,8 @@ function OAuthCallback() {
     twoFactorStatus,
     twoFactorLoading,
     handle2FARouting,
+    isBackendOAuthFlow,
+    backendStatus,
   ]);
 
   const getProviderName = () => {

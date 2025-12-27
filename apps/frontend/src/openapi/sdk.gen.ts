@@ -24,17 +24,17 @@ import type {
   ForgotPasswordApiV1AuthForgotPasswordPostData,
   ForgotPasswordApiV1AuthForgotPasswordPostErrors,
   ForgotPasswordApiV1AuthForgotPasswordPostResponses,
-  GetConnectedAccountsApiV1OauthAccountsGetData,
-  GetConnectedAccountsApiV1OauthAccountsGetErrors,
-  GetConnectedAccountsApiV1OauthAccountsGetResponses,
+  GetConnectedAccountsOauthAccountsGetData,
+  GetConnectedAccountsOauthAccountsGetErrors,
+  GetConnectedAccountsOauthAccountsGetResponses,
   GetCurrentUserInfoApiV1AuthMeGetData,
   GetCurrentUserInfoApiV1AuthMeGetErrors,
   GetCurrentUserInfoApiV1AuthMeGetResponses,
   GetCurrentUserInfoApiV1UsersMeGetData,
   GetCurrentUserInfoApiV1UsersMeGetErrors,
   GetCurrentUserInfoApiV1UsersMeGetResponses,
-  GetOauthProvidersApiV1OauthProvidersGetData,
-  GetOauthProvidersApiV1OauthProvidersGetResponses,
+  GetOauthProvidersOauthProvidersGetData,
+  GetOauthProvidersOauthProvidersGetResponses,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetErrors,
   GetTaskApiV1TasksTaskIdGetResponses,
@@ -52,15 +52,15 @@ import type {
   LogoutApiV1AuthLogoutPostData,
   LogoutApiV1AuthLogoutPostErrors,
   LogoutApiV1AuthLogoutPostResponses,
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetData,
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors,
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetResponses,
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors,
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses,
-  OauthCallbackApiV1OauthProviderCallbackGetData,
-  OauthCallbackApiV1OauthProviderCallbackGetErrors,
-  OauthCallbackApiV1OauthProviderCallbackGetResponses,
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData,
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors,
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetResponses,
+  OauthAuthorizeOauthProviderAuthorizeGetData,
+  OauthAuthorizeOauthProviderAuthorizeGetErrors,
+  OauthAuthorizeOauthProviderAuthorizeGetResponses,
+  OauthCallbackOauthProviderCallbackGetData,
+  OauthCallbackOauthProviderCallbackGetErrors,
+  OauthCallbackOauthProviderCallbackGetResponses,
   RefreshApiV1AuthRefreshPostData,
   RefreshApiV1AuthRefreshPostErrors,
   RefreshApiV1AuthRefreshPostResponses,
@@ -82,9 +82,9 @@ import type {
   SetupTwoFactorApiV1TwoFactorSetupPostData,
   SetupTwoFactorApiV1TwoFactorSetupPostErrors,
   SetupTwoFactorApiV1TwoFactorSetupPostResponses,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteData,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteErrors,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteResponses,
   UpdateProfileApiV1AuthProfilePutData,
   UpdateProfileApiV1AuthProfilePutErrors,
   UpdateProfileApiV1AuthProfilePutResponses,
@@ -205,14 +205,16 @@ export const loginUserApiV1AuthLoginPost = <ThrowOnError extends boolean = false
  *
  * Verify 2FA code during login and issue full tokens.
  *
- * Requires a partial access token (valid only during 2FA verification step).
+ * Accepts both partial tokens (traditional 2FA flow) and full tokens (OAuth flow).
+ * - Partial token: Used during traditional login's 2FA verification step
+ * - Full token: Used during OAuth login where user is already authenticated
  *
  * Args:
  * request_data: Request containing 2FA code and remember_me flag
  * request: FastAPI request object (for IP address)
  * response: FastAPI response object (to set cookies)
  * db: Database session
- * current_user: Current user from partial token
+ * current_user: Current user from partial or full token
  *
  * Returns:
  * LoginResponse: Success message with user data and email verification status
@@ -558,10 +560,10 @@ export const updateProfileApiV1AuthProfilePut = <ThrowOnError extends boolean = 
  *
  * Get current user information.
  *
- * Accepts both full and partial tokens (partial tokens during 2FA setup/verification).
+ * Requires a full access token. Rejects partial tokens (2FA verification step).
  *
  * Args:
- * current_user: Current authenticated user (via full or partial token)
+ * current_user: Current authenticated user (requires full token)
  *
  * Returns:
  * Current user data
@@ -847,7 +849,8 @@ export const disableTwoFactorApiV1TwoFactorDisablePost = <ThrowOnError extends b
  *
  * Verify a 2FA code (TOTP or backup code).
  *
- * This endpoint can be used during login or for sensitive operations.
+ * Accepts both full and partial tokens (partial tokens during OAuth/login flows).
+ * Can be used during login or for sensitive operations after 2FA setup.
  *
  * Args:
  * request: Contains the TOTP or backup code.
@@ -916,16 +919,16 @@ export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost = <
  * Returns:
  * Dictionary of provider names and whether they are configured.
  */
-export const getOauthProvidersApiV1OauthProvidersGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData, ThrowOnError>
+export const getOauthProvidersOauthProvidersGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetOauthProvidersOauthProvidersGetData, ThrowOnError>
 ) =>
   (options?.client ?? client).get<
-    GetOauthProvidersApiV1OauthProvidersGetResponses,
+    GetOauthProvidersOauthProvidersGetResponses,
     unknown,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/providers',
+    url: '/oauth/providers',
     ...options,
   });
 
@@ -946,16 +949,16 @@ export const getOauthProvidersApiV1OauthProvidersGet = <ThrowOnError extends boo
  * Raises:
  * HTTPException: If provider is not supported or not configured.
  */
-export const oauthAuthorizeApiV1OauthProviderAuthorizeGet = <ThrowOnError extends boolean = false>(
-  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData, ThrowOnError>
+export const oauthAuthorizeOauthProviderAuthorizeGet = <ThrowOnError extends boolean = false>(
+  options: Options<OauthAuthorizeOauthProviderAuthorizeGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    OauthAuthorizeApiV1OauthProviderAuthorizeGetResponses,
-    OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors,
+    OauthAuthorizeOauthProviderAuthorizeGetResponses,
+    OauthAuthorizeOauthProviderAuthorizeGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/{provider}/authorize',
+    url: '/oauth/{provider}/authorize',
     ...options,
   });
 
@@ -973,18 +976,18 @@ export const oauthAuthorizeApiV1OauthProviderAuthorizeGet = <ThrowOnError extend
  * Returns:
  * Redirect to the OAuth provider.
  */
-export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet = <
+export const oauthAuthorizeLinkOauthProviderAuthorizeLinkGet = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData, ThrowOnError>
+  options: Options<OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses,
-    OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors,
+    OauthAuthorizeLinkOauthProviderAuthorizeLinkGetResponses,
+    OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/{provider}/authorize/link',
+    url: '/oauth/{provider}/authorize/link',
     ...options,
   });
 
@@ -1007,16 +1010,16 @@ export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet = <
  * Raises:
  * HTTPException: If callback fails.
  */
-export const oauthCallbackApiV1OauthProviderCallbackGet = <ThrowOnError extends boolean = false>(
-  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData, ThrowOnError>
+export const oauthCallbackOauthProviderCallbackGet = <ThrowOnError extends boolean = false>(
+  options: Options<OauthCallbackOauthProviderCallbackGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    OauthCallbackApiV1OauthProviderCallbackGetResponses,
-    OauthCallbackApiV1OauthProviderCallbackGetErrors,
+    OauthCallbackOauthProviderCallbackGetResponses,
+    OauthCallbackOauthProviderCallbackGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/{provider}/callback',
+    url: '/oauth/{provider}/callback',
     ...options,
   });
 
@@ -1028,16 +1031,16 @@ export const oauthCallbackApiV1OauthProviderCallbackGet = <ThrowOnError extends 
  * Returns:
  * List of connected OAuth accounts.
  */
-export const getConnectedAccountsApiV1OauthAccountsGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData, ThrowOnError>
+export const getConnectedAccountsOauthAccountsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetConnectedAccountsOauthAccountsGetData, ThrowOnError>
 ) =>
   (options?.client ?? client).get<
-    GetConnectedAccountsApiV1OauthAccountsGetResponses,
-    GetConnectedAccountsApiV1OauthAccountsGetErrors,
+    GetConnectedAccountsOauthAccountsGetResponses,
+    GetConnectedAccountsOauthAccountsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/accounts',
+    url: '/oauth/accounts',
     ...options,
   });
 
@@ -1055,18 +1058,16 @@ export const getConnectedAccountsApiV1OauthAccountsGet = <ThrowOnError extends b
  * Raises:
  * HTTPException: If unlinking fails.
  */
-export const unlinkOauthAccountApiV1OauthProviderUnlinkDelete = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData, ThrowOnError>
+export const unlinkOauthAccountOauthProviderUnlinkDelete = <ThrowOnError extends boolean = false>(
+  options: Options<UnlinkOauthAccountOauthProviderUnlinkDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses,
-    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors,
+    UnlinkOauthAccountOauthProviderUnlinkDeleteResponses,
+    UnlinkOauthAccountOauthProviderUnlinkDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/api/v1/oauth/{provider}/unlink',
+    url: '/oauth/{provider}/unlink',
     ...options,
   });
 

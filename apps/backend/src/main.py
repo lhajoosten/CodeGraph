@@ -103,7 +103,8 @@ app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
 app.include_router(two_factor.router, prefix="/api/v1", tags=["two-factor-auth"])
-app.include_router(oauth.router, prefix="/api/v1", tags=["oauth"])
+# OAuth is public-facing and should not have API versioning prefix
+app.include_router(oauth.router, tags=["oauth"])
 app.include_router(test_email.router, tags=["testing"])
 
 

@@ -61,8 +61,8 @@ client.instance.interceptors.response.use(
         // Get last used OAuth provider from localStorage
         const lastOAuthProvider = localStorage.getItem('last_oauth_provider') || 'github';
 
-        // Redirect to OAuth provider authorization
-        window.location.href = `/api/v1/oauth/${lastOAuthProvider}/authorize?redirect_url=${currentPath}`;
+        // Redirect to OAuth provider authorization (uses public path without /api/v1)
+        window.location.href = `/oauth/${lastOAuthProvider}/authorize?redirect_url=${currentPath}`;
         return Promise.reject(error);
       }
 
@@ -84,7 +84,10 @@ client.instance.interceptors.response.use(
           color: 'warning',
         });
 
-        router.navigate({ to: '/verify-2fa' });
+        router.navigate({
+          to: '/verify-2fa',
+          search: { provider: undefined, oauth: undefined, from: 'protected' },
+        });
         return Promise.reject(error);
       }
 

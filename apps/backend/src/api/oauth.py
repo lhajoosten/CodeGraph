@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.deps import get_current_user
 from src.core.config import settings
-from src.core.cookies import set_auth_cookies, set_partial_auth_cookies
+from src.core.cookies import set_auth_cookies
 from src.core.csrf import generate_csrf_token
 from src.core.database import get_db
 from src.core.error_codes import AuthErrorCode
@@ -19,7 +19,6 @@ from src.core.exceptions import ValidationException
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
-    create_partial_access_token,
     create_refresh_token,
 )
 from src.models.user import User
@@ -242,76 +241,46 @@ async def oauth_callback(
     # Get or create user
     user, is_new = await oauth_service.get_or_create_user(profile)
 
-    # Check if 2FA is enabled
+    # All OAuth login scenarios need to authenticate the user via the frontend callback route
+    # The backend sets auth cookies here, then redirects to frontend to fetch user info and update auth store
+
+    # Determine which redirect URL to use based on user state
     if user.two_factor_enabled:
-        # User has 2FA - require verification
-        partial_token = create_partial_access_token(data={"sub": str(user.id)})
-        csrf_token = generate_csrf_token()
+        # User has 2FA - frontend will route to verification
+        auth_redirect = f"/oauth/callback/{provider}?oauth=true&status=2fa_required"
+    elif (settings.two_factor_mandatory or is_new) and not user.two_factor_enabled:
+        # User needs 2FA setup - frontend will route to setup
+        auth_redirect = f"/oauth/callback/{provider}?oauth=true&status=2fa_setup_required"
+    elif is_new and not user.profile_completed:
+        # New user needs profile completion - frontend will route to profile
+        auth_redirect = f"/oauth/callback/{provider}?oauth=true&status=profile_completion_required"
+    else:
+        # Normal login - user will be directed to their requested redirect URL
+        auth_redirect = f"/oauth/callback/{provider}?oauth=true&status=success"
 
-        redirect_url = f"{settings.frontend_url}/verify-2fa?oauth=true&provider={provider}"
-        response = RedirectResponse(url=redirect_url)
-        set_partial_auth_cookies(response, partial_token, csrf_token)
+    response = RedirectResponse(url=f"{settings.frontend_url}{auth_redirect}")
 
-        logger.info(
-            "oauth_login_2fa_verification_required",
-            provider=provider,
-            user_id=user.id,
-        )
+    csrf_token = generate_csrf_token()
 
-        return response
+    # ALL OAuth users get a refresh token marked with oauth=True
+    # When the refresh token expires, frontend detects oauth_reauthentication_required error
+    # and redirects to OAuth provider for re-authentication
+    # For OAuth, both access and refresh tokens expire at the same time (access_token_expire_minutes)
+    oauth_token_expiry = timedelta(minutes=settings.access_token_expire_minutes)
 
-    # Check if 2FA is mandatory but not enabled
-    if settings.two_factor_mandatory and not user.two_factor_enabled:
-        # User must set up 2FA
-        partial_token = create_partial_access_token(data={"sub": str(user.id)})
-        csrf_token = generate_csrf_token()
-
-        redirect_url = f"{settings.frontend_url}/setup-2fa?oauth=true&provider={provider}"
-        response = RedirectResponse(url=redirect_url)
-        set_partial_auth_cookies(response, partial_token, csrf_token)
-
-        logger.info(
-            "oauth_login_2fa_setup_required",
-            provider=provider,
-            user_id=user.id,
-        )
-
-        return response
-
-    # Check if profile needs completion (for new OAuth users)
-    if is_new and not user.profile_completed:
-        # User needs to complete their profile
-        partial_token = create_partial_access_token(data={"sub": str(user.id)})
-        csrf_token = generate_csrf_token()
-
-        redirect_url = f"{settings.frontend_url}/complete-profile?oauth=true&provider={provider}"
-        response = RedirectResponse(url=redirect_url)
-        set_partial_auth_cookies(response, partial_token, csrf_token)
-
-        logger.info(
-            "oauth_profile_completion_required",
-            provider=provider,
-            user_id=user.id,
-        )
-
-        return response
-
-    # 2FA not enabled and not mandatory - proceed with full OAuth login
-    # Create response with redirect
-    redirect_url = f"{settings.frontend_url}{state_data['redirect_url']}"
-    response = RedirectResponse(url=redirect_url)
-
-    # Set auth cookies (OAuth: NO database storage)
-    access_token = create_access_token(data={"sub": str(user.id)})
-    # Create a short-lived refresh token in JWT only (not stored in DB)
-    # This allows the frontend to detect expiry and redirect to OAuth
     refresh_token_str = create_refresh_token(
         data={"sub": str(user.id), "oauth": True},  # Mark as OAuth token
-        expires_delta=timedelta(
-            minutes=settings.access_token_expire_minutes
-        ),  # Same as access token
+        expires_delta=oauth_token_expiry,
     )
-    csrf_token = generate_csrf_token()
+
+    # OAuth users always get full access tokens (not partial)
+    # The frontend will handle 2FA verification/setup UX, but the user remains authenticated via OAuth
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=oauth_token_expiry,
+    )
+
+    # Set auth cookies (both access and refresh tokens)
     set_auth_cookies(response, access_token, refresh_token_str, csrf_token)
 
     # DO NOT create RefreshToken or UserSession DB records for OAuth users

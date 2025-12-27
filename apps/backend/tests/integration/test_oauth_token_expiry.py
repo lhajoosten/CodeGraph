@@ -59,7 +59,7 @@ class TestOAuthTokenExpiry:
 
             # Simulate OAuth callback
             response = await client.get(
-                "/api/v1/oauth/github/callback",
+                "/oauth/github/callback",
                 params={
                     "code": "github_code_123",
                     "state": state,
@@ -138,7 +138,7 @@ class TestOAuthTokenExpiry:
 
             # Create OAuth user
             response = await client.get(
-                "/api/v1/oauth/github/callback",
+                "/oauth/github/callback",
                 params={
                     "code": "github_code_456",
                     "state": state,
@@ -199,7 +199,7 @@ class TestOAuthTokenExpiry:
             }
 
             response = await client.get(
-                "/api/v1/oauth/google/callback",
+                "/oauth/google/callback",
                 params={
                     "code": "google_code_123",
                     "state": state,
@@ -248,7 +248,7 @@ class TestOAuthTokenExpiry:
             }
 
             response = await client.get(
-                "/api/v1/oauth/microsoft/callback",
+                "/oauth/microsoft/callback",
                 params={
                     "code": "ms_code_123",
                     "state": state,

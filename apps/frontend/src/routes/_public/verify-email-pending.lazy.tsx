@@ -1,7 +1,5 @@
 import { createLazyFileRoute, Link, useSearch } from '@tanstack/react-router';
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { resendVerificationApiV1AuthResendVerificationPostMutation } from '@/openapi/@tanstack/react-query.gen';
+import { useResendVerification } from '@/hooks/api';
 
 export const Route = createLazyFileRoute('/_public/verify-email-pending')({
   component: VerifyEmailPendingPage,
@@ -9,26 +7,9 @@ export const Route = createLazyFileRoute('/_public/verify-email-pending')({
 
 function VerifyEmailPendingPage() {
   const { email } = useSearch({ from: '/_public/verify-email-pending' });
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-
-  const baseMutation = resendVerificationApiV1AuthResendVerificationPostMutation();
-  const resendMutation = useMutation({
-    mutationFn: baseMutation.mutationFn,
-    onSuccess: (_data) => {
-      setMessage('Verification email sent! Check your inbox.');
-      setError('');
-    },
-    onError: (err: Error) => {
-      const errorMessage = err?.message || 'Failed to resend verification email. Please try again.';
-      setError(errorMessage);
-      setMessage('');
-    },
-  });
+  const resendMutation = useResendVerification();
 
   const handleResend = () => {
-    setMessage('');
-    setError('');
     resendMutation.mutate({ body: { email } });
   };
 
@@ -93,68 +74,6 @@ function VerifyEmailPendingPage() {
               Check Your Email - We sent a verification link to <strong>{email}</strong>
             </p>
           </div>
-
-          {/* Success Message */}
-          {message && (
-            <div
-              style={{
-                backgroundColor: 'rgba(34, 211, 238, 0.1)',
-                borderColor: 'rgba(34, 211, 238, 0.3)',
-              }}
-              className="rounded-lg border p-4"
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  style={{ color: 'var(--color-brand-cyan)' }}
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <p style={{ color: 'var(--color-brand-cyan)' }} className="text-sm font-medium">
-                  {message}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Error Alert */}
-          {error && (
-            <div
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderColor: 'rgba(239, 68, 68, 0.3)',
-              }}
-              className="rounded-lg border p-4"
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  style={{ color: 'var(--color-error)' }}
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p style={{ color: 'var(--color-error)' }} className="text-sm font-medium">
-                  {error}
-                </p>
-              </div>
-            </div>
-          )}
 
           {/* Instructions */}
           <div style={{ color: 'var(--color-text-secondary-lum)' }} className="space-y-3 text-sm">

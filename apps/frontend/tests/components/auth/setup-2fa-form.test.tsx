@@ -35,6 +35,7 @@ describe('Setup2FAForm', () => {
     setOtp: vi.fn(),
     setCodesConfirmed: vi.fn(),
     setCopied: vi.fn(),
+    startSetup: vi.fn(),
     verifyOTP: vi.fn(),
     downloadCodes: vi.fn(),
     copyCode: vi.fn(),

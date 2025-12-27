@@ -18,19 +18,19 @@ import {
   disableTwoFactorApiV1TwoFactorDisablePost,
   enableTwoFactorApiV1TwoFactorEnablePost,
   forgotPasswordApiV1AuthForgotPasswordPost,
-  getConnectedAccountsApiV1OauthAccountsGet,
+  getConnectedAccountsOauthAccountsGet,
   getCurrentUserInfoApiV1AuthMeGet,
   getCurrentUserInfoApiV1UsersMeGet,
-  getOauthProvidersApiV1OauthProvidersGet,
+  getOauthProvidersOauthProvidersGet,
   getTaskApiV1TasksTaskIdGet,
   getTwoFactorStatusApiV1TwoFactorStatusGet,
   healthCheckHealthGet,
   listTasksApiV1TasksGet,
   loginUserApiV1AuthLoginPost,
   logoutApiV1AuthLogoutPost,
-  oauthAuthorizeApiV1OauthProviderAuthorizeGet,
-  oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet,
-  oauthCallbackApiV1OauthProviderCallbackGet,
+  oauthAuthorizeLinkOauthProviderAuthorizeLinkGet,
+  oauthAuthorizeOauthProviderAuthorizeGet,
+  oauthCallbackOauthProviderCallbackGet,
   type Options,
   refreshApiV1AuthRefreshPost,
   regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost,
@@ -39,7 +39,7 @@ import {
   resetPasswordApiV1AuthResetPasswordPost,
   sendTestEmailApiV1TestSendTestEmailPost,
   setupTwoFactorApiV1TwoFactorSetupPost,
-  unlinkOauthAccountApiV1OauthProviderUnlinkDelete,
+  unlinkOauthAccountOauthProviderUnlinkDelete,
   updateProfileApiV1AuthProfilePut,
   updateTaskApiV1TasksTaskIdPatch,
   verifyEmailApiV1AuthVerifyEmailPost,
@@ -68,17 +68,17 @@ import type {
   ForgotPasswordApiV1AuthForgotPasswordPostData,
   ForgotPasswordApiV1AuthForgotPasswordPostError,
   ForgotPasswordApiV1AuthForgotPasswordPostResponse,
-  GetConnectedAccountsApiV1OauthAccountsGetData,
-  GetConnectedAccountsApiV1OauthAccountsGetError,
-  GetConnectedAccountsApiV1OauthAccountsGetResponse,
+  GetConnectedAccountsOauthAccountsGetData,
+  GetConnectedAccountsOauthAccountsGetError,
+  GetConnectedAccountsOauthAccountsGetResponse,
   GetCurrentUserInfoApiV1AuthMeGetData,
   GetCurrentUserInfoApiV1AuthMeGetError,
   GetCurrentUserInfoApiV1AuthMeGetResponse,
   GetCurrentUserInfoApiV1UsersMeGetData,
   GetCurrentUserInfoApiV1UsersMeGetError,
   GetCurrentUserInfoApiV1UsersMeGetResponse,
-  GetOauthProvidersApiV1OauthProvidersGetData,
-  GetOauthProvidersApiV1OauthProvidersGetResponse,
+  GetOauthProvidersOauthProvidersGetData,
+  GetOauthProvidersOauthProvidersGetResponse,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetError,
   GetTaskApiV1TasksTaskIdGetResponse,
@@ -96,12 +96,12 @@ import type {
   LogoutApiV1AuthLogoutPostData,
   LogoutApiV1AuthLogoutPostError,
   LogoutApiV1AuthLogoutPostResponse,
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetData,
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetError,
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData,
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError,
-  OauthCallbackApiV1OauthProviderCallbackGetData,
-  OauthCallbackApiV1OauthProviderCallbackGetError,
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData,
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetError,
+  OauthAuthorizeOauthProviderAuthorizeGetData,
+  OauthAuthorizeOauthProviderAuthorizeGetError,
+  OauthCallbackOauthProviderCallbackGetData,
+  OauthCallbackOauthProviderCallbackGetError,
   RefreshApiV1AuthRefreshPostData,
   RefreshApiV1AuthRefreshPostError,
   RefreshApiV1AuthRefreshPostResponse,
@@ -123,9 +123,9 @@ import type {
   SetupTwoFactorApiV1TwoFactorSetupPostData,
   SetupTwoFactorApiV1TwoFactorSetupPostError,
   SetupTwoFactorApiV1TwoFactorSetupPostResponse,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError,
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteData,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteError,
+  UnlinkOauthAccountOauthProviderUnlinkDeleteResponse,
   UpdateProfileApiV1AuthProfilePutData,
   UpdateProfileApiV1AuthProfilePutError,
   UpdateProfileApiV1AuthProfilePutResponse,
@@ -295,14 +295,16 @@ export const loginUserApiV1AuthLoginPostMutation = (
  *
  * Verify 2FA code during login and issue full tokens.
  *
- * Requires a partial access token (valid only during 2FA verification step).
+ * Accepts both partial tokens (traditional 2FA flow) and full tokens (OAuth flow).
+ * - Partial token: Used during traditional login's 2FA verification step
+ * - Full token: Used during OAuth login where user is already authenticated
  *
  * Args:
  * request_data: Request containing 2FA code and remember_me flag
  * request: FastAPI request object (for IP address)
  * response: FastAPI response object (to set cookies)
  * db: Database session
- * current_user: Current user from partial token
+ * current_user: Current user from partial or full token
  *
  * Returns:
  * LoginResponse: Success message with user data and email verification status
@@ -740,10 +742,10 @@ export const getCurrentUserInfoApiV1UsersMeGetQueryKey = (
  *
  * Get current user information.
  *
- * Accepts both full and partial tokens (partial tokens during 2FA setup/verification).
+ * Requires a full access token. Rejects partial tokens (2FA verification step).
  *
  * Args:
- * current_user: Current authenticated user (via full or partial token)
+ * current_user: Current authenticated user (requires full token)
  *
  * Returns:
  * Current user data
@@ -1216,7 +1218,8 @@ export const disableTwoFactorApiV1TwoFactorDisablePostMutation = (
  *
  * Verify a 2FA code (TOTP or backup code).
  *
- * This endpoint can be used during login or for sensitive operations.
+ * Accepts both full and partial tokens (partial tokens during OAuth/login flows).
+ * Can be used during login or for sensitive operations after 2FA setup.
  *
  * Args:
  * request: Contains the TOTP or backup code.
@@ -1289,9 +1292,9 @@ export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostMutatio
   return mutationOptions;
 };
 
-export const getOauthProvidersApiV1OauthProvidersGetQueryKey = (
-  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData>
-) => createQueryKey('getOauthProvidersApiV1OauthProvidersGet', options);
+export const getOauthProvidersOauthProvidersGetQueryKey = (
+  options?: Options<GetOauthProvidersOauthProvidersGetData>
+) => createQueryKey('getOauthProvidersOauthProvidersGet', options);
 
 /**
  * Get Oauth Providers
@@ -1301,17 +1304,17 @@ export const getOauthProvidersApiV1OauthProvidersGetQueryKey = (
  * Returns:
  * Dictionary of provider names and whether they are configured.
  */
-export const getOauthProvidersApiV1OauthProvidersGetOptions = (
-  options?: Options<GetOauthProvidersApiV1OauthProvidersGetData>
+export const getOauthProvidersOauthProvidersGetOptions = (
+  options?: Options<GetOauthProvidersOauthProvidersGetData>
 ) =>
   queryOptions<
-    GetOauthProvidersApiV1OauthProvidersGetResponse,
+    GetOauthProvidersOauthProvidersGetResponse,
     AxiosError<DefaultError>,
-    GetOauthProvidersApiV1OauthProvidersGetResponse,
-    ReturnType<typeof getOauthProvidersApiV1OauthProvidersGetQueryKey>
+    GetOauthProvidersOauthProvidersGetResponse,
+    ReturnType<typeof getOauthProvidersOauthProvidersGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getOauthProvidersApiV1OauthProvidersGet({
+      const { data } = await getOauthProvidersOauthProvidersGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -1319,12 +1322,12 @@ export const getOauthProvidersApiV1OauthProvidersGetOptions = (
       });
       return data;
     },
-    queryKey: getOauthProvidersApiV1OauthProvidersGetQueryKey(options),
+    queryKey: getOauthProvidersOauthProvidersGetQueryKey(options),
   });
 
-export const oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey = (
-  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData>
-) => createQueryKey('oauthAuthorizeApiV1OauthProviderAuthorizeGet', options);
+export const oauthAuthorizeOauthProviderAuthorizeGetQueryKey = (
+  options: Options<OauthAuthorizeOauthProviderAuthorizeGetData>
+) => createQueryKey('oauthAuthorizeOauthProviderAuthorizeGet', options);
 
 /**
  * Oauth Authorize
@@ -1343,17 +1346,17 @@ export const oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey = (
  * Raises:
  * HTTPException: If provider is not supported or not configured.
  */
-export const oauthAuthorizeApiV1OauthProviderAuthorizeGetOptions = (
-  options: Options<OauthAuthorizeApiV1OauthProviderAuthorizeGetData>
+export const oauthAuthorizeOauthProviderAuthorizeGetOptions = (
+  options: Options<OauthAuthorizeOauthProviderAuthorizeGetData>
 ) =>
   queryOptions<
     unknown,
-    AxiosError<OauthAuthorizeApiV1OauthProviderAuthorizeGetError>,
+    AxiosError<OauthAuthorizeOauthProviderAuthorizeGetError>,
     unknown,
-    ReturnType<typeof oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey>
+    ReturnType<typeof oauthAuthorizeOauthProviderAuthorizeGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await oauthAuthorizeApiV1OauthProviderAuthorizeGet({
+      const { data } = await oauthAuthorizeOauthProviderAuthorizeGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -1361,12 +1364,12 @@ export const oauthAuthorizeApiV1OauthProviderAuthorizeGetOptions = (
       });
       return data;
     },
-    queryKey: oauthAuthorizeApiV1OauthProviderAuthorizeGetQueryKey(options),
+    queryKey: oauthAuthorizeOauthProviderAuthorizeGetQueryKey(options),
   });
 
-export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey = (
-  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData>
-) => createQueryKey('oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet', options);
+export const oauthAuthorizeLinkOauthProviderAuthorizeLinkGetQueryKey = (
+  options: Options<OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData>
+) => createQueryKey('oauthAuthorizeLinkOauthProviderAuthorizeLinkGet', options);
 
 /**
  * Oauth Authorize Link
@@ -1382,17 +1385,17 @@ export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey = (
  * Returns:
  * Redirect to the OAuth provider.
  */
-export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetOptions = (
-  options: Options<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData>
+export const oauthAuthorizeLinkOauthProviderAuthorizeLinkGetOptions = (
+  options: Options<OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData>
 ) =>
   queryOptions<
     unknown,
-    AxiosError<OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError>,
+    AxiosError<OauthAuthorizeLinkOauthProviderAuthorizeLinkGetError>,
     unknown,
-    ReturnType<typeof oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey>
+    ReturnType<typeof oauthAuthorizeLinkOauthProviderAuthorizeLinkGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGet({
+      const { data } = await oauthAuthorizeLinkOauthProviderAuthorizeLinkGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -1400,12 +1403,12 @@ export const oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetOptions = (
       });
       return data;
     },
-    queryKey: oauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetQueryKey(options),
+    queryKey: oauthAuthorizeLinkOauthProviderAuthorizeLinkGetQueryKey(options),
   });
 
-export const oauthCallbackApiV1OauthProviderCallbackGetQueryKey = (
-  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData>
-) => createQueryKey('oauthCallbackApiV1OauthProviderCallbackGet', options);
+export const oauthCallbackOauthProviderCallbackGetQueryKey = (
+  options: Options<OauthCallbackOauthProviderCallbackGetData>
+) => createQueryKey('oauthCallbackOauthProviderCallbackGet', options);
 
 /**
  * Oauth Callback
@@ -1426,17 +1429,17 @@ export const oauthCallbackApiV1OauthProviderCallbackGetQueryKey = (
  * Raises:
  * HTTPException: If callback fails.
  */
-export const oauthCallbackApiV1OauthProviderCallbackGetOptions = (
-  options: Options<OauthCallbackApiV1OauthProviderCallbackGetData>
+export const oauthCallbackOauthProviderCallbackGetOptions = (
+  options: Options<OauthCallbackOauthProviderCallbackGetData>
 ) =>
   queryOptions<
     unknown,
-    AxiosError<OauthCallbackApiV1OauthProviderCallbackGetError>,
+    AxiosError<OauthCallbackOauthProviderCallbackGetError>,
     unknown,
-    ReturnType<typeof oauthCallbackApiV1OauthProviderCallbackGetQueryKey>
+    ReturnType<typeof oauthCallbackOauthProviderCallbackGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await oauthCallbackApiV1OauthProviderCallbackGet({
+      const { data } = await oauthCallbackOauthProviderCallbackGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -1444,12 +1447,12 @@ export const oauthCallbackApiV1OauthProviderCallbackGetOptions = (
       });
       return data;
     },
-    queryKey: oauthCallbackApiV1OauthProviderCallbackGetQueryKey(options),
+    queryKey: oauthCallbackOauthProviderCallbackGetQueryKey(options),
   });
 
-export const getConnectedAccountsApiV1OauthAccountsGetQueryKey = (
-  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData>
-) => createQueryKey('getConnectedAccountsApiV1OauthAccountsGet', options);
+export const getConnectedAccountsOauthAccountsGetQueryKey = (
+  options?: Options<GetConnectedAccountsOauthAccountsGetData>
+) => createQueryKey('getConnectedAccountsOauthAccountsGet', options);
 
 /**
  * Get Connected Accounts
@@ -1459,17 +1462,17 @@ export const getConnectedAccountsApiV1OauthAccountsGetQueryKey = (
  * Returns:
  * List of connected OAuth accounts.
  */
-export const getConnectedAccountsApiV1OauthAccountsGetOptions = (
-  options?: Options<GetConnectedAccountsApiV1OauthAccountsGetData>
+export const getConnectedAccountsOauthAccountsGetOptions = (
+  options?: Options<GetConnectedAccountsOauthAccountsGetData>
 ) =>
   queryOptions<
-    GetConnectedAccountsApiV1OauthAccountsGetResponse,
-    AxiosError<GetConnectedAccountsApiV1OauthAccountsGetError>,
-    GetConnectedAccountsApiV1OauthAccountsGetResponse,
-    ReturnType<typeof getConnectedAccountsApiV1OauthAccountsGetQueryKey>
+    GetConnectedAccountsOauthAccountsGetResponse,
+    AxiosError<GetConnectedAccountsOauthAccountsGetError>,
+    GetConnectedAccountsOauthAccountsGetResponse,
+    ReturnType<typeof getConnectedAccountsOauthAccountsGetQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getConnectedAccountsApiV1OauthAccountsGet({
+      const { data } = await getConnectedAccountsOauthAccountsGet({
         ...options,
         ...queryKey[0],
         signal,
@@ -1477,7 +1480,7 @@ export const getConnectedAccountsApiV1OauthAccountsGetOptions = (
       });
       return data;
     },
-    queryKey: getConnectedAccountsApiV1OauthAccountsGetQueryKey(options),
+    queryKey: getConnectedAccountsOauthAccountsGetQueryKey(options),
   });
 
 /**
@@ -1494,20 +1497,20 @@ export const getConnectedAccountsApiV1OauthAccountsGetOptions = (
  * Raises:
  * HTTPException: If unlinking fails.
  */
-export const unlinkOauthAccountApiV1OauthProviderUnlinkDeleteMutation = (
-  options?: Partial<Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>>
+export const unlinkOauthAccountOauthProviderUnlinkDeleteMutation = (
+  options?: Partial<Options<UnlinkOauthAccountOauthProviderUnlinkDeleteData>>
 ): UseMutationOptions<
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
-  AxiosError<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError>,
-  Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>
+  UnlinkOauthAccountOauthProviderUnlinkDeleteResponse,
+  AxiosError<UnlinkOauthAccountOauthProviderUnlinkDeleteError>,
+  Options<UnlinkOauthAccountOauthProviderUnlinkDeleteData>
 > => {
   const mutationOptions: UseMutationOptions<
-    UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse,
-    AxiosError<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError>,
-    Options<UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData>
+    UnlinkOauthAccountOauthProviderUnlinkDeleteResponse,
+    AxiosError<UnlinkOauthAccountOauthProviderUnlinkDeleteError>,
+    Options<UnlinkOauthAccountOauthProviderUnlinkDeleteData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await unlinkOauthAccountApiV1OauthProviderUnlinkDelete({
+      const { data } = await unlinkOauthAccountOauthProviderUnlinkDelete({
         ...options,
         ...fnOptions,
         throwOnError: true,

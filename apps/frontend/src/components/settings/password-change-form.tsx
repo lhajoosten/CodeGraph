@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { changePasswordApiV1AuthChangePasswordPost } from '@/openapi/sdk.gen';
+import { useChangePassword } from '@/hooks/api';
 
 export const PasswordChangeForm = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -9,13 +8,7 @@ export const PasswordChangeForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const changeMutation = useMutation({
-    mutationFn: async (data: { current_password: string; new_password: string }) => {
-      const response = await changePasswordApiV1AuthChangePasswordPost({
-        body: data,
-      });
-      return response;
-    },
+  const changeMutation = useChangePassword({
     onSuccess: () => {
       setSuccess(true);
       setCurrentPassword('');
@@ -25,8 +18,7 @@ export const PasswordChangeForm = () => {
       // Hide success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     },
-    onError: (error: Error & { response?: { data?: { detail?: string } } }) => {
-      setError(error.response?.data?.detail || 'Failed to change password');
+    onError: () => {
       setSuccess(false);
     },
   });
@@ -57,8 +49,10 @@ export const PasswordChangeForm = () => {
     }
 
     changeMutation.mutate({
-      current_password: currentPassword,
-      new_password: newPassword,
+      body: {
+        current_password: currentPassword,
+        new_password: newPassword,
+      },
     });
   };
 

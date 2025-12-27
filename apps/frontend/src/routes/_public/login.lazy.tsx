@@ -39,18 +39,9 @@ function LoginPageContent() {
 
         {/* OAuth Buttons */}
         <div className="grid grid-cols-3 gap-3">
-          <OAuthButton
-            provider="github"
-            href={`${apiUrl}/oauth/github/authorize?redirect_url=/oauth/callback/github`}
-          />
-          <OAuthButton
-            provider="google"
-            href={`${apiUrl}/oauth/google/authorize?redirect_url=/oauth/callback/google`}
-          />
-          <OAuthButton
-            provider="microsoft"
-            href={`${apiUrl}/oauth/microsoft/authorize?redirect_url=/oauth/callback/microsoft`}
-          />
+          <OAuthButton provider="github" href={`${apiUrl}/oauth/github/authorize`} />
+          <OAuthButton provider="google" href={`${apiUrl}/oauth/google/authorize`} />
+          <OAuthButton provider="microsoft" href={`${apiUrl}/oauth/microsoft/authorize`} />
         </div>
 
         {/* Footer */}

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { changeEmailApiV1AuthChangeEmailPost } from '@/openapi/sdk.gen';
+import { useChangeEmail } from '@/hooks/api';
 import { useAuthStore } from '@/stores/auth-store';
 
 export const EmailChangeForm = () => {
@@ -10,21 +9,14 @@ export const EmailChangeForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const changeMutation = useMutation({
-    mutationFn: async (data: { new_email: string; password: string }) => {
-      const response = await changeEmailApiV1AuthChangeEmailPost({
-        body: data,
-      });
-      return response;
-    },
+  const changeMutation = useChangeEmail({
     onSuccess: () => {
       setSuccess(true);
       setNewEmail('');
       setPassword('');
       setError('');
     },
-    onError: (error: Error & { response?: { data?: { detail?: string } } }) => {
-      setError(error.response?.data?.detail || 'Failed to change email');
+    onError: () => {
       setSuccess(false);
     },
   });
@@ -51,8 +43,10 @@ export const EmailChangeForm = () => {
     }
 
     changeMutation.mutate({
-      new_email: newEmail,
-      password: password,
+      body: {
+        new_email: newEmail,
+        password: password,
+      },
     });
   };
 

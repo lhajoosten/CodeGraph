@@ -668,20 +668,20 @@ export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData =
 export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
   zRegenerateBackupCodesResponse;
 
-export const zGetOauthProvidersApiV1OauthProvidersGetData = z.object({
+export const zGetOauthProvidersOauthProvidersGetData = z.object({
   body: z.optional(z.never()),
   path: z.optional(z.never()),
   query: z.optional(z.never()),
 });
 
 /**
- * Response Get Oauth Providers Api V1 Oauth Providers Get
+ * Response Get Oauth Providers Oauth Providers Get
  *
  * Successful Response
  */
-export const zGetOauthProvidersApiV1OauthProvidersGetResponse = z.record(z.string(), z.boolean());
+export const zGetOauthProvidersOauthProvidersGetResponse = z.record(z.string(), z.boolean());
 
-export const zOauthAuthorizeApiV1OauthProviderAuthorizeGetData = z.object({
+export const zOauthAuthorizeOauthProviderAuthorizeGetData = z.object({
   body: z.optional(z.never()),
   path: z.object({
     provider: z.string(),
@@ -693,7 +693,7 @@ export const zOauthAuthorizeApiV1OauthProviderAuthorizeGetData = z.object({
   ),
 });
 
-export const zOauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData = z.object({
+export const zOauthAuthorizeLinkOauthProviderAuthorizeLinkGetData = z.object({
   body: z.optional(z.never()),
   path: z.object({
     provider: z.string(),
@@ -705,7 +705,7 @@ export const zOauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData = z.objec
   ),
 });
 
-export const zOauthCallbackApiV1OauthProviderCallbackGetData = z.object({
+export const zOauthCallbackOauthProviderCallbackGetData = z.object({
   body: z.optional(z.never()),
   path: z.object({
     provider: z.string(),
@@ -716,7 +716,7 @@ export const zOauthCallbackApiV1OauthProviderCallbackGetData = z.object({
   }),
 });
 
-export const zGetConnectedAccountsApiV1OauthAccountsGetData = z.object({
+export const zGetConnectedAccountsOauthAccountsGetData = z.object({
   body: z.optional(z.never()),
   path: z.optional(z.never()),
   query: z.optional(z.never()),
@@ -725,9 +725,9 @@ export const zGetConnectedAccountsApiV1OauthAccountsGetData = z.object({
 /**
  * Successful Response
  */
-export const zGetConnectedAccountsApiV1OauthAccountsGetResponse = zConnectedAccountsResponse;
+export const zGetConnectedAccountsOauthAccountsGetResponse = zConnectedAccountsResponse;
 
-export const zUnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData = z.object({
+export const zUnlinkOauthAccountOauthProviderUnlinkDeleteData = z.object({
   body: z.optional(z.never()),
   path: z.object({
     provider: z.string(),
@@ -736,11 +736,11 @@ export const zUnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData = z.object({
 });
 
 /**
- * Response Unlink Oauth Account Api V1 Oauth  Provider  Unlink Delete
+ * Response Unlink Oauth Account Oauth  Provider  Unlink Delete
  *
  * Successful Response
  */
-export const zUnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse = z.record(
+export const zUnlinkOauthAccountOauthProviderUnlinkDeleteResponse = z.record(
   z.string(),
   z.string()
 );

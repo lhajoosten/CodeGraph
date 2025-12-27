@@ -13,7 +13,7 @@ export default defineConfig({
     plugins: [
         {
             name: '@hey-api/client-axios',
-            baseUrl: apiUrl, // Base URL without /api/v1 - paths include it
+            baseUrl: apiUrl,
         },
         '@hey-api/schemas',
         'zod',

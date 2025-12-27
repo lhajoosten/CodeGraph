@@ -5,12 +5,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { getErrorMessage } from '@/lib/error-handler';
 import { AuthLayout, AuthCard, AuthHeader } from '@/components/auth';
 import { ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
-
-interface CurrentUserResponse {
-  id: number;
-  email: string;
-  email_verified: boolean;
-}
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentUserInfoApiV1UsersMeGetOptions } from '@/openapi/@tanstack/react-query.gen.ts';
 
 export const Route = createFileRoute('/_public/verify-email')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -28,6 +24,8 @@ function EmailVerificationPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const { setEmailVerified, isAuthenticated } = useAuthStore();
+
+  const userReponse = useQuery({ ...getCurrentUserInfoApiV1UsersMeGetOptions() });
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -56,10 +54,7 @@ function EmailVerificationPage() {
             // Try to fetch user info to update auth store
             (async () => {
               try {
-                const { client } = await import('@/openapi/client.gen');
-                const userResponse = await client.get<CurrentUserResponse>({
-                  url: '/api/v1/users/me',
-                });
+                const userResponse = await userReponse.refetch();
                 if (userResponse.data?.id) {
                   // Call the setters with the user data
                   const { login, setTwoFactorStatus } = useAuthStore.getState();
@@ -74,8 +69,8 @@ function EmailVerificationPage() {
                 console.error('Failed to fetch user after verification:', error);
               }
             })();
-            // Navigate to 2FA setup
-            navigate({ to: '/setup-2fa' });
+            // Navigate to 2FA setup (traditional auth flow, not OAuth)
+            navigate({ to: '/setup-2fa', search: { oauth: undefined, provider: undefined } });
           } else {
             // 2FA not mandatory: redirect to login
             navigate({ to: '/login', search: { redirect: '/' } });
@@ -89,7 +84,7 @@ function EmailVerificationPage() {
     };
 
     verifyEmail();
-  }, [token, navigate, setEmailVerified, isAuthenticated]);
+  }, [token, navigate, setEmailVerified, isAuthenticated, userReponse]);
 
   return (
     <AuthLayout>

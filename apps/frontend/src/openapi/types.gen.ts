@@ -1386,16 +1386,16 @@ export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse
 export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses[keyof RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses];
 
-export type GetOauthProvidersApiV1OauthProvidersGetData = {
+export type GetOauthProvidersOauthProvidersGetData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/oauth/providers';
+  url: '/oauth/providers';
 };
 
-export type GetOauthProvidersApiV1OauthProvidersGetResponses = {
+export type GetOauthProvidersOauthProvidersGetResponses = {
   /**
-   * Response Get Oauth Providers Api V1 Oauth Providers Get
+   * Response Get Oauth Providers Oauth Providers Get
    *
    * Successful Response
    */
@@ -1404,10 +1404,10 @@ export type GetOauthProvidersApiV1OauthProvidersGetResponses = {
   };
 };
 
-export type GetOauthProvidersApiV1OauthProvidersGetResponse =
-  GetOauthProvidersApiV1OauthProvidersGetResponses[keyof GetOauthProvidersApiV1OauthProvidersGetResponses];
+export type GetOauthProvidersOauthProvidersGetResponse =
+  GetOauthProvidersOauthProvidersGetResponses[keyof GetOauthProvidersOauthProvidersGetResponses];
 
-export type OauthAuthorizeApiV1OauthProviderAuthorizeGetData = {
+export type OauthAuthorizeOauthProviderAuthorizeGetData = {
   body?: never;
   path: {
     /**
@@ -1421,27 +1421,27 @@ export type OauthAuthorizeApiV1OauthProviderAuthorizeGetData = {
      */
     redirect_url?: string | null;
   };
-  url: '/api/v1/oauth/{provider}/authorize';
+  url: '/oauth/{provider}/authorize';
 };
 
-export type OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors = {
+export type OauthAuthorizeOauthProviderAuthorizeGetErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type OauthAuthorizeApiV1OauthProviderAuthorizeGetError =
-  OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors[keyof OauthAuthorizeApiV1OauthProviderAuthorizeGetErrors];
+export type OauthAuthorizeOauthProviderAuthorizeGetError =
+  OauthAuthorizeOauthProviderAuthorizeGetErrors[keyof OauthAuthorizeOauthProviderAuthorizeGetErrors];
 
-export type OauthAuthorizeApiV1OauthProviderAuthorizeGetResponses = {
+export type OauthAuthorizeOauthProviderAuthorizeGetResponses = {
   /**
    * Successful Response
    */
   200: unknown;
 };
 
-export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData = {
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData = {
   body?: never;
   path: {
     /**
@@ -1455,27 +1455,27 @@ export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetData = {
      */
     redirect_url?: string | null;
   };
-  url: '/api/v1/oauth/{provider}/authorize/link';
+  url: '/oauth/{provider}/authorize/link';
 };
 
-export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors = {
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetError =
-  OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors[keyof OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetErrors];
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetError =
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors[keyof OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors];
 
-export type OauthAuthorizeLinkApiV1OauthProviderAuthorizeLinkGetResponses = {
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetResponses = {
   /**
    * Successful Response
    */
   200: unknown;
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackGetData = {
+export type OauthCallbackOauthProviderCallbackGetData = {
   body?: never;
   path: {
     /**
@@ -1493,54 +1493,54 @@ export type OauthCallbackApiV1OauthProviderCallbackGetData = {
      */
     state: string;
   };
-  url: '/api/v1/oauth/{provider}/callback';
+  url: '/oauth/{provider}/callback';
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackGetErrors = {
+export type OauthCallbackOauthProviderCallbackGetErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type OauthCallbackApiV1OauthProviderCallbackGetError =
-  OauthCallbackApiV1OauthProviderCallbackGetErrors[keyof OauthCallbackApiV1OauthProviderCallbackGetErrors];
+export type OauthCallbackOauthProviderCallbackGetError =
+  OauthCallbackOauthProviderCallbackGetErrors[keyof OauthCallbackOauthProviderCallbackGetErrors];
 
-export type OauthCallbackApiV1OauthProviderCallbackGetResponses = {
+export type OauthCallbackOauthProviderCallbackGetResponses = {
   /**
    * Successful Response
    */
   200: unknown;
 };
 
-export type GetConnectedAccountsApiV1OauthAccountsGetData = {
+export type GetConnectedAccountsOauthAccountsGetData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/oauth/accounts';
+  url: '/oauth/accounts';
 };
 
-export type GetConnectedAccountsApiV1OauthAccountsGetErrors = {
+export type GetConnectedAccountsOauthAccountsGetErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type GetConnectedAccountsApiV1OauthAccountsGetError =
-  GetConnectedAccountsApiV1OauthAccountsGetErrors[keyof GetConnectedAccountsApiV1OauthAccountsGetErrors];
+export type GetConnectedAccountsOauthAccountsGetError =
+  GetConnectedAccountsOauthAccountsGetErrors[keyof GetConnectedAccountsOauthAccountsGetErrors];
 
-export type GetConnectedAccountsApiV1OauthAccountsGetResponses = {
+export type GetConnectedAccountsOauthAccountsGetResponses = {
   /**
    * Successful Response
    */
   200: ConnectedAccountsResponse;
 };
 
-export type GetConnectedAccountsApiV1OauthAccountsGetResponse =
-  GetConnectedAccountsApiV1OauthAccountsGetResponses[keyof GetConnectedAccountsApiV1OauthAccountsGetResponses];
+export type GetConnectedAccountsOauthAccountsGetResponse =
+  GetConnectedAccountsOauthAccountsGetResponses[keyof GetConnectedAccountsOauthAccountsGetResponses];
 
-export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData = {
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteData = {
   body?: never;
   path: {
     /**
@@ -1549,22 +1549,22 @@ export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteData = {
     provider: string;
   };
   query?: never;
-  url: '/api/v1/oauth/{provider}/unlink';
+  url: '/oauth/{provider}/unlink';
 };
 
-export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors = {
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteErrors = {
   /**
    * Validation Error
    */
   422: HttpValidationError;
 };
 
-export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteError =
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors[keyof UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteErrors];
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteError =
+  UnlinkOauthAccountOauthProviderUnlinkDeleteErrors[keyof UnlinkOauthAccountOauthProviderUnlinkDeleteErrors];
 
-export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses = {
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteResponses = {
   /**
-   * Response Unlink Oauth Account Api V1 Oauth  Provider  Unlink Delete
+   * Response Unlink Oauth Account Oauth  Provider  Unlink Delete
    *
    * Successful Response
    */
@@ -1573,8 +1573,8 @@ export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses = {
   };
 };
 
-export type UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponse =
-  UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses[keyof UnlinkOauthAccountApiV1OauthProviderUnlinkDeleteResponses];
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteResponse =
+  UnlinkOauthAccountOauthProviderUnlinkDeleteResponses[keyof UnlinkOauthAccountOauthProviderUnlinkDeleteResponses];
 
 export type SendTestEmailApiV1TestSendTestEmailPostData = {
   body?: never;

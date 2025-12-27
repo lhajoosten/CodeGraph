@@ -10,21 +10,23 @@ interface CurrentUserResponse {
 }
 
 interface SetupSearchParams {
-  oauth?: string;
+  oauth?: boolean;
   provider?: string;
+  from?: string;
 }
 
 export const Route = createFileRoute('/_public/setup-2fa')({
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      oauth: search.oauth as string | undefined,
+      oauth: search.oauth === true ? true : undefined,
       provider: search.provider as string | undefined,
+      from: search.from as string | undefined,
     };
   },
   beforeLoad: async ({ search }) => {
     const { twoFactorVerified, login, setTwoFactorStatus } = useAuthStore.getState();
     const searchParams = search as SetupSearchParams;
-    const isOAuthFlow = searchParams.oauth === 'true';
+    const isOAuthFlow = searchParams.oauth === true;
 
     // If already verified, redirect to dashboard
     if (twoFactorVerified) {
@@ -50,9 +52,9 @@ export const Route = createFileRoute('/_public/setup-2fa')({
           // If user already has 2FA enabled, redirect to verify instead of setup
           if (response.data.two_factor_enabled === true) {
             setTwoFactorStatus(true, false, false);
-            redirect({
+            throw redirect({
               to: '/verify-2fa',
-              search: { oauth: 'true', provider: searchParams.provider },
+              search: { oauth: true, provider: searchParams.provider, from: 'setup-redirect' },
             });
           }
 
@@ -66,8 +68,19 @@ export const Route = createFileRoute('/_public/setup-2fa')({
       }
     }
 
-    // Non-OAuth flow: check if user is properly authenticated
-    // If we get here and aren't in OAuth flow, just allow access
-    // (user should already be in correct auth state)
+    // Non-OAuth flow: Traditional auth users must verify email before setting up 2FA
+    const { isAuthenticated, user, oauthProvider } = useAuthStore.getState();
+
+    // If not authenticated, redirect to login
+    if (!isAuthenticated) {
+      throw redirect({ to: '/login', search: { redirect: '/' } });
+    }
+
+    // If traditional auth (no OAuth provider) and email not verified, require email verification
+    if (!oauthProvider && user && !user.email_verified) {
+      throw redirect({ to: '/verify-email-pending', search: { email: user.email } });
+    }
+
+    // Email verified or OAuth user - allow access to 2FA setup
   },
 });

@@ -1,27 +1,14 @@
 import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { client } from '@/openapi/client.gen';
-
-interface OAuthAccount {
-  provider: string;
-  provider_user_id: string;
-  email?: string;
-  name?: string;
-  avatar_url?: string;
-  connected_at: string;
-}
-
-interface ConnectedAccountsResponse {
-  accounts: OAuthAccount[];
-}
+import { useFetchOAuthAccounts, useUnlinkOAuthAccount } from '@/hooks/api';
+import type { OAuthAccountResponse } from '@/openapi/types.gen';
 
 /**
  * Navigate to external OAuth authorization URL for linking
  * (when user is already authenticated)
  */
 function navigateToOAuthProviderLink(provider: string): void {
-  const authUrl = `${import.meta.env.VITE_API_URL}/api/v1/oauth/${provider}/authorize/link?redirect_url=/settings/account`;
-  window.location.href = authUrl;
+  // Uses public path without /api/v1 prefix
+  window.location.href = `${import.meta.env.VITE_API_URL}/oauth/${provider}/authorize/link?redirect_url=/settings/account`;
 }
 
 const providerInfo = {
@@ -73,31 +60,11 @@ const providerInfo = {
 };
 
 export const ConnectedAccounts = () => {
-  const queryClient = useQueryClient();
+  // Fetch connected OAuth accounts using the extracted hook
+  const accountsQuery = useFetchOAuthAccounts();
 
-  // Fetch connected accounts
-  const accountsQuery = useQuery({
-    queryKey: ['oauth-accounts'],
-    queryFn: async () => {
-      const response = await client.get<ConnectedAccountsResponse>({
-        url: '/api/v1/oauth/accounts',
-      });
-      return response.data;
-    },
-    retry: false,
-  });
-
-  // Unlink account mutation
-  const unlinkMutation = useMutation({
-    mutationFn: async (provider: string) => {
-      await client.delete({
-        url: `/api/v1/oauth/${provider}/unlink`,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['oauth-accounts'] });
-    },
-  });
+  // Unlink account mutation using the extracted hook
+  const unlinkMutation = useUnlinkOAuthAccount();
 
   // Define handlers before early returns
   const handleConnect = useCallback((provider: string) => {
@@ -147,13 +114,13 @@ export const ConnectedAccounts = () => {
     );
   }
 
-  const connectedAccounts = accountsQuery.data?.accounts || [];
+  const connectedAccounts: OAuthAccountResponse[] = accountsQuery.data?.accounts || [];
 
-  const isConnected = (provider: string) =>
-    connectedAccounts.some((acc) => acc.provider === provider);
+  const isConnected = (provider: string): boolean =>
+    connectedAccounts.some((acc: OAuthAccountResponse) => acc.provider === provider);
 
-  const getAccount = (provider: string) =>
-    connectedAccounts.find((acc) => acc.provider === provider);
+  const getAccount = (provider: string): OAuthAccountResponse | undefined =>
+    connectedAccounts.find((acc: OAuthAccountResponse) => acc.provider === provider);
 
   const handleUnlink = (provider: string) => {
     if (
@@ -161,7 +128,7 @@ export const ConnectedAccounts = () => {
         `Are you sure you want to disconnect your ${providerInfo[provider as keyof typeof providerInfo]?.name} account?`
       )
     ) {
-      unlinkMutation.mutate(provider);
+      unlinkMutation.mutate({ path: { provider } });
     }
   };
 

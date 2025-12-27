@@ -2,33 +2,27 @@
  * Setup two-factor authentication hook.
  *
  * Manages the complete 2FA setup flow:
- * - Step 1: Fetch QR code for scanning
+ * - Step 1: Fetch QR code for scanning (auto-fetched on mount)
  * - Step 2: Verify 6-digit code from authenticator
  * - Step 3: Display and manage backup codes
  *
  * Handles all state management, API calls, and user feedback.
  *
+ * @param options - Hook options
+ * @param options.autoStart - Whether to auto-start the setup. Default: true
  * @returns {Object} Setup 2FA state and handlers
  *
  * @example
- * const {
- *   step,
- *   otp,
- *   codesConfirmed,
- *   qrData,
- *   backupCodes,
- *   isLoading,
- *   isVerifying,
- *   error,
- *   setStep,
- *   setOtp,
- *   setCodesConfirmed,
- *   verifyOTP,
- *   downloadCodes,
- * } = useSetup2FA();
+ * // Auto-fetches QR code on mount (default behavior)
+ * const { step, qrData, isLoading, verifyOTP } = useSetup2FA();
+ *
+ * @example
+ * // Manual start
+ * const { qrData, isLoading, startSetup } = useSetup2FA({ autoStart: false });
+ * // Later: startSetup();
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import {
@@ -41,6 +35,11 @@ import { getErrorMessage } from '@/hooks/api/utils';
 import { useAuthStore } from '@/stores/auth-store';
 
 export type SetupStep = 'qr' | 'verify' | 'backup';
+
+export interface UseSetup2FAOptions {
+  /** Whether to auto-start the setup on mount. Default: true */
+  autoStart?: boolean;
+}
 
 export interface UseSetup2FAReturn {
   // State
@@ -64,9 +63,11 @@ export interface UseSetup2FAReturn {
   verifyOTP: () => void;
   downloadCodes: () => void;
   copyCode: (code: string) => void;
+  startSetup: () => void;
 }
 
-export const useSetup2FA = (): UseSetup2FAReturn => {
+export const useSetup2FA = (options: UseSetup2FAOptions = {}): UseSetup2FAReturn => {
+  const { autoStart = true } = options;
   const navigate = useNavigate();
   const { setTwoFactorStatus } = useAuthStore();
 
@@ -75,20 +76,20 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
   const [otp, setOtp] = useState('');
   const [codesConfirmed, setCodesConfirmed] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  // Track if we've auto-started to prevent double calls
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
 
   // Setup 2FA - generates QR code and stores secret on server
   const setupMutation = useMutation({
     ...setupTwoFactorApiV1TwoFactorSetupPostMutation(),
     onError: (error) => {
       // If 2FA is already enabled, redirect to verify page
-      // This can happen if backend redirected to setup-2fa with oauth=true
-      // but user already has 2FA from a previous session
       const errorMessage = getErrorMessage(error);
       if (errorMessage.includes('already enabled') || errorMessage.includes('already')) {
         setTwoFactorStatus(true, false, false);
         navigate({
           to: '/verify-2fa',
-          search: { oauth: 'true' },
+          search: { oauth: true, provider: undefined, from: 'setup-redirect' },
         });
       }
     },
@@ -115,19 +116,27 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
     },
   });
 
-  // Auto-trigger setup on component mount to fetch QR code
-  useEffect(() => {
-    setupMutation.mutate({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Auto-start: trigger setup once on first render if enabled
+  // Using state update to trigger mutation avoids ref access during render
+  if (autoStart && !hasAutoStarted && !setupMutation.isPending && !setupMutation.data && !setupMutation.error) {
+    setHasAutoStarted(true);
+    // Schedule mutation for next microtask to avoid render-time side effects
+    queueMicrotask(() => {
+      setupMutation.mutate({});
+    });
+  }
 
   // Handlers
-  const verifyOTP = async () => {
+  const startSetup = useCallback(() => {
+    setupMutation.mutate({});
+  }, [setupMutation]);
+
+  const verifyOTP = useCallback(() => {
     if (otp.length !== 6) return;
     enableMutation.mutate({ body: { code: otp } });
-  };
+  }, [otp, enableMutation]);
 
-  const downloadCodes = () => {
+  const downloadCodes = useCallback(() => {
     const backupCodes = enableMutation.data?.backup_codes || [];
     const content = `CodeGraph Backup Codes\n\nGenerated: ${new Date().toISOString()}\n\n${backupCodes.join('\n')}\n\nKeep these codes safe and secure!`;
     const element = document.createElement('a');
@@ -137,13 +146,13 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-  };
+  }, [enableMutation.data?.backup_codes]);
 
-  const copyCode = (code: string) => {
+  const copyCode = useCallback((code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(code);
     setTimeout(() => setCopied(null), 2000);
-  };
+  }, []);
 
   return {
     // State
@@ -167,7 +176,7 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
     verifyOTP,
     downloadCodes,
     copyCode,
+    startSetup,
   };
 };
 
-export type UseSetup2FAOptions = ReturnType<typeof useSetup2FA>;

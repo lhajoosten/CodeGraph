@@ -37,7 +37,7 @@ def set_auth_cookies(
         secure=settings.cookie_secure,
         samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
-        path="/api",
+        path="/",
     )
 
     # Refresh token cookie (7 days)
@@ -87,6 +87,7 @@ def set_partial_auth_cookies(
 
     # Partial access token cookie (5 minutes)
     # HTTP-only, secure, SameSite protection
+    # Restricted to /api paths for 2FA verification only
     response.set_cookie(
         key="access_token",
         value=partial_token,
@@ -124,7 +125,16 @@ def clear_auth_cookies(response: Response) -> None:
         settings.cookie_samesite,
     )
 
-    # Clear access token
+    # Clear access token (both regular and partial tokens use this name,
+    # but they have different paths, so we need to clear both)
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite=samesite,
+        domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
+    )
     response.delete_cookie(
         key="access_token",
         path="/api",

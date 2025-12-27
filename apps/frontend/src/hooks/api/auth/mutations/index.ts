@@ -3,6 +3,17 @@ export { useLogout, type UseLogoutOptions } from './use-logout';
 export { useRegister, type UseRegisterOptions } from './use-register';
 export { useForgotPassword, type UseForgotPasswordOptions } from './use-forgot-password';
 export { useResetPassword, type UseResetPasswordOptions } from './use-reset-password';
-export { useSetup2FA, type UseSetup2FAOptions } from './use-setup-2fa';
+export {
+  useSetup2FA,
+  type UseSetup2FAOptions,
+  type UseSetup2FAReturn,
+  type SetupStep,
+} from './use-setup-2fa';
 export { useVerify2FA, type UseVerify2FAOptions } from './use-verify-2fa';
 export { useVerifyEmail, type UseVerifyEmailOptions } from './use-verify-email';
+export {
+  useResendVerification,
+  type UseResendVerificationOptions,
+} from './use-resend-verification';
+export { useChangePassword, type UseChangePasswordOptions } from './use-change-password';
+export { useChangeEmail, type UseChangeEmailOptions } from './use-change-email';

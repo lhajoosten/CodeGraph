@@ -253,15 +253,15 @@ Expected response:
 
 ```bash
 # Test GitHub
-curl http://localhost:8000/api/v1/oauth/github/authorize
+curl http://localhost:8000/oauth/github/authorize
 # Should redirect to GitHub
 
 # Test Google
-curl http://localhost:8000/api/v1/oauth/google/authorize
+curl http://localhost:8000/oauth/google/authorize
 # Should redirect to Google
 
 # Test Microsoft
-curl http://localhost:8000/api/v1/oauth/microsoft/authorize
+curl http://localhost:8000/oauth/microsoft/authorize
 # Should redirect to Microsoft
 ```
 
