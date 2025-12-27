@@ -203,7 +203,7 @@ class MockModelBuilder:
     Example:
         model = (
             MockModelBuilder()
-            .with_model_name("claude-sonnet-4-20250514")
+            .with_model_name("claude-haiku-4-5-20251001")
             .with_response("Generated plan")
             .build()
         )
@@ -215,7 +215,7 @@ class MockModelBuilder:
     def __init__(self) -> None:
         """Initialize the builder."""
         self._config: dict[str, Any] = {
-            "model": "claude-sonnet-4-20250514",
+            "model": "claude-haiku-4-5-20251001",
             "response": "",
             "tokens": 1000,
         }

@@ -45,13 +45,14 @@ class TestAgentModels:
         """Test that ModelFactory can create Sonnet model."""
         model = ModelFactory.create("sonnet")
         assert model is not None
-        assert model.model == "claude-sonnet-4-20250514"
+        assert model.model == "claude-sonnet-4-5-20251001"
+
 
     def test_model_factory_creates_opus(self) -> None:
         """Test that ModelFactory can create Opus model."""
         model = ModelFactory.create("opus")
         assert model is not None
-        assert model.model == "claude-opus-4-20250514"
+        assert model.model == "claude-opus-4-5-20251001"
 
     def test_model_factory_invalid_model(self) -> None:
         """Test that ModelFactory rejects invalid model names."""
@@ -64,9 +65,9 @@ class TestAgentModels:
         sonnet = ModelFactory.create_for_task("medium")
         opus = ModelFactory.create_for_task("high")
 
-        assert haiku.model == "claude-haiku-4-20250514"
-        assert sonnet.model == "claude-sonnet-4-20250514"
-        assert opus.model == "claude-opus-4-20250514"
+        assert haiku.model == "claude-haiku-4-5-20251001"
+        assert sonnet.model == "claude-sonnet-4-5-20251001"
+        assert opus.model == "claude-opus-4-5-20251001"
 
 
 class TestWorkflowState:

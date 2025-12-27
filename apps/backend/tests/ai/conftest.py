@@ -202,7 +202,8 @@ def mock_chat_anthropic(mock_claude_response: AIMessage) -> MagicMock:
         MagicMock of ChatAnthropic with ainvoke method
     """
     mock = MagicMock()
-    mock.model = "claude-sonnet-4-20250514"
+    mock.model =  "claude-haiku-4-5-20251001"
+
     mock.ainvoke = AsyncMock(return_value=mock_claude_response)
     mock.astream = AsyncMock()
     return mock
@@ -224,7 +225,7 @@ def mock_streaming_chat_anthropic(mock_streaming_chunks: list[AIMessage]) -> Mag
             yield chunk
 
     mock = MagicMock()
-    mock.model = "claude-sonnet-4-20250514"
+    mock.model = "claude-haiku-4-5-20251001"
     mock.astream = AsyncMock(return_value=async_generator())
     mock.ainvoke = AsyncMock()
     return mock
@@ -338,7 +339,7 @@ def mock_settings() -> dict[str, Any]:
     """
     return {
         "anthropic_api_key": "test-key",
-        "anthropic_default_model": "claude-sonnet-4-20250514",
+        "anthropic_default_model": "claude-haiku-4-5-20251001",
         "max_agent_iterations": 5,
         "agent_timeout_seconds": 30,
     }
