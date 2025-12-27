@@ -10,8 +10,10 @@ updates:
     labels:
       - "dependencies"
       - "backend"
-    reviewers:
-      - "lhajoosten"
+    groups:
+      python-all:
+        patterns:
+          - "*"
 
   # Frontend dependencies
   - package-ecosystem: "npm"
@@ -23,8 +25,10 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
-    reviewers:
-      - "lhajoosten"
+    groups:
+      npm-all:
+        patterns:
+          - "*"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -35,4 +39,7 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-
+    groups:
+      actions-all:
+        patterns:
+          - "*"

@@ -12,6 +12,20 @@ from sqlalchemy.pool import StaticPool
 from src.core.database import Base, get_db
 from src.main import app
 
+# Import all models to register them with Base.metadata
+from src.models import (  # noqa: F401
+    AgentRun,
+    BackupCode,
+    EmailVerificationToken,
+    OAuthAccount,
+    PasswordResetToken,
+    RefreshToken,
+    Repository,
+    Task,
+    User,
+    UserSession,
+)
+
 # In-memory SQLite for unit tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 

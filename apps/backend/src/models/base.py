@@ -13,7 +13,12 @@ class Base(DeclarativeBase):
 
 
 class TimestampMixin:
-    """Mixin that adds created_at and updated_at timestamp fields."""
+    """Mixin that adds created_at and updated_at timestamp fields.
+
+    Attributes:
+        created_at (datetime): Timestamp when the record was created.""
+        updated_at (datetime): Timestamp when the record was last updated.
+    """
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

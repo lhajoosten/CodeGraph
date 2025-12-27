@@ -7,25 +7,33 @@ export const Route = createFileRoute('/$404')({
 function NotFoundPage() {
   return (
     <div
-      className={`
-        flex min-h-screen items-center justify-center bg-gradient-to-br
-        from-gray-50 to-gray-100
-      `}
+      style={{
+        background: `linear-gradient(135deg, var(--color-bg-primary-lum) 0%, var(--color-bg-elevated-lum) 100%)`,
+      }}
+      className="flex min-h-screen items-center justify-center px-4 py-12"
     >
       <div className="max-w-md text-center">
         <div className="mb-6">
-          <h1 className="text-6xl font-bold text-blue-600">404</h1>
-          <p className="mt-2 text-2xl font-semibold text-gray-800">Page Not Found</p>
+          <h1 style={{ color: 'var(--color-brand-cyan)' }} className="text-6xl font-bold">
+            404
+          </h1>
+          <p
+            style={{ color: 'var(--color-text-primary-lum)' }}
+            className="mt-2 text-2xl font-semibold"
+          >
+            Page Not Found
+          </p>
         </div>
-        <p className="mb-8 text-gray-600">
+        <p style={{ color: 'var(--color-text-secondary-lum)' }} className="mb-8">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <Link
           to="/"
-          className={`
-            inline-block rounded-md bg-blue-600 px-6 py-3 text-white
-            hover:bg-blue-700
-          `}
+          style={{
+            backgroundColor: 'var(--color-brand-cyan)',
+            color: 'var(--color-bg-primary-lum)',
+          }}
+          className="inline-block rounded-md px-6 py-3 font-medium transition hover:opacity-90"
         >
           Return to Home
         </Link>

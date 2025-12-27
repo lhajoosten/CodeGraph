@@ -3,6 +3,98 @@
 import { z } from 'zod';
 
 /**
+ * ChangeEmailRequest
+ *
+ * Request to change email for authenticated user.
+ */
+export const zChangeEmailRequest = z.object({
+  new_email: z.email(),
+  password: z.string(),
+});
+
+/**
+ * ChangePasswordRequest
+ *
+ * Request to change password for authenticated user.
+ */
+export const zChangePasswordRequest = z.object({
+  current_password: z.string(),
+  new_password: z.string(),
+});
+
+/**
+ * ForgotPasswordRequest
+ *
+ * Request to initiate password reset.
+ */
+export const zForgotPasswordRequest = z.object({
+  email: z.email(),
+});
+
+/**
+ * OAuthAccountResponse
+ *
+ * Response for a linked OAuth account.
+ */
+export const zOAuthAccountResponse = z.object({
+  provider: z.string(),
+  provider_user_id: z.string(),
+  email: z.optional(z.union([z.string(), z.null()])),
+  name: z.optional(z.union([z.string(), z.null()])),
+  avatar_url: z.optional(z.union([z.string(), z.null()])),
+  connected_at: z.string(),
+});
+
+/**
+ * ConnectedAccountsResponse
+ *
+ * Response for listing connected accounts.
+ */
+export const zConnectedAccountsResponse = z.object({
+  accounts: z.array(zOAuthAccountResponse),
+});
+
+/**
+ * ProfileUpdateRequest
+ *
+ * Schema for updating user profile information.
+ */
+export const zProfileUpdateRequest = z.object({
+  first_name: z.optional(z.union([z.string().max(100), z.null()])),
+  last_name: z.optional(z.union([z.string().max(100), z.null()])),
+  display_name: z.optional(z.union([z.string().max(200), z.null()])),
+  avatar_url: z.optional(z.union([z.string().max(512), z.null()])),
+});
+
+/**
+ * RegenerateBackupCodesRequest
+ *
+ * Request to regenerate backup codes.
+ */
+export const zRegenerateBackupCodesRequest = z.object({
+  password: z.string(),
+});
+
+/**
+ * RegenerateBackupCodesResponse
+ *
+ * Response for backup code regeneration.
+ */
+export const zRegenerateBackupCodesResponse = z.object({
+  backup_codes: z.array(z.string()),
+});
+
+/**
+ * ResetPasswordRequest
+ *
+ * Request to reset password with token.
+ */
+export const zResetPasswordRequest = z.object({
+  token: z.string(),
+  password: z.string(),
+});
+
+/**
  * TaskPriority
  *
  * Enum representing the priority of a task.
@@ -91,6 +183,81 @@ export const zTokenResponse = z.object({
 });
 
 /**
+ * TwoFactorDisableRequest
+ *
+ * Request to disable 2FA.
+ */
+export const zTwoFactorDisableRequest = z.object({
+  password: z.string(),
+});
+
+/**
+ * TwoFactorEnableRequest
+ *
+ * Request to enable 2FA.
+ */
+export const zTwoFactorEnableRequest = z.object({
+  code: z.string(),
+});
+
+/**
+ * TwoFactorEnableResponse
+ *
+ * Response for enabling 2FA.
+ */
+export const zTwoFactorEnableResponse = z.object({
+  backup_codes: z.array(z.string()),
+});
+
+/**
+ * TwoFactorLoginRequest
+ *
+ * Request to verify 2FA code during login.
+ */
+export const zTwoFactorLoginRequest = z.object({
+  code: z.string(),
+  remember_me: z.optional(z.boolean()).default(false),
+});
+
+/**
+ * TwoFactorSetupResponse
+ *
+ * Response for 2FA setup initiation.
+ */
+export const zTwoFactorSetupResponse = z.object({
+  qr_code: z.string(),
+  secret: z.string(),
+});
+
+/**
+ * TwoFactorStatusResponse
+ *
+ * Response for 2FA status check.
+ */
+export const zTwoFactorStatusResponse = z.object({
+  enabled: z.boolean(),
+  backup_codes_remaining: z.optional(z.union([z.int(), z.null()])),
+});
+
+/**
+ * TwoFactorVerifyRequest
+ *
+ * Request to verify a 2FA code.
+ */
+export const zTwoFactorVerifyRequest = z.object({
+  code: z.string(),
+});
+
+/**
+ * TwoFactorVerifyResponse
+ *
+ * Response for 2FA verification.
+ */
+export const zTwoFactorVerifyResponse = z.object({
+  valid: z.boolean(),
+});
+
+/**
  * UserCreate
  *
  * Schema for creating a new user.
@@ -98,6 +265,8 @@ export const zTokenResponse = z.object({
 export const zUserCreate = z.object({
   email: z.email(),
   password: z.string().min(8),
+  first_name: z.optional(z.union([z.string().max(100), z.null()])),
+  last_name: z.optional(z.union([z.string().max(100), z.null()])),
 });
 
 /**
@@ -108,6 +277,7 @@ export const zUserCreate = z.object({
 export const zUserLogin = z.object({
   email: z.email(),
   password: z.string(),
+  remember_me: z.optional(z.boolean()).default(false),
 });
 
 /**
@@ -120,8 +290,28 @@ export const zUserResponse = z.object({
   id: z.int(),
   is_active: z.boolean(),
   is_superuser: z.boolean(),
+  email_verified: z.boolean(),
+  two_factor_enabled: z.boolean(),
+  first_name: z.optional(z.union([z.string(), z.null()])),
+  last_name: z.optional(z.union([z.string(), z.null()])),
+  display_name: z.optional(z.union([z.string(), z.null()])),
+  avatar_url: z.optional(z.union([z.string(), z.null()])),
+  profile_completed: z.boolean(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
+});
+
+/**
+ * LoginResponse
+ *
+ * Response for successful login.
+ */
+export const zLoginResponse = z.object({
+  message: z.string(),
+  user: zUserResponse,
+  email_verified: z.boolean(),
+  requires_two_factor: z.optional(z.boolean()).default(false),
+  two_factor_enabled: z.optional(z.boolean()).default(false),
 });
 
 /**
@@ -138,6 +328,25 @@ export const zValidationError = z.object({
  */
 export const zHttpValidationError = z.object({
   detail: z.optional(z.array(zValidationError)),
+});
+
+/**
+ * VerifyEmailRequest
+ *
+ * Request to verify email with token.
+ */
+export const zVerifyEmailRequest = z.object({
+  token: z.string(),
+});
+
+/**
+ * VerifyEmailResponse
+ *
+ * Response after email verification.
+ */
+export const zVerifyEmailResponse = z.object({
+  message: z.string(),
+  requires_2fa_setup: z.optional(z.boolean()).default(false),
 });
 
 export const zHealthCheckHealthGetData = z.object({
@@ -174,6 +383,144 @@ export const zLoginUserApiV1AuthLoginPostData = z.object({
  * Successful Response
  */
 export const zLoginUserApiV1AuthLoginPostResponse = zTokenResponse;
+
+export const zVerifyTwoFactorLoginApiV1AuthVerify2FaPostData = z.object({
+  body: zTwoFactorLoginRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zVerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse = zLoginResponse;
+
+export const zLogoutApiV1AuthLogoutPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Logout Api V1 Auth Logout Post
+ *
+ * Successful Response
+ */
+export const zLogoutApiV1AuthLogoutPostResponse = z.record(z.string(), z.string());
+
+export const zRefreshApiV1AuthRefreshPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Refresh Api V1 Auth Refresh Post
+ *
+ * Successful Response
+ */
+export const zRefreshApiV1AuthRefreshPostResponse = z.record(z.string(), z.string());
+
+export const zGetCurrentUserInfoApiV1AuthMeGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetCurrentUserInfoApiV1AuthMeGetResponse = zUserResponse;
+
+export const zVerifyEmailApiV1AuthVerifyEmailPostData = z.object({
+  body: zVerifyEmailRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zVerifyEmailApiV1AuthVerifyEmailPostResponse = zVerifyEmailResponse;
+
+export const zResendVerificationApiV1AuthResendVerificationPostData = z.object({
+  body: zForgotPasswordRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Resend Verification Api V1 Auth Resend Verification Post
+ *
+ * Successful Response
+ */
+export const zResendVerificationApiV1AuthResendVerificationPostResponse = z.record(
+  z.string(),
+  z.string()
+);
+
+export const zForgotPasswordApiV1AuthForgotPasswordPostData = z.object({
+  body: zForgotPasswordRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Forgot Password Api V1 Auth Forgot Password Post
+ *
+ * Successful Response
+ */
+export const zForgotPasswordApiV1AuthForgotPasswordPostResponse = z.record(z.string(), z.string());
+
+export const zResetPasswordApiV1AuthResetPasswordPostData = z.object({
+  body: zResetPasswordRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Reset Password Api V1 Auth Reset Password Post
+ *
+ * Successful Response
+ */
+export const zResetPasswordApiV1AuthResetPasswordPostResponse = z.record(z.string(), z.string());
+
+export const zChangePasswordApiV1AuthChangePasswordPostData = z.object({
+  body: zChangePasswordRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Change Password Api V1 Auth Change Password Post
+ *
+ * Successful Response
+ */
+export const zChangePasswordApiV1AuthChangePasswordPostResponse = z.record(z.string(), z.string());
+
+export const zChangeEmailApiV1AuthChangeEmailPostData = z.object({
+  body: zChangeEmailRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Change Email Api V1 Auth Change Email Post
+ *
+ * Successful Response
+ */
+export const zChangeEmailApiV1AuthChangeEmailPostResponse = z.record(z.string(), z.string());
+
+export const zUpdateProfileApiV1AuthProfilePutData = z.object({
+  body: zProfileUpdateRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zUpdateProfileApiV1AuthProfilePutResponse = zUserResponse;
 
 export const zGetCurrentUserInfoApiV1UsersMeGetData = z.object({
   body: z.optional(z.never()),
@@ -251,3 +598,164 @@ export const zUpdateTaskApiV1TasksTaskIdPatchData = z.object({
  * Successful Response
  */
 export const zUpdateTaskApiV1TasksTaskIdPatchResponse = zTaskResponse;
+
+export const zGetTwoFactorStatusApiV1TwoFactorStatusGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetTwoFactorStatusApiV1TwoFactorStatusGetResponse = zTwoFactorStatusResponse;
+
+export const zSetupTwoFactorApiV1TwoFactorSetupPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zSetupTwoFactorApiV1TwoFactorSetupPostResponse = zTwoFactorSetupResponse;
+
+export const zEnableTwoFactorApiV1TwoFactorEnablePostData = z.object({
+  body: zTwoFactorEnableRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zEnableTwoFactorApiV1TwoFactorEnablePostResponse = zTwoFactorEnableResponse;
+
+export const zDisableTwoFactorApiV1TwoFactorDisablePostData = z.object({
+  body: zTwoFactorDisableRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Disable Two Factor Api V1 Two Factor Disable Post
+ *
+ * Successful Response
+ */
+export const zDisableTwoFactorApiV1TwoFactorDisablePostResponse = z.record(z.string(), z.string());
+
+export const zVerifyTwoFactorApiV1TwoFactorVerifyPostData = z.object({
+  body: zTwoFactorVerifyRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zVerifyTwoFactorApiV1TwoFactorVerifyPostResponse = zTwoFactorVerifyResponse;
+
+export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData = z.object({
+  body: zRegenerateBackupCodesRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
+  zRegenerateBackupCodesResponse;
+
+export const zGetOauthProvidersOauthProvidersGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Get Oauth Providers Oauth Providers Get
+ *
+ * Successful Response
+ */
+export const zGetOauthProvidersOauthProvidersGetResponse = z.record(z.string(), z.boolean());
+
+export const zOauthAuthorizeOauthProviderAuthorizeGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    provider: z.string(),
+  }),
+  query: z.optional(
+    z.object({
+      redirect_url: z.optional(z.union([z.string(), z.null()])),
+    })
+  ),
+});
+
+export const zOauthAuthorizeLinkOauthProviderAuthorizeLinkGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    provider: z.string(),
+  }),
+  query: z.optional(
+    z.object({
+      redirect_url: z.optional(z.union([z.string(), z.null()])),
+    })
+  ),
+});
+
+export const zOauthCallbackOauthProviderCallbackGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    provider: z.string(),
+  }),
+  query: z.object({
+    code: z.string(),
+    state: z.string(),
+  }),
+});
+
+export const zGetConnectedAccountsOauthAccountsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetConnectedAccountsOauthAccountsGetResponse = zConnectedAccountsResponse;
+
+export const zUnlinkOauthAccountOauthProviderUnlinkDeleteData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    provider: z.string(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Unlink Oauth Account Oauth  Provider  Unlink Delete
+ *
+ * Successful Response
+ */
+export const zUnlinkOauthAccountOauthProviderUnlinkDeleteResponse = z.record(
+  z.string(),
+  z.string()
+);
+
+export const zSendTestEmailApiV1TestSendTestEmailPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.object({
+    recipient_email: z.string(),
+  }),
+});
+
+/**
+ * Response Send Test Email Api V1 Test Send Test Email Post
+ *
+ * Successful Response
+ */
+export const zSendTestEmailApiV1TestSendTestEmailPostResponse = z.record(z.string(), z.string());

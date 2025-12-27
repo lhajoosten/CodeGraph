@@ -1,0 +1,52 @@
+# Task management strings (Dutch)
+
+tasks:
+  title: 'Taken'
+  subtitle: 'Beheer je AI-aangedreven codeertaken'
+  newTask: 'Nieuwe taak'
+  createTask: 'Taak maken'
+  noneYet: 'Nog geen taken'
+  successCreateMessage: 'Taak succesvol gemaakt. Onze agenten staan klaar om eraan te werken!'
+  successCreateTitle: 'Taak gemaakt'
+  failureCreateTitle: 'Taak maken mislukt'
+  successUpdateMessage: 'Taak succesvol bijgewerkt.'
+  successUpdateTitle: 'Taak bijgewerkt'
+  failureUpdateTitle: 'Taak bijwerken mislukt'
+  successDeleteMessage: 'Taak succesvol verwijderd.'
+  successDeleteTitle: 'Taak verwijderd'
+  failureDeleteTitle: 'Taak verwijderen mislukt'
+
+taskForm:
+  title: 'Taaktitel'
+  description: 'Taakbeschrijving'
+  priority: 'Prioriteit'
+  status: 'Status'
+  submit: 'Taak maken'
+
+taskCard:
+  status: 'Status'
+  priority: 'Prioriteit'
+  createdAt: 'Gemaakt'
+  updatedAt: 'Bijgewerkt'
+  delete: 'Taak verwijderen'
+
+taskDetail:
+  title: 'Taakdetails'
+  back: 'Terug naar taken'
+  edit: 'Bewerken'
+  delete: 'Verwijderen'
+  confirmDelete: 'Weet je zeker dat je deze taak wilt verwijderen?'
+
+status:
+  pending: 'In wachtrij'
+  planning: 'Plannen'
+  in_progress: 'In behandeling'
+  testing: 'Testen'
+  reviewing: 'Beoordelen'
+  completed: 'Voltooid'
+
+priority:
+  low: 'Laag'
+  medium: 'Gemiddeld'
+  high: 'Hoog'
+  urgent: 'Urgent'

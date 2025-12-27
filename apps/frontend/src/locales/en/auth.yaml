@@ -1,0 +1,194 @@
+# Authentication strings (English)
+
+login:
+  title: 'Sign in to your account'
+  email: 'Email Address'
+  password: 'Password'
+  forgotPassword: 'Forgot password?'
+  submit: 'Sign in'
+  noAccount: "Don't have an account?"
+  register: 'Sign up'
+  successMessage: 'Welcome back! You have successfully logged in.'
+  successTitle: 'Login Successful'
+  failureTitle: 'Login Failed'
+
+register:
+  title: 'Create your account'
+  email: 'Email Address'
+  password: 'Password'
+  confirmPassword: 'Confirm Password'
+  passwordHint: 'At least 8 characters'
+  submit: 'Create account'
+  haveAccount: 'Already have an account?'
+  login: 'Sign in'
+  successMessage: 'Account created! Please check your email to verify your account.'
+  successTitle: 'Registration Successful'
+  failureTitle: 'Registration Failed'
+
+logout:
+  successMessage: 'You have been logged out successfully.'
+  successTitle: 'Logged Out'
+  failureTitle: 'Logout Failed'
+
+verification:
+  title: 'Verify your email'
+  message: 'We have sent a verification link to your email address'
+  resend: 'Resend verification email'
+  pending: 'Verification pending'
+
+forgotPassword:
+  title: 'Reset your password'
+  message: 'Enter your email address and we will send you a link to reset your password'
+  submit: 'Send reset link'
+
+resetPassword:
+  title: 'Reset your password'
+  newPassword: 'New Password'
+  confirmPassword: 'Confirm Password'
+  submit: 'Reset Password'
+
+validation:
+  invalidEmail: 'Please enter a valid email'
+  passwordTooShort: 'Password must be at least 8 characters'
+  passwordMismatch: 'Passwords do not match'
+
+# Luminous design system auth flows
+luminous:
+  signin:
+    title: 'Sign In'
+    subtitle: 'Welcome back to CodeGraph'
+    email: 'Email Address'
+    password: 'Password'
+    rememberMe: 'Remember me'
+    forgotPassword: 'Forgot password?'
+    submit: 'Sign In'
+    oauthDivider: 'Or continue with'
+    noAccount: "Don't have an account?"
+    signup: 'Sign up'
+    termsAgreement: 'By signing in, you agree to our Terms of Service and Privacy Policy'
+
+  signup:
+    title: 'Create Account'
+    subtitle: 'Start building with CodeGraph'
+    firstName: 'First Name'
+    lastName: 'Last Name'
+    email: 'Email Address'
+    emailHint: "We'll never share your email"
+    password: 'Password'
+    passwordPlaceholder: 'Create a strong password'
+    confirmPassword: 'Confirm Password'
+    acceptTerms: 'I agree to the Terms of Service and Privacy Policy'
+    submit: 'Create Account'
+    oauthDivider: 'Or continue with'
+    haveAccount: 'Already have an account?'
+    signin: 'Sign in'
+    signupFailed: 'Signup Failed'
+
+  forgotPassword:
+    title: 'Reset Password'
+    subtitle: 'Enter your email to receive reset link'
+    email: 'Email Address'
+    emailHint: 'We''ll never share your email'
+    submit: 'Send Reset Link'
+    successTitle: 'Check Your Email'
+    successMessage: 'We have sent a password reset link to your email. Please check your inbox and follow the link to reset your password.'
+    successTip: 'Tip: If you don''t see the email, check your spam or junk folder.'
+    tryAnotherEmail: 'Try Another Email'
+    backToLogin: 'Back to Login'
+    rememberPassword: 'Remember your password?'
+    signin: 'Sign in'
+
+  resetPassword:
+    title: 'Set New Password'
+    subtitle: 'Create a strong password for your account'
+    newPassword: 'New Password'
+    newPasswordPlaceholder: 'Enter your new password'
+    confirmPassword: 'Confirm Password'
+    confirmPasswordPlaceholder: 'Confirm your new password'
+    submit: 'Reset Password'
+    resettingPassword: 'Resetting password...'
+    success: 'Password Reset Successfully'
+    successTitle: 'Password Reset Successfully'
+    successMessage: 'Your password has been reset. You can now sign in with your new password.'
+    invalidToken: 'Invalid Reset Link'
+    invalidTokenTitle: 'Invalid Reset Link'
+    invalidTokenMessage: 'The password reset link is invalid or has expired. Please request a new one.'
+    requestNewLink: 'Request New Link'
+    rememberPassword: 'Remember your password?'
+    signin: 'Sign in'
+
+  twoFactor:
+    setup:
+      title: 'Enable Two-Factor Authentication'
+      subtitle: 'Secure your account with 2FA'
+      scanQR: 'Scan QR Code'
+      scanQRMessage: 'Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, etc.)'
+      manualEntry: "Can't scan? Enter manually"
+      manualEntryKey: 'Manual entry key:'
+      continue: 'Continue'
+      verifyCode: 'Verify Code'
+      verifyCodeMessage: 'Enter the 6-digit code from your authenticator app to confirm setup'
+      backToQR: 'Back to QR Code'
+      saveBackup: 'Save Backup Codes'
+      backupMessage: 'Store these codes somewhere safe. You''ll need them if you lose access to your authenticator app.'
+      keepCodesSafe: 'Keep these codes safe and secure'
+      downloadCodes: 'Download Codes'
+      confirmSaved: 'I have saved my backup codes in a safe place'
+      completeSetup: 'Complete Setup'
+
+    verify:
+      title: 'Verify Your Identity'
+      subtitle: 'Enter your verification code'
+      code: 'Verification Code'
+      codePlaceholder: '000000'
+      submit: 'Verify Code'
+      useBackupCode: 'Lost access to your authenticator? Use backup code'
+      useAuthenticator: "Don't have a backup code? Use authenticator app"
+      cancel: 'Cancel'
+      support: 'If you continue to have trouble signing in, please contact support.'
+
+  verification:
+    pending:
+      title: 'Verify Your Email'
+      message: 'We have sent a verification link to your email address. Please click the link to verify your account.'
+      resend: 'Resend Verification Email'
+      backToLogin: 'Back to Login'
+
+    success:
+      title: 'Email Verified'
+      message: 'Your email has been successfully verified. You can now log in to your account.'
+      proceed: 'Proceed to Login'
+
+    error:
+      title: 'Verification Failed'
+      message: 'The verification link is invalid or has expired. Please request a new verification email.'
+      resend: 'Request New Email'
+
+  passwordStrength:
+    weak: 'Weak'
+    medium: 'Medium'
+    strong: 'Strong'
+    requirements: 'Requirements:'
+    minChars: 'At least 8 characters'
+    uppercase: 'One uppercase letter'
+    number: 'One number'
+    special: 'One special character'
+
+  completeProfile:
+    title: 'Complete Your Profile'
+    subtitle: 'Help us personalize your experience'
+    firstName: 'First Name'
+    firstNamePlaceholder: 'John'
+    lastName: 'Last Name'
+    lastNamePlaceholder: 'Doe'
+    displayName: 'Display Name'
+    displayNamePlaceholder: 'How you want to be addressed'
+    displayNameHint: 'Optional: Full or preferred name'
+    avatarUrl: 'Profile Picture URL'
+    avatarUrlPlaceholder: 'https://example.com/avatar.jpg'
+    avatarUrlHint: 'Optional: Link to your profile picture'
+    submit: 'Complete Profile'
+    submitting: 'Saving profile...'
+    skip: 'Skip for Now'
+    successTitle: 'Profile Complete'
+    successMessage: 'Your profile has been set up. Enjoy CodeGraph!'

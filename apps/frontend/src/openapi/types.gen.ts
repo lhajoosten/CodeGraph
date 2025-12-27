@@ -5,6 +5,62 @@ export type ClientOptions = {
 };
 
 /**
+ * ChangeEmailRequest
+ *
+ * Request to change email for authenticated user.
+ */
+export type ChangeEmailRequest = {
+  /**
+   * New Email
+   */
+  new_email: string;
+  /**
+   * Password
+   */
+  password: string;
+};
+
+/**
+ * ChangePasswordRequest
+ *
+ * Request to change password for authenticated user.
+ */
+export type ChangePasswordRequest = {
+  /**
+   * Current Password
+   */
+  current_password: string;
+  /**
+   * New Password
+   */
+  new_password: string;
+};
+
+/**
+ * ConnectedAccountsResponse
+ *
+ * Response for listing connected accounts.
+ */
+export type ConnectedAccountsResponse = {
+  /**
+   * Accounts
+   */
+  accounts: Array<OAuthAccountResponse>;
+};
+
+/**
+ * ForgotPasswordRequest
+ *
+ * Request to initiate password reset.
+ */
+export type ForgotPasswordRequest = {
+  /**
+   * Email
+   */
+  email: string;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -12,6 +68,135 @@ export type HttpValidationError = {
    * Detail
    */
   detail?: Array<ValidationError>;
+};
+
+/**
+ * LoginResponse
+ *
+ * Response for successful login.
+ */
+export type LoginResponse = {
+  /**
+   * Message
+   */
+  message: string;
+  user: UserResponse;
+  /**
+   * Email Verified
+   */
+  email_verified: boolean;
+  /**
+   * Requires Two Factor
+   */
+  requires_two_factor?: boolean;
+  /**
+   * Two Factor Enabled
+   */
+  two_factor_enabled?: boolean;
+};
+
+/**
+ * OAuthAccountResponse
+ *
+ * Response for a linked OAuth account.
+ */
+export type OAuthAccountResponse = {
+  /**
+   * Provider
+   */
+  provider: string;
+  /**
+   * Provider User Id
+   */
+  provider_user_id: string;
+  /**
+   * Email
+   */
+  email?: string | null;
+  /**
+   * Name
+   */
+  name?: string | null;
+  /**
+   * Avatar Url
+   */
+  avatar_url?: string | null;
+  /**
+   * Connected At
+   */
+  connected_at: string;
+};
+
+/**
+ * ProfileUpdateRequest
+ *
+ * Schema for updating user profile information.
+ */
+export type ProfileUpdateRequest = {
+  /**
+   * First Name
+   *
+   * User's first name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   *
+   * User's last name
+   */
+  last_name?: string | null;
+  /**
+   * Display Name
+   *
+   * User's display name
+   */
+  display_name?: string | null;
+  /**
+   * Avatar Url
+   *
+   * URL to user's profile picture
+   */
+  avatar_url?: string | null;
+};
+
+/**
+ * RegenerateBackupCodesRequest
+ *
+ * Request to regenerate backup codes.
+ */
+export type RegenerateBackupCodesRequest = {
+  /**
+   * Password
+   */
+  password: string;
+};
+
+/**
+ * RegenerateBackupCodesResponse
+ *
+ * Response for backup code regeneration.
+ */
+export type RegenerateBackupCodesResponse = {
+  /**
+   * Backup Codes
+   */
+  backup_codes: Array<string>;
+};
+
+/**
+ * ResetPasswordRequest
+ *
+ * Request to reset password with token.
+ */
+export type ResetPasswordRequest = {
+  /**
+   * Token
+   */
+  token: string;
+  /**
+   * Password
+   */
+  password: string;
 };
 
 /**
@@ -182,6 +367,114 @@ export type TokenResponse = {
 };
 
 /**
+ * TwoFactorDisableRequest
+ *
+ * Request to disable 2FA.
+ */
+export type TwoFactorDisableRequest = {
+  /**
+   * Password
+   */
+  password: string;
+};
+
+/**
+ * TwoFactorEnableRequest
+ *
+ * Request to enable 2FA.
+ */
+export type TwoFactorEnableRequest = {
+  /**
+   * Code
+   */
+  code: string;
+};
+
+/**
+ * TwoFactorEnableResponse
+ *
+ * Response for enabling 2FA.
+ */
+export type TwoFactorEnableResponse = {
+  /**
+   * Backup Codes
+   */
+  backup_codes: Array<string>;
+};
+
+/**
+ * TwoFactorLoginRequest
+ *
+ * Request to verify 2FA code during login.
+ */
+export type TwoFactorLoginRequest = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Remember Me
+   */
+  remember_me?: boolean;
+};
+
+/**
+ * TwoFactorSetupResponse
+ *
+ * Response for 2FA setup initiation.
+ */
+export type TwoFactorSetupResponse = {
+  /**
+   * Qr Code
+   */
+  qr_code: string;
+  /**
+   * Secret
+   */
+  secret: string;
+};
+
+/**
+ * TwoFactorStatusResponse
+ *
+ * Response for 2FA status check.
+ */
+export type TwoFactorStatusResponse = {
+  /**
+   * Enabled
+   */
+  enabled: boolean;
+  /**
+   * Backup Codes Remaining
+   */
+  backup_codes_remaining?: number | null;
+};
+
+/**
+ * TwoFactorVerifyRequest
+ *
+ * Request to verify a 2FA code.
+ */
+export type TwoFactorVerifyRequest = {
+  /**
+   * Code
+   */
+  code: string;
+};
+
+/**
+ * TwoFactorVerifyResponse
+ *
+ * Response for 2FA verification.
+ */
+export type TwoFactorVerifyResponse = {
+  /**
+   * Valid
+   */
+  valid: boolean;
+};
+
+/**
  * UserCreate
  *
  * Schema for creating a new user.
@@ -197,6 +490,18 @@ export type UserCreate = {
    * User password (minimum 8 characters)
    */
   password: string;
+  /**
+   * First Name
+   *
+   * User's first name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   *
+   * User's last name
+   */
+  last_name?: string | null;
 };
 
 /**
@@ -213,6 +518,10 @@ export type UserLogin = {
    * Password
    */
   password: string;
+  /**
+   * Remember Me
+   */
+  remember_me?: boolean;
 };
 
 /**
@@ -237,6 +546,34 @@ export type UserResponse = {
    * Is Superuser
    */
   is_superuser: boolean;
+  /**
+   * Email Verified
+   */
+  email_verified: boolean;
+  /**
+   * Two Factor Enabled
+   */
+  two_factor_enabled: boolean;
+  /**
+   * First Name
+   */
+  first_name?: string | null;
+  /**
+   * Last Name
+   */
+  last_name?: string | null;
+  /**
+   * Display Name
+   */
+  display_name?: string | null;
+  /**
+   * Avatar Url
+   */
+  avatar_url?: string | null;
+  /**
+   * Profile Completed
+   */
+  profile_completed: boolean;
   /**
    * Created At
    */
@@ -263,6 +600,34 @@ export type ValidationError = {
    * Error Type
    */
   type: string;
+};
+
+/**
+ * VerifyEmailRequest
+ *
+ * Request to verify email with token.
+ */
+export type VerifyEmailRequest = {
+  /**
+   * Token
+   */
+  token: string;
+};
+
+/**
+ * VerifyEmailResponse
+ *
+ * Response after email verification.
+ */
+export type VerifyEmailResponse = {
+  /**
+   * Message
+   */
+  message: string;
+  /**
+   * Requires 2Fa Setup
+   */
+  requires_2fa_setup?: boolean;
 };
 
 export type HealthCheckHealthGetData = {
@@ -340,12 +705,347 @@ export type LoginUserApiV1AuthLoginPostResponses = {
 export type LoginUserApiV1AuthLoginPostResponse =
   LoginUserApiV1AuthLoginPostResponses[keyof LoginUserApiV1AuthLoginPostResponses];
 
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostData = {
+  body: TwoFactorLoginRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/verify-2fa';
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostError =
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors[keyof VerifyTwoFactorLoginApiV1AuthVerify2FaPostErrors];
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: LoginResponse;
+};
+
+export type VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponse =
+  VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses[keyof VerifyTwoFactorLoginApiV1AuthVerify2FaPostResponses];
+
+export type LogoutApiV1AuthLogoutPostData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/logout';
+};
+
+export type LogoutApiV1AuthLogoutPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type LogoutApiV1AuthLogoutPostError =
+  LogoutApiV1AuthLogoutPostErrors[keyof LogoutApiV1AuthLogoutPostErrors];
+
+export type LogoutApiV1AuthLogoutPostResponses = {
+  /**
+   * Response Logout Api V1 Auth Logout Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type LogoutApiV1AuthLogoutPostResponse =
+  LogoutApiV1AuthLogoutPostResponses[keyof LogoutApiV1AuthLogoutPostResponses];
+
+export type RefreshApiV1AuthRefreshPostData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/refresh';
+};
+
+export type RefreshApiV1AuthRefreshPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type RefreshApiV1AuthRefreshPostError =
+  RefreshApiV1AuthRefreshPostErrors[keyof RefreshApiV1AuthRefreshPostErrors];
+
+export type RefreshApiV1AuthRefreshPostResponses = {
+  /**
+   * Response Refresh Api V1 Auth Refresh Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type RefreshApiV1AuthRefreshPostResponse =
+  RefreshApiV1AuthRefreshPostResponses[keyof RefreshApiV1AuthRefreshPostResponses];
+
+export type GetCurrentUserInfoApiV1AuthMeGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/me';
+};
+
+export type GetCurrentUserInfoApiV1AuthMeGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetCurrentUserInfoApiV1AuthMeGetError =
+  GetCurrentUserInfoApiV1AuthMeGetErrors[keyof GetCurrentUserInfoApiV1AuthMeGetErrors];
+
+export type GetCurrentUserInfoApiV1AuthMeGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: UserResponse;
+};
+
+export type GetCurrentUserInfoApiV1AuthMeGetResponse =
+  GetCurrentUserInfoApiV1AuthMeGetResponses[keyof GetCurrentUserInfoApiV1AuthMeGetResponses];
+
+export type VerifyEmailApiV1AuthVerifyEmailPostData = {
+  body: VerifyEmailRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/verify-email';
+};
+
+export type VerifyEmailApiV1AuthVerifyEmailPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type VerifyEmailApiV1AuthVerifyEmailPostError =
+  VerifyEmailApiV1AuthVerifyEmailPostErrors[keyof VerifyEmailApiV1AuthVerifyEmailPostErrors];
+
+export type VerifyEmailApiV1AuthVerifyEmailPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: VerifyEmailResponse;
+};
+
+export type VerifyEmailApiV1AuthVerifyEmailPostResponse =
+  VerifyEmailApiV1AuthVerifyEmailPostResponses[keyof VerifyEmailApiV1AuthVerifyEmailPostResponses];
+
+export type ResendVerificationApiV1AuthResendVerificationPostData = {
+  body: ForgotPasswordRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/resend-verification';
+};
+
+export type ResendVerificationApiV1AuthResendVerificationPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ResendVerificationApiV1AuthResendVerificationPostError =
+  ResendVerificationApiV1AuthResendVerificationPostErrors[keyof ResendVerificationApiV1AuthResendVerificationPostErrors];
+
+export type ResendVerificationApiV1AuthResendVerificationPostResponses = {
+  /**
+   * Response Resend Verification Api V1 Auth Resend Verification Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type ResendVerificationApiV1AuthResendVerificationPostResponse =
+  ResendVerificationApiV1AuthResendVerificationPostResponses[keyof ResendVerificationApiV1AuthResendVerificationPostResponses];
+
+export type ForgotPasswordApiV1AuthForgotPasswordPostData = {
+  body: ForgotPasswordRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/forgot-password';
+};
+
+export type ForgotPasswordApiV1AuthForgotPasswordPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ForgotPasswordApiV1AuthForgotPasswordPostError =
+  ForgotPasswordApiV1AuthForgotPasswordPostErrors[keyof ForgotPasswordApiV1AuthForgotPasswordPostErrors];
+
+export type ForgotPasswordApiV1AuthForgotPasswordPostResponses = {
+  /**
+   * Response Forgot Password Api V1 Auth Forgot Password Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type ForgotPasswordApiV1AuthForgotPasswordPostResponse =
+  ForgotPasswordApiV1AuthForgotPasswordPostResponses[keyof ForgotPasswordApiV1AuthForgotPasswordPostResponses];
+
+export type ResetPasswordApiV1AuthResetPasswordPostData = {
+  body: ResetPasswordRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/reset-password';
+};
+
+export type ResetPasswordApiV1AuthResetPasswordPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ResetPasswordApiV1AuthResetPasswordPostError =
+  ResetPasswordApiV1AuthResetPasswordPostErrors[keyof ResetPasswordApiV1AuthResetPasswordPostErrors];
+
+export type ResetPasswordApiV1AuthResetPasswordPostResponses = {
+  /**
+   * Response Reset Password Api V1 Auth Reset Password Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type ResetPasswordApiV1AuthResetPasswordPostResponse =
+  ResetPasswordApiV1AuthResetPasswordPostResponses[keyof ResetPasswordApiV1AuthResetPasswordPostResponses];
+
+export type ChangePasswordApiV1AuthChangePasswordPostData = {
+  body: ChangePasswordRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/change-password';
+};
+
+export type ChangePasswordApiV1AuthChangePasswordPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ChangePasswordApiV1AuthChangePasswordPostError =
+  ChangePasswordApiV1AuthChangePasswordPostErrors[keyof ChangePasswordApiV1AuthChangePasswordPostErrors];
+
+export type ChangePasswordApiV1AuthChangePasswordPostResponses = {
+  /**
+   * Response Change Password Api V1 Auth Change Password Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type ChangePasswordApiV1AuthChangePasswordPostResponse =
+  ChangePasswordApiV1AuthChangePasswordPostResponses[keyof ChangePasswordApiV1AuthChangePasswordPostResponses];
+
+export type ChangeEmailApiV1AuthChangeEmailPostData = {
+  body: ChangeEmailRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/change-email';
+};
+
+export type ChangeEmailApiV1AuthChangeEmailPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ChangeEmailApiV1AuthChangeEmailPostError =
+  ChangeEmailApiV1AuthChangeEmailPostErrors[keyof ChangeEmailApiV1AuthChangeEmailPostErrors];
+
+export type ChangeEmailApiV1AuthChangeEmailPostResponses = {
+  /**
+   * Response Change Email Api V1 Auth Change Email Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type ChangeEmailApiV1AuthChangeEmailPostResponse =
+  ChangeEmailApiV1AuthChangeEmailPostResponses[keyof ChangeEmailApiV1AuthChangeEmailPostResponses];
+
+export type UpdateProfileApiV1AuthProfilePutData = {
+  body: ProfileUpdateRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/auth/profile';
+};
+
+export type UpdateProfileApiV1AuthProfilePutErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type UpdateProfileApiV1AuthProfilePutError =
+  UpdateProfileApiV1AuthProfilePutErrors[keyof UpdateProfileApiV1AuthProfilePutErrors];
+
+export type UpdateProfileApiV1AuthProfilePutResponses = {
+  /**
+   * Successful Response
+   */
+  200: UserResponse;
+};
+
+export type UpdateProfileApiV1AuthProfilePutResponse =
+  UpdateProfileApiV1AuthProfilePutResponses[keyof UpdateProfileApiV1AuthProfilePutResponses];
+
 export type GetCurrentUserInfoApiV1UsersMeGetData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/users/me';
 };
+
+export type GetCurrentUserInfoApiV1UsersMeGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetCurrentUserInfoApiV1UsersMeGetError =
+  GetCurrentUserInfoApiV1UsersMeGetErrors[keyof GetCurrentUserInfoApiV1UsersMeGetErrors];
 
 export type GetCurrentUserInfoApiV1UsersMeGetResponses = {
   /**
@@ -519,3 +1219,395 @@ export type UpdateTaskApiV1TasksTaskIdPatchResponses = {
 
 export type UpdateTaskApiV1TasksTaskIdPatchResponse =
   UpdateTaskApiV1TasksTaskIdPatchResponses[keyof UpdateTaskApiV1TasksTaskIdPatchResponses];
+
+export type GetTwoFactorStatusApiV1TwoFactorStatusGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/status';
+};
+
+export type GetTwoFactorStatusApiV1TwoFactorStatusGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTwoFactorStatusApiV1TwoFactorStatusGetError =
+  GetTwoFactorStatusApiV1TwoFactorStatusGetErrors[keyof GetTwoFactorStatusApiV1TwoFactorStatusGetErrors];
+
+export type GetTwoFactorStatusApiV1TwoFactorStatusGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: TwoFactorStatusResponse;
+};
+
+export type GetTwoFactorStatusApiV1TwoFactorStatusGetResponse =
+  GetTwoFactorStatusApiV1TwoFactorStatusGetResponses[keyof GetTwoFactorStatusApiV1TwoFactorStatusGetResponses];
+
+export type SetupTwoFactorApiV1TwoFactorSetupPostData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/setup';
+};
+
+export type SetupTwoFactorApiV1TwoFactorSetupPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SetupTwoFactorApiV1TwoFactorSetupPostError =
+  SetupTwoFactorApiV1TwoFactorSetupPostErrors[keyof SetupTwoFactorApiV1TwoFactorSetupPostErrors];
+
+export type SetupTwoFactorApiV1TwoFactorSetupPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: TwoFactorSetupResponse;
+};
+
+export type SetupTwoFactorApiV1TwoFactorSetupPostResponse =
+  SetupTwoFactorApiV1TwoFactorSetupPostResponses[keyof SetupTwoFactorApiV1TwoFactorSetupPostResponses];
+
+export type EnableTwoFactorApiV1TwoFactorEnablePostData = {
+  body: TwoFactorEnableRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/enable';
+};
+
+export type EnableTwoFactorApiV1TwoFactorEnablePostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type EnableTwoFactorApiV1TwoFactorEnablePostError =
+  EnableTwoFactorApiV1TwoFactorEnablePostErrors[keyof EnableTwoFactorApiV1TwoFactorEnablePostErrors];
+
+export type EnableTwoFactorApiV1TwoFactorEnablePostResponses = {
+  /**
+   * Successful Response
+   */
+  200: TwoFactorEnableResponse;
+};
+
+export type EnableTwoFactorApiV1TwoFactorEnablePostResponse =
+  EnableTwoFactorApiV1TwoFactorEnablePostResponses[keyof EnableTwoFactorApiV1TwoFactorEnablePostResponses];
+
+export type DisableTwoFactorApiV1TwoFactorDisablePostData = {
+  body: TwoFactorDisableRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/disable';
+};
+
+export type DisableTwoFactorApiV1TwoFactorDisablePostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type DisableTwoFactorApiV1TwoFactorDisablePostError =
+  DisableTwoFactorApiV1TwoFactorDisablePostErrors[keyof DisableTwoFactorApiV1TwoFactorDisablePostErrors];
+
+export type DisableTwoFactorApiV1TwoFactorDisablePostResponses = {
+  /**
+   * Response Disable Two Factor Api V1 Two Factor Disable Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type DisableTwoFactorApiV1TwoFactorDisablePostResponse =
+  DisableTwoFactorApiV1TwoFactorDisablePostResponses[keyof DisableTwoFactorApiV1TwoFactorDisablePostResponses];
+
+export type VerifyTwoFactorApiV1TwoFactorVerifyPostData = {
+  body: TwoFactorVerifyRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/verify';
+};
+
+export type VerifyTwoFactorApiV1TwoFactorVerifyPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type VerifyTwoFactorApiV1TwoFactorVerifyPostError =
+  VerifyTwoFactorApiV1TwoFactorVerifyPostErrors[keyof VerifyTwoFactorApiV1TwoFactorVerifyPostErrors];
+
+export type VerifyTwoFactorApiV1TwoFactorVerifyPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: TwoFactorVerifyResponse;
+};
+
+export type VerifyTwoFactorApiV1TwoFactorVerifyPostResponse =
+  VerifyTwoFactorApiV1TwoFactorVerifyPostResponses[keyof VerifyTwoFactorApiV1TwoFactorVerifyPostResponses];
+
+export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData = {
+  body: RegenerateBackupCodesRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/two-factor/regenerate-backup-codes';
+};
+
+export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostError =
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors[keyof RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors];
+
+export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: RegenerateBackupCodesResponse;
+};
+
+export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
+  RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses[keyof RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses];
+
+export type GetOauthProvidersOauthProvidersGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/oauth/providers';
+};
+
+export type GetOauthProvidersOauthProvidersGetResponses = {
+  /**
+   * Response Get Oauth Providers Oauth Providers Get
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: boolean;
+  };
+};
+
+export type GetOauthProvidersOauthProvidersGetResponse =
+  GetOauthProvidersOauthProvidersGetResponses[keyof GetOauthProvidersOauthProvidersGetResponses];
+
+export type OauthAuthorizeOauthProviderAuthorizeGetData = {
+  body?: never;
+  path: {
+    /**
+     * Provider
+     */
+    provider: string;
+  };
+  query?: {
+    /**
+     * Redirect Url
+     */
+    redirect_url?: string | null;
+  };
+  url: '/oauth/{provider}/authorize';
+};
+
+export type OauthAuthorizeOauthProviderAuthorizeGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type OauthAuthorizeOauthProviderAuthorizeGetError =
+  OauthAuthorizeOauthProviderAuthorizeGetErrors[keyof OauthAuthorizeOauthProviderAuthorizeGetErrors];
+
+export type OauthAuthorizeOauthProviderAuthorizeGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetData = {
+  body?: never;
+  path: {
+    /**
+     * Provider
+     */
+    provider: string;
+  };
+  query?: {
+    /**
+     * Redirect Url
+     */
+    redirect_url?: string | null;
+  };
+  url: '/oauth/{provider}/authorize/link';
+};
+
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetError =
+  OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors[keyof OauthAuthorizeLinkOauthProviderAuthorizeLinkGetErrors];
+
+export type OauthAuthorizeLinkOauthProviderAuthorizeLinkGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type OauthCallbackOauthProviderCallbackGetData = {
+  body?: never;
+  path: {
+    /**
+     * Provider
+     */
+    provider: string;
+  };
+  query: {
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * State
+     */
+    state: string;
+  };
+  url: '/oauth/{provider}/callback';
+};
+
+export type OauthCallbackOauthProviderCallbackGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type OauthCallbackOauthProviderCallbackGetError =
+  OauthCallbackOauthProviderCallbackGetErrors[keyof OauthCallbackOauthProviderCallbackGetErrors];
+
+export type OauthCallbackOauthProviderCallbackGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type GetConnectedAccountsOauthAccountsGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/oauth/accounts';
+};
+
+export type GetConnectedAccountsOauthAccountsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetConnectedAccountsOauthAccountsGetError =
+  GetConnectedAccountsOauthAccountsGetErrors[keyof GetConnectedAccountsOauthAccountsGetErrors];
+
+export type GetConnectedAccountsOauthAccountsGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: ConnectedAccountsResponse;
+};
+
+export type GetConnectedAccountsOauthAccountsGetResponse =
+  GetConnectedAccountsOauthAccountsGetResponses[keyof GetConnectedAccountsOauthAccountsGetResponses];
+
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteData = {
+  body?: never;
+  path: {
+    /**
+     * Provider
+     */
+    provider: string;
+  };
+  query?: never;
+  url: '/oauth/{provider}/unlink';
+};
+
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteError =
+  UnlinkOauthAccountOauthProviderUnlinkDeleteErrors[keyof UnlinkOauthAccountOauthProviderUnlinkDeleteErrors];
+
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteResponses = {
+  /**
+   * Response Unlink Oauth Account Oauth  Provider  Unlink Delete
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type UnlinkOauthAccountOauthProviderUnlinkDeleteResponse =
+  UnlinkOauthAccountOauthProviderUnlinkDeleteResponses[keyof UnlinkOauthAccountOauthProviderUnlinkDeleteResponses];
+
+export type SendTestEmailApiV1TestSendTestEmailPostData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Recipient Email
+     */
+    recipient_email: string;
+  };
+  url: '/api/v1/test/send-test-email';
+};
+
+export type SendTestEmailApiV1TestSendTestEmailPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SendTestEmailApiV1TestSendTestEmailPostError =
+  SendTestEmailApiV1TestSendTestEmailPostErrors[keyof SendTestEmailApiV1TestSendTestEmailPostErrors];
+
+export type SendTestEmailApiV1TestSendTestEmailPostResponses = {
+  /**
+   * Response Send Test Email Api V1 Test Send Test Email Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string;
+  };
+};
+
+export type SendTestEmailApiV1TestSendTestEmailPostResponse =
+  SendTestEmailApiV1TestSendTestEmailPostResponses[keyof SendTestEmailApiV1TestSendTestEmailPostResponses];

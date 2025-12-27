@@ -13,7 +13,19 @@ if TYPE_CHECKING:
 
 
 class Repository(Base, TimestampMixin):
-    """Repository model representing a GitHub repository linked to the platform."""
+    """Repository model representing a GitHub repository linked to the platform.
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the repository.
+        github_url (str): URL of the GitHub repository.
+        default_branch (str): Default branch of the repository.
+        description (str | None): Description of the repository.
+        user_id (int): Foreign key to the user who owns the repository.
+
+    Relationships:
+        user (User): The user who owns the repository.
+        tasks (list[Task]): List of tasks associated with the repository.
+    """
 
     __tablename__ = "repositories"
 

@@ -1,0 +1,49 @@
+# Common UI strings (German)
+
+# Navigation
+nav:
+  dashboard: 'Dashboard'
+  tasks: 'Aufgaben'
+  settings: 'Einstellungen'
+  logout: 'Abmelden'
+
+# Buttons
+button:
+  submit: 'Absenden'
+  cancel: 'Abbrechen'
+  save: 'Speichern'
+  delete: 'Löschen'
+  confirm: 'Bestätigen'
+  create: 'Erstellen'
+  update: 'Aktualisieren'
+  close: 'Schließen'
+  back: 'Zurück'
+  next: 'Weiter'
+  loading: 'Wird geladen...'
+
+# Common labels
+label:
+  email: 'E-Mail-Adresse'
+  password: 'Passwort'
+  name: 'Name'
+  description: 'Beschreibung'
+  status: 'Status'
+  priority: 'Priorität'
+  language: 'Sprache'
+  theme: 'Design'
+
+# Messages
+message:
+  success: 'Erfolg'
+  error: 'Fehler'
+  warning: 'Warnung'
+  info: 'Information'
+  loading: 'Wird geladen...'
+  noData: 'Keine Daten verfügbar'
+  required: 'Dieses Feld ist erforderlich'
+
+# Language names
+languages:
+  en: 'Englisch'
+  nl: 'Niederländisch'
+  de: 'Deutsch'

@@ -1,0 +1,52 @@
+# Task management strings (English)
+
+tasks:
+  title: 'Tasks'
+  subtitle: "Manage your AI-powered coding tasks"
+  newTask: 'New Task'
+  createTask: 'Create Task'
+  noneYet: 'No tasks yet'
+  successCreateMessage: 'Task created successfully. Our agents are ready to work on it!'
+  successCreateTitle: 'Task Created'
+  failureCreateTitle: 'Failed to Create Task'
+  successUpdateMessage: 'Task updated successfully.'
+  successUpdateTitle: 'Task Updated'
+  failureUpdateTitle: 'Failed to Update Task'
+  successDeleteMessage: 'Task deleted successfully.'
+  successDeleteTitle: 'Task Deleted'
+  failureDeleteTitle: 'Failed to Delete Task'
+
+taskForm:
+  title: 'Task Title'
+  description: 'Task Description'
+  priority: 'Priority'
+  status: 'Status'
+  submit: 'Create Task'
+
+taskCard:
+  status: 'Status'
+  priority: 'Priority'
+  createdAt: 'Created'
+  updatedAt: 'Updated'
+  delete: 'Delete task'
+
+taskDetail:
+  title: 'Task Details'
+  back: 'Back to tasks'
+  edit: 'Edit'
+  delete: 'Delete'
+  confirmDelete: 'Are you sure you want to delete this task?'
+
+status:
+  pending: 'Pending'
+  planning: 'Planning'
+  in_progress: 'In Progress'
+  testing: 'Testing'
+  reviewing: 'Reviewing'
+  completed: 'Completed'
+
+priority:
+  low: 'Low'
+  medium: 'Medium'
+  high: 'High'
+  urgent: 'Urgent'

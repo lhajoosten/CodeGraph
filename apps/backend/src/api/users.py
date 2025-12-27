@@ -114,8 +114,10 @@ async def get_current_user_info(
     """
     Get current user information.
 
+    Requires a full access token. Rejects partial tokens (2FA verification step).
+
     Args:
-        current_user: Current authenticated user
+        current_user: Current authenticated user (requires full token)
 
     Returns:
         Current user data

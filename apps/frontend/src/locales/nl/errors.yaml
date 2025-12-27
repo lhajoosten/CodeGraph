@@ -1,0 +1,40 @@
+# Error messages (Dutch)
+
+error:
+  # Common errors
+  unexpected: 'Er is een onverwachte fout opgetreden. Probeer het later opnieuw.'
+  invalidInput: 'Ongeldige invoer. Controleer alstublieft je gegevens en probeer opnieuw.'
+  unauthorized: 'Je bent niet gemachtigd om deze actie uit te voeren.'
+  forbidden: 'Toegang geweigerd. Je hebt geen toestemming om deze bron te gebruiken.'
+  notFound: 'De aangevraagde bron is niet gevonden.'
+  serverError: 'Er is een serverfout opgetreden. Probeer het later opnieuw.'
+  networkError: 'Netwerkfout. Controleer alstublieft je verbinding en probeer opnieuw.'
+  timeout: 'Het verzoek duurde te lang. Probeer alstublieft opnieuw.'
+
+  # API errors
+  apiError: 'Er is een fout opgetreden bij communicatie met de server.'
+  apiTimeout: 'De server antwoordde niet op tijd. Probeer alstublieft opnieuw.'
+
+  # Auth errors
+  invalidCredentials: 'Ongeldig e-mailadres of wachtwoord.'
+  accountNotFound: 'Account niet gevonden.'
+  accountAlreadyExists: 'Er bestaat al een account met dit e-mailadres.'
+  emailNotVerified: 'Verifieer alstublieft je e-mailadres voordat je inlogt.'
+  invalidToken: 'Deze link is verlopen of ongeldig.'
+
+  # Task errors
+  taskNotFound: 'Taak niet gevonden.'
+  cannotDeleteTask: 'Kan deze taak niet verwijderen. Het kan in behandeling zijn.'
+  taskUpdateFailed: 'Taak bijwerken mislukt. Probeer alstublieft opnieuw.'
+  invalidTaskData: 'Ongeldige taakgegevens. Controleer alstublieft en probeer opnieuw.'
+
+  # Validation errors
+  required: 'Dit veld is verplicht'
+  invalidEmail: 'Voer alstublieft een geldig e-mailadres in'
+  passwordTooShort: 'Wachtwoord moet minimaal 8 tekens bevatten'
+  passwordMismatch: 'Wachtwoorden komen niet overeen'
+
+  # Messages
+  tryAgain: 'Probeer het alstublieft opnieuw'
+  contactSupport: 'Als het probleem aanhoudt, neem alstublieft contact op met ondersteuning'
+  reload: 'Probeer de pagina opnieuw in te laden'

@@ -469,7 +469,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 - 📖 [Documentation](docs/)
 - 💬 [GitHub Discussions](https://github.com/yourusername/codegraph/discussions)
 - 🐛 [Issue Tracker](https://github.com/yourusername/codegraph/issues)
-- 📧 Email: support@codegraph.dev (if applicable)
+- 📧 Email: info@codegraph.nl (if applicable)
 
 ### Stay Updated
 
@@ -483,7 +483,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 Found a security vulnerability? Please **do not** open a public issue.
 
-Email security@codegraph.dev or see [SECURITY.md](SECURITY.md) for details.
+Email security@codegraph.nl or see [SECURITY.md](SECURITY.md) for details.
 
 ---
 

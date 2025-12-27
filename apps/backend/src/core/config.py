@@ -38,7 +38,32 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
-    refresh_token_expire_days: int = 7
+    refresh_token_expire_hours: int = 4  # Default expiry (without remember_me)
+    refresh_token_expire_days: int = 7  # Extended expiry (with remember_me)
+
+    # Two-Factor Authentication
+    two_factor_mandatory: bool = False  # Set True to enforce 2FA for all users
+
+    # Encryption Key (for OAuth tokens, sensitive data)
+    # IMPORTANT: Should be unique per environment, stored securely
+    # Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+    encryption_key: str | None = None
+
+    # Cookie Settings
+    cookie_domain: str = "localhost"
+    cookie_secure: bool = False  # Set to True in production with HTTPS
+    cookie_samesite: str = "lax"  # 'strict', 'lax', or 'none'
+
+    # CSRF Protection
+    csrf_secret_key: str = "dev-csrf-secret-key-change-in-production"
+
+    # Session Management
+    session_expire_hours: int = 168  # 7 days
+    max_sessions_per_user: int = 5
+
+    # URLs
+    backend_url: str = "http://localhost:8000"
+    frontend_url: str = "http://localhost:5173"
 
     # CORS
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
@@ -61,8 +86,34 @@ class Settings(BaseSettings):
     langsmith_project: str = "codegraph"
     langsmith_tracing: bool = False
 
-    # GitHub Integration
+    # GitHub Integration (for code operations)
     github_token: str | None = None
+
+    # OAuth - GitHub
+    github_client_id: str | None = None
+    github_client_secret: str | None = None
+
+    # OAuth - Google
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
+
+    # OAuth - Microsoft
+    microsoft_client_id: str | None = None
+    microsoft_client_secret: str | None = None
+
+    # Email Service (SMTP)
+    email_service_mode: str = "mock"  # 'mock' for development, 'smtp' for production
+    smtp_host: str = "localhost"
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "noreply@codegraph.dev"
+    smtp_from_name: str = "CodeGraph"
+    smtp_use_tls: bool = True
+
+    # Email Token Expiry
+    email_verification_token_expire_hours: int = 24
+    password_reset_token_expire_hours: int = 1
 
     # Agent Configuration
     max_agent_iterations: int = 20

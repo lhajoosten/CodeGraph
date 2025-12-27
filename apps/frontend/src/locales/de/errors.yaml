@@ -1,0 +1,40 @@
+# Error messages (German)
+
+error:
+  # Common errors
+  unexpected: 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
+  invalidInput: 'Ungültige Eingabe. Bitte überprüfen Sie Ihre Daten und versuchen Sie es erneut.'
+  unauthorized: 'Sie sind nicht berechtigt, diese Aktion auszuführen.'
+  forbidden: 'Zugriff verweigert. Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.'
+  notFound: 'Die angeforderte Ressource wurde nicht gefunden.'
+  serverError: 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
+  networkError: 'Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.'
+  timeout: 'Die Anfrage hat zu lange gedauert. Bitte versuchen Sie es erneut.'
+
+  # API errors
+  apiError: 'Ein Fehler bei der Kommunikation mit dem Server ist aufgetreten.'
+  apiTimeout: 'Der Server hat nicht rechtzeitig geantwortet. Bitte versuchen Sie es erneut.'
+
+  # Auth errors
+  invalidCredentials: 'Ungültige E-Mail-Adresse oder Passwort.'
+  accountNotFound: 'Konto nicht gefunden.'
+  accountAlreadyExists: 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.'
+  emailNotVerified: 'Bitte überprüfen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden.'
+  invalidToken: 'Dieser Link ist abgelaufen oder ungültig.'
+
+  # Task errors
+  taskNotFound: 'Aufgabe nicht gefunden.'
+  cannotDeleteTask: 'Diese Aufgabe kann nicht gelöscht werden. Sie kann sich in Bearbeitung befinden.'
+  taskUpdateFailed: 'Aufgabenaktualisierung fehlgeschlagen. Bitte versuchen Sie es erneut.'
+  invalidTaskData: 'Ungültige Aufgabendaten. Bitte überprüfen Sie und versuchen Sie es erneut.'
+
+  # Validation errors
+  required: 'Dieses Feld ist erforderlich'
+  invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
+  passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein'
+  passwordMismatch: 'Passwörter stimmen nicht überein'
+
+  # Messages
+  tryAgain: 'Bitte versuchen Sie es erneut'
+  contactSupport: 'Wenn das Problem weiterhin besteht, wenden Sie sich bitte an den Support'
+  reload: 'Versuchen Sie, die Seite neu zu laden'

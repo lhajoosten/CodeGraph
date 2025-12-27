@@ -1,15 +1,22 @@
 """Main FastAPI application entry point."""
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.api import tasks, users
+from src.api import auth, oauth, tasks, test_email, two_factor, users
 from src.core.config import settings
 from src.core.database import close_db
+from src.core.exception_handlers import (
+    codegraph_exception_handler,
+    validation_exception_handler,
+)
+from src.core.exceptions import CodeGraphException
 from src.core.logging import configure_logging, get_logger
 
 # Configure logging
@@ -51,6 +58,12 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs" if settings.debug else None,
     redoc_url="/redoc" if settings.debug else None,
+    servers=[
+        {
+            "url": "http://localhost:8000",
+            "description": "Development server",
+        }
+    ],
 )
 
 # Configure CORS
@@ -60,6 +73,16 @@ app.add_middleware(
     allow_credentials=settings.cors_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# Register exception handlers
+app.add_exception_handler(
+    CodeGraphException,
+    cast(Callable[[Request, Any], Any], codegraph_exception_handler),
+)
+app.add_exception_handler(
+    RequestValidationError,
+    cast(Callable[[Request, Any], Any], validation_exception_handler),
 )
 
 
@@ -76,8 +99,13 @@ async def health_check() -> dict[str, str]:
 
 
 # Include routers
+app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
+app.include_router(two_factor.router, prefix="/api/v1", tags=["two-factor-auth"])
+# OAuth is public-facing and should not have API versioning prefix
+app.include_router(oauth.router, tags=["oauth"])
+app.include_router(test_email.router, tags=["testing"])
 
 
 # Global exception handler

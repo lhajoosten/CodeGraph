@@ -1,7 +1,7 @@
 import {defineConfig} from '@hey-api/openapi-ts';
 
-const apiUrl = process.env.VITE_API_URL || 'http://localhost:8000/api/v1';
-const specUrl = process.env.VITE_API_SPEC_URL || `${apiUrl.replace('/api/v1', '')}/openapi.json`;
+const apiUrl = process.env.VITE_API_URL || 'http://localhost:8000';
+const specUrl = process.env.VITE_API_SPEC_URL || `${apiUrl}/openapi.json`;
 
 export default defineConfig({
     input: specUrl,
@@ -11,7 +11,10 @@ export default defineConfig({
         lint: "eslint",
     },
     plugins: [
-        '@hey-api/client-axios',
+        {
+            name: '@hey-api/client-axios',
+            baseUrl: apiUrl,
+        },
         '@hey-api/schemas',
         'zod',
         {

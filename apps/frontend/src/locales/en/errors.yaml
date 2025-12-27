@@ -1,0 +1,58 @@
+# Error messages (English)
+
+error:
+  # Common errors
+  unexpected: 'An unexpected error occurred. Please try again later.'
+  invalidInput: 'Invalid input. Please check your data and try again.'
+  unauthorized: 'You are not authorized to perform this action.'
+  forbidden: 'Access denied. You do not have permission to access this resource.'
+  notFound: 'The requested resource was not found.'
+  serverError: 'A server error occurred. Please try again later.'
+  networkError: 'Network error. Please check your connection and try again.'
+  timeout: 'The request took too long. Please try again.'
+
+  # API errors
+  apiError: 'An error occurred while communicating with the server.'
+  apiTimeout: 'The server did not respond in time. Please try again.'
+
+  # Authentication errors
+  invalidCredentials: 'Invalid email or password.'
+  invalidPassword: 'Incorrect password.'
+  accountNotFound: 'Account not found.'
+  accountAlreadyExists: 'An account with this email already exists.'
+  accountLocked: 'Account is locked. Try again {{time}}.'
+  accountInactive: 'Your account is inactive. Please contact support.'
+  emailNotVerified: 'Please verify your email address before logging in.'
+  invalidToken: 'This link has expired or is invalid.'
+  tokenExpired: 'Your session has expired. Please log in again.'
+
+  # Password reset
+  # (reuses invalidToken for reset token errors)
+
+  # 2FA errors
+  twoFactorRequired: '2FA verification required.'
+  twoFactorSetupRequired: '2FA setup required.'
+  twoFactorCodeInvalid: 'Invalid 2FA code. Please try again.'
+
+  # OAuth errors
+  oauthProviderNotConfigured: 'This OAuth provider is not configured.'
+  oauthStateInvalid: 'OAuth state validation failed. Please try again.'
+  oauthCallbackFailed: 'OAuth authentication failed. Please try again.'
+  oauthReauthRequired: 'Please log in again with {{provider}}.'
+
+  # Task errors
+  taskNotFound: 'Task not found.'
+  cannotDeleteTask: 'Cannot delete this task. It may be in progress.'
+  taskUpdateFailed: 'Failed to update task. Please try again.'
+  invalidTaskData: 'Invalid task data. Please check and try again.'
+
+  # Validation errors
+  required: 'This field is required'
+  invalidEmail: 'Please enter a valid email address'
+  passwordTooShort: 'Password must be at least 8 characters long'
+  passwordMismatch: 'Passwords do not match'
+
+  # Messages
+  tryAgain: 'Please try again'
+  contactSupport: 'If the problem persists, please contact support'
+  reload: 'Try reloading the page'
