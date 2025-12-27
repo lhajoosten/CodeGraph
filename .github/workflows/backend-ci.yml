@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/backend/**'
-      - '.github/workflows/backend-ci.yml'
+      - "apps/backend/**"
+      - ".github/workflows/backend-ci.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'apps/backend/**'
-      - '.github/workflows/backend-ci.yml'
+      - "apps/backend/**"
+      - ".github/workflows/backend-ci.yml"
 
 jobs:
   test:
@@ -49,7 +49,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -80,6 +80,7 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://codegraph:codegraph@localhost:5432/codegraph_test
           REDIS_URL: redis://localhost:6379/0
           SECRET_KEY: test-secret-key
+          ENCRYPTION_KEY: test-encryption-key-for-ci-only-32-char-min
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: poetry run pytest --cov=src --cov-report=xml --cov-report=term
 
