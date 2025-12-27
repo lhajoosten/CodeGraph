@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.deps import get_current_user
+from src.api.deps import get_current_user_or_partial
 from src.core.database import get_db
 from src.core.security import (
     create_access_token,
@@ -109,13 +109,15 @@ async def login_user(
 
 @router.get("/users/me", response_model=UserResponse)
 async def get_current_user_info(
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user_or_partial)],
 ) -> User:
     """
     Get current user information.
 
+    Accepts both full and partial tokens (partial tokens during 2FA setup/verification).
+
     Args:
-        current_user: Current authenticated user
+        current_user: Current authenticated user (via full or partial token)
 
     Returns:
         Current user data

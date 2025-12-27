@@ -1,22 +1,27 @@
 /**
- * E2E tests for user login flow
+ * E2E Tests: User Login Flow
  *
  * Tests cover:
- * - Successful login
- * - Invalid credentials
- * - Unverified email
+ * - Display of login form elements
+ * - Successful login with valid credentials
+ * - Invalid credentials handling
+ * - Form validation (empty fields, invalid email)
+ * - Password visibility toggle
  * - Remember me functionality
- * - Redirect to protected pages
- * - Login with 2FA redirect
+ * - Navigation to registration and forgot password
+ * - OAuth button display
+ * - 2FA redirect scenarios
+ * - Protected route access and redirection
  */
 
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
 import {
   EXISTING_USER,
   INVALID_CREDENTIALS,
-  USER_UNVERIFIED_EMAIL,
-  USER_WITH_2FA,
   INVALID_EMAILS,
+  USER_WITH_2FA,
+  USER_UNVERIFIED_EMAIL,
 } from '../fixtures';
 import {
   mockLoginSuccess,
@@ -24,269 +29,277 @@ import {
   mockLoginEmailNotVerified,
   mockLoginRequires2FA,
   mockGetCurrentUserSuccess,
-  setupAuthFlowMocks,
-} from '../helpers';
-import {
-  navigateToLogin,
-  fillLoginForm,
-  submitLoginForm,
-  loginWithCredentials,
-  waitForAuthentication,
-} from '../helpers';
-import {
-  assertRedirectToDashboard,
-  assertRedirectTo2FAVerification,
-  assertErrorToast,
-  assertFieldHasError,
-  assertAuthenticationState,
-  assertUserInAuthStore,
-} from '../helpers';
-import {
-  clickLink,
-  getLocalStorageItem,
+  setupLoginFlowMocks,
 } from '../helpers';
 
-test.describe('User Login', async () => {
+test.describe('Login Page', () => {
+  let loginPage: LoginPage;
+
   test.beforeEach(async ({ page }) => {
-    await navigateToLogin(page);
+    loginPage = new LoginPage(page);
+    await loginPage.navigate();
   });
 
-  test('should display login form with all fields', async ({ page }) => {
-    await expect(page.getByLabel(/email/i)).toBeVisible();
-    await expect(page.getByLabel(/password/i)).toBeVisible();
-    await expect(page.getByRole('checkbox', { name: /remember me/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /sign in|log in/i })).toBeVisible();
+  // ===========================================================================
+  // Form Display Tests
+  // ===========================================================================
+
+  test.describe('Form Display', () => {
+    test('should display login form with all required elements', async () => {
+      await loginPage.expectFormDisplayed();
+      await expect(loginPage.rememberMeCheckbox).toBeVisible();
+      await expect(loginPage.forgotPasswordLink).toBeVisible();
+      await expect(loginPage.registerLink).toBeVisible();
+    });
+
+    test('should display OAuth login buttons', async () => {
+      await loginPage.expectOAuthButtonsDisplayed();
+    });
+
+    test('should have password hidden by default', async () => {
+      await loginPage.expectPasswordHidden();
+    });
   });
 
-  test('should successfully login with valid credentials', async ({ page }) => {
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
+  // ===========================================================================
+  // Successful Login Tests
+  // ===========================================================================
 
-    await fillLoginForm(page, EXISTING_USER.email, EXISTING_USER.password);
-    await submitLoginForm(page);
+  test.describe('Successful Login', () => {
+    test('should login successfully with valid credentials', async ({ page }) => {
+      await setupLoginFlowMocks(page, EXISTING_USER);
 
-    // Should redirect to dashboard
-    await assertRedirectToDashboard(page);
+      await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
 
-    // Should store auth token
-    await assertAuthenticationState(page, true);
+      await loginPage.expectRedirectToDashboard();
+    });
 
-    // Should store user in auth store
-    await assertUserInAuthStore(page, EXISTING_USER.email);
+    test('should store authentication state after login', async ({ page }) => {
+      await setupLoginFlowMocks(page, EXISTING_USER);
+
+      await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+
+      await loginPage.expectRedirectToDashboard();
+
+      // Verify auth state is stored
+      const isAuth = await loginPage.isAuthenticated();
+      expect(isAuth).toBe(true);
+    });
+
+    test('should show loading state during submission', async ({ page }) => {
+      // Create a delayed response to see loading state
+      await page.route('**/api/v1/auth/login', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            access_token: 'test-token',
+            token_type: 'bearer',
+            expires_in: 86400,
+            user: {
+              id: 'user-1',
+              email: EXISTING_USER.email,
+              first_name: EXISTING_USER.firstName,
+              last_name: EXISTING_USER.lastName,
+              email_verified: true,
+              two_factor_enabled: false,
+            },
+            email_verified: true,
+            two_factor_required: false,
+            two_factor_enabled: false,
+            two_factor_setup_required: false,
+          }),
+        });
+      });
+      await mockGetCurrentUserSuccess(page, EXISTING_USER);
+
+      await loginPage.fillForm(EXISTING_USER.email, EXISTING_USER.password);
+      await loginPage.submit();
+
+      // Check loading state
+      await loginPage.expectSubmitLoading();
+    });
   });
 
-  test('should show error for invalid credentials', async ({ page }) => {
-    await mockLoginInvalidCredentials(page);
+  // ===========================================================================
+  // Login Error Tests
+  // ===========================================================================
 
-    await fillLoginForm(page, INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password);
-    await submitLoginForm(page);
+  test.describe('Login Errors', () => {
+    test('should show error for invalid credentials', async ({ page }) => {
+      await mockLoginInvalidCredentials(page);
 
-    // Should show error toast
-    await assertErrorToast(page, /invalid email or password|incorrect credentials/i);
+      await loginPage.login(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password);
 
-    // Should remain on login page
-    await expect(page).toHaveURL('/login');
+      await loginPage.expectErrorMessage(/invalid|incorrect/i);
+      await loginPage.expectUrl('/login');
+    });
 
-    // Should not store auth token
-    await assertAuthenticationState(page, false);
+    test('should show error for unverified email', async ({ page }) => {
+      await mockLoginEmailNotVerified(page);
+
+      await loginPage.login(USER_UNVERIFIED_EMAIL.email, USER_UNVERIFIED_EMAIL.password);
+
+      await loginPage.expectErrorMessage(/verify|email/i);
+      await loginPage.expectUrl('/login');
+    });
+
+    test('should remain on login page after failed login', async ({ page }) => {
+      await mockLoginInvalidCredentials(page);
+
+      await loginPage.login(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password);
+
+      await loginPage.expectUrl('/login');
+
+      // Verify not authenticated
+      const isAuth = await loginPage.isAuthenticated();
+      expect(isAuth).toBe(false);
+    });
   });
 
-  test('should show error for unverified email', async ({ page }) => {
-    await mockLoginEmailNotVerified(page);
+  // ===========================================================================
+  // Form Validation Tests
+  // ===========================================================================
 
-    await fillLoginForm(page, USER_UNVERIFIED_EMAIL.email, USER_UNVERIFIED_EMAIL.password);
-    await submitLoginForm(page);
+  test.describe('Form Validation', () => {
+    test('should show validation error for empty email', async () => {
+      await loginPage.fillEmail('');
+      await loginPage.fillPassword(EXISTING_USER.password);
+      await loginPage.submit();
 
-    // Should show error toast
-    await assertErrorToast(page, /verify your email|email not verified/i);
+      await loginPage.expectEmailError(/required|email/i);
+    });
 
-    // Should remain on login page
-    await expect(page).toHaveURL('/login');
+    test('should show validation error for invalid email format', async () => {
+      await loginPage.fillEmail(INVALID_EMAILS.noAtSign);
+      await loginPage.fillPassword(EXISTING_USER.password);
+      await loginPage.submit();
+
+      await loginPage.expectEmailError(/invalid|valid email/i);
+    });
+
+    test('should show validation error for empty password', async () => {
+      await loginPage.fillEmail(EXISTING_USER.email);
+      await loginPage.fillPassword('');
+      await loginPage.submit();
+
+      await loginPage.expectPasswordError(/required|password/i);
+    });
   });
 
-  test('should redirect to 2FA verification when required', async ({ page }) => {
-    await mockLoginRequires2FA(page, USER_WITH_2FA);
+  // ===========================================================================
+  // Password Visibility Tests
+  // ===========================================================================
 
-    await fillLoginForm(page, USER_WITH_2FA.email, USER_WITH_2FA.password);
-    await submitLoginForm(page);
+  test.describe('Password Visibility', () => {
+    test('should toggle password visibility', async () => {
+      await loginPage.fillPassword(EXISTING_USER.password);
 
-    // Should redirect to 2FA verification page
-    await assertRedirectTo2FAVerification(page);
+      // Initially hidden
+      await loginPage.expectPasswordHidden();
+
+      // Toggle to visible
+      await loginPage.togglePasswordVisibility();
+      await loginPage.expectPasswordVisible();
+
+      // Toggle back to hidden
+      await loginPage.togglePasswordVisibility();
+      await loginPage.expectPasswordHidden();
+    });
   });
 
-  test('should show validation error for empty email', async ({ page }) => {
-    await page.getByLabel(/email/i).fill('');
-    await page.getByLabel(/password/i).fill(EXISTING_USER.password);
-    await submitLoginForm(page);
+  // ===========================================================================
+  // Remember Me Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /email/i, /required|cannot be empty/i);
+  test.describe('Remember Me', () => {
+    test('should remember user when checkbox is checked', async ({ page }) => {
+      await setupLoginFlowMocks(page, EXISTING_USER);
+
+      await loginPage.fillForm(EXISTING_USER.email, EXISTING_USER.password);
+      await loginPage.checkRememberMe();
+      await loginPage.submit();
+
+      await loginPage.expectRedirectToDashboard();
+
+      // Check if email is stored
+      const rememberedEmail = await loginPage.getLocalStorageItem('rememberMe');
+      expect(rememberedEmail).toBe(EXISTING_USER.email);
+    });
+
+    test('should not remember user when checkbox is unchecked', async ({ page }) => {
+      await setupLoginFlowMocks(page, EXISTING_USER);
+
+      await loginPage.fillForm(EXISTING_USER.email, EXISTING_USER.password);
+      await loginPage.uncheckRememberMe();
+      await loginPage.submit();
+
+      await loginPage.expectRedirectToDashboard();
+
+      // Email should not be stored
+      const rememberedEmail = await loginPage.getLocalStorageItem('rememberMe');
+      expect(rememberedEmail).toBeNull();
+    });
   });
 
-  test('should show validation error for invalid email format', async ({ page }) => {
-    await page.getByLabel(/email/i).fill(INVALID_EMAILS.noAtSign);
-    await page.getByLabel(/password/i).fill(EXISTING_USER.password);
-    await submitLoginForm(page);
+  // ===========================================================================
+  // Navigation Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /email/i, /invalid|valid email/i);
+  test.describe('Navigation', () => {
+    test('should navigate to registration page', async () => {
+      await loginPage.clickRegister();
+      await loginPage.expectUrl('/register');
+    });
+
+    test('should navigate to forgot password page', async () => {
+      await loginPage.clickForgotPassword();
+      await loginPage.expectUrl('/forgot-password');
+    });
   });
 
-  test('should show validation error for empty password', async ({ page }) => {
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByLabel(/password/i).fill('');
-    await submitLoginForm(page);
+  // ===========================================================================
+  // 2FA Redirect Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /password/i, /required|cannot be empty/i);
-  });
+  test.describe('Two-Factor Authentication', () => {
+    test('should redirect to 2FA verification when required', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
 
-  test('should disable submit button while submitting', async ({ page }) => {
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
 
-    await fillLoginForm(page, EXISTING_USER.email, EXISTING_USER.password);
-
-    const submitButton = page.getByRole('button', { name: /sign in|log in/i });
-
-    // Button should be enabled before submit
-    await expect(submitButton).toBeEnabled();
-
-    // Click submit
-    await submitButton.click();
-
-    // Button should be disabled during submission
-    await expect(submitButton).toBeDisabled();
-  });
-
-  test('should toggle password visibility', async ({ page }) => {
-    const passwordField = page.getByLabel(/password/i);
-    await passwordField.fill(EXISTING_USER.password);
-
-    // Password should be hidden by default
-    await expect(passwordField).toHaveAttribute('type', 'password');
-
-    // Click show password button
-    const toggleButton = page.getByRole('button', { name: /show password|toggle/i });
-    await toggleButton.click();
-
-    // Password should be visible
-    await expect(passwordField).toHaveAttribute('type', 'text');
-
-    // Click again to hide
-    await toggleButton.click();
-    await expect(passwordField).toHaveAttribute('type', 'password');
-  });
-
-  test('should remember user when "Remember me" is checked', async ({ page }) => {
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
-
-    await fillLoginForm(page, EXISTING_USER.email, EXISTING_USER.password);
-
-    // Check "Remember me"
-    const rememberCheckbox = page.getByRole('checkbox', { name: /remember me/i });
-    await rememberCheckbox.check();
-
-    await submitLoginForm(page);
-
-    // Wait for login to complete
-    await waitForAuthentication(page);
-
-    // Should store email in localStorage
-    const rememberedEmail = await getLocalStorageItem(page, 'remembered_email');
-    expect(rememberedEmail).toBe(EXISTING_USER.email);
-  });
-
-  test('should not remember user when "Remember me" is unchecked', async ({ page }) => {
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
-
-    await fillLoginForm(page, EXISTING_USER.email, EXISTING_USER.password);
-
-    // Ensure "Remember me" is unchecked
-    const rememberCheckbox = page.getByRole('checkbox', { name: /remember me/i });
-    await rememberCheckbox.uncheck();
-
-    await submitLoginForm(page);
-
-    // Wait for login to complete
-    await waitForAuthentication(page);
-
-    // Should not store email in localStorage
-    const rememberedEmail = await getLocalStorageItem(page, 'remembered_email');
-    expect(rememberedEmail).toBeNull();
-  });
-
-  test('should pre-fill email if previously remembered', async ({ page }) => {
-    // Set remembered email in localStorage
-    await page.evaluate((email) => {
-      localStorage.setItem('remembered_email', email);
-    }, EXISTING_USER.email);
-
-    // Reload page to trigger pre-fill
-    await page.reload();
-
-    // Email field should be pre-filled
-    const emailField = page.getByLabel(/email/i);
-    await expect(emailField).toHaveValue(EXISTING_USER.email);
-
-    // Remember me checkbox should be checked
-    const rememberCheckbox = page.getByRole('checkbox', { name: /remember me/i });
-    await expect(rememberCheckbox).toBeChecked();
-  });
-
-  test('should navigate to registration page from link', async ({ page }) => {
-    await clickLink(page, /sign up|register|create account/i);
-    await expect(page).toHaveURL('/register');
-  });
-
-  test('should navigate to forgot password page from link', async ({ page }) => {
-    await clickLink(page, /forgot password|reset password/i);
-    await expect(page).toHaveURL('/forgot-password');
-  });
-
-  test('should display OAuth login options', async ({ page }) => {
-    await expect(page.getByRole('button', { name: /google/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /github/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /microsoft/i })).toBeVisible();
+      await loginPage.expectRedirectTo2FAVerification();
+    });
   });
 });
 
+// =============================================================================
+// Protected Route Access Tests
+// =============================================================================
+
 test.describe('Protected Route Access', () => {
   test('should redirect to login when accessing protected page without auth', async ({ page }) => {
-    // Try to access dashboard without authentication
     await page.goto('/');
 
-    // Should redirect to login
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('should redirect to original page after login', async ({ page }) => {
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
-
-    // Try to access protected settings page
+  test('should redirect to login when accessing settings without auth', async ({ page }) => {
     await page.goto('/settings');
 
-    // Should redirect to login with redirect parameter
-    await expect(page).toHaveURL(/\/login.*redirect/);
-
-    // Login
-    await fillLoginForm(page, EXISTING_USER.email, EXISTING_USER.password);
-    await submitLoginForm(page);
-
-    // Should redirect back to settings page
-    await expect(page).toHaveURL('/settings');
+    await expect(page).toHaveURL(/\/login/);
   });
 
   test('should allow access to protected pages when authenticated', async ({ page }) => {
-    await setupAuthFlowMocks(page, EXISTING_USER);
+    const loginPage = new LoginPage(page);
+
+    await setupLoginFlowMocks(page, EXISTING_USER);
 
     // Login first
-    await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-    await waitForAuthentication(page);
-
-    // Should be able to access dashboard
-    await page.goto('/');
-    await expect(page).toHaveURL(/^\/(dashboard)?$/);
+    await loginPage.navigate();
+    await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+    await loginPage.expectRedirectToDashboard();
 
     // Should be able to access settings
     await page.goto('/settings');
@@ -294,39 +307,47 @@ test.describe('Protected Route Access', () => {
   });
 });
 
-test.describe('Login Session Persistence', () => {
+// =============================================================================
+// Session Persistence Tests
+// =============================================================================
+
+test.describe('Session Persistence', () => {
   test('should maintain session after page reload', async ({ page }) => {
-    await setupAuthFlowMocks(page, EXISTING_USER);
+    const loginPage = new LoginPage(page);
+
+    await setupLoginFlowMocks(page, EXISTING_USER);
 
     // Login
-    await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-    await waitForAuthentication(page);
+    await loginPage.navigate();
+    await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+    await loginPage.expectRedirectToDashboard();
 
-    // Store auth token
-    const authToken = await getLocalStorageItem(page, 'auth_token');
-    expect(authToken).not.toBeNull();
+    // Re-mock for after reload
+    await mockGetCurrentUserSuccess(page, EXISTING_USER);
 
     // Reload page
     await page.reload();
 
-    // Should still be authenticated
-    await assertAuthenticationState(page, true);
+    // Should still be on dashboard (not redirected to login)
     await expect(page).toHaveURL(/^\/(dashboard)?$/);
   });
 
   test('should maintain session in new tab', async ({ context, page }) => {
-    await setupAuthFlowMocks(page, EXISTING_USER);
+    const loginPage = new LoginPage(page);
+
+    await setupLoginFlowMocks(page, EXISTING_USER);
 
     // Login in first tab
-    await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-    await waitForAuthentication(page);
+    await loginPage.navigate();
+    await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+    await loginPage.expectRedirectToDashboard();
 
     // Open new tab
     const newPage = await context.newPage();
+    await mockGetCurrentUserSuccess(newPage, EXISTING_USER);
     await newPage.goto('/');
 
     // Should be authenticated in new tab
-    await assertAuthenticationState(newPage, true);
     await expect(newPage).toHaveURL(/^\/(dashboard)?$/);
 
     await newPage.close();

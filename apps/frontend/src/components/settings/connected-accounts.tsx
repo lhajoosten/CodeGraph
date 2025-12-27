@@ -110,11 +110,11 @@ export const ConnectedAccounts = () => {
       <div className="space-y-4">
         <div
           className={`
-            rounded-lg border border-gray-200 bg-gray-50 p-6 text-center
+            rounded-lg border border-border-steel bg-bg-elevated-lum p-6 text-center
           `}
         >
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className="mx-auto h-12 w-12 text-text-muted-lum"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -126,8 +126,8 @@ export const ConnectedAccounts = () => {
               d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Connected Accounts</h3>
-          <p className="mt-2 text-sm text-gray-500">
+          <h3 className="mt-4 text-lg font-medium text-text-primary-lum">Connected Accounts</h3>
+          <p className="mt-2 text-sm text-text-secondary-lum">
             OAuth connections are not yet available. This feature is coming soon!
           </p>
         </div>
@@ -140,7 +140,7 @@ export const ConnectedAccounts = () => {
       <div className="flex items-center justify-center py-8">
         <div
           className={`
-            h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600
+            h-8 w-8 animate-spin rounded-full border-b-2 border-brand-cyan
           `}
         ></div>
       </div>
@@ -167,7 +167,7 @@ export const ConnectedAccounts = () => {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-text-secondary-lum">
         Connect your accounts for easier sign-in and to access additional features.
       </p>
 
@@ -184,9 +184,9 @@ export const ConnectedAccounts = () => {
                 flex items-center justify-between rounded-lg border p-4
                 ${
                   connected
-                    ? 'border-green-200 bg-green-50'
+                    ? 'border-success bg-success/10'
                     : `
-                  border-gray-200 bg-white
+                  border-border-steel bg-bg-elevated-lum
                 `
                 }
               `}
@@ -201,13 +201,13 @@ export const ConnectedAccounts = () => {
                   {info.icon}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{info.name}</p>
+                  <p className="font-medium text-text-primary-lum">{info.name}</p>
                   {connected && account ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-text-secondary-lum">
                       Connected as {account.email || account.name || account.provider_user_id}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500">Not connected</p>
+                    <p className="text-sm text-text-secondary-lum">Not connected</p>
                   )}
                 </div>
               </div>
@@ -217,9 +217,9 @@ export const ConnectedAccounts = () => {
                   onClick={() => handleUnlink(provider)}
                   disabled={unlinkMutation.isPending}
                   className={`
-                    rounded-lg border border-red-300 px-4 py-2 text-sm
-                    font-medium text-red-600 transition
-                    hover:bg-red-50
+                    rounded-lg border border-error px-4 py-2 text-sm
+                    font-medium text-error transition
+                    hover:bg-error/5
                     disabled:cursor-not-allowed disabled:opacity-50
                   `}
                 >
@@ -229,9 +229,9 @@ export const ConnectedAccounts = () => {
                 <button
                   onClick={() => handleConnect(provider)}
                   className={`
-                    rounded-lg border border-gray-300 px-4 py-2 text-sm
-                    font-medium text-gray-700 transition
-                    hover:bg-gray-50
+                    rounded-lg border border-border-steel px-4 py-2 text-sm
+                    font-medium text-text-secondary-lum transition
+                    hover:bg-bg-steel
                   `}
                 >
                   Connect
@@ -242,10 +242,10 @@ export const ConnectedAccounts = () => {
         })}
       </div>
 
-      <div className="rounded-lg bg-blue-50 p-4">
+      <div className="rounded-lg bg-brand-cyan/10 p-4">
         <div className="flex items-start gap-3">
           <svg
-            className="h-5 w-5 text-blue-600"
+            className="h-5 w-5 text-brand-cyan"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -258,7 +258,7 @@ export const ConnectedAccounts = () => {
             />
           </svg>
           <div>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-brand-cyan">
               Connecting accounts allows you to sign in with a single click and may provide access
               to additional features like repository imports and team synchronization.
             </p>

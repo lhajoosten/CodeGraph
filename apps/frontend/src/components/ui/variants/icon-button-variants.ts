@@ -4,9 +4,9 @@ export const iconButtonVariants = cva(
   [
     'inline-flex items-center justify-center',
     'rounded-md transition-all duration-200',
-    'ring-offset-background-2',
+    'ring-offset-bg-steel',
     `
-      focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-2 focus-visible:ring-brand-cyan
       focus-visible:ring-offset-2 focus-visible:outline-none
     `,
     'disabled:pointer-events-none disabled:opacity-50',
@@ -16,29 +16,29 @@ export const iconButtonVariants = cva(
     variants: {
       variant: {
         default: `
-          bg-primary text-text-button
-          hover:bg-primary-600
-          active:bg-primary-700
+          bg-brand-cyan text-white
+          hover:shadow-[0_0_16px_rgba(34,211,238,0.5)]
+          active:opacity-90
         `,
         destructive: `
-          bg-danger text-white
-          hover:bg-danger-600
-          active:bg-danger-700
+          bg-error text-white
+          hover:shadow-[0_0_16px_rgba(239,68,68,0.5)]
+          active:opacity-90
         `,
         outline: `
-          border border-border bg-transparent text-text-primary
-          hover:bg-secondary
-          active:bg-tertiary
+          border border-border-steel bg-transparent text-text-primary-lum
+          hover:bg-bg-elevated-lum
+          active:bg-bg-steel
         `,
         secondary: `
-          bg-secondary text-text-primary
-          hover:bg-tertiary
-          active:bg-gray-300
+          bg-bg-elevated-lum text-text-primary-lum
+          hover:bg-bg-steel
+          active:opacity-90
         `,
         ghost: `
-          text-text-secondary
-          hover:bg-secondary hover:text-text-primary
-          active:bg-tertiary
+          text-text-secondary-lum
+          hover:bg-bg-elevated-lum hover:text-text-primary-lum
+          active:opacity-80
         `,
       },
       size: {

@@ -13,12 +13,13 @@ function SetupTwoFactorPage() {
   const setTwoFactorStatus = useAuthStore((state) => state.setTwoFactorStatus);
 
   const handleSetup2FASuccess = () => {
-    // Update auth store to reflect successful 2FA setup
-    // - twoFactorEnabled: true (2FA is now enabled)
-    // - twoFactorVerified: true (completing setup counts as verification)
-    // - requiresTwoFactorSetup: false (no longer required)
-    setTwoFactorStatus(true, true, false);
-    navigate({ to: '/' });
+    // Update auth store to reflect that 2FA is now enabled
+    // This allows the verify-2fa route guard to pass
+    setTwoFactorStatus(true, false, false);
+
+    // Redirect to verify page to complete 2FA verification
+    // This ensures the user is fully authenticated before accessing protected resources
+    navigate({ to: '/verify-2fa', search: { from: 'setup' } });
   };
 
   return (

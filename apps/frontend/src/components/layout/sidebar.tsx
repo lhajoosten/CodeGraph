@@ -51,10 +51,10 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
           transition-colors
         `,
         active
-          ? 'bg-primary/10 text-text-sidebar'
+          ? 'bg-brand-cyan/10 text-text-secondary-lum'
           : `
-            text-text-secondary
-            hover:bg-secondary hover:text-text-primary
+            text-text-secondary-lum
+            hover:bg-bg-elevated-lum hover:text-text-primary-lum
           `
       )}
     >
@@ -65,7 +65,7 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
           {item.badge && (
             <span
               className={`
-                rounded-full bg-primary px-2 py-0.5 text-xs text-text-button
+                rounded-full bg-brand-cyan px-2 py-0.5 text-xs text-white
               `}
             >
               {item.badge}
@@ -102,8 +102,8 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       <aside
         className={cn(
           `
-            fixed top-0 left-0 z-40 flex h-screen flex-col border-r
-            border-border bg-sidebar transition-all duration-300
+            fixed top-0 left-0 z-40 flex h-screen flex-col
+            border-r border-border-steel bg-bg-steel transition-all duration-300
           `,
           isOpen ? 'w-64' : 'w-16',
           className
@@ -112,19 +112,19 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         {/* Logo */}
         <div
           className={`
-            flex h-16 items-center justify-between border-b border-border px-4
+            flex h-16 items-center justify-between border-b border-border-steel px-4
           `}
         >
           {isOpen ? (
             <Link to="/" className="flex items-center gap-2">
               <div
                 className={`
-                  flex h-8 w-8 items-center justify-center rounded-lg bg-primary
+                  flex h-8 w-8 items-center justify-center rounded-lg bg-brand-cyan
                 `}
               >
-                <span className="text-lg font-bold text-text-button">C</span>
+                <span className="text-lg font-bold text-white">C</span>
               </div>
-              <span className="text-xl font-bold text-primary">{APP_NAME}</span>
+              <span className="text-xl font-bold text-brand-cyan">{APP_NAME}</span>
             </Link>
           ) : (
             <Link
@@ -134,7 +134,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
                 bg-primary
               `}
             >
-              <span className="text-lg font-bold text-text-button">C</span>
+              <span className="text-text-button text-lg font-bold">C</span>
             </Link>
           )}
         </div>

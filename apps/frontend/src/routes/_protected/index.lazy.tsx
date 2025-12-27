@@ -74,11 +74,11 @@ function DashboardPage() {
             `}
             >
               <CardTitle className="text-sm font-medium text-text-secondary">Total Tasks</CardTitle>
-              <Squares2X2Icon className="h-4 w-4 text-text-tertiary" />
+              <Squares2X2Icon className="text-text-tertiary h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.total}</div>
-              <p className="text-xs text-text-tertiary">All tasks in the system</p>
+              <p className="text-text-tertiary text-xs">All tasks in the system</p>
             </CardContent>
           </Card>
 
@@ -93,7 +93,7 @@ function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.pending}</div>
-              <p className="text-xs text-text-tertiary">Waiting to be processed</p>
+              <p className="text-text-tertiary text-xs">Waiting to be processed</p>
             </CardContent>
           </Card>
 
@@ -108,7 +108,7 @@ function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.inProgress}</div>
-              <p className="text-xs text-text-tertiary">Being worked on by agents</p>
+              <p className="text-text-tertiary text-xs">Being worked on by agents</p>
             </CardContent>
           </Card>
 
@@ -123,7 +123,7 @@ function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-text-primary">{stats.completed}</div>
-              <p className="text-xs text-text-tertiary">Successfully finished</p>
+              <p className="text-text-tertiary text-xs">Successfully finished</p>
             </CardContent>
           </Card>
         </div>
@@ -180,7 +180,7 @@ function DashboardPage() {
                     flex flex-col items-center justify-center py-12 text-center
                   `}
                 >
-                  <Squares2X2Icon className="mb-4 h-12 w-12 text-text-tertiary" />
+                  <Squares2X2Icon className="text-text-tertiary mb-4 h-12 w-12" />
                   <h3 className="mb-2 text-lg font-medium text-text-primary">No tasks yet</h3>
                   <p className="mb-4 text-text-secondary">
                     Create your first task and let our AI agents help you code.
@@ -253,7 +253,7 @@ function DashboardPage() {
               <CardContent className="space-y-3">
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -261,11 +261,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Planning Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -273,11 +273,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Coding Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -285,11 +285,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Testing Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -297,7 +297,7 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Review Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
               </CardContent>
             </Card>

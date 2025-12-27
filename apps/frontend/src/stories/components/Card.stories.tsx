@@ -8,15 +8,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: [
-        'default',
-        'elevated',
-        'ghost',
-        'primary',
-        'luminous',
-        'luminousGlass',
-        'luminousElevated',
-      ],
+      options: ['default', 'glass', 'glassElevated'],
     },
     padding: {
       control: 'select',
@@ -29,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default Card - Yellow theme with border
+ * Default Card - Luminous steel background with glass border
  */
 export const Default: Story = {
   args: {
@@ -37,23 +29,7 @@ export const Default: Story = {
     padding: 'md',
     children: (
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Default Card</h3>
-        <p className="text-sm">Standard card with border</p>
-      </div>
-    ),
-  },
-};
-
-/**
- * Luminous Card - Steel background with glass border
- */
-export const Luminous: Story = {
-  args: {
-    variant: 'luminous',
-    padding: 'md',
-    children: (
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-text-primary-lum">Luminous Card</h3>
+        <h3 className="text-lg font-semibold text-text-primary-lum">Default Card</h3>
         <p className="text-sm text-text-secondary-lum">Steel background with glass border effect</p>
       </div>
     ),
@@ -61,15 +37,15 @@ export const Luminous: Story = {
 };
 
 /**
- * Luminous Glass Card - Transparent with backdrop blur
+ * Glass Card - Transparent with backdrop blur
  */
-export const LuminousGlass: Story = {
+export const Glass: Story = {
   args: {
-    variant: 'luminousGlass',
+    variant: 'glass',
     padding: 'md',
     children: (
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-text-primary-lum">Luminous Glass Card</h3>
+        <h3 className="text-lg font-semibold text-text-primary-lum">Glass Card</h3>
         <p className="text-sm text-text-secondary-lum">Transparent with 12px backdrop blur</p>
       </div>
     ),
@@ -77,64 +53,16 @@ export const LuminousGlass: Story = {
 };
 
 /**
- * Luminous Elevated Card - Steel with strong shadow
+ * Elevated Card - Steel with strong shadow
  */
-export const LuminousElevated: Story = {
+export const GlassElevated: Story = {
   args: {
-    variant: 'luminousElevated',
+    variant: 'glassElevated',
     padding: 'md',
     children: (
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-text-primary-lum">Luminous Elevated Card</h3>
+        <h3 className="text-lg font-semibold text-text-primary-lum">Elevated Card</h3>
         <p className="text-sm text-text-secondary-lum">Steel background with elevated shadow</p>
-      </div>
-    ),
-  },
-};
-
-/**
- * Elevated Card - Yellow theme with shadow
- */
-export const Elevated: Story = {
-  args: {
-    variant: 'elevated',
-    padding: 'md',
-    children: (
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Elevated Card</h3>
-        <p className="text-sm">Card with shadow effect</p>
-      </div>
-    ),
-  },
-};
-
-/**
- * Ghost Card - Transparent background
- */
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-    padding: 'md',
-    children: (
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Ghost Card</h3>
-        <p className="text-sm">Transparent background</p>
-      </div>
-    ),
-  },
-};
-
-/**
- * Primary Card - Yellow theme with primary background
- */
-export const Primary: Story = {
-  args: {
-    variant: 'primary',
-    padding: 'md',
-    children: (
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Primary Card</h3>
-        <p className="text-sm">Card with primary background</p>
       </div>
     ),
   },
@@ -145,7 +73,7 @@ export const Primary: Story = {
  */
 export const SmallPadding: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     padding: 'sm',
     children: (
       <div>
@@ -160,7 +88,7 @@ export const SmallPadding: Story = {
  */
 export const LargePadding: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     padding: 'lg',
     children: (
       <div className="space-y-2">
@@ -176,7 +104,7 @@ export const LargePadding: Story = {
  */
 export const NoPadding: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     padding: 'none',
     children: (
       <div className="rounded-t-lg bg-bg-primary-lum p-4">
@@ -191,7 +119,7 @@ export const NoPadding: Story = {
  */
 export const WithHeaderFooter: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     padding: 'none',
     children: (
       <div className="flex flex-col">
@@ -219,10 +147,10 @@ export const LuminousVariantsShowcase: Story = {
     <div className="w-full max-w-2xl space-y-6">
       <div>
         <h4 className="mb-3 text-sm font-semibold text-text-secondary-lum">
-          Standard (Glass Border)
+          Default (Glass Border)
         </h4>
-        <Card variant="luminous" padding="md">
-          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">Luminous Card</h3>
+        <Card variant="default" padding="md">
+          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">Default Card</h3>
           <p className="text-text-secondary-lum">
             Steel background with subtle glass border and glow effect
           </p>
@@ -231,8 +159,8 @@ export const LuminousVariantsShowcase: Story = {
 
       <div>
         <h4 className="mb-3 text-sm font-semibold text-text-secondary-lum">Glass (With Blur)</h4>
-        <Card variant="luminousGlass" padding="md">
-          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">Luminous Glass Card</h3>
+        <Card variant="glass" padding="md">
+          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">Glass Card</h3>
           <p className="text-text-secondary-lum">
             Transparent background with 12px backdrop blur effect
           </p>
@@ -241,10 +169,8 @@ export const LuminousVariantsShowcase: Story = {
 
       <div>
         <h4 className="mb-3 text-sm font-semibold text-text-secondary-lum">Elevated</h4>
-        <Card variant="luminousElevated" padding="md">
-          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">
-            Luminous Elevated Card
-          </h3>
+        <Card variant="glassElevated" padding="md">
+          <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">Elevated Card</h3>
           <p className="text-text-secondary-lum">
             Steel background with prominent shadow for depth
           </p>
@@ -262,44 +188,20 @@ export const AllVariants: Story = {
     <div className="w-full max-w-4xl space-y-12">
       <section className="space-y-4">
         <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Luminous Theme (New)
-        </h3>
-        <div className="grid grid-cols-1 gap-4">
-          <Card variant="luminous" padding="md">
-            <h4 className="mb-1 font-semibold text-text-primary-lum">Luminous</h4>
-            <p className="text-sm text-text-secondary-lum">Steel background with glass border</p>
-          </Card>
-          <Card variant="luminousGlass" padding="md">
-            <h4 className="mb-1 font-semibold text-text-primary-lum">Luminous Glass</h4>
-            <p className="text-sm text-text-secondary-lum">Transparent with backdrop blur</p>
-          </Card>
-          <Card variant="luminousElevated" padding="md">
-            <h4 className="mb-1 font-semibold text-text-primary-lum">Luminous Elevated</h4>
-            <p className="text-sm text-text-secondary-lum">Steel background with strong shadow</p>
-          </Card>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Yellow Theme (Existing)
+          Luminous Theme Variants
         </h3>
         <div className="grid grid-cols-1 gap-4">
           <Card variant="default" padding="md">
-            <h4 className="mb-1 font-semibold">Default</h4>
-            <p className="text-sm">Standard card with border</p>
+            <h4 className="mb-1 font-semibold text-text-primary-lum">Default</h4>
+            <p className="text-sm text-text-secondary-lum">Steel background with glass border</p>
           </Card>
-          <Card variant="elevated" padding="md">
-            <h4 className="mb-1 font-semibold">Elevated</h4>
-            <p className="text-sm">Card with shadow</p>
+          <Card variant="glass" padding="md">
+            <h4 className="mb-1 font-semibold text-text-primary-lum">Glass</h4>
+            <p className="text-sm text-text-secondary-lum">Transparent with backdrop blur</p>
           </Card>
-          <Card variant="ghost" padding="md">
-            <h4 className="mb-1 font-semibold">Ghost</h4>
-            <p className="text-sm">Transparent background</p>
-          </Card>
-          <Card variant="primary" padding="md">
-            <h4 className="mb-1 font-semibold">Primary</h4>
-            <p className="text-sm">Primary background color</p>
+          <Card variant="glassElevated" padding="md">
+            <h4 className="mb-1 font-semibold text-text-primary-lum">Elevated</h4>
+            <p className="text-sm text-text-secondary-lum">Steel background with strong shadow</p>
           </Card>
         </div>
       </section>
@@ -309,16 +211,16 @@ export const AllVariants: Story = {
           Padding Variants
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <Card variant="luminous" padding="sm">
+          <Card variant="default" padding="sm">
             <p className="text-sm text-text-secondary-lum">Small (4px)</p>
           </Card>
-          <Card variant="luminous" padding="md">
+          <Card variant="default" padding="md">
             <p className="text-sm text-text-secondary-lum">Medium (6px)</p>
           </Card>
-          <Card variant="luminous" padding="lg">
+          <Card variant="default" padding="lg">
             <p className="text-sm text-text-secondary-lum">Large (8px)</p>
           </Card>
-          <Card variant="luminous" padding="none">
+          <Card variant="default" padding="none">
             <p className="text-sm text-text-secondary-lum">None</p>
           </Card>
         </div>

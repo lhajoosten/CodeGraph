@@ -113,6 +113,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         disabled={isSubmitting || registerMutation.isPending}
         error={errors.email?.message}
         helperText={t('luminous.signup.emailHint')}
+        autoComplete="email"
         {...register('email')}
       />
 
@@ -126,6 +127,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             disabled={isSubmitting || registerMutation.isPending}
             error={errors.password?.message}
             className="pr-10"
+            autoComplete="new-password"
             {...register('password')}
           />
           <button
@@ -159,6 +161,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
               : undefined)
           }
           className="pr-10"
+          autoComplete="new-password"
           {...register('confirmPassword')}
         />
         <button

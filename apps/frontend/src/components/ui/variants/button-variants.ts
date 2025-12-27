@@ -4,9 +4,9 @@ export const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
     'rounded-md text-sm font-medium whitespace-nowrap',
-    'ring-offset-background-2 transition-all duration-200',
+    'ring-offset-bg-steel transition-all duration-200',
     `
-      focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-2 focus-visible:ring-brand-cyan
       focus-visible:ring-offset-2 focus-visible:outline-none
     `,
     'disabled:pointer-events-none disabled:opacity-50',
@@ -16,64 +16,25 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: `
-          bg-primary text-text-button
-          hover:bg-primary-600
-          active:bg-primary-700
-        `,
-        destructive: `
-          bg-danger text-white
-          hover:bg-danger-600
-          active:bg-danger-700
-        `,
-        outline: `
-          border border-border bg-transparent text-text-primary
-          hover:bg-secondary
-          active:bg-tertiary
-        `,
-        secondary: `
-          bg-secondary text-text-primary
-          hover:bg-tertiary
-          active:bg-gray-300
-        `,
-        ghost: `
-          text-text-button-ghost
-          hover:bg-secondary
-          active:bg-tertiary
-        `,
-        link: `
-          text-primary underline-offset-4
-          hover:underline
-        `,
-        success: `
-          bg-success text-white
-          hover:bg-success-600
-          active:bg-success-700
-        `,
-        warning: `
-          bg-warning text-text-button
-          hover:bg-warning-600
-          active:bg-warning-700
-        `,
-        info: `
-          bg-info text-white
-          hover:bg-info-600
-          active:bg-info-700
-        `,
-        luminous: `
           bg-brand-cyan font-semibold text-white
           shadow-[0_0_12px_rgba(34,211,238,0.4)]
           transition-shadow
           hover:shadow-[0_0_20px_rgba(34,211,238,0.6)]
           active:opacity-90
         `,
-        luminousGhost: `
-          border border-brand-teal
-          bg-transparent text-brand-teal
+        destructive: `
+          bg-error text-white
+          shadow-[0_0_12px_rgba(239,68,68,0.4)]
           transition-shadow
-          hover:shadow-[0_0_12px_rgba(45,212,191,0.4)]
-          active:opacity-80
+          hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]
+          active:opacity-90
         `,
-        luminousSecondary: `
+        outline: `
+          border border-border-steel bg-transparent text-text-primary-lum
+          hover:bg-bg-elevated-lum
+          active:bg-bg-steel
+        `,
+        secondary: `
           border border-border-steel
           bg-bg-elevated-lum text-text-primary-lum
           shadow-glass
@@ -81,12 +42,31 @@ export const buttonVariants = cva(
           hover:bg-bg-steel
           active:opacity-90
         `,
-        luminousDanger: `
-          bg-error text-white
-          shadow-[0_0_12px_rgba(239,68,68,0.4)]
+        ghost: `
+          border border-brand-teal
+          bg-transparent text-brand-teal
           transition-shadow
-          hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]
-          active:opacity-90
+          hover:shadow-[0_0_12px_rgba(45,212,191,0.4)]
+          active:opacity-80
+        `,
+        link: `
+          text-brand-cyan underline-offset-4
+          hover:underline
+        `,
+        success: `
+          bg-success text-white
+          hover:opacity-90
+          active:opacity-80
+        `,
+        warning: `
+          bg-warning text-white
+          hover:opacity-90
+          active:opacity-80
+        `,
+        info: `
+          bg-brand-cyan text-white
+          hover:opacity-90
+          active:opacity-80
         `,
       },
       size: {

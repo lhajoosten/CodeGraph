@@ -59,16 +59,16 @@ export const EmailChangeForm = () => {
   return (
     <div className="space-y-4">
       {/* Current Email Display */}
-      <div className="rounded-lg bg-gray-50 p-4">
-        <p className="text-sm text-gray-600">Current email</p>
-        <p className="font-medium text-gray-900">{user?.email}</p>
+      <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-4">
+        <p className="text-sm text-text-secondary-lum">Current email</p>
+        <p className="font-medium text-text-primary-lum">{user?.email}</p>
       </div>
 
       {success ? (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+        <div className="rounded-lg border border-success bg-success/10 p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="h-5 w-5 text-green-600"
+              className="h-5 w-5 text-success"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -81,8 +81,8 @@ export const EmailChangeForm = () => {
               />
             </svg>
             <div>
-              <p className="font-medium text-green-800">Verification email sent!</p>
-              <p className="mt-1 text-sm text-green-700">
+              <p className="font-medium text-success">Verification email sent!</p>
+              <p className="mt-1 text-sm text-text-secondary-lum">
                 We&apos;ve sent a verification email to <strong>{newEmail}</strong>. Please check
                 your inbox and click the link to confirm your new email address.
               </p>
@@ -91,8 +91,8 @@ export const EmailChangeForm = () => {
           <button
             onClick={() => setSuccess(false)}
             className={`
-              mt-4 text-sm font-medium text-green-700
-              hover:text-green-800
+              mt-4 text-sm font-medium text-success
+              hover:text-brand-lime
             `}
           >
             Change to a different email
@@ -103,8 +103,8 @@ export const EmailChangeForm = () => {
           {error && (
             <div
               className={`
-                rounded-lg border border-red-200 bg-red-50 p-3 text-sm
-                text-red-700
+                rounded-lg border border-error bg-error/10 p-3 text-sm
+                text-error
               `}
             >
               {error}
@@ -112,16 +112,17 @@ export const EmailChangeForm = () => {
           )}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label className="mb-1 block text-sm font-medium text-text-secondary-lum">
               New Email Address
             </label>
             <input
               type="email"
+              autoComplete="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               className={`
-                w-full rounded-lg border border-gray-300 px-4 py-2
-                focus:border-transparent focus:ring-2 focus:ring-blue-500
+                w-full rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-text-primary-lum
+                focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
               placeholder="Enter new email address"
@@ -130,22 +131,23 @@ export const EmailChangeForm = () => {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
+            <label className="mb-1 block text-sm font-medium text-text-secondary-lum">
               Confirm with Password
             </label>
             <input
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`
-                w-full rounded-lg border border-gray-300 px-4 py-2
-                focus:border-transparent focus:ring-2 focus:ring-blue-500
+                w-full rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-text-primary-lum
+                focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
               placeholder="Enter your password"
               disabled={changeMutation.isPending}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-text-muted-lum">
               We need your password to confirm this change
             </p>
           </div>
@@ -154,9 +156,9 @@ export const EmailChangeForm = () => {
             type="submit"
             disabled={changeMutation.isPending}
             className={`
-              w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+              w-full rounded-lg bg-brand-cyan px-4 py-2 font-medium text-white
               transition
-              hover:bg-blue-700
+              hover:shadow-[0_0_16px_rgba(34,211,238,0.5)]
               disabled:cursor-not-allowed disabled:opacity-50
             `}
           >

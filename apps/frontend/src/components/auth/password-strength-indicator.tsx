@@ -100,7 +100,7 @@ export function PasswordStrengthIndicator({
       )}
 
       {password && strength !== 'strong' && (
-        <ul className="mt-2 space-y-1 text-xs text-text-muted-lum">
+        <ul className="mt-2 space-y-1 text-xs text-text-secondary-lum">
           <li className="flex items-center gap-2">
             <span className={password.length >= 8 ? 'text-success' : 'text-text-muted-lum'}>✓</span>
             At least 8 characters

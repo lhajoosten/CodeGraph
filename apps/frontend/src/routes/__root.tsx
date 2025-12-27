@@ -19,12 +19,20 @@ const TanStackRouterDevtools =
 function Root() {
   return (
     <ErrorBoundary>
+      <RootContent />
+    </ErrorBoundary>
+  );
+}
+
+function RootContent() {
+  return (
+    <>
       <Outlet />
       <Toaster richColors position="top-right" theme="system" visibleToasts={3} closeButton />
       <Suspense>
         <TanStackRouterDevtools />
       </Suspense>
-    </ErrorBoundary>
+    </>
   );
 }
 

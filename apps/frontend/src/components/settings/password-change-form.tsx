@@ -67,7 +67,7 @@ export const PasswordChangeForm = () => {
       {error && (
         <div
           className={`
-            rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700
+            rounded-lg border border-error bg-error/10 p-3 text-sm text-error
           `}
         >
           {error}
@@ -77,8 +77,8 @@ export const PasswordChangeForm = () => {
       {success && (
         <div
           className={`
-            rounded-lg border border-green-200 bg-green-50 p-3 text-sm
-            text-green-700
+            rounded-lg border border-success bg-success/10 p-3 text-sm
+            text-success
           `}
         >
           Password changed successfully!
@@ -86,14 +86,16 @@ export const PasswordChangeForm = () => {
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Current Password</label>
+        <label className="mb-1 block text-sm font-medium text-text-secondary-lum">
+          Current Password
+        </label>
         <input
           type="password"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           className={`
-            w-full rounded-lg border border-gray-300 px-4 py-2
-            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            w-full rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-text-primary-lum
+            focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
           placeholder="Enter current password"
@@ -102,31 +104,35 @@ export const PasswordChangeForm = () => {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">New Password</label>
+        <label className="mb-1 block text-sm font-medium text-text-secondary-lum">
+          New Password
+        </label>
         <input
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           className={`
-            w-full rounded-lg border border-gray-300 px-4 py-2
-            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            w-full rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-text-primary-lum
+            focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
           placeholder="Enter new password"
           disabled={changeMutation.isPending}
         />
-        <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
+        <p className="mt-1 text-xs text-text-muted-lum">Must be at least 8 characters</p>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Confirm New Password</label>
+        <label className="mb-1 block text-sm font-medium text-text-secondary-lum">
+          Confirm New Password
+        </label>
         <input
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className={`
-            w-full rounded-lg border border-gray-300 px-4 py-2
-            focus:border-transparent focus:ring-2 focus:ring-blue-500
+            w-full rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-text-primary-lum
+            focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
           placeholder="Confirm new password"
@@ -138,9 +144,9 @@ export const PasswordChangeForm = () => {
         type="submit"
         disabled={changeMutation.isPending}
         className={`
-          w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white
+          w-full rounded-lg bg-brand-cyan px-4 py-2 font-medium text-white
           transition
-          hover:bg-blue-700
+          hover:shadow-[0_0_16px_rgba(34,211,238,0.5)]
           disabled:cursor-not-allowed disabled:opacity-50
         `}
       >

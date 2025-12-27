@@ -427,6 +427,7 @@ export const LoginFormExample = (() => {
                     setEmail(e.target.value);
                     setEmailError('');
                   }}
+                  autoComplete="email"
                   error={emailError}
                 />
 
@@ -437,6 +438,7 @@ export const LoginFormExample = (() => {
                   icon={LockClosedIcon}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
                 />
 
                 <div className="flex items-center justify-between text-sm">
@@ -550,6 +552,7 @@ export const RegisterFormExample = (() => {
                   icon={EnvelopeIcon}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  autoComplete="email"
                 />
 
                 <div className="space-y-2">
@@ -565,6 +568,7 @@ export const RegisterFormExample = (() => {
                         password: e.target.value,
                       })
                     }
+                    autoComplete="new-password"
                   />
                   <PasswordStrengthIndicator password={formData.password} showLabel />
                 </div>
@@ -581,6 +585,7 @@ export const RegisterFormExample = (() => {
                       confirmPassword: e.target.value,
                     })
                   }
+                  autoComplete="new-password"
                 />
 
                 <label className="flex cursor-pointer items-center gap-2">

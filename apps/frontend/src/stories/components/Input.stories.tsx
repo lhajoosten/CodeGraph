@@ -8,7 +8,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'error', 'success', 'luminous', 'luminousError', 'luminousSuccess'],
+      options: ['default', 'error', 'success'],
     },
     inputSize: {
       control: 'select',
@@ -30,67 +30,35 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default Input - Yellow theme
+ * Default Input - Luminous style with cyan focus
  */
 export const Default: Story = {
   args: {
     variant: 'default',
-    placeholder: 'Default input',
-  },
-};
-
-/**
- * Luminous Input - Primary style with cyan focus
- */
-export const Luminous: Story = {
-  args: {
-    variant: 'luminous',
     placeholder: 'Enter your email...',
     type: 'email',
   },
 };
 
 /**
- * Luminous Error Input
+ * Error Input - Luminous error state
  */
-export const LuminousError: Story = {
+export const Error: Story = {
   args: {
-    variant: 'luminousError',
+    variant: 'error',
     placeholder: 'Invalid input',
     defaultValue: 'invalid@',
   },
 };
 
 /**
- * Luminous Success Input
- */
-export const LuminousSuccess: Story = {
-  args: {
-    variant: 'luminousSuccess',
-    placeholder: 'Verified input',
-    defaultValue: 'valid@example.com',
-  },
-};
-
-/**
- * Error Input - Yellow theme
- */
-export const Error: Story = {
-  args: {
-    variant: 'error',
-    placeholder: 'Error input',
-    value: 'invalid',
-  },
-};
-
-/**
- * Success Input - Yellow theme
+ * Success Input - Luminous success state
  */
 export const Success: Story = {
   args: {
     variant: 'success',
-    placeholder: 'Success input',
-    value: 'valid',
+    placeholder: 'Verified input',
+    defaultValue: 'valid@example.com',
   },
 };
 
@@ -99,7 +67,7 @@ export const Success: Story = {
  */
 export const Small: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     inputSize: 'sm',
     placeholder: 'Small input',
   },
@@ -110,7 +78,7 @@ export const Small: Story = {
  */
 export const Large: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     inputSize: 'lg',
     placeholder: 'Large input',
   },
@@ -121,7 +89,7 @@ export const Large: Story = {
  */
 export const Disabled: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     placeholder: 'Disabled input',
     disabled: true,
   },
@@ -132,7 +100,7 @@ export const Disabled: Story = {
  */
 export const Password: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     type: 'password',
     placeholder: 'Enter password',
   },
@@ -143,7 +111,7 @@ export const Password: Story = {
  */
 export const Number: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     type: 'number',
     placeholder: 'Enter number',
   },
@@ -157,28 +125,38 @@ export const LuminousVariantsShowcase: Story = {
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-2">
         <label className="text-sm font-semibold text-text-secondary-lum">Email Address</label>
-        <Input variant="luminous" type="email" placeholder="you@example.com" />
+        <Input variant="default" type="email" placeholder="you@example.com" autoComplete="email" />
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-text-secondary-lum">Password</label>
-        <Input variant="luminous" type="password" placeholder="Enter password" />
+        <Input
+          variant="default"
+          type="password"
+          placeholder="Enter password"
+          autoComplete="new-password"
+        />
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-text-secondary-lum">Confirm Password</label>
-        <Input variant="luminous" type="password" placeholder="Confirm password" />
+        <Input
+          variant="default"
+          type="password"
+          placeholder="Confirm password"
+          autoComplete="new-password"
+        />
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-text-secondary-lum">Error State</label>
-        <Input variant="luminousError" placeholder="Invalid input" defaultValue="invalid value" />
+        <Input variant="error" placeholder="Invalid input" defaultValue="invalid value" />
         <p className="mt-1 text-xs text-error">This field is required</p>
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-text-secondary-lum">Success State</label>
-        <Input variant="luminousSuccess" placeholder="Verified" defaultValue="valid@example.com" />
+        <Input variant="success" placeholder="Verified" defaultValue="valid@example.com" />
         <p className="mt-1 text-xs text-success">Email verified</p>
       </div>
     </div>
@@ -193,47 +171,23 @@ export const AllStates: Story = {
     <div className="w-full max-w-2xl space-y-12">
       <section className="space-y-4">
         <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Luminous Theme (New)
+          Luminous Theme - States
         </h3>
         <div className="space-y-3">
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Default</label>
-            <Input variant="luminous" placeholder="Default state" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm text-text-secondary-lum">Error</label>
-            <Input variant="luminousError" placeholder="Error state" defaultValue="invalid" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm text-text-secondary-lum">Success</label>
-            <Input variant="luminousSuccess" placeholder="Success state" defaultValue="valid" />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm text-text-secondary-lum">Disabled</label>
-            <Input variant="luminous" placeholder="Disabled state" disabled />
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Yellow Theme (Existing)
-        </h3>
-        <div className="space-y-3">
-          <div>
-            <label className="mb-2 block text-sm text-text-primary">Default</label>
             <Input variant="default" placeholder="Default state" />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-text-primary">Error</label>
+            <label className="mb-2 block text-sm text-text-secondary-lum">Error</label>
             <Input variant="error" placeholder="Error state" defaultValue="invalid" />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-text-primary">Success</label>
+            <label className="mb-2 block text-sm text-text-secondary-lum">Success</label>
             <Input variant="success" placeholder="Success state" defaultValue="valid" />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-text-primary">Disabled</label>
+            <label className="mb-2 block text-sm text-text-secondary-lum">Disabled</label>
             <Input variant="default" placeholder="Disabled state" disabled />
           </div>
         </div>
@@ -246,15 +200,15 @@ export const AllStates: Story = {
         <div className="space-y-3">
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Small</label>
-            <Input variant="luminous" inputSize="sm" placeholder="Small input" />
+            <Input variant="default" inputSize="sm" placeholder="Small input" />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Default</label>
-            <Input variant="luminous" inputSize="default" placeholder="Default input" />
+            <Input variant="default" inputSize="default" placeholder="Default input" />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Large</label>
-            <Input variant="luminous" inputSize="lg" placeholder="Large input" />
+            <Input variant="default" inputSize="lg" placeholder="Large input" />
           </div>
         </div>
       </section>
@@ -266,23 +220,28 @@ export const AllStates: Story = {
         <div className="space-y-3">
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Text</label>
-            <Input variant="luminous" type="text" placeholder="Text input" />
+            <Input variant="default" type="text" placeholder="Text input" />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Email</label>
-            <Input variant="luminous" type="email" placeholder="Email input" />
+            <Input variant="default" type="email" placeholder="Email input" autoComplete="email" />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Password</label>
-            <Input variant="luminous" type="password" placeholder="Password input" />
+            <Input
+              variant="default"
+              type="password"
+              placeholder="Password input"
+              autoComplete="new-password"
+            />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Number</label>
-            <Input variant="luminous" type="number" placeholder="Number input" />
+            <Input variant="default" type="number" placeholder="Number input" />
           </div>
           <div>
             <label className="mb-2 block text-sm text-text-secondary-lum">Search</label>
-            <Input variant="luminous" type="search" placeholder="Search input" />
+            <Input variant="default" type="search" placeholder="Search input" />
           </div>
         </div>
       </section>
@@ -298,13 +257,18 @@ export const FormLayout: Story = {
     <div className="w-full max-w-md space-y-6">
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-text-secondary-lum">Email Address</label>
-        <Input variant="luminous" type="email" placeholder="you@example.com" />
+        <Input variant="default" type="email" placeholder="you@example.com" autoComplete="email" />
         <p className="text-xs text-text-muted-lum">We&apos;ll never share your email.</p>
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-text-secondary-lum">Password</label>
-        <Input variant="luminous" type="password" placeholder="Enter a strong password" />
+        <Input
+          variant="default"
+          type="password"
+          placeholder="Enter a strong password"
+          autoComplete="new-password"
+        />
         <p className="text-xs text-text-muted-lum">
           At least 8 characters with uppercase, lowercase, and numbers.
         </p>
@@ -314,7 +278,12 @@ export const FormLayout: Story = {
         <label className="block text-sm font-semibold text-text-secondary-lum">
           Confirm Password
         </label>
-        <Input variant="luminous" type="password" placeholder="Confirm your password" />
+        <Input
+          variant="default"
+          type="password"
+          placeholder="Confirm your password"
+          autoComplete="new-password"
+        />
       </div>
 
       <div className="flex items-center gap-2">

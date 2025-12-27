@@ -59,6 +59,7 @@ export const LoginFlow: StoryObj = {
                   setEmail(e.target.value);
                   setEmailError('');
                 }}
+                autoComplete="email"
                 error={emailError}
               />
 
@@ -69,6 +70,7 @@ export const LoginFlow: StoryObj = {
                 icon={LockClosedIcon}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
 
               <div className="flex items-center justify-between text-sm">
@@ -180,6 +182,7 @@ export const RegisterFlow: StoryObj = {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 helperText="We'll never share your email"
+                autoComplete="email"
               />
 
               <div className="space-y-2">
@@ -195,6 +198,7 @@ export const RegisterFlow: StoryObj = {
                       password: e.target.value,
                     })
                   }
+                  autoComplete="new-password"
                 />
                 <PasswordStrengthIndicator password={formData.password} showLabel />
               </div>
@@ -211,6 +215,7 @@ export const RegisterFlow: StoryObj = {
                     confirmPassword: e.target.value,
                   })
                 }
+                autoComplete="new-password"
               />
 
               <label className="flex cursor-pointer items-center gap-2">
@@ -499,6 +504,7 @@ export const ForgotPasswordFlow: StoryObj = {
                   icon={EnvelopeIcon}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
                 />
 
                 <button
@@ -591,6 +597,7 @@ export const ResetPasswordFlow: StoryObj = {
                     icon={LockClosedIcon}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
                   />
                   <PasswordStrengthIndicator password={password} showLabel />
                 </div>
@@ -607,6 +614,7 @@ export const ResetPasswordFlow: StoryObj = {
                       ? 'Passwords do not match'
                       : undefined
                   }
+                  autoComplete="new-password"
                 />
 
                 <button

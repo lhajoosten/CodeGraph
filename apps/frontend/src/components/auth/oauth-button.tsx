@@ -12,7 +12,7 @@ interface OAuthButtonProps {
 
 /**
  * OAuth Button - Provider-specific OAuth login button
- * - Uses luminousSecondary variant for secondary appearance
+ * - Uses secondary variant for secondary appearance
  * - Provider icon and label
  * - Consistent styling across providers
  * - Supports both onClick callback and href link
@@ -70,12 +70,7 @@ export function OAuthButton({ provider, onClick, href, disabled = false }: OAuth
 
   // Render as button with onClick
   return (
-    <Button
-      variant="luminousSecondary"
-      className="w-full gap-2"
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <Button variant="secondary" className="w-full gap-2" onClick={onClick} disabled={disabled}>
       {icon}
       {label}
     </Button>

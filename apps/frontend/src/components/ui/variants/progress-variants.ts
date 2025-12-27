@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const progressVariants = cva(
   `
-  relative w-full overflow-hidden rounded-full bg-secondary
+  relative w-full overflow-hidden rounded-full bg-bg-elevated-lum
 `,
   {
     variants: {
@@ -21,11 +21,11 @@ export const progressVariants = cva(
 export const progressIndicatorVariants = cva('h-full w-full flex-1 transition-all', {
   variants: {
     variant: {
-      default: 'bg-primary',
+      default: 'bg-brand-cyan',
       success: 'bg-success',
-      danger: 'bg-danger',
+      danger: 'bg-error',
       warning: 'bg-warning',
-      info: 'bg-info',
+      info: 'bg-brand-teal',
     },
   },
   defaultVariants: {

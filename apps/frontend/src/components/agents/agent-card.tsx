@@ -38,9 +38,9 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
     <Card
       className={cn(
         'transition-all duration-300',
-        isRunning && 'border-info ring-1 ring-info/20',
+        isRunning && 'border-brand-cyan/50 ring-1 ring-brand-cyan/20',
         isCompleted && 'border-success/50',
-        isFailed && 'border-danger/50',
+        isFailed && 'border-error/50',
         className
       )}
     >
@@ -48,10 +48,10 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
         <div
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg',
-            isRunning && 'bg-info/10 text-info',
+            isRunning && 'bg-brand-cyan/10 text-brand-cyan',
             isCompleted && 'bg-success/10 text-success',
-            isFailed && 'bg-danger/10 text-danger',
-            status === 'idle' && 'bg-secondary text-text-secondary'
+            isFailed && 'bg-error/10 text-error',
+            status === 'idle' && 'bg-bg-steel text-text-secondary-lum'
           )}
         >
           <Icon className="h-5 w-5" />
@@ -62,10 +62,10 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
             <h3 className="font-semibold text-text-primary capitalize">{type} Agent</h3>
             <AgentStatusBadge status={status} size="sm" />
           </div>
-          <p className="text-xs text-text-tertiary">{agentDescriptions[type]}</p>
+          <p className="text-xs text-text-secondary-lum">{agentDescriptions[type]}</p>
         </div>
 
-        {isRunning && <CircularProgress value={progress} size={36} variant="info" showValue />}
+        {isRunning && <CircularProgress value={progress} size={36} variant="default" showValue />}
       </CardHeader>
 
       {message && (

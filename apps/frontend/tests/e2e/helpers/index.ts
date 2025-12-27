@@ -1,17 +1,11 @@
 /**
  * E2E Test Helpers Index
  *
- * Central export point for all E2E test helpers, fixtures, and utilities.
+ * Central export for all test helper functions.
  */
 
-// Authentication helpers
-export * from './auth-helpers';
+// API mocking utilities
+export * from './mock-api';
 
-// Page interaction helpers
-export * from './page-helpers';
-
-// Assertion helpers
-export * from './assertions';
-
-// Mock utilities
-export * from './mock-utils';
+// Test utilities and common helpers
+export * from './test-utils';

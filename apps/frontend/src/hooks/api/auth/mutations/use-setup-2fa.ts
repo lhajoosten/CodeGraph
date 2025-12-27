@@ -28,20 +28,17 @@
  * } = useSetup2FA();
  */
 
-import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { client } from '@/openapi/client.gen';
+import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+import {
+  setupTwoFactorApiV1TwoFactorSetupPostMutation,
+  enableTwoFactorApiV1TwoFactorEnablePostMutation,
+} from '@/openapi/@tanstack/react-query.gen';
+import type { TwoFactorSetupResponse } from '@/openapi/types.gen';
 import { addToast } from '@/lib/toast';
 import { getErrorMessage } from '@/hooks/api/utils';
-
-interface TwoFactorSetupResponse {
-  qr_code: string;
-  secret: string;
-}
-
-interface TwoFactorEnableResponse {
-  backup_codes: string[];
-}
+import { useAuthStore } from '@/stores/auth-store';
 
 export type SetupStep = 'qr' | 'verify' | 'backup';
 
@@ -70,33 +67,36 @@ export interface UseSetup2FAReturn {
 }
 
 export const useSetup2FA = (): UseSetup2FAReturn => {
+  const navigate = useNavigate();
+  const { setTwoFactorStatus } = useAuthStore();
+
   // State management
   const [step, setStep] = useState<SetupStep>('qr');
   const [otp, setOtp] = useState('');
   const [codesConfirmed, setCodesConfirmed] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
-  // Fetch QR code and secret on mount
-  const setupQuery = useQuery({
-    queryKey: ['setupTwoFactor'],
-    queryFn: async () => {
-      const response = await client.post<TwoFactorSetupResponse>({
-        url: '/api/v1/two-factor/setup',
-      });
-      return response.data;
+  // Setup 2FA - generates QR code and stores secret on server
+  const setupMutation = useMutation({
+    ...setupTwoFactorApiV1TwoFactorSetupPostMutation(),
+    onError: (error) => {
+      // If 2FA is already enabled, redirect to verify page
+      // This can happen if backend redirected to setup-2fa with oauth=true
+      // but user already has 2FA from a previous session
+      const errorMessage = getErrorMessage(error);
+      if (errorMessage.includes('already enabled') || errorMessage.includes('already')) {
+        setTwoFactorStatus(true, false, false);
+        navigate({
+          to: '/verify-2fa',
+          search: { oauth: 'true' },
+        });
+      }
     },
-    retry: 1,
   });
 
   // Enable 2FA with verification code
   const enableMutation = useMutation({
-    mutationFn: async (code: string) => {
-      const response = await client.post<TwoFactorEnableResponse>({
-        url: '/api/v1/two-factor/enable',
-        body: { code },
-      });
-      return response.data;
-    },
+    ...enableTwoFactorApiV1TwoFactorEnablePostMutation(),
     onSuccess: () => {
       setStep('backup');
       addToast({
@@ -115,10 +115,16 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
     },
   });
 
+  // Auto-trigger setup on component mount to fetch QR code
+  useEffect(() => {
+    setupMutation.mutate({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Handlers
   const verifyOTP = async () => {
     if (otp.length !== 6) return;
-    enableMutation.mutate(otp);
+    enableMutation.mutate({ body: { code: otp } });
   };
 
   const downloadCodes = () => {
@@ -145,13 +151,13 @@ export const useSetup2FA = (): UseSetup2FAReturn => {
     otp,
     codesConfirmed,
     copied,
-    qrData: setupQuery.data,
+    qrData: setupMutation.data,
     backupCodes: enableMutation.data?.backup_codes || [],
 
     // Loading states
-    isLoading: setupQuery.isLoading,
+    isLoading: setupMutation.isPending,
     isVerifying: enableMutation.isPending,
-    error: setupQuery.error || enableMutation.error,
+    error: setupMutation.error || enableMutation.error,
 
     // Handlers
     setStep,

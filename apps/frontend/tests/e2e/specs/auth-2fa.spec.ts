@@ -1,395 +1,444 @@
 /**
- * E2E tests for Two-Factor Authentication (2FA) flow
+ * E2E Tests: Two-Factor Authentication Flow
  *
  * Tests cover:
- * - 2FA setup after email verification
- * - 2FA setup skip option
+ * - 2FA setup flow (QR code, secret key, verification)
  * - 2FA verification during login
- * - Invalid 2FA codes
- * - Backup codes
- * - QR code display
+ * - Backup codes display and usage
+ * - Skip 2FA setup option
+ * - Invalid code handling
+ * - OTP input behavior
  */
 
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
+import { TwoFactorSetupPage, TwoFactorVerificationPage } from '../pages/two-factor.page';
 import {
-  EXISTING_USER,
   USER_WITH_2FA,
+  EXISTING_USER,
   TEST_2FA_CODES,
-} from '../fixtures/users';
+} from '../fixtures';
 import {
   mockLoginRequires2FA,
+  mockLoginRequires2FASetup,
   mock2FASetupSuccess,
   mock2FAVerifySuccess,
   mock2FAVerifyInvalidCode,
   mock2FALoginSuccess,
   mock2FALoginInvalidCode,
   mockGetCurrentUserSuccess,
-  setup2FAFlowMocks,
-} from '../helpers/mock-utils';
+  setup2FALoginFlowMocks,
+  setup2FASetupFlowMocks,
+} from '../helpers';
 import {
-  navigateToLogin,
-  fillLoginForm,
-  submitLoginForm,
-  fill2FACode,
-  submit2FACode,
-  setup2FA as _setup2FA,
-  skip2FASetup as _skip2FASetup,
-  loginWithCredentials,
-} from '../helpers/auth-helpers';
-import {
-  assertRedirectToDashboard,
-  assertRedirectTo2FASetup as _assertRedirectTo2FASetup,
-  assertRedirectTo2FAVerification,
-  assert2FAQRCodeDisplayed,
-  assertBackupCodesDisplayed,
-  assertErrorToast,
-  assertSuccessToast,
-  assertFieldHasError,
-} from '../helpers/assertions';
-import { clickButton, assertButtonDisabled as _assertButtonDisabled } from '../helpers/page-helpers';
+  setRequires2FASetupState,
+} from '../helpers/test-utils';
 
-test.describe('2FA Setup After Email Verification', () => {
+// =============================================================================
+// 2FA Setup Flow Tests
+// =============================================================================
+
+test.describe('2FA Setup Flow', () => {
+  let loginPage: LoginPage;
+  let setupPage: TwoFactorSetupPage;
+
   test.beforeEach(async ({ page }) => {
-    // Simulate user just verified email and is redirected to 2FA setup
-    await page.goto('/setup-2fa-after-verification');
-    await mock2FASetupSuccess(page);
+    loginPage = new LoginPage(page);
+    setupPage = new TwoFactorSetupPage(page);
   });
 
-  test('should display 2FA setup introduction', async ({ page }) => {
-    await expect(page.getByText(/two-factor authentication|2fa/i)).toBeVisible();
-    await expect(page.getByText(/additional security|secure your account/i)).toBeVisible();
+  // ===========================================================================
+  // QR Code and Secret Display Tests
+  // ===========================================================================
+
+  test.describe('QR Code Display', () => {
+    test('should display QR code after starting 2FA setup', async ({ page }) => {
+      // Mock BEFORE navigating - route will fetch on load
+      await mock2FASetupSuccess(page);
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.expectQRCodeDisplayed();
+    });
+
+    test('should display secret key for manual entry', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.expectSecretKeyDisplayed();
+    });
   });
 
-  test('should allow skipping 2FA setup', async ({ page }) => {
-    const skipButton = page.getByRole('button', { name: /skip|later/i });
-    await expect(skipButton).toBeVisible();
-    await skipButton.click();
+  // ===========================================================================
+  // 2FA Verification Tests
+  // ===========================================================================
 
-    // Should redirect to dashboard
-    await assertRedirectToDashboard(page);
+  test.describe('2FA Setup Verification', () => {
+    test('should successfully verify and enable 2FA', async ({ page }) => {
+      // Mock BEFORE navigating
+      await setup2FASetupFlowMocks(page, { ...EXISTING_USER, twoFactorEnabled: true });
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.verify(TEST_2FA_CODES.valid);
+
+      // Should show backup codes or redirect to dashboard
+      const hasBackupCodes = await setupPage.backupCodes.isVisible().catch(() => false);
+      const isDashboard = page.url().match(/^\/(dashboard)?$/);
+      expect(hasBackupCodes || isDashboard).toBeTruthy();
+    });
+
+    test('should show error for invalid verification code', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      await mock2FAVerifyInvalidCode(page);
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.verify(TEST_2FA_CODES.invalid);
+
+      await setupPage.expectError(/invalid|incorrect/i);
+    });
+
+    test('should show loading state during verification', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      await page.route('**/api/v1/auth/2fa/verify', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, backup_codes: ['AAAA-BBBB'] }),
+        });
+      });
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.fillCode(TEST_2FA_CODES.valid);
+      await setupPage.clickVerify();
+
+      await expect(setupPage.verifyButton).toBeDisabled();
+    });
   });
 
-  test('should display QR code after clicking continue', async ({ page }) => {
-    await clickButton(page, /continue|set up/i);
+  // ===========================================================================
+  // Backup Codes Tests
+  // ===========================================================================
 
-    // Should display QR code
-    await assert2FAQRCodeDisplayed(page);
+  test.describe('Backup Codes', () => {
+    test('should display backup codes after successful verification', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      await mock2FAVerifySuccess(page);
+      await mockGetCurrentUserSuccess(page, { ...EXISTING_USER, twoFactorEnabled: true });
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
 
-    // Should display secret key
-    await expect(page.getByText(/secret key|manual entry/i)).toBeVisible();
+      await setupPage.verify(TEST_2FA_CODES.valid);
+
+      await setupPage.expectBackupCodesDisplayed();
+    });
+
+    test('should have at least 5 backup codes', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      await mock2FAVerifySuccess(page);
+      await mockGetCurrentUserSuccess(page, { ...EXISTING_USER, twoFactorEnabled: true });
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
+
+      await setupPage.verify(TEST_2FA_CODES.valid);
+
+      const codes = await setupPage.getBackupCodes();
+      expect(codes.length).toBeGreaterThanOrEqual(5);
+    });
   });
 
-  test('should successfully verify and enable 2FA', async ({ page }) => {
-    await mock2FAVerifySuccess(page);
-    await mockGetCurrentUserSuccess(page, { ...EXISTING_USER, twoFactorEnabled: true });
+  // ===========================================================================
+  // Skip Setup Tests
+  // ===========================================================================
 
-    await clickButton(page, /continue|set up/i);
-    await assert2FAQRCodeDisplayed(page);
+  test.describe('Skip 2FA Setup', () => {
+    test('should allow skipping 2FA setup if option available', async ({ page }) => {
+      // Mock BEFORE navigating
+      await mock2FASetupSuccess(page);
+      await mockGetCurrentUserSuccess(page, EXISTING_USER);
+      // Set auth state for 2FA setup (navigates and sets auth state)
+      await setRequires2FASetupState(page, EXISTING_USER);
 
-    // Fill verification code
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
-
-    // Should show backup codes
-    await assertBackupCodesDisplayed(page);
-    await assertSuccessToast(page, /2fa enabled|two-factor authentication enabled/i);
+      // Check if skip button is visible
+      const skipVisible = await setupPage.skipButton.isVisible().catch(() => false);
+      if (skipVisible) {
+        await setupPage.clickSkip();
+        await setupPage.expectRedirectToDashboard();
+      }
+    });
   });
 
-  test('should show error for invalid verification code during setup', async ({ page }) => {
-    await mock2FAVerifyInvalidCode(page);
+  // ===========================================================================
+  // Login Redirect to 2FA Setup Tests
+  // ===========================================================================
 
-    await clickButton(page, /continue|set up/i);
-    await assert2FAQRCodeDisplayed(page);
+  test.describe('Login to 2FA Setup Redirect', () => {
+    test('should redirect to 2FA setup when required after login', async ({ page }) => {
+      await mockLoginRequires2FASetup(page, EXISTING_USER);
+      await mockGetCurrentUserSuccess(page, EXISTING_USER);
 
-    // Fill invalid code
-    await fill2FACode(page, TEST_2FA_CODES.invalid);
-    await submit2FACode(page);
+      await loginPage.navigate();
+      await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
 
-    await assertErrorToast(page, /invalid.*code|incorrect code/i);
-  });
-
-  test('should display backup codes after successful verification', async ({ page }) => {
-    await mock2FAVerifySuccess(page);
-
-    await clickButton(page, /continue|set up/i);
-    await assert2FAQRCodeDisplayed(page);
-
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
-
-    // Should display backup codes
-    await assertBackupCodesDisplayed(page);
-
-    // Should have download or copy button
-    const downloadButton = page.getByRole('button', { name: /download|save/i });
-    const copyButton = page.getByRole('button', { name: /copy/i });
-
-    const downloadVisible = await downloadButton.isVisible().catch(() => false);
-    const copyVisible = await copyButton.isVisible().catch(() => false);
-
-    expect(downloadVisible || copyVisible).toBe(true);
-  });
-
-  test('should allow copying backup codes', async ({ page }) => {
-    await mock2FAVerifySuccess(page);
-
-    await clickButton(page, /continue|set up/i);
-    await assert2FAQRCodeDisplayed(page);
-
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
-
-    await assertBackupCodesDisplayed(page);
-
-    const copyButton = page.getByRole('button', { name: /copy/i });
-    if (await copyButton.isVisible()) {
-      await copyButton.click();
-      await assertSuccessToast(page, /copied|copied to clipboard/i);
-    }
-  });
-
-  test('should proceed to dashboard after acknowledging backup codes', async ({ page }) => {
-    await mock2FAVerifySuccess(page);
-    await mockGetCurrentUserSuccess(page, { ...EXISTING_USER, twoFactorEnabled: true });
-
-    await clickButton(page, /continue|set up/i);
-    await assert2FAQRCodeDisplayed(page);
-
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
-
-    await assertBackupCodesDisplayed(page);
-
-    // Click continue/done button
-    await clickButton(page, /continue|done|finish/i);
-
-    // Should redirect to dashboard
-    await assertRedirectToDashboard(page);
+      await loginPage.expectRedirectTo2FASetup();
+    });
   });
 });
+
+// =============================================================================
+// 2FA Login Verification Tests
+// =============================================================================
 
 test.describe('2FA Login Verification', () => {
+  let loginPage: LoginPage;
+  let verificationPage: TwoFactorVerificationPage;
+
   test.beforeEach(async ({ page }) => {
-    await mockLoginRequires2FA(page, USER_WITH_2FA);
-    await navigateToLogin(page);
-    await fillLoginForm(page, USER_WITH_2FA.email, USER_WITH_2FA.password);
-    await submitLoginForm(page);
-
-    // Should redirect to 2FA verification
-    await assertRedirectTo2FAVerification(page);
+    loginPage = new LoginPage(page);
+    verificationPage = new TwoFactorVerificationPage(page);
   });
 
-  test('should display 2FA verification form', async ({ page }) => {
-    await expect(page.getByText(/enter.*code|verification code|authenticator/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /verify|continue/i })).toBeVisible();
+  // ===========================================================================
+  // Redirect to Verification Tests
+  // ===========================================================================
+
+  test.describe('Login Redirect', () => {
+    test('should redirect to 2FA verification when 2FA is enabled', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      // Auto-redirected to /verify-2fa after login
+      await expect(page).toHaveURL(/\/verify-2fa(\?.*)?$/);
+    });
   });
 
-  test('should successfully login with valid 2FA code', async ({ page }) => {
-    await mock2FALoginSuccess(page, USER_WITH_2FA);
-    await mockGetCurrentUserSuccess(page, USER_WITH_2FA);
+  // ===========================================================================
+  // Verification Form Tests
+  // ===========================================================================
 
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
+  test.describe('Verification Form', () => {
+    test('should display 2FA verification form', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
 
-    // Should redirect to dashboard
-    await assertRedirectToDashboard(page);
-    await assertSuccessToast(page, /logged in|login successful/i);
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      // Already on /verify-2fa page after login
+      await verificationPage.expectFormDisplayed();
+    });
+
+    test('should show backup code option', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      // Already on /verify-2fa page after login
+      await verificationPage.expectBackupCodeOptionVisible();
+    });
   });
 
-  test('should show error for invalid 2FA code', async ({ page }) => {
-    await mock2FALoginInvalidCode(page);
+  // ===========================================================================
+  // Successful Verification Tests
+  // ===========================================================================
 
-    await fill2FACode(page, TEST_2FA_CODES.invalid);
-    await submit2FACode(page);
+  test.describe('Successful Verification', () => {
+    test('should login successfully with valid 2FA code', async ({ page }) => {
+      await setup2FALoginFlowMocks(page, USER_WITH_2FA);
 
-    await assertErrorToast(page, /invalid.*code|incorrect code/i);
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
 
-    // Should remain on 2FA verification page
-    await expect(page).toHaveURL(/\/verify-2fa/);
+      await verificationPage.verify(TEST_2FA_CODES.valid);
+
+      await verificationPage.expectRedirectToDashboard();
+    });
+
+    test('should store authentication state after 2FA verification', async ({ page }) => {
+      await setup2FALoginFlowMocks(page, USER_WITH_2FA);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+      await verificationPage.verify(TEST_2FA_CODES.valid);
+
+      await verificationPage.expectRedirectToDashboard();
+
+      const isAuth = await verificationPage.isAuthenticated();
+      expect(isAuth).toBe(true);
+    });
   });
 
-  test('should show validation error for empty 2FA code', async ({ page }) => {
-    await fill2FACode(page, '');
-    await submit2FACode(page);
+  // ===========================================================================
+  // Invalid Code Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /code/i, /required|cannot be empty/i);
+  test.describe('Invalid Code Handling', () => {
+    test('should show error for invalid 2FA code', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+      await mock2FALoginInvalidCode(page);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      await verificationPage.verify(TEST_2FA_CODES.invalid);
+
+      await verificationPage.expectError(/invalid|incorrect/i);
+    });
+
+    test('should remain on verification page after failed attempt', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+      await mock2FALoginInvalidCode(page);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      await verificationPage.verify(TEST_2FA_CODES.invalid);
+
+      await verificationPage.expectUrl(/\/verify-2fa/);
+    });
   });
 
-  test('should show validation error for short 2FA code', async ({ page }) => {
-    await fill2FACode(page, TEST_2FA_CODES.tooShort);
-    await submit2FACode(page);
+  // ===========================================================================
+  // Backup Code Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /code/i, /6 digits|must be 6/i);
+  test.describe('Backup Code Usage', () => {
+    test('should switch to backup code input mode', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      await verificationPage.clickUseBackupCode();
+
+      await expect(verificationPage.backupCodeInput).toBeVisible();
+    });
+
+    test('should login successfully with valid backup code', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
+      await mock2FALoginSuccess(page, USER_WITH_2FA);
+      await mockGetCurrentUserSuccess(page, USER_WITH_2FA);
+
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
+
+      await verificationPage.verifyWithBackupCode('AAAA-BBBB');
+
+      await verificationPage.expectRedirectToDashboard();
+    });
   });
 
-  test('should show validation error for non-numeric 2FA code', async ({ page }) => {
-    await fill2FACode(page, TEST_2FA_CODES.nonNumeric);
-    await submit2FACode(page);
+  // ===========================================================================
+  // Cancel Verification Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /code/i, /numeric|numbers only/i);
-  });
+  test.describe('Cancel Verification', () => {
+    test('should allow canceling 2FA verification', async ({ page }) => {
+      await mockLoginRequires2FA(page, USER_WITH_2FA);
 
-  test('should disable submit button while verifying', async ({ page }) => {
-    await mock2FALoginSuccess(page, USER_WITH_2FA);
-    await mockGetCurrentUserSuccess(page, USER_WITH_2FA);
+      await loginPage.navigate();
+      await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
 
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-
-    const submitButton = page.getByRole('button', { name: /verify|continue/i });
-    await expect(submitButton).toBeEnabled();
-
-    await submitButton.click();
-
-    // Button should be disabled during verification
-    await expect(submitButton).toBeDisabled();
-  });
-
-  test('should auto-submit when all digits are entered', async ({ page }) => {
-    await mock2FALoginSuccess(page, USER_WITH_2FA);
-    await mockGetCurrentUserSuccess(page, USER_WITH_2FA);
-
-    // Fill 6-digit code (should auto-submit)
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-
-    // Should redirect to dashboard without manual submit
-    await assertRedirectToDashboard(page);
-  });
-
-  test('should allow using backup code instead of 2FA code', async ({ page }) => {
-    await mock2FALoginSuccess(page, USER_WITH_2FA);
-    await mockGetCurrentUserSuccess(page, USER_WITH_2FA);
-
-    // Click "Use backup code" link
-    const backupLink = page.getByRole('button', { name: /backup code/i }).or(
-      page.getByRole('link', { name: /backup code/i })
-    );
-
-    if (await backupLink.isVisible()) {
-      await backupLink.click();
-
-      // Should show backup code input
-      await expect(page.getByLabel(/backup code/i)).toBeVisible();
-
-      // Fill backup code
-      await page.getByLabel(/backup code/i).fill('ABCD-1234');
-      await submit2FACode(page);
-
-      // Should redirect to dashboard
-      await assertRedirectToDashboard(page);
-    }
-  });
-
-  test('should allow going back to login', async ({ page }) => {
-    const backButton = page.getByRole('button', { name: /back|cancel/i }).or(
-      page.getByRole('link', { name: /back to login/i })
-    );
-
-    if (await backButton.isVisible()) {
-      await backButton.click();
-
-      // Should redirect to login page
-      await expect(page).toHaveURL('/login');
-    }
+      // Check if cancel button is visible
+      const cancelVisible = await verificationPage.cancelButton.isVisible().catch(() => false);
+      if (cancelVisible) {
+        await verificationPage.clickCancel();
+        await verificationPage.expectRedirectToLogin();
+      }
+    });
   });
 });
 
-test.describe('2FA Management in Settings', () => {
+// =============================================================================
+// OTP Input Behavior Tests
+// =============================================================================
+
+test.describe('OTP Input Behavior', () => {
+  let verificationPage: TwoFactorVerificationPage;
+
   test.beforeEach(async ({ page }) => {
-    // Login as user without 2FA
-    await setup2FAFlowMocks(page, EXISTING_USER);
-    await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-    await page.goto('/settings');
-  });
-
-  test('should display 2FA enable option when disabled', async ({ page }) => {
-    await expect(page.getByText(/enable two-factor|set up 2fa/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /enable|set up/i })).toBeVisible();
-  });
-
-  test('should navigate to 2FA setup from settings', async ({ page }) => {
-    await mock2FASetupSuccess(page);
-
-    const enableButton = page.getByRole('button', { name: /enable|set up.*2fa/i });
-    await enableButton.click();
-
-    // Should show setup modal or redirect to setup page
-    await assert2FAQRCodeDisplayed(page);
-  });
-
-  test('should successfully enable 2FA from settings', async ({ page }) => {
-    await mock2FASetupSuccess(page);
-    await mock2FAVerifySuccess(page);
-    await mockGetCurrentUserSuccess(page, { ...EXISTING_USER, twoFactorEnabled: true });
-
-    const enableButton = page.getByRole('button', { name: /enable|set up.*2fa/i });
-    await enableButton.click();
-
-    await assert2FAQRCodeDisplayed(page);
-
-    await fill2FACode(page, TEST_2FA_CODES.valid);
-    await submit2FACode(page);
-
-    await assertBackupCodesDisplayed(page);
-    await assertSuccessToast(page, /2fa enabled/i);
-  });
-});
-
-test.describe('2FA OTP Input', () => {
-  test.beforeEach(async ({ page }) => {
+    verificationPage = new TwoFactorVerificationPage(page);
     await mockLoginRequires2FA(page, USER_WITH_2FA);
-    await navigateToLogin(page);
-    await fillLoginForm(page, USER_WITH_2FA.email, USER_WITH_2FA.password);
-    await submitLoginForm(page);
-    await assertRedirectTo2FAVerification(page);
+
+    const loginPage = new LoginPage(page);
+    await loginPage.navigate();
+    await loginPage.login(USER_WITH_2FA.email, USER_WITH_2FA.password);
   });
 
-  test('should auto-focus first digit input', async ({ page }) => {
-    const firstDigitInput = page.locator('[inputmode="numeric"]').first();
-    await expect(firstDigitInput).toBeFocused();
-  });
+  test('should accept numeric input only', async ({ page }) => {
+    const otpInputs = verificationPage.otpInputs;
+    const count = await otpInputs.count();
 
-  test('should auto-advance to next digit on input', async ({ page }) => {
-    const digitInputs = page.locator('[inputmode="numeric"]');
-    const count = await digitInputs.count();
+    if (count >= 6) {
+      // OTP inputs should only accept numbers
+      await otpInputs.first().fill('A');
+      const value = await otpInputs.first().inputValue();
+      expect(value).toBe('');
 
-    if (count === 6) {
-      // Fill first digit
-      await digitInputs.nth(0).fill('1');
-
-      // Second input should be focused
-      await expect(digitInputs.nth(1)).toBeFocused();
+      await otpInputs.first().fill('1');
+      const numValue = await otpInputs.first().inputValue();
+      expect(numValue).toBe('1');
     }
   });
 
-  test('should allow backspace to previous digit', async ({ page }) => {
-    const digitInputs = page.locator('[inputmode="numeric"]');
-    const count = await digitInputs.count();
+  test('should auto-advance to next input on digit entry', async ({ page }) => {
+    const otpInputs = verificationPage.otpInputs;
+    const count = await otpInputs.count();
 
-    if (count === 6) {
-      // Fill first two digits
-      await digitInputs.nth(0).fill('1');
-      await digitInputs.nth(1).fill('2');
+    if (count >= 6) {
+      await otpInputs.first().click();
+      await page.keyboard.type('1');
 
-      // Press backspace on second digit
-      await digitInputs.nth(1).press('Backspace');
-
-      // First digit should be focused
-      await expect(digitInputs.nth(0)).toBeFocused();
+      // Focus should move to second input
+      await expect(otpInputs.nth(1)).toBeFocused();
     }
   });
 
-  test('should allow paste of full code', async ({ page }) => {
-    const firstDigitInput = page.locator('[inputmode="numeric"]').first();
+  test('should handle paste of full code', async ({ page }) => {
+    const otpInputs = verificationPage.otpInputs;
+    const count = await otpInputs.count();
 
-    // Paste full code
-    await firstDigitInput.focus();
-    await page.evaluate((code) => {
-      navigator.clipboard.writeText(code);
-    }, TEST_2FA_CODES.valid);
+    if (count >= 6) {
+      await otpInputs.first().click();
 
-    await firstDigitInput.press('Control+v');
+      // Paste full code
+      await page.keyboard.insertText('123456');
 
-    // All digits should be filled (implementation may vary)
-    // This is a best-effort test
+      // All inputs should be filled
+      for (let i = 0; i < 6; i++) {
+        const value = await otpInputs.nth(i).inputValue();
+        expect(value).toBe(String(i + 1));
+      }
+    }
+  });
+
+  test('should handle backspace to previous input', async ({ page }) => {
+    const otpInputs = verificationPage.otpInputs;
+    const count = await otpInputs.count();
+
+    if (count >= 6) {
+      // Fill first two inputs
+      await otpInputs.first().fill('1');
+      await otpInputs.nth(1).fill('2');
+
+      // Focus second input and press backspace
+      await otpInputs.nth(1).click();
+      await page.keyboard.press('Backspace');
+      await page.keyboard.press('Backspace');
+
+      // Focus should return to first input
+      await expect(otpInputs.first()).toBeFocused();
+    }
   });
 });

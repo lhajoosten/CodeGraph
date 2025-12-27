@@ -73,7 +73,7 @@ export function TaskForm({
             variant={errors.title ? 'error' : 'default'}
             {...register('title')}
           />
-          {errors.title && <p className="text-xs text-danger">{errors.title.message}</p>}
+          {errors.title && <p className="text-xs text-error">{errors.title.message}</p>}
         </div>
 
         {/* Description */}
@@ -85,9 +85,7 @@ export function TaskForm({
             variant={errors.description ? 'error' : 'default'}
             {...register('description')}
           />
-          {errors.description && (
-            <p className="text-xs text-danger">{errors.description.message}</p>
-          )}
+          {errors.description && <p className="text-xs text-error">{errors.description.message}</p>}
         </div>
 
         {/* Priority */}

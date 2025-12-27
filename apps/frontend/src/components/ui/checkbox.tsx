@@ -13,22 +13,23 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       'peer h-4 w-4 shrink-0 rounded-sm border',
-      'ring-offset-background-2 transition-colors',
+      'ring-offset-bg-steel transition-colors',
       `
-        focus-visible:ring-2 focus-visible:ring-primary
+        focus-visible:ring-2 focus-visible:ring-brand-cyan
         focus-visible:ring-offset-2 focus-visible:outline-none
       `,
       'disabled:cursor-not-allowed disabled:opacity-50',
       `
-        data-[state=checked]:border-primary data-[state=checked]:bg-primary
-        data-[state=checked]:text-text-button
+        data-[state=checked]:border-brand-cyan
+        data-[state=checked]:bg-brand-cyan
+        data-[state=checked]:text-white
       `,
       `
-        data-[state=indeterminate]:border-primary
-        data-[state=indeterminate]:bg-primary
-        data-[state=indeterminate]:text-text-button
+        data-[state=indeterminate]:border-brand-cyan
+        data-[state=indeterminate]:bg-brand-cyan
+        data-[state=indeterminate]:text-white
       `,
-      error ? 'border-danger' : 'border-border',
+      error ? 'border-error' : 'border-border-steel',
       className
     )}
     {...props}
@@ -73,12 +74,12 @@ const CheckboxWithLabel = React.forwardRef<
           className={cn(
             'cursor-pointer text-sm leading-none font-medium',
             'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-            error ? 'text-danger' : 'text-text-primary'
+            error ? 'text-error' : 'text-text-primary-lum'
           )}
         >
           {label}
         </label>
-        {description && <p className="text-xs text-text-tertiary">{description}</p>}
+        {description && <p className="text-xs text-text-muted-lum">{description}</p>}
       </div>
     </div>
   );

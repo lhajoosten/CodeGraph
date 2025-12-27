@@ -112,7 +112,7 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
         </CardContent>
       )}
 
-      <CardFooter className="pt-2 text-xs text-text-tertiary">
+      <CardFooter className="pt-2 text-xs text-text-secondary-lum">
         Updated {formatRelativeTime(task.updated_at)}
       </CardFooter>
     </Card>

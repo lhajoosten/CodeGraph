@@ -216,33 +216,42 @@ function OAuthCallback() {
 
   return (
     <div
-      className={`
-        flex min-h-screen items-center justify-center bg-gradient-to-br
-        from-blue-500 to-blue-600 px-4 py-12
-        sm:px-6
-        lg:px-8
-      `}
+      style={{
+        background: `linear-gradient(135deg, var(--color-bg-primary-lum) 0%, var(--color-bg-elevated-lum) 100%)`,
+      }}
+      className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
     >
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-white">CodeGraph</h1>
+          <h1 style={{ color: 'var(--color-brand-cyan)' }} className="mb-2 text-4xl font-bold">
+            CodeGraph
+          </h1>
         </div>
 
-        <div className="rounded-lg bg-white p-8 shadow-xl">
+        <div
+          style={{
+            backgroundColor: 'var(--color-bg-secondary-lum)',
+            borderColor: 'var(--color-border-steel)',
+          }}
+          className="rounded-lg border p-8 shadow-xl"
+        >
           {status === 'loading' && (
             <>
               <div className="mb-4 flex justify-center">
                 <div
-                  className={`
-                    h-12 w-12 animate-spin rounded-full border-b-2
-                    border-blue-600
-                  `}
+                  style={{
+                    borderBottomColor: 'var(--color-brand-cyan)',
+                  }}
+                  className="h-12 w-12 animate-spin rounded-full border-b-2"
                 ></div>
               </div>
-              <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
+              <h2
+                style={{ color: 'var(--color-text-primary-lum)' }}
+                className="mb-2 text-center text-2xl font-bold"
+              >
                 {isLinkFlow ? 'Linking' : 'Connecting to'} {getProviderName()}
               </h2>
-              <p className="text-center text-gray-600">
+              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="text-center">
                 Please wait while we{' '}
                 {isLinkFlow ? 'link your account' : 'complete your authentication'}...
               </p>
@@ -252,7 +261,7 @@ function OAuthCallback() {
           {status === 'success' && (
             <>
               <div className="mb-4 flex justify-center">
-                <div className="text-green-500">
+                <div style={{ color: 'var(--color-success)' }}>
                   <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -263,10 +272,13 @@ function OAuthCallback() {
                   </svg>
                 </div>
               </div>
-              <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
+              <h2
+                style={{ color: 'var(--color-text-primary-lum)' }}
+                className="mb-2 text-center text-2xl font-bold"
+              >
                 {isLinkFlow ? 'Account Linked Successfully!' : 'Successfully Connected!'}
               </h2>
-              <p className="text-center text-gray-600">
+              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="text-center">
                 Redirecting you {isLinkFlow ? 'back to settings' : 'to your dashboard'}...
               </p>
             </>
@@ -275,7 +287,7 @@ function OAuthCallback() {
           {status === 'error' && (
             <>
               <div className="mb-4 flex justify-center">
-                <div className="text-red-500">
+                <div style={{ color: 'var(--color-error)' }}>
                   <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -286,27 +298,33 @@ function OAuthCallback() {
                   </svg>
                 </div>
               </div>
-              <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">
+              <h2
+                style={{ color: 'var(--color-text-primary-lum)' }}
+                className="mb-2 text-center text-2xl font-bold"
+              >
                 Authentication Failed
               </h2>
-              <p className="mb-6 text-center text-gray-600">{errorMessage}</p>
+              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="mb-6 text-center">
+                {errorMessage}
+              </p>
               <div className="space-y-3">
                 <button
                   onClick={() => navigate({ to: '/login', search: { redirect: '/' } })}
-                  className={`
-                    w-full rounded-lg bg-blue-600 py-2 text-white transition
-                    hover:bg-blue-700
-                  `}
+                  style={{
+                    backgroundColor: 'var(--color-brand-cyan)',
+                    color: 'var(--color-bg-primary-lum)',
+                  }}
+                  className="w-full rounded-lg py-2 font-medium transition hover:opacity-90"
                 >
                   Back to Login
                 </button>
                 <button
                   onClick={() => window.location.reload()}
-                  className={`
-                    w-full rounded-lg border border-gray-300 py-2 text-gray-700
-                    transition
-                    hover:bg-gray-50
-                  `}
+                  style={{
+                    borderColor: 'var(--color-border-steel)',
+                    color: 'var(--color-text-secondary-lum)',
+                  }}
+                  className="w-full rounded-lg border py-2 transition hover:bg-bg-steel"
                 >
                   Try Again
                 </button>

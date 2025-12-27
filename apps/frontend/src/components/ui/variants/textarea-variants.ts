@@ -2,11 +2,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const textareaVariants = cva(
   [
-    'flex w-full rounded-md border bg-background-2 px-3 py-2 text-sm',
-    'ring-offset-background-2 transition-colors duration-200',
-    'placeholder:text-text-tertiary',
+    'flex w-full rounded-md border bg-bg-elevated-lum px-3 py-2 text-sm',
+    'ring-offset-bg-steel transition-colors duration-200',
+    'text-text-primary-lum placeholder:text-text-muted-lum',
     `
-      focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-2 focus-visible:ring-brand-cyan
       focus-visible:ring-offset-2 focus-visible:outline-none
     `,
     'disabled:cursor-not-allowed disabled:opacity-50',
@@ -16,15 +16,18 @@ export const textareaVariants = cva(
     variants: {
       variant: {
         default: `
-          border-border
-          focus-visible:border-primary
+          border-border-default-lum
+          focus-visible:border-brand-cyan
+          focus-visible:shadow-[0_0_8px_rgba(34,211,238,0.3)]
         `,
         error: `
-          border-danger
-          focus-visible:ring-danger
+          border-error
+          focus-visible:shadow-[0_0_8px_rgba(239,68,68,0.3)]
+          focus-visible:ring-error
         `,
         success: `
           border-success
+          focus-visible:shadow-[0_0_8px_rgba(34,197,94,0.3)]
           focus-visible:ring-success
         `,
       },

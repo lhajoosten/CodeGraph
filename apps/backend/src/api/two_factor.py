@@ -1,7 +1,7 @@
 """Two-factor authentication API endpoints."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.deps import get_current_user, get_current_user_or_partial
@@ -36,6 +36,14 @@ class TwoFactorEnableRequest(BaseModel):
 
     code: str
 
+    @field_validator("code")
+    @classmethod
+    def validate_code(cls, v: str) -> str:
+        """Validate that code is exactly 6 digits."""
+        if not v.isdigit() or len(v) != 6:
+            raise ValueError("Code must be exactly 6 digits")
+        return v
+
 
 class TwoFactorEnableResponse(BaseModel):
     """Response for enabling 2FA."""
@@ -53,6 +61,18 @@ class TwoFactorVerifyRequest(BaseModel):
     """Request to verify a 2FA code."""
 
     code: str
+
+    @field_validator("code")
+    @classmethod
+    def validate_code(cls, v: str) -> str:
+        """Validate that code is either 6-digit TOTP or 8-12 char backup code."""
+        v = v.strip()
+        # Must be either 6 digits (TOTP) or 8-12 alphanumeric (backup code)
+        if v.isdigit() and len(v) == 6:
+            return v
+        if v.isalnum() and 8 <= len(v) <= 12:
+            return v.upper()
+        raise ValueError("Code must be 6 digits (TOTP) or 8-12 characters (backup code)")
 
 
 class TwoFactorVerifyResponse(BaseModel):
@@ -75,10 +95,12 @@ class RegenerateBackupCodesResponse(BaseModel):
 
 @router.get("/two-factor/status", response_model=TwoFactorStatusResponse)
 async def get_two_factor_status(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_or_partial),
     db: AsyncSession = Depends(get_db),
 ) -> TwoFactorStatusResponse:
     """Get the current 2FA status for the authenticated user.
+
+    Accepts both full and partial tokens (partial tokens during OAuth/2FA flows).
 
     Returns:
         TwoFactorStatusResponse with enabled status and remaining backup codes.

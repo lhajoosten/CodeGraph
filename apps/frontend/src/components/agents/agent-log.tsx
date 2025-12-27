@@ -64,28 +64,28 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
             key={index}
             className={cn(
               'flex items-start gap-3 rounded-md border p-3',
-              isRunning && 'border-info/30 bg-info/5',
+              isRunning && 'border-brand-cyan/30 bg-brand-cyan/5',
               isCompleted && 'border-success/30 bg-success/5',
-              isFailed && 'border-danger/30 bg-danger/5',
+              isFailed && 'border-error/30 bg-error/5',
               !isRunning &&
                 !isCompleted &&
                 !isFailed &&
                 `
-                border-border bg-secondary/50
+                border-border-steel bg-bg-elevated-lum/50
               `
             )}
           >
             <div
               className={cn(
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                isRunning && 'bg-info/10 text-info',
+                isRunning && 'bg-brand-cyan/10 text-brand-cyan',
                 isCompleted && 'bg-success/10 text-success',
-                isFailed && 'bg-danger/10 text-danger',
+                isFailed && 'bg-error/10 text-error',
                 !isRunning &&
                   !isCompleted &&
                   !isFailed &&
                   `
-                  bg-secondary text-text-secondary
+                  bg-bg-elevated-lum text-text-secondary-lum
                 `
               )}
             >
@@ -96,7 +96,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               <div className="flex items-center gap-2">
                 <span
                   className={`
-                  text-sm font-medium text-text-primary capitalize
+                  text-sm font-medium text-text-primary-lum capitalize
                 `}
                 >
                   {update.agent} Agent
@@ -104,16 +104,16 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                 <StatusIcon
                   className={cn(
                     'h-3.5 w-3.5',
-                    isRunning && 'animate-spin text-info',
+                    isRunning && 'animate-spin text-brand-cyan',
                     isCompleted && 'text-success',
-                    isFailed && 'text-danger'
+                    isFailed && 'text-error'
                   )}
                 />
               </div>
-              <p className="text-sm text-text-secondary">{update.message}</p>
+              <p className="text-sm text-text-secondary-lum">{update.message}</p>
             </div>
 
-            <span className="shrink-0 text-xs text-text-tertiary">
+            <span className="shrink-0 text-xs text-text-secondary-lum">
               {formatTime(update.timestamp)}
             </span>
           </div>

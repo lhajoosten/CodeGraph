@@ -23,8 +23,8 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
       {/* Overall progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-text-primary">Overall Progress</span>
-          <span className="text-text-secondary">{Math.round(totalProgress)}%</span>
+          <span className="font-medium text-text-primary-lum">Overall Progress</span>
+          <span className="text-text-secondary-lum">{Math.round(totalProgress)}%</span>
         </div>
         <Progress value={totalProgress} size="lg" />
       </div>
@@ -51,11 +51,11 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                       justify-center rounded-full border-2
                     `,
                     isCompleted && 'border-success bg-success text-white',
-                    isRunning && 'border-info bg-info/10 text-info',
-                    isFailed && 'border-danger bg-danger/10 text-danger',
+                    isRunning && 'border-brand-cyan bg-brand-cyan/10 text-brand-cyan',
+                    isFailed && 'border-error bg-error/10 text-error',
                     isPending &&
                       `
-                      border-border bg-background-2 text-text-tertiary
+                      border-border-steel bg-bg-steel text-text-muted-lum
                     `
                   )}
                 >
@@ -75,22 +75,22 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                       className={cn(
                         'font-medium',
                         isCompleted && 'text-success',
-                        isRunning && 'text-text-primary',
-                        isFailed && 'text-danger',
-                        isPending && 'text-text-tertiary'
+                        isRunning && 'text-text-primary-lum',
+                        isFailed && 'text-error',
+                        isPending && 'text-text-muted-lum'
                       )}
                     >
                       {AGENT_TYPE_LABELS[step.type]}
                     </span>
                     {isRunning && (
-                      <span className="text-xs text-text-secondary">{step.progress}%</span>
+                      <span className="text-xs text-text-secondary-lum">{step.progress}%</span>
                     )}
                   </div>
                   {isRunning && (
                     <Progress
                       value={step.progress}
                       size="sm"
-                      variant="info"
+                      variant="default"
                       className={`
                       mt-2
                     `}

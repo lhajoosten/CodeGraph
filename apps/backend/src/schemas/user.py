@@ -41,6 +41,7 @@ class UserResponse(UserBase):
     is_active: bool
     is_superuser: bool
     email_verified: bool
+    two_factor_enabled: bool
     first_name: str | None = None
     last_name: str | None = None
     display_name: str | None = None

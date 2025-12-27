@@ -10,7 +10,7 @@ interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 /**
  * Auth Input - Wrapped Input component with label, icon, and error handling
- * - Uses luminous variant with cyan focus glow
+ * - Uses default variant with cyan focus glow
  * - Optional left icon (Mail, Lock, User, etc.)
  * - Automatic error styling
  * - Helper text for guidance
@@ -32,7 +32,7 @@ export const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
 
           <Input
             ref={ref}
-            variant={error ? 'luminousError' : 'luminous'}
+            variant={error ? 'error' : 'default'}
             className={`${Icon ? 'pl-10' : ''} ${className || ''}`}
             {...props}
           />

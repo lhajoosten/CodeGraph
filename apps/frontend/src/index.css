@@ -45,6 +45,7 @@ body {
 @theme {
   /* Font Family */
   --font-family-sans: 'Inter', 'Roboto Variable', sans-serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
 
   /* Border Radius */
   --radius-xs: 2px;
@@ -125,150 +126,17 @@ body {
     }
   }
 
-  /* Shadows */
-  --shadow-card: 0px 0px 36px 0px rgba(104, 101, 99, 0.05);
-  --shadow-tabs: 0 0 2px 0px rgba(32, 32, 32, 0.4);
-  --shadow-modal: 0px 0px 36px 0px rgba(104, 101, 99, 0.1);
+  /* Shadows - Luminous theme */
+  --shadow-card: 0px 0px 24px 0px rgba(26, 26, 26, 0.4);
+  --shadow-tabs: 0 0 24px 0 rgba(32, 32, 32, 0.4);
+  --shadow-modal: 0px 0px 24px 0px rgba(32, 32, 32, 0.4);
   --shadow-main: 0px 0px 36px 0px rgba(104, 101, 99, 0.1);
   --shadow-chat-input: 0 0 8px 1px rgba(25, 25, 25, 0.4);
 
   /* Grid Template Columns */
   --col-auditor-results: 3fr 1fr 1fr auto;
 
-  /* Color Scales */
-  /* Gray */
-  --color-gray-100: #fafafa;
-  --color-gray-200: #e4e4e7;
-  --color-gray-300: #d4d4d8;
-  --color-gray-400: #a1a1aa;
-  --color-gray-500: #71717a;
-  --color-gray-600: #52525b;
-  --color-gray-700: #3f3f46;
-  --color-gray-800: #27272a;
-  --color-gray-900: #18181b;
-  --color-gray: #71717a;
-
-  /* Success */
-  --color-success-100: #e8f9cf;
-  --color-success-200: #cef4a1;
-  --color-success-300: #a3df6d;
-  --color-success-400: #78c045;
-  --color-success-500: #439616;
-  --color-success-600: #308110;
-  --color-success-700: #206c0b;
-  --color-success-800: #145707;
-  --color-success-900: #0b4804;
-  --color-success: #439616;
-
-  /* Danger */
-  --color-danger-50: #fff1f2;
-  --color-danger-100: #ffe4e5;
-  --color-danger-200: #ffccd1;
-  --color-danger-300: #fea3ac;
-  --color-danger-400: #fd5468;
-  --color-danger-500: #f73c57;
-  --color-danger-600: #e41a41;
-  --color-danger-700: #c10f36;
-  --color-danger-800: #a11034;
-  --color-danger-900: #8a1133;
-  --color-danger-950: #4d0416;
-
-  /* Info */
-  --color-info-100: #cbf3fe;
-  --color-info-200: #98e3fe;
-  --color-info-300: #65ccfd;
-  --color-info-400: #3eb4fb;
-  --color-info-500: #008df9;
-  --color-info-600: #006dd6;
-  --color-info-700: #0051b3;
-  --color-info-800: #003990;
-  --color-info-900: #002877;
-  --color-info: #008df9;
-
-  /* Warning */
-  --color-warning-100: #fff0cc;
-  --color-warning-200: #ffde99;
-  --color-warning-300: #ffc667;
-  --color-warning-400: #ffaf41;
-  --color-warning-500: #ff8902;
-  --color-warning-600: #db6b01;
-  --color-warning-700: #b75101;
-  --color-warning-800: #933a00;
-  --color-warning-900: #7a2a00;
-  --color-warning: #ff8902;
-
-  /* Dislike */
-  --color-dislike-bg: #310413;
-  --color-dislike-text: #c32d3f;
-
-  /* Like */
-  --color-like-bg: #78dea5;
-  --color-like-text: #0d6c36;
-
-  /* Light theme */
-  /* Light Crowe Theme Colors */
-  --color-sidebar: #fef2d9;
-
-  /* Primary colors */
-  --color-primary-50: #fffcea;
-  --color-primary-100: #fff7c5;
-  --color-primary-200: #fff086;
-  --color-primary-300: #ffe146;
-  --color-primary-400: #ffd01c;
-  --color-primary-500: #f5a801;
-  --color-primary-600: #e18500;
-  --color-primary-700: #bb5c02;
-  --color-primary-800: #974709;
-  --color-primary-900: #7c3a0b;
-  --color-primary: #f5a801;
-
-  /* Secondary & Tertiary */
-  --color-secondary-elements: #f6f6f6;
-  --color-secondary: #f3f3f3;
-  --color-tertiary: #e2e2e2;
-
-  /* Background colors */
-  --color-background: #f4f4f4;
-  --color-background-primary: #fff6e1;
-  --color-background-2: #ffffff;
-
-  /* Border colors */
-  --color-border: #c4c4c4;
-  --color-border-primary: #f5a800;
-  --color-border-otp-active: #d8d8d8;
-
-  /* Text colors */
-  --color-text-primary: #23221f;
-  --color-text-secondary: #5c5c5c;
-  --color-text-tertiary: #787878;
-  --color-text-contrast: #000;
-  --color-text-light: #808080;
-  --color-text-button: #1d1d1d;
-  --color-text-button-ghost: #8f6200;
-  --color-text-sidebar: #8f6200;
-
-  /* Table colors */
-  --color-table-primary: #fbfbfb;
-  --color-table-secondary: #ffffff;
-
-  /* Chat bubble colors */
-  --color-chat-bubble-user: #deddd4;
-  --color-chat-bubble-assistant: #ffffff;
-
-  /* Danger color */
-  --color-danger: #ed293c;
-
-  /* Listbox colors */
-  --color-listbox-selected: #f5ce7a;
-  --color-listbox-selected-text: #8f6200;
-
-  /* Default color */
-  --color-default: #f3f3f3;
-
   /* === LUMINOUS TECHNICAL DESIGN TOKENS === */
-  /* Font Families */
-  --font-family-mono: 'JetBrains Mono', monospace;
-
   /* Brand Colors */
   --color-brand-cyan: #22d3ee;
   --color-brand-teal: #2dd4bf;
@@ -288,8 +156,15 @@ body {
   /* Borders (Luminous) */
   --color-border-steel: rgba(255, 255, 255, 0.1);
   --color-border-default-lum: rgba(51, 65, 85, 1);
+  --color-border-primary-lum: rgba(255, 255, 255, 0.1);
 
-  /* Shadows & Effects */
+  /* Text Tertiary (Luminous) */
+  --color-text-tertiary-lum: #6b7280;
+
+  /* Background Tertiary (Luminous) - for hover states */
+  --color-bg-tertiary-lum: #1f2937;
+
+  /* Shadows & Effects (Luminous) */
   --shadow-glow-cyan: 0 0 12px rgba(34, 211, 238, 0.4);
   --shadow-glow-teal: 0 0 12px rgba(45, 212, 191, 0.4);
   --shadow-glass: 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -298,87 +173,16 @@ body {
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+
+  /* Aliases for variant compatibility */
+  --color-primary: var(--color-brand-cyan);
+  --color-background: var(--color-bg-primary-lum);
+  --color-background-2: var(--color-bg-steel);
+  --color-text-primary: var(--color-text-primary-lum);
+  --color-text-secondary: var(--color-text-secondary-lum);
+  --color-border: var(--color-border-steel);
 }
 
 @layer utilities {
-  .dark {
-    --shadow-card: 0px 0px 24px 0px rgba(26, 26, 26, 0.4);
-    --shadow-tabs: 0 0 24px 0 rgba(32, 32, 32, 0.4);
-    --shadow-modal: 0px 0px 24px 0px rgba(32, 32, 32, 0.4);
-    --shadow-main: 0px 0px 36px 0px rgba(104, 101, 99, 0.1);
-
-    /* Dark Crowe Theme Colors */
-    --color-sidebar: #f5a80026;
-
-    /* Primary colors */
-    --color-primary-50: #fffcea;
-    --color-primary-100: #fff7c5;
-    --color-primary-200: #fff086;
-    --color-primary-300: #ffe146;
-    --color-primary-400: #ffd01c;
-    --color-primary-500: #f5a801;
-    --color-primary-600: #e18500;
-    --color-primary-700: #bb5c02;
-    --color-primary-800: #974709;
-    --color-primary-900: #7c3a0b;
-    --color-primary-950: #481d00;
-    --color-primary: #f5a800;
-
-    /* Secondary & Tertiary */
-    --color-secondary: #3b3a34;
-    --color-secondary-elements: #3b3a34;
-    --color-tertiary: #515047;
-
-    /* Background colors */
-    --color-background-primary: #f5a8001a;
-    --color-background: #23221f;
-    --color-background-2: #302f2b;
-
-    /* Border colors */
-    --color-border: #5c5c5c;
-    --color-border-primary: #f5a800;
-    --color-border-otp-active: #787878;
-
-    /* Text colors */
-    --color-text-primary: #f4f4f4;
-    --color-text-secondary: #c4c4c4;
-    --color-text-tertiary: #b3b3b3;
-    --color-text-contrast: #f4f4f4;
-    --color-text-light: #f8fcfd;
-    --color-text-button: #000000;
-    --color-text-button-ghost: #dc9907;
-    --color-text-sidebar: #f5a800;
-
-    /* Table colors */
-    --color-table-primary: #404040;
-    --color-table-secondary: #373737;
-
-    /* Chat bubble colors */
-    --color-chat-bubble-user: #515047;
-    --color-chat-bubble-assistant: #302f2b;
-
-    /* Danger color */
-    --color-danger: #ff6653;
-
-    /* Listbox colors */
-    --color-listbox-selected: #f5a80180;
-    --color-listbox-selected-text: #f5ce7a;
-
-    /* Default color */
-    --color-default: #5c5c5c;
-  }
-
-  /* Scoped Luminous Theme */
-  .luminous-theme {
-    --color-background: var(--color-bg-primary-lum);
-    --color-foreground: var(--color-text-primary-lum);
-    background: var(--color-bg-primary-lum);
-    color: var(--color-text-primary-lum);
-    font-family: var(--font-family-sans);
-  }
-
-  /* Hide theme toggle on luminous pages */
-  .luminous-theme .theme-toggle {
-    display: none;
-  }
+  /* Luminous theme is now the default - no theme toggle needed */
 }

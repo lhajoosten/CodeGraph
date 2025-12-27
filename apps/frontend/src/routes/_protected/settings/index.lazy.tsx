@@ -66,23 +66,23 @@ function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('security');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-primary-lum">
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="border-b border-border-steel bg-bg-elevated-lum">
         <div className="mx-auto max-w-4xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <h1 className="text-2xl font-bold text-text-primary-lum">Settings</h1>
+              <p className="mt-1 text-sm text-text-secondary-lum">
                 Manage your account settings and preferences
               </p>
             </div>
             <Link
               to="/"
               className={`
-                flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm
-                font-medium text-gray-700 transition
-                hover:bg-gray-200
+                flex items-center gap-2 rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-sm
+                font-medium text-text-secondary-lum transition
+                hover:bg-bg-steel
               `}
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,10 +124,10 @@ function SettingsPage() {
                     text-left text-sm font-medium transition
                     ${
                       activeTab === tab.id
-                        ? 'bg-blue-50 text-blue-700'
+                        ? 'bg-brand-cyan/10 text-brand-cyan'
                         : `
-                          text-gray-600
-                          hover:bg-gray-100 hover:text-gray-900
+                          text-text-secondary-lum
+                          hover:bg-bg-elevated-lum hover:text-text-primary-lum
                         `
                     }
                   `}
@@ -143,12 +143,14 @@ function SettingsPage() {
           <div className="flex-1">
             {activeTab === 'security' && (
               <div className="space-y-6">
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Change Password</h2>
+                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
+                    Change Password
+                  </h2>
                   <PasswordChangeForm />
                 </div>
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
                     Two-Factor Authentication
                   </h2>
                   <TwoFactorSettings />
@@ -158,8 +160,8 @@ function SettingsPage() {
 
             {activeTab === 'account' && (
               <div className="space-y-6">
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Change Email</h2>
+                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">Change Email</h2>
                   <EmailChangeForm />
                 </div>
               </div>
@@ -167,8 +169,10 @@ function SettingsPage() {
 
             {activeTab === 'connections' && (
               <div className="space-y-6">
-                <div className="rounded-lg bg-white p-6 shadow">
-                  <h2 className="mb-4 text-lg font-semibold text-gray-900">Connected Accounts</h2>
+                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
+                    Connected Accounts
+                  </h2>
                   <ConnectedAccounts />
                 </div>
               </div>

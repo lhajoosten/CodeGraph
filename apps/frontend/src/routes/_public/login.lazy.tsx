@@ -2,12 +2,13 @@ import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import { AuthLayout, AuthCard, AuthHeader, LoginForm, OAuthButton } from '@/components/auth';
 import { useTranslationNamespace } from '@/hooks/useTranslation';
+import { Suspense } from 'react';
 
 export const Route = createLazyFileRoute('/_public/login')({
   component: LoginPage,
 });
 
-function LoginPage() {
+function LoginPageContent() {
   const { t } = useTranslationNamespace('auth');
   const navigate = useNavigate();
 
@@ -75,5 +76,26 @@ function LoginPage() {
         </p>
       </AuthCard>
     </AuthLayout>
+  );
+}
+
+function LoginPageFallback() {
+  return (
+    <AuthLayout>
+      <AuthCard>
+        <div className="space-y-4">
+          <div className="h-8 w-32 animate-pulse rounded bg-bg-steel"></div>
+          <div className="h-4 w-48 animate-pulse rounded bg-bg-steel"></div>
+        </div>
+      </AuthCard>
+    </AuthLayout>
+  );
+}
+
+function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

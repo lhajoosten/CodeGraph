@@ -138,6 +138,7 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
           icon={LockClosedIcon}
           disabled={isSubmitting || resetPasswordMutation.isPending}
           error={errors.password?.message}
+          autoComplete="new-password"
           {...register('password')}
         />
 
@@ -161,6 +162,7 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
             ? t('validation.passwordMismatch')
             : undefined)
         }
+        autoComplete="new-password"
         {...register('confirmPassword')}
       />
 

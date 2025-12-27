@@ -12,8 +12,8 @@
  * - User settings (optional setup)
  */
 
-import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import {
   ClipboardIcon,
   ArrowDownTrayIcon,
@@ -21,7 +21,10 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import { client } from '@/openapi/client.gen';
+import {
+  setupTwoFactorApiV1TwoFactorSetupPostMutation,
+  enableTwoFactorApiV1TwoFactorEnablePostMutation,
+} from '@/openapi/@tanstack/react-query.gen';
 import { addToast } from '@/lib/toast';
 
 export interface SetupWizardProps {
@@ -35,15 +38,6 @@ export interface SetupWizardProps {
   title?: string;
   /** Custom subtitle */
   subtitle?: string;
-}
-
-interface TwoFactorSetupResponse {
-  qr_code: string;
-  secret: string;
-}
-
-interface TwoFactorEnableResponse {
-  backup_codes: string[];
 }
 
 type Step = 'qr' | 'verify' | 'backup';
@@ -60,27 +54,14 @@ export function TwoFactorSetupWizard({
   const [backupCodesConfirmed, setBackupCodesConfirmed] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  // Fetch QR code and secret for 2FA setup
-  const setupQuery = useQuery({
-    queryKey: ['setupTwoFactor'],
-    queryFn: async () => {
-      const response = await client.post<TwoFactorSetupResponse>({
-        url: '/api/v1/two-factor/setup',
-      });
-      return response.data;
-    },
-    retry: 1,
+  // Setup 2FA - generates QR code and stores secret on server
+  const setupMutation = useMutation({
+    ...setupTwoFactorApiV1TwoFactorSetupPostMutation(),
   });
 
   // Enable 2FA with verification code
   const enableMutation = useMutation({
-    mutationFn: async (code: string) => {
-      const response = await client.post<TwoFactorEnableResponse>({
-        url: '/api/v1/two-factor/enable',
-        body: { code },
-      });
-      return response.data;
-    },
+    ...enableTwoFactorApiV1TwoFactorEnablePostMutation(),
     onSuccess: () => {
       setStep('backup');
     },
@@ -94,6 +75,12 @@ export function TwoFactorSetupWizard({
     },
   });
 
+  // Auto-trigger setup on component mount to fetch QR code
+  useEffect(() => {
+    setupMutation.mutate({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleVerifyCode = () => {
     if (verificationCode.length !== 6) {
       addToast({
@@ -104,7 +91,7 @@ export function TwoFactorSetupWizard({
       return;
     }
 
-    enableMutation.mutate(verificationCode);
+    enableMutation.mutate({ body: { code: verificationCode } });
   };
 
   const handleCopyCode = (code: string) => {
@@ -145,7 +132,7 @@ export function TwoFactorSetupWizard({
     onSuccess();
   };
 
-  if (setupQuery.isLoading) {
+  if (setupMutation.isPending) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -156,7 +143,7 @@ export function TwoFactorSetupWizard({
     );
   }
 
-  if (setupQuery.isError) {
+  if (setupMutation.isError) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -167,7 +154,7 @@ export function TwoFactorSetupWizard({
     );
   }
 
-  const qrData = setupQuery.data;
+  const qrData = setupMutation.data;
   const backupCodes = enableMutation.data?.backup_codes || [];
 
   return (

@@ -81,8 +81,8 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           })}
         </p>
 
-        <div className="rounded-lg border border-info/30 bg-info/10 p-3">
-          <p className="text-xs text-info">{t('luminous.forgotPassword.successTip')}</p>
+        <div className="rounded-lg border border-brand-cyan/30 bg-brand-cyan/10 p-3">
+          <p className="text-xs text-brand-cyan">{t('luminous.forgotPassword.successTip')}</p>
         </div>
 
         <div className="flex gap-3 pt-4">
@@ -114,6 +114,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         disabled={forgotPasswordMutation.isPending}
         error={errors.email?.message}
         helperText={t('luminous.forgotPassword.emailHint')}
+        autoComplete="email"
         {...register('email')}
       />
 

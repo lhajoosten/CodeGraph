@@ -13,6 +13,8 @@ export const mockUser = {
   id: 1,
   email: 'test@example.com',
   email_verified: true,
+  first_name: 'John',
+  last_name: 'Doe',
 };
 
 export const mockUnverifiedUser = {

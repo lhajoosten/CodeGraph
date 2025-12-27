@@ -34,26 +34,39 @@ function VerifyEmailPendingPage() {
 
   return (
     <div
-      className={`
-        flex min-h-screen items-center justify-center bg-gradient-to-br
-        from-blue-500 to-blue-600 px-4 py-12
-        sm:px-6
-        lg:px-8
-      `}
+      style={{
+        background: `linear-gradient(135deg, var(--color-bg-primary-lum) 0%, var(--color-bg-elevated-lum) 100%)`,
+      }}
+      className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
     >
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
-          <h1 className="mb-2 text-4xl font-bold text-white">CodeGraph</h1>
+          <h1 style={{ color: 'var(--color-brand-cyan)' }} className="mb-2 text-4xl font-bold">
+            CodeGraph
+          </h1>
         </div>
 
         {/* Card */}
-        <div className="space-y-6 rounded-lg bg-white p-8 shadow-xl">
+        <div
+          style={{
+            backgroundColor: 'var(--color-bg-secondary-lum)',
+            borderColor: 'var(--color-border-steel)',
+          }}
+          className="space-y-6 rounded-lg border p-8 shadow-xl"
+        >
           {/* Icon */}
           <div className="flex justify-center">
-            <div className="rounded-full bg-blue-100 p-4">
+            <div
+              style={{
+                backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                borderColor: 'rgba(34, 211, 238, 0.3)',
+              }}
+              className="rounded-full border p-4"
+            >
               <svg
-                className="h-8 w-8 text-blue-600"
+                style={{ color: 'var(--color-brand-cyan)' }}
+                className="h-8 w-8"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -70,18 +83,30 @@ function VerifyEmailPendingPage() {
 
           {/* Heading */}
           <div className="text-center">
-            <h2 className="mb-2 text-2xl font-bold text-gray-900">Email Verification Pending</h2>
-            <p className="text-gray-600">
+            <h2
+              style={{ color: 'var(--color-text-primary-lum)' }}
+              className="mb-2 text-2xl font-bold"
+            >
+              Email Verification Pending
+            </h2>
+            <p style={{ color: 'var(--color-text-secondary-lum)' }}>
               Check Your Email - We sent a verification link to <strong>{email}</strong>
             </p>
           </div>
 
           {/* Success Message */}
           {message && (
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+            <div
+              style={{
+                backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                borderColor: 'rgba(34, 211, 238, 0.3)',
+              }}
+              className="rounded-lg border p-4"
+            >
               <div className="flex items-center gap-2">
                 <svg
-                  className="h-5 w-5 text-green-600"
+                  style={{ color: 'var(--color-brand-cyan)' }}
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -93,17 +118,26 @@ function VerifyEmailPendingPage() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <p className="text-sm font-medium text-green-700">{message}</p>
+                <p style={{ color: 'var(--color-brand-cyan)' }} className="text-sm font-medium">
+                  {message}
+                </p>
               </div>
             </div>
           )}
 
           {/* Error Alert */}
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <div
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderColor: 'rgba(239, 68, 68, 0.3)',
+              }}
+              className="rounded-lg border p-4"
+            >
               <div className="flex items-center gap-2">
                 <svg
-                  className="h-5 w-5 text-red-600"
+                  style={{ color: 'var(--color-error)' }}
+                  className="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -115,13 +149,15 @@ function VerifyEmailPendingPage() {
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <p className="text-sm font-medium text-red-700">{error}</p>
+                <p style={{ color: 'var(--color-error)' }} className="text-sm font-medium">
+                  {error}
+                </p>
               </div>
             </div>
           )}
 
           {/* Instructions */}
-          <div className="space-y-3 text-sm text-gray-600">
+          <div style={{ color: 'var(--color-text-secondary-lum)' }} className="space-y-3 text-sm">
             <p>👉 Click the link in the email to verify your account</p>
             <p>⏱️ The link expires in 24 hours</p>
             <p>📧 Check your spam folder if you don&apos;t see it</p>
@@ -131,12 +167,11 @@ function VerifyEmailPendingPage() {
           <button
             onClick={handleResend}
             disabled={resendMutation.isPending}
-            className={`
-              w-full rounded-lg border-2 border-blue-600 px-4 py-2 font-medium
-              text-blue-600 transition
-              hover:bg-blue-50
-              disabled:cursor-not-allowed disabled:opacity-50
-            `}
+            style={{
+              backgroundColor: 'var(--color-brand-cyan)',
+              color: 'var(--color-bg-primary-lum)',
+            }}
+            className="w-full rounded-lg px-4 py-3 font-medium transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {resendMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
@@ -166,10 +201,21 @@ function VerifyEmailPendingPage() {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div
+                style={{ borderColor: 'var(--color-border-steel)' }}
+                className="w-full border-t"
+              ></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">Need help?</span>
+              <span
+                style={{
+                  backgroundColor: 'var(--color-bg-secondary-lum)',
+                  color: 'var(--color-text-muted-lum)',
+                }}
+                className="px-2"
+              >
+                Need help?
+              </span>
             </div>
           </div>
 
@@ -178,21 +224,21 @@ function VerifyEmailPendingPage() {
             <Link
               to="/login"
               search={{ redirect: '/' }}
-              className={`
-                block w-full rounded-lg px-4 py-2 text-center text-gray-600
-                transition
-                hover:bg-gray-100 hover:text-gray-900
-              `}
+              style={{
+                borderColor: 'var(--color-border-steel)',
+                color: 'var(--color-text-secondary-lum)',
+              }}
+              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-bg-steel"
             >
               Back to Sign In
             </Link>
             <Link
               to="/register"
-              className={`
-                block w-full rounded-lg px-4 py-2 text-center text-gray-600
-                transition
-                hover:bg-gray-100 hover:text-gray-900
-              `}
+              style={{
+                borderColor: 'var(--color-border-steel)',
+                color: 'var(--color-text-secondary-lum)',
+              }}
+              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-bg-steel"
             >
               Create Different Account
             </Link>
@@ -200,7 +246,7 @@ function VerifyEmailPendingPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-blue-100">
+        <p style={{ color: 'var(--color-text-secondary-lum)' }} className="text-center text-sm">
           Contact support if you continue to have issues
         </p>
       </div>

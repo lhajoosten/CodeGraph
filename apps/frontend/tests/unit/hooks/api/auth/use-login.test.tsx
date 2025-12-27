@@ -83,7 +83,9 @@ describe('useLogin', () => {
     // Check auth store was updated
     const authState = useAuthStore.getState();
     expect(authState.isAuthenticated).toBe(true);
-    expect(authState.user).toEqual(mockUser);
+    expect(authState.user?.id).toBe(mockUser.id);
+    expect(authState.user?.email).toBe(mockUser.email);
+    expect(authState.user?.email_verified).toBe(mockUser.email_verified);
     expect(authState.emailVerified).toBe(true);
   });
 

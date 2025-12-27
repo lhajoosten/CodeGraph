@@ -5,14 +5,14 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-text-button',
-        secondary: 'border-transparent bg-secondary text-text-secondary',
+        default: 'border-transparent bg-brand-cyan text-white',
+        secondary: 'border-transparent bg-bg-elevated-lum text-text-secondary-lum',
         success: 'border-transparent bg-success text-white',
-        danger: 'border-transparent bg-danger text-white',
-        warning: 'border-transparent bg-warning text-text-button',
-        info: 'border-transparent bg-info text-white',
-        outline: 'border-border bg-transparent text-text-primary',
-        ghost: 'border-transparent bg-transparent text-text-secondary',
+        danger: 'border-transparent bg-error text-white',
+        warning: 'border-transparent bg-warning text-white',
+        info: 'border-transparent bg-brand-teal text-white',
+        outline: 'border-border-steel bg-transparent text-text-primary-lum',
+        ghost: 'border-transparent bg-transparent text-text-secondary-lum',
       },
       size: {
         default: 'px-2.5 py-0.5 text-xs',

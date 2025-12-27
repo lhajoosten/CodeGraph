@@ -291,6 +291,7 @@ export const zUserResponse = z.object({
   is_active: z.boolean(),
   is_superuser: z.boolean(),
   email_verified: z.boolean(),
+  two_factor_enabled: z.boolean(),
   first_name: z.optional(z.union([z.string(), z.null()])),
   last_name: z.optional(z.union([z.string(), z.null()])),
   display_name: z.optional(z.union([z.string(), z.null()])),

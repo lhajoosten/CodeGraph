@@ -4,495 +4,466 @@ Comprehensive end-to-end tests for the CodeGraph authentication system using [Pl
 
 ## Overview
 
-These tests verify complete user journeys through the authentication system with **141 total tests** covering:
+These tests verify complete user journeys through the authentication system covering:
 
-- **Registration Flow** (32 tests) - User registration, validation, email verification pending
-- **Login Flow** (18 tests) - Login, invalid credentials, remember me, session persistence
-- **2FA Flow** (21 tests) - Setup, verification, QR codes, backup codes, OTP input
-- **Email Verification** (20 tests) - Token validation, resend, rate limiting
-- **OAuth Flow** (25 tests) - Google, GitHub, Microsoft authentication
-- **Password Reset** (25 tests) - Request, reset, validation, security
+- **Login Flow** - Email/password login, validation, 2FA redirect
+- **Registration Flow** - User registration, validation, email verification
+- **Password Reset Flow** - Forgot password, reset with token
+- **Two-Factor Authentication** - 2FA setup, verification, backup codes
+- **OAuth Flow** - Google, GitHub, Microsoft authentication
+- **Protected Routes** - Access control and session management
 
-## Installation
-
-Playwright is already installed. To install browser binaries:
-
-```bash
-npx playwright install
-```
-
-### System Dependencies
-
-Playwright requires system libraries to run browsers. Depending on your environment:
-
-**Ubuntu/Debian:**
-```bash
-sudo npx playwright install-deps
-```
-
-**WSL2 (Windows Subsystem for Linux):**
-WSL2 lacks some system libraries by default. Options:
-1. Use Docker (recommended) - See Docker Setup below
-2. Install minimal dependencies:
-   ```bash
-   sudo apt-get install -y libasound2 libxdamage1 libxcomposite1
-   ```
-3. Use native Windows/Mac for E2E testing
-
-**macOS:**
-No additional setup needed - Playwright handles dependencies automatically.
-
-### Docker Setup
-
-If system dependencies are problematic, run E2E tests in Docker:
-
-```bash
-# Build Docker image
-docker build -t codegraph-e2e .
-
-# Run tests in Docker
-docker run --rm -v $(pwd):/app codegraph-e2e npm run e2e
-```
-
-## Running Tests
-
-### Basic Commands
-
-```bash
-# Run all E2E tests in headless mode
-npm run e2e
-
-# Run with browser visible (headed mode)
-npm run e2e:headed
-
-# Run in debug mode (interactive)
-npm run e2e:debug
-
-# Run with UI mode (recommended for development)
-npm run e2e:ui
-```
-
-### Running Specific Tests
-
-```bash
-# Run only registration tests
-npx playwright test --grep "Registration Flow"
-
-# Run a single test file
-npx playwright test auth.spec.ts
-
-# Run tests on a specific browser
-npx playwright test --project=chromium
-
-# Run with verbose output
-npx playwright test --verbose
-```
-
-## Test Structure
+## Test Architecture
 
 ```
 tests/e2e/
-├── fixtures/           # Test data and mock responses
-│   ├── users.ts       # User test data constants
-│   ├── oauth-mocks.ts # OAuth provider mock responses
-│   ├── api-stubs.ts   # API response templates
-│   └── index.ts       # Central exports
-├── helpers/           # Reusable test utilities
-│   ├── auth-helpers.ts    # Authentication flow helpers
-│   ├── page-helpers.ts    # Page interaction helpers
-│   ├── assertions.ts      # Common assertion functions
-│   ├── mock-utils.ts      # API mocking utilities
-│   └── index.ts           # Central exports
-└── specs/            # Test specifications
-    ├── auth-registration.spec.ts       # Registration flow tests (32 tests)
-    ├── auth-login.spec.ts              # Login flow tests (18 tests)
-    ├── auth-2fa.spec.ts                # 2FA flow tests (21 tests)
-    ├── auth-email-verification.spec.ts # Email verification tests (20 tests)
-    ├── auth-oauth.spec.ts              # OAuth flow tests (25 tests)
-    └── auth-password-reset.spec.ts     # Password reset tests (25 tests)
+|-- fixtures/           # Test data and API response stubs
+|   |-- users.ts       # User test data constants
+|   |-- api-stubs.ts   # API response templates
+|   |-- index.ts       # Central exports
+|
+|-- helpers/           # Reusable test utilities
+|   |-- mock-api.ts    # API mocking utilities
+|   |-- test-utils.ts  # Common test helpers
+|   |-- index.ts       # Central exports
+|
+|-- pages/             # Page Object Models
+|   |-- base.page.ts   # Base page with common methods
+|   |-- login.page.ts  # Login page object
+|   |-- register.page.ts
+|   |-- forgot-password.page.ts
+|   |-- reset-password.page.ts
+|   |-- two-factor.page.ts
+|   |-- index.ts       # Central exports
+|
+|-- specs/             # Test specifications
+|   |-- auth-login.spec.ts
+|   |-- auth-registration.spec.ts
+|   |-- auth-password-reset.spec.ts
+|   |-- auth-2fa.spec.ts
+|   |-- auth-oauth.spec.ts
+|
+|-- README.md          # This file
 ```
 
-### Test Categories
+## Quick Start
 
-#### Registration Flow (32 tests)
-- Display registration form
-- Successful registration
-- Email/password validation (empty, invalid format, weak password)
-- Password confirmation matching
-- Terms acceptance requirement
-- Email already exists error
-- Special characters in names
-- Password strength indicator
-- Password visibility toggle
-- Submit button states
-- Email verification pending page
-- Resend verification email
-- Rate limiting
+### Prerequisites
 
-#### Login Flow (18 tests)
-- Display login form
-- Successful login
-- Invalid credentials error
-- Unverified email error
-- 2FA redirect
-- Email/password validation
-- Remember me functionality
-- Password visibility toggle
-- Submit button states
-- Protected route access
-- Redirect after login
-- Session persistence across reloads/tabs
-- OAuth button display
+```bash
+# Install Playwright browsers
+npx playwright install chromium
 
-#### 2FA Flow (21 tests)
-- Display 2FA setup introduction
-- Skip 2FA option
-- QR code display
-- Successful verification and enablement
-- Invalid verification code errors
-- Backup codes display and copying
-- 2FA verification during login
-- Valid/invalid login codes
-- Auto-submit on complete input
-- OTP input behavior (focus, advance, backspace, paste)
-- Backup code login option
-- 2FA management in settings
+# Install system dependencies (Ubuntu/Debian)
+sudo npx playwright install-deps chromium
+```
 
-#### Email Verification (20 tests)
-- Successful verification with valid token
-- Invalid token error
-- Expired token error
-- Already verified message
-- Resend verification option
-- Redirect to 2FA setup after verification
-- Skip to dashboard option
-- Email verification pending display
-- Resend with rate limiting
-- Email change verification
-- Network/server error handling
-- Missing token parameter
-- Accessibility (ARIA labels, keyboard navigation)
+### Running Tests
 
-#### OAuth Flow (25 tests)
-- Display all OAuth provider buttons
-- Google OAuth (login, register, error, cancellation)
-- GitHub OAuth (login, register, error)
-- Microsoft OAuth (login, register, error)
-- Profile completion for new OAuth users
-- State parameter validation
-- Missing code parameter
-- Already authenticated handling
-- Network/server error handling
-- Provider-specific errors
-- OAuth from registration page
+```bash
+# Run all E2E tests
+npm run e2e
 
-#### Password Reset (25 tests)
-- Display forgot password form
-- Successful reset request
-- Email validation
-- Non-existent email handling (security)
-- Rate limiting
-- Submit button states
-- Sent confirmation screen
-- Resend reset email
-- Display reset form with token
-- Successful password reset
-- Password validation (empty, weak, mismatch)
-- Invalid/expired/used token errors
-- Password strength indicator
-- Password visibility toggle
-- Missing token parameter
-- Post-reset login with new password
-- Old password invalidation
-- Network/server error handling
+# Run in headed mode (see browser)
+npm run e2e:headed
+
+# Run in debug mode (step through tests)
+npm run e2e:debug
+
+# Run with UI mode (interactive)
+npm run e2e:ui
+
+# Run specific test file
+npx playwright test auth-login.spec.ts
+
+# Run tests matching pattern
+npx playwright test --grep "Login"
+```
+
+## Test Design Philosophy
+
+### 1. User-Centric Testing
+
+Tests focus on real user behavior, not implementation details:
+
+```typescript
+// Good: Tests what users see
+await page.getByRole('button', { name: /sign in/i }).click();
+await expect(page).toHaveURL('/dashboard');
+
+// Avoid: Tests implementation details
+await page.locator('.btn-primary').click();
+await expect(localStorage.getItem('token')).not.toBeNull();
+```
+
+### 2. Page Object Model
+
+Each page has a dedicated class encapsulating all interactions:
+
+```typescript
+// pages/login.page.ts
+export class LoginPage extends BasePage {
+  get emailInput() { return this.page.getByLabel(/email/i); }
+  get submitButton() { return this.page.getByRole('button', { name: /sign in/i }); }
+
+  async login(email: string, password: string) {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
+  }
+}
+
+// In tests
+const loginPage = new LoginPage(page);
+await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+```
+
+### 3. API Mocking Strategy
+
+Tests mock API responses for deterministic, fast execution:
+
+```typescript
+// Mock successful login
+await mockLoginSuccess(page, EXISTING_USER);
+
+// Mock error scenarios
+await mockLoginInvalidCredentials(page);
+
+// Mock rate limiting
+await mockRateLimited(page, '/api/v1/auth/login');
+```
+
+### 4. Deterministic Test Data
+
+All test data is predefined in fixtures:
+
+```typescript
+// fixtures/users.ts
+export const EXISTING_USER = {
+  email: 'existing.user@codegraph.dev',
+  password: 'ExistingPass123!',
+  firstName: 'Existing',
+  lastName: 'User',
+};
+
+export const TEST_2FA_CODES = {
+  valid: '000000',
+  invalid: '999999',
+};
+```
+
+## Writing Tests
+
+### Test Structure
+
+Tests follow the AAA pattern (Arrange, Act, Assert):
+
+```typescript
+test('should login successfully with valid credentials', async ({ page }) => {
+  // ARRANGE - Set up test state
+  const loginPage = new LoginPage(page);
+  await setupLoginFlowMocks(page, EXISTING_USER);
+
+  // ACT - Perform the action
+  await loginPage.navigate();
+  await loginPage.login(EXISTING_USER.email, EXISTING_USER.password);
+
+  // ASSERT - Verify the outcome
+  await loginPage.expectRedirectToDashboard();
+});
+```
+
+### Using Page Objects
+
+```typescript
+import { LoginPage } from '../pages/login.page';
+
+test.describe('Login Page', () => {
+  let loginPage: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.navigate();
+  });
+
+  test('should display form', async () => {
+    await loginPage.expectFormDisplayed();
+  });
+});
+```
+
+### Mocking API Responses
+
+```typescript
+import { mockLoginSuccess, mockLoginInvalidCredentials } from '../helpers';
+
+// Success scenario
+await mockLoginSuccess(page, EXISTING_USER);
+await loginPage.login(email, password);
+await loginPage.expectRedirectToDashboard();
+
+// Error scenario
+await mockLoginInvalidCredentials(page);
+await loginPage.login(email, wrongPassword);
+await loginPage.expectErrorMessage(/invalid/i);
+```
+
+### Composite Flow Mocks
+
+For complex flows requiring multiple endpoints:
+
+```typescript
+// Sets up all mocks for complete login flow
+await setupLoginFlowMocks(page, user);
+
+// Sets up all mocks for 2FA login
+await setup2FALoginFlowMocks(page, user);
+
+// Sets up all mocks for password reset
+await setupPasswordResetFlowMocks(page);
+```
+
+## Authentication State Management
+
+The application uses Zustand with localStorage persistence for authentication state. To properly test protected routes and 2FA flows, you need to set up the correct authentication state in `localStorage['auth-store']`.
+
+### Available State Helpers
+
+These helpers in `test-utils.ts` set up the authentication state and navigate to the page:
+
+```typescript
+// Set user authenticated with no 2FA
+await setAuthenticatedState(page, user);
+
+// Set user that requires 2FA setup
+await setRequires2FASetupState(page, user);
+
+// Set user that requires 2FA verification
+await setRequires2FAVerificationState(page, user);
+
+// Set fully authenticated user (with 2FA verified)
+await setFullyAuthenticatedState(page, user);
+
+// Clear all authentication state
+await clearAuthenticatedState(page);
+```
+
+### Auth State Structure
+
+The app expects this state in `localStorage['auth-store']`:
+
+```typescript
+{
+  state: {
+    isAuthenticated: boolean;           // Is user logged in?
+    emailVerified: boolean;             // Is email verified?
+    user: {                             // User data
+      id: string;
+      email: string;
+      email_verified: boolean;
+      first_name?: string;
+      last_name?: string;
+      // ... other user fields
+    } | null;
+    oauthProvider: string | null;       // 'google', 'github', 'microsoft'
+    twoFactorEnabled: boolean;          // Has user enabled 2FA?
+    twoFactorVerified: boolean;         // Is 2FA verified this session?
+    requiresTwoFactorSetup: boolean;    // Must user set up 2FA?
+  },
+  version: 0
+}
+```
+
+### Example: Testing 2FA Setup Flow
+
+```typescript
+test('should display 2FA setup page for users requiring setup', async ({ page }) => {
+  // Navigate to /setup-2fa and set auth state for 2FA setup
+  await setRequires2FASetupState(page, EXISTING_USER);
+  await mock2FASetupSuccess(page);
+
+  // Now user is on /setup-2fa with proper auth state
+  await setupPage.expectQRCodeDisplayed();
+});
+```
+
+### Example: Testing Protected Routes
+
+```typescript
+test('should redirect unauthenticated users to login', async ({ page }) => {
+  // Don't set auth state - user is unauthenticated
+  await page.goto('/dashboard');
+
+  // Should redirect to login page
+  await expect(page).toHaveURL(/\/login(\?.*)?$/);
+});
+```
+
+### Important Notes
+
+1. **Navigate first**: Auth state helpers handle navigation internally, so don't call `.navigate()` separately
+2. **Clear state between tests**: Use independent tests that don't rely on state from previous tests
+3. **Mock API responses**: Always mock the endpoints your route will call
+4. **Query parameters**: URLs may include `?redirect=` parameters - use flexible assertions
 
 ## Test Data
 
-All test data is in `fixtures/users.ts`:
+### User Fixtures
 
-```typescript
-// Primary test users
-VALID_USER                  // Standard valid user
-EXISTING_USER              // User already in system
-USER_WITH_2FA              // User with 2FA enabled
-USER_UNVERIFIED_EMAIL      // User with unverified email
-OAUTH_USER_GOOGLE          // Google OAuth user
-OAUTH_USER_GITHUB          // GitHub OAuth user
-OAUTH_USER_MICROSOFT       // Microsoft OAuth user
+| Fixture | Description |
+|---------|-------------|
+| `VALID_USER` | Standard valid user for registration |
+| `EXISTING_USER` | Already registered user for login |
+| `USER_WITH_2FA` | User with 2FA enabled |
+| `USER_UNVERIFIED_EMAIL` | User with unverified email |
+| `OAUTH_USER_GOOGLE` | Google OAuth user |
+| `OAUTH_USER_GITHUB` | GitHub OAuth user |
+| `OAUTH_USER_MICROSOFT` | Microsoft OAuth user |
 
-// Edge cases
-USER_WITH_SPECIAL_CHARS    // Special characters in name
-USER_WITH_MAX_LENGTH       // Maximum length fields
+### Validation Test Data
 
-// Test codes
-TEST_2FA_CODES.valid       // "000000"
-TEST_2FA_CODES.invalid     // "999999"
-TEST_VERIFICATION_TOKENS   // Email verification tokens
-TEST_RESET_TOKENS          // Password reset tokens
+| Fixture | Description |
+|---------|-------------|
+| `WEAK_PASSWORDS` | Various weak passwords for validation testing |
+| `INVALID_EMAILS` | Various invalid email formats |
+| `TEST_2FA_CODES` | Valid/invalid 2FA codes |
+| `TEST_RESET_TOKENS` | Valid/expired reset tokens |
+| `TEST_OAUTH_STATE` | OAuth state tokens |
 
-// Invalid data
-WEAK_PASSWORDS             // Various weak passwords
-INVALID_EMAILS             // Various invalid email formats
+## Best Practices
+
+### Do's
+
+- Use semantic selectors (role, label, text)
+- Wait for specific conditions, not arbitrary timeouts
+- Test one thing per test
+- Use fixtures for test data
+- Mock all API calls
+- Keep tests independent
+
+### Don'ts
+
+- Don't use CSS class selectors
+- Don't use `page.waitForTimeout()`
+- Don't share state between tests
+- Don't make real API calls
+- Don't test implementation details
+
+### Selector Priority
+
+1. `getByRole()` - Most accessible, most stable
+2. `getByLabel()` - For form inputs
+3. `getByText()` - For visible text
+4. `getByTestId()` - When semantics don't apply (last resort)
+
+## Debugging
+
+### Debug Mode
+
+```bash
+npm run e2e:debug
+```
+
+Launches Playwright Inspector for stepping through tests.
+
+### UI Mode
+
+```bash
+npm run e2e:ui
+```
+
+Interactive test runner with timeline view.
+
+### Traces
+
+Traces are automatically collected on test failure. View with:
+
+```bash
+npx playwright show-trace test-results/[test-name]/trace.zip
+```
+
+### Screenshots
+
+Failed tests automatically capture screenshots in `test-results/`.
+
+## CI/CD Integration
+
+Tests run automatically in CI. Key configurations:
+
+```yaml
+# .github/workflows/e2e.yml
+- name: Run E2E tests
+  run: npm run e2e
+  env:
+    CI: true
+
+- name: Upload test report
+  uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: playwright-report
+    path: playwright-report/
 ```
 
 ## Configuration
 
 Configuration is in `playwright.config.ts`:
+
 - **Base URL**: `http://localhost:5173`
-- **Browsers**: Chromium, Firefox, WebKit
-- **Dev Server**: Automatically started before tests
+- **Browser**: Chromium (Firefox/WebKit available)
 - **Timeout**: 30 seconds per test
+- **Retries**: 2 on CI, 0 locally
+- **Screenshots**: On failure only
+- **Traces**: On first retry
 
-## Usage Patterns
+## Troubleshooting
 
-### Using Fixtures
+### Port 5173 in use
 
-```typescript
-import { VALID_USER, EXISTING_USER, TEST_2FA_CODES } from '../fixtures/users';
-import { GOOGLE_OAUTH } from '../fixtures/oauth-mocks';
-import { LOGIN_STUBS } from '../fixtures/api-stubs';
-
-// Use in tests
-await page.getByLabel(/email/i).fill(VALID_USER.email);
-await fill2FACode(page, TEST_2FA_CODES.valid);
-```
-
-### Using Helpers
-
-```typescript
-import {
-  registerUser,
-  loginWithCredentials,
-  setup2FA,
-  verifyEmail,
-} from '../helpers/auth-helpers';
-
-// Encapsulate entire flows
-await registerUser(page, VALID_USER);
-await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-await setup2FA(page);
-await verifyEmail(page, TEST_VERIFICATION_TOKENS.valid);
-```
-
-### Using Assertions
-
-```typescript
-import {
-  assertRedirectToDashboard,
-  assertSuccessToast,
-  assertFieldHasError,
-  assert2FAQRCodeDisplayed,
-} from '../helpers/assertions';
-
-// Common assertions
-await assertRedirectToDashboard(page);
-await assertSuccessToast(page, /login successful/i);
-await assertFieldHasError(page, /email/i, /required/i);
-await assert2FAQRCodeDisplayed(page);
-```
-
-### Using Mocks
-
-```typescript
-import {
-  mockLoginSuccess,
-  mockRegisterEmailTaken,
-  setup2FAFlowMocks,
-  setupOAuthFlowMocks,
-} from '../helpers/mock-utils';
-
-// Mock API responses
-await mockLoginSuccess(page, EXISTING_USER);
-await mockRegisterEmailTaken(page);
-await setup2FAFlowMocks(page, user);
-await setupOAuthFlowMocks(page, 'google', OAUTH_USER_GOOGLE);
-```
-
-## Best Practices
-
-### Do's
-- ✅ Use deterministic test data from fixtures
-- ✅ Test user behavior, not implementation details
-- ✅ Use semantic locators (role, label, text)
-- ✅ Handle async properly with `await`
-- ✅ Mock external dependencies (API calls)
-- ✅ Test error states and edge cases
-- ✅ Keep tests independent
-- ✅ Use helper functions to avoid duplication
-- ✅ Write descriptive test names with "should"
-
-### Don'ts
-- ❌ Don't use random data
-- ❌ Don't test implementation details
-- ❌ Don't use brittle selectors (class names, IDs)
-- ❌ Don't create test interdependencies
-- ❌ Don't skip error testing
-- ❌ Don't make real API calls
-- ❌ Don't use hard timeouts (`waitForTimeout`)
-
-### Writing New Tests
-
-1. **Choose appropriate fixture data**
-   ```typescript
-   import { VALID_USER } from '../fixtures/users';
-   ```
-
-2. **Use helper functions**
-   ```typescript
-   await loginWithCredentials(page, email, password);
-   ```
-
-3. **Mock API responses**
-   ```typescript
-   await mockLoginSuccess(page, EXISTING_USER);
-   ```
-
-4. **Write descriptive test names**
-   ```typescript
-   test('should show error for invalid credentials', async ({ page }) => {
-     // Test implementation
-   });
-   ```
-
-5. **Test error paths**
-   ```typescript
-   await mockLoginInvalidCredentials(page);
-   await assertErrorToast(page, /invalid email or password/i);
-   ```
-
-## Debugging
-
-### Debug Mode
 ```bash
-npm run e2e:debug
+lsof -ti :5173 | xargs kill -9
 ```
-- Launches inspector to step through tests
-- Can pause, resume, and inspect state
 
-### UI Mode
+### Browser launch errors (WSL)
+
 ```bash
-npm run e2e:ui
+sudo apt-get install -y libasound2 libxdamage1 libxcomposite1
 ```
-- Visual test runner
-- See test execution in real-time
-- Timeline view of actions
-
-### Logs and Traces
-```bash
-# Run with trace collection
-npx playwright test --trace on
-
-# View trace
-npx playwright show-trace trace.zip
-```
-
-## CI/CD Integration
-
-For GitHub Actions, add to `.github/workflows/e2e.yml`:
-
-```yaml
-name: E2E Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm ci
-      - run: npm run e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-```
-
-## Common Issues
-
-### Browser launch errors (WSL2)
-**Error**: `error while loading shared libraries: libasound.so.2`
-
-**Solutions**:
-1. **Docker**: Easiest - run tests in Docker container
-   ```bash
-   docker run --rm --workdir /app -v $(pwd):/app node:18 npm run e2e
-   ```
-
-2. **Install minimal deps**:
-   ```bash
-   sudo apt-get install -y libasound2
-   ```
-
-3. **Use headless=false** (for development/debugging):
-   ```bash
-   npx playwright test --headed
-   ```
-
-4. **Check available disk space** - Playwright needs ~500MB for browser binaries
-
-### Tests timeout
-- Ensure dev server is running on `http://localhost:5173`
-- Check browser is not blocked by firewall
-- Increase timeout in `playwright.config.ts` if needed
-
-### Tests fail in CI
-- Tests may fail if backend API is not available
-- Use test doubles/mocks for API responses if needed
-- Ensure consistent test data
-- For GitHub Actions, ensure workflow runs `npm run dev` or similar
 
 ### Flaky tests
-- Avoid hard timeouts (`waitForTimeout`)
-- Use proper wait conditions (`waitFor`, `expect`)
-- Make tests independent and idempotent
 
-### Port 5173 already in use
-**Error**: `EADDRINUSE: address already in use :::5173`
+1. Check for race conditions
+2. Use proper wait conditions
+3. Ensure test independence
+4. Increase specific timeouts if needed
 
-**Solution**:
-```bash
-# Find process using port 5173
-lsof -ti :5173 | xargs kill -9
-# Or configure Playwright to use different port
-# Edit playwright.config.ts and change baseURL
-```
+### Tests timeout
 
-## Documentation
+1. Ensure dev server is running
+2. Check network connectivity
+3. Increase timeout in config if needed
+
+## Contributing
+
+When adding new tests:
+
+1. Place in appropriate spec file or create new one
+2. Use existing page objects or create new ones
+3. Add test data to fixtures if needed
+4. Add mock utilities for new API endpoints
+5. Follow naming conventions
+6. Document test purpose
+
+### Naming Conventions
+
+- **Spec files**: `auth-<feature>.spec.ts`
+- **Page objects**: `<feature>.page.ts`
+- **Test names**: Start with "should"
+- **Describe blocks**: Use feature/scenario names
+
+## Resources
 
 - [Playwright Documentation](https://playwright.dev/)
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
 - [Testing Library Queries](https://testing-library.com/docs/queries/about)
-
-## Contributing
-
-When adding new E2E tests:
-
-1. Place tests in `tests/e2e/`
-2. Follow naming convention: `*.spec.ts`
-3. Group related tests in `describe()` blocks
-4. Use semantic selectors and accessibility queries
-5. Create helper functions for common actions
-6. Document test purpose and expected behavior
-
-## Troubleshooting
-
-### Port 5173 already in use
-```bash
-# Kill process on port 5173
-lsof -ti :5173 | xargs kill -9
-```
-
-### Browser cache issues
-```bash
-# Clear Playwright cache
-rm -rf ~/.cache/ms-playwright/
-npx playwright install
-```
-
-### Tests not finding elements
-1. Check CSS selectors with browser inspector
-2. Ensure page fully loaded before interactions
-3. Use `waitForNavigation()` after page changes
+- [WCAG Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

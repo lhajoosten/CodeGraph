@@ -1,6 +1,6 @@
 .PHONY: help install dev test clean lint format type-check check build
 .PHONY: db-migrate db-reset db-test db-fix-auth db-init db-setup
-.PHONY: docker-up docker-down docker-logs docker-build docker-full
+.PHONY: docker-up docker-down docker-logs docker-build docker-full docker-clean
 
 # Variables
 DOCKER_DIR=../../docker
@@ -36,6 +36,7 @@ help:
 	@echo "  make docker-logs       - View Docker container logs"
 	@echo "  make docker-build      - Build Docker containers"
 	@echo "  make docker-full       - Rebuild and restart full Docker stack"
+	@echo "  make docker-clean      - Remove Docker volumes and artifacts (destructive)"
 	@echo ""
 	@echo "$(COLOR_BOLD)Code Quality:$(COLOR_RESET)"
 	@echo "  make check             - Full check pipeline (lint + format + type-check)"
@@ -125,16 +126,20 @@ docker-build:
 	@echo "$(COLOR_GREEN)✓ Docker containers built$(COLOR_RESET)"
 
 docker-full:
-	@echo "$(COLOR_GREEN)Rebuilding and restarting full Docker stack...$(COLOR_RESET)"
-	@echo "$(COLOR_YELLOW)Cleaning up old volumes (including node_modules cache)...$(COLOR_RESET)"
-	@cd $(DOCKER_DIR) && docker-compose down -v 2>/dev/null || true
+	@echo "$(COLOR_GREEN)Restarting full Docker stack (no volume cleanup)...$(COLOR_RESET)"
+	@cd $(DOCKER_DIR) && docker-compose down
 	@echo "$(COLOR_GREEN)Building Docker containers...$(COLOR_RESET)"
 	@$(MAKE) docker-build
 	@cd $(DOCKER_DIR) && docker-compose up -d
 	@sleep 5
 	@$(MAKE) db-fix-auth
 	@$(MAKE) db-migrate
-	@echo "$(COLOR_GREEN)✓ Full Docker stack restarted$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)✓ Full Docker stack restarted (volumes/data preserved)$(COLOR_RESET)"
+
+docker-clean:
+	@echo "$(COLOR_YELLOW)Cleaning up Docker volumes and artifacts (destructive!)...$(COLOR_RESET)"
+	@cd $(DOCKER_DIR) && docker-compose down -v 2>/dev/null || true
+	@echo "$(COLOR_GREEN)✓ Docker volumes and artifacts cleaned$(COLOR_RESET)"
 
 # Code Quality
 lint:

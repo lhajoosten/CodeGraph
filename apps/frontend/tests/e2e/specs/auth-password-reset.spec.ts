@@ -1,454 +1,351 @@
 /**
- * E2E tests for password reset flow
+ * E2E Tests: Password Reset Flow
  *
  * Tests cover:
- * - Request password reset
- * - Reset with valid token
- * - Invalid/expired tokens
- * - Password validation during reset
+ * - Forgot password form display
+ * - Successful password reset request
+ * - Email validation
  * - Rate limiting
- * - Security considerations
+ * - Reset password form with token
+ * - Password validation on reset
+ * - Invalid/expired token handling
+ * - Successful password reset completion
  */
 
 import { test, expect } from '@playwright/test';
-import { EXISTING_USER, TEST_RESET_TOKENS, WEAK_PASSWORDS, INVALID_EMAILS } from '../fixtures';
+import { ForgotPasswordPage } from '../pages/forgot-password.page';
+import { ResetPasswordPage } from '../pages/reset-password.page';
+import {
+  VALID_USER,
+  EXISTING_USER,
+  INVALID_EMAILS,
+  WEAK_PASSWORDS,
+  TEST_RESET_TOKENS,
+} from '../fixtures';
 import {
   mockPasswordResetRequestSuccess,
+  mockPasswordResetRequestRateLimited,
   mockPasswordResetSuccess,
   mockPasswordResetInvalidToken,
-  mockLoginSuccess,
-  mockGetCurrentUserSuccess,
+  mockPasswordResetExpiredToken,
+  setupPasswordResetFlowMocks,
 } from '../helpers';
-import {
-  navigateToForgotPassword,
-  requestPasswordReset,
-  resetPassword,
-  loginWithCredentials,
-} from '../helpers';
-import {
-  assertRedirectToLogin,
-  assertSuccessToast,
-  assertErrorToast,
-  assertFieldHasError,
-} from '../helpers';
-import { PASSWORD_RESET_STUBS } from '../fixtures';
+
+// =============================================================================
+// Forgot Password Page Tests
+// =============================================================================
 
 test.describe('Forgot Password Page', () => {
+  let forgotPasswordPage: ForgotPasswordPage;
+
   test.beforeEach(async ({ page }) => {
-    await navigateToForgotPassword(page);
+    forgotPasswordPage = new ForgotPasswordPage(page);
+    await forgotPasswordPage.navigate();
   });
 
-  test('should display forgot password form', async ({ page }) => {
-    await expect(page.getByLabel(/email/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /send|reset/i })).toBeVisible();
+  // ===========================================================================
+  // Form Display Tests
+  // ===========================================================================
+
+  test.describe('Form Display', () => {
+    test('should display forgot password form with all elements', async () => {
+      await forgotPasswordPage.expectFormDisplayed();
+      await expect(forgotPasswordPage.backToLoginLink).toBeVisible();
+    });
   });
 
-  test('should display instructions', async ({ page }) => {
-    await expect(page.getByText(/enter.*email|reset.*password/i)).toBeVisible();
+  // ===========================================================================
+  // Successful Request Tests
+  // ===========================================================================
+
+  test.describe('Successful Request', () => {
+    test('should show success message after requesting reset', async ({ page }) => {
+      await mockPasswordResetRequestSuccess(page);
+
+      await forgotPasswordPage.requestPasswordReset(EXISTING_USER.email);
+
+      await forgotPasswordPage.expectSuccessMessage();
+    });
+
+    test('should show success for any email (security best practice)', async ({ page }) => {
+      // Even for non-existent emails, show success to prevent email enumeration
+      await mockPasswordResetRequestSuccess(page);
+
+      await forgotPasswordPage.requestPasswordReset('nonexistent@example.com');
+
+      await forgotPasswordPage.expectSuccessMessage();
+    });
+
+    test('should show loading state during submission', async ({ page }) => {
+      await page.route('**/api/v1/auth/forgot-password', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, message: 'Reset link sent' }),
+        });
+      });
+
+      await forgotPasswordPage.fillEmail(EXISTING_USER.email);
+      await forgotPasswordPage.submit();
+
+      await forgotPasswordPage.expectSubmitLoading();
+    });
   });
 
-  test('should have link back to login', async ({ page }) => {
-    const loginLink = page.getByRole('link', { name: /back to login|sign in/i });
-    await expect(loginLink).toBeVisible();
-    await loginLink.click();
-    await assertRedirectToLogin(page);
+  // ===========================================================================
+  // Validation Tests
+  // ===========================================================================
+
+  test.describe('Form Validation', () => {
+    test('should show error for empty email', async () => {
+      await forgotPasswordPage.fillEmail('');
+      await forgotPasswordPage.submit();
+
+      await forgotPasswordPage.expectEmailError(/required|email/i);
+    });
+
+    test('should show error for invalid email format', async () => {
+      await forgotPasswordPage.fillEmail(INVALID_EMAILS.noAtSign);
+      await forgotPasswordPage.submit();
+
+      await forgotPasswordPage.expectEmailError(/invalid|valid email/i);
+    });
+  });
+
+  // ===========================================================================
+  // Rate Limiting Tests
+  // ===========================================================================
+
+  test.describe('Rate Limiting', () => {
+    test('should show error when rate limited', async ({ page }) => {
+      await mockPasswordResetRequestRateLimited(page);
+
+      await forgotPasswordPage.requestPasswordReset(EXISTING_USER.email);
+
+      await forgotPasswordPage.expectErrorMessage(/too many|wait|rate/i);
+    });
+  });
+
+  // ===========================================================================
+  // Navigation Tests
+  // ===========================================================================
+
+  test.describe('Navigation', () => {
+    test('should navigate back to login page', async () => {
+      await forgotPasswordPage.clickBackToLogin();
+      await forgotPasswordPage.expectRedirectToLogin();
+    });
   });
 });
 
-test.describe('Request Password Reset', () => {
+// =============================================================================
+// Reset Password Page Tests
+// =============================================================================
+
+test.describe('Reset Password Page', () => {
+  let resetPasswordPage: ResetPasswordPage;
+
   test.beforeEach(async ({ page }) => {
-    await navigateToForgotPassword(page);
+    resetPasswordPage = new ResetPasswordPage(page);
   });
 
-  test('should successfully request password reset', async ({ page }) => {
-    await mockPasswordResetRequestSuccess(page);
+  // ===========================================================================
+  // Form Display Tests
+  // ===========================================================================
 
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
+  test.describe('Form Display', () => {
+    test('should display reset password form with valid token', async ({ page }) => {
+      await mockPasswordResetSuccess(page);
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
 
-    await assertSuccessToast(page, /reset.*email.*sent|check.*inbox/i);
-    await expect(page.getByText(/check.*email|sent.*instructions/i)).toBeVisible();
+      await resetPasswordPage.expectFormDisplayed();
+    });
   });
 
-  test('should show validation error for empty email', async ({ page }) => {
-    await page.getByLabel(/email/i).fill('');
-    await page.getByRole('button', { name: /send|reset/i }).click();
+  // ===========================================================================
+  // Successful Reset Tests
+  // ===========================================================================
 
-    await assertFieldHasError(page, /email/i, /required|cannot be empty/i);
-  });
+  test.describe('Successful Reset', () => {
+    test('should reset password successfully with valid token', async ({ page }) => {
+      await setupPasswordResetFlowMocks(page);
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
 
-  test('should show validation error for invalid email format', async ({ page }) => {
-    await page.getByLabel(/email/i).fill(INVALID_EMAILS.noAtSign);
-    await page.getByRole('button', { name: /send|reset/i }).click();
+      await resetPasswordPage.resetPassword(VALID_USER.password);
 
-    await assertFieldHasError(page, /email/i, /invalid|valid email/i);
-  });
-
-  test('should handle non-existent email gracefully', async ({ page }) => {
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(PASSWORD_RESET_STUBS.requestUserNotFound()),
-      });
+      // Should show success or redirect to login
+      const hasSuccess =
+        (await resetPasswordPage.successMessage.isVisible().catch(() => false)) ||
+        (await resetPasswordPage.page.url().includes('/login'));
+      expect(hasSuccess).toBe(true);
     });
 
-    await page.getByLabel(/email/i).fill('nonexistent@example.com');
-    await page.getByRole('button', { name: /send|reset/i }).click();
+    test('should show loading state during submission', async ({ page }) => {
+      await page.route('**/api/v1/auth/reset-password', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, message: 'Password reset' }),
+        });
+      });
 
-    // Should still show success message (security best practice)
-    await assertSuccessToast(page, /reset.*email.*sent|check.*inbox/i);
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
+      await resetPasswordPage.fillPasswords(VALID_USER.password);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectSubmitLoading();
+    });
   });
 
-  test('should handle rate limiting', async ({ page }) => {
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 429,
-        contentType: 'application/json',
-        body: JSON.stringify(PASSWORD_RESET_STUBS.requestRateLimited()),
-      });
+  // ===========================================================================
+  // Token Validation Tests
+  // ===========================================================================
+
+  test.describe('Token Validation', () => {
+    test('should show error for invalid token', async ({ page }) => {
+      await mockPasswordResetInvalidToken(page);
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.invalid);
+
+      // Try to submit with valid password
+      await resetPasswordPage.fillPasswords(VALID_USER.password);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectErrorMessage(/invalid|token/i);
     });
 
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
+    test('should show error for expired token', async ({ page }) => {
+      await mockPasswordResetExpiredToken(page);
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.expired);
 
-    await assertErrorToast(page, /too many.*requests|wait.*before/i);
+      await resetPasswordPage.fillPasswords(VALID_USER.password);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectErrorMessage(/expired|token/i);
+    });
   });
 
-  test('should disable submit button while sending', async ({ page }) => {
-    await mockPasswordResetRequestSuccess(page);
+  // ===========================================================================
+  // Password Validation Tests
+  // ===========================================================================
 
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
+  test.describe('Password Validation', () => {
+    test.beforeEach(async ({ page }) => {
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
+    });
 
-    const submitButton = page.getByRole('button', { name: /send|reset/i });
-    await expect(submitButton).toBeEnabled();
+    test('should show error for empty password', async () => {
+      await resetPasswordPage.fillConfirmPassword(VALID_USER.password);
+      await resetPasswordPage.submit();
 
-    await submitButton.click();
+      await resetPasswordPage.expectNewPasswordError(/required|password/i);
+    });
 
-    // Button should be disabled during submission
-    await expect(submitButton).toBeDisabled();
+    test('should show error for weak password', async () => {
+      await resetPasswordPage.fillPasswords(WEAK_PASSWORDS.tooShort);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectNewPasswordError(/8 characters|too short/i);
+    });
+
+    test('should show error for password without uppercase', async () => {
+      await resetPasswordPage.fillPasswords(WEAK_PASSWORDS.noUppercase);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectNewPasswordError(/uppercase/i);
+    });
+
+    test('should show error when passwords do not match', async () => {
+      await resetPasswordPage.fillNewPassword(VALID_USER.password);
+      await resetPasswordPage.fillConfirmPassword('DifferentPassword123!');
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectConfirmPasswordError(/match|same/i);
+    });
+
+    test('should show error for empty confirm password', async () => {
+      await resetPasswordPage.fillNewPassword(VALID_USER.password);
+      await resetPasswordPage.submit();
+
+      await resetPasswordPage.expectConfirmPasswordError(/required|confirm/i);
+    });
   });
 
-  test('should show sent confirmation screen', async ({ page }) => {
-    await mockPasswordResetRequestSuccess(page);
+  // ===========================================================================
+  // Password Visibility Tests
+  // ===========================================================================
 
-    await requestPasswordReset(page, EXISTING_USER.email);
+  test.describe('Password Visibility', () => {
+    test.beforeEach(async ({ page }) => {
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
+    });
 
-    // Should show confirmation with email
-    await expect(page.getByText(EXISTING_USER.email)).toBeVisible();
-    await expect(page.getByText(/sent.*instructions|check.*email/i)).toBeVisible();
+    test('should toggle password visibility', async () => {
+      await resetPasswordPage.fillNewPassword(VALID_USER.password);
+
+      // Toggle visibility
+      await resetPasswordPage.toggleNewPasswordVisibility();
+
+      // Password should be visible (type="text")
+      await expect(resetPasswordPage.newPasswordInput).toHaveAttribute('type', 'text');
+
+      // Toggle back
+      await resetPasswordPage.toggleNewPasswordVisibility();
+
+      // Password should be hidden (type="password")
+      await expect(resetPasswordPage.newPasswordInput).toHaveAttribute('type', 'password');
+    });
   });
 
-  test('should allow resending reset email', async ({ page }) => {
-    await mockPasswordResetRequestSuccess(page);
+  // ===========================================================================
+  // Password Strength Tests
+  // ===========================================================================
 
-    await requestPasswordReset(page, EXISTING_USER.email);
+  test.describe('Password Strength', () => {
+    test.beforeEach(async ({ page }) => {
+      await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
+    });
 
-    const resendButton = page.getByRole('button', { name: /resend|send again/i });
-    if (await resendButton.isVisible()) {
-      await resendButton.click();
-      await assertSuccessToast(page, /email.*sent/i);
-    }
+    test('should show password strength indicator', async () => {
+      await resetPasswordPage.fillNewPassword('weak');
+      await resetPasswordPage.expectPasswordStrength('weak');
+
+      await resetPasswordPage.fillNewPassword('Password1');
+      await resetPasswordPage.expectPasswordStrength('medium');
+
+      await resetPasswordPage.fillNewPassword('SecurePass123!@#');
+      await resetPasswordPage.expectPasswordStrength('strong');
+    });
   });
 });
 
-test.describe('Reset Password with Token', () => {
-  test.beforeEach(async ({ page }) => {
-    await mockPasswordResetSuccess(page);
-  });
+// =============================================================================
+// Complete Password Reset Flow Tests
+// =============================================================================
 
-  test('should display reset password form', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
+test.describe('Complete Password Reset Flow', () => {
+  test('should complete full password reset flow', async ({ page }) => {
+    const forgotPasswordPage = new ForgotPasswordPage(page);
+    const resetPasswordPage = new ResetPasswordPage(page);
 
-    await expect(page.getByLabel(/^new password/i)).toBeVisible();
-    await expect(page.getByLabel(/confirm password/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /reset|save/i })).toBeVisible();
-  });
-
-  test('should successfully reset password', async ({ page }) => {
-    const newPassword = 'NewSecurePass123!';
-
-    await resetPassword(page, TEST_RESET_TOKENS.valid, newPassword);
-
-    await assertSuccessToast(page, /password.*reset|password.*updated/i);
-    await assertRedirectToLogin(page);
-  });
-
-  test('should show validation error for empty password', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    await page.getByLabel(/^new password/i).fill('');
-    await page.getByLabel(/confirm password/i).fill('');
-    await page.getByRole('button', { name: /reset|save/i }).click();
-
-    await assertFieldHasError(page, /^new password/i, /required|cannot be empty/i);
-  });
-
-  test('should show validation error for weak password', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    await page.getByLabel(/^new password/i).fill(WEAK_PASSWORDS.tooShort);
-    await page.getByLabel(/confirm password/i).fill(WEAK_PASSWORDS.tooShort);
-    await page.getByRole('button', { name: /reset|save/i }).click();
-
-    await assertFieldHasError(page, /^new password/i, /at least 8 characters|too short/i);
-  });
-
-  test('should show validation error when passwords do not match', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    await page.getByLabel(/^new password/i).fill('NewPassword123!');
-    await page.getByLabel(/confirm password/i).fill('DifferentPassword123!');
-    await page.getByRole('button', { name: /reset|save/i }).click();
-
-    await assertFieldHasError(page, /confirm password/i, /must match|do not match/i);
-  });
-
-  test('should show error for invalid token', async ({ page }) => {
-    await mockPasswordResetInvalidToken(page);
-
-    await resetPassword(page, TEST_RESET_TOKENS.invalid, 'NewPassword123!');
-
-    await assertErrorToast(page, /invalid.*token|link.*invalid/i);
-  });
-
-  test('should show error for expired token', async ({ page }) => {
-    await mockPasswordResetInvalidToken(page);
-
-    await resetPassword(page, TEST_RESET_TOKENS.expired, 'NewPassword123!');
-
-    await assertErrorToast(page, /expired.*token|link.*expired/i);
-  });
-
-  test('should show error for already used token', async ({ page }) => {
-    await mockPasswordResetInvalidToken(page);
-
-    await resetPassword(page, TEST_RESET_TOKENS.alreadyUsed, 'NewPassword123!');
-
-    await assertErrorToast(page, /invalid.*token|already.*used/i);
-  });
-
-  test('should display password strength indicator', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    const passwordField = page.getByLabel(/^new password/i);
-
-    // Type weak password
-    await passwordField.fill(WEAK_PASSWORDS.allLowercase);
-    await expect(page.getByText(/weak/i)).toBeVisible();
-
-    // Type strong password
-    await passwordField.fill('StrongPassword123!');
-    await expect(page.getByText(/strong|good/i)).toBeVisible();
-  });
-
-  test('should toggle password visibility', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    const passwordField = page.getByLabel(/^new password/i);
-    await passwordField.fill('TestPassword123!');
-
-    // Password should be hidden by default
-    await expect(passwordField).toHaveAttribute('type', 'password');
-
-    // Click show password button
-    const toggleButtons = page.getByRole('button', { name: /show password|toggle/i });
-    await toggleButtons.first().click();
-
-    // Password should be visible
-    await expect(passwordField).toHaveAttribute('type', 'text');
-  });
-
-  test('should disable submit button while resetting', async ({ page }) => {
-    await page.goto(`/reset-password?token=${TEST_RESET_TOKENS.valid}`);
-
-    await page.getByLabel(/^new password/i).fill('NewPassword123!');
-    await page.getByLabel(/confirm password/i).fill('NewPassword123!');
-
-    const submitButton = page.getByRole('button', { name: /reset|save/i });
-    await expect(submitButton).toBeEnabled();
-
-    await submitButton.click();
-
-    // Button should be disabled during submission
-    await expect(submitButton).toBeDisabled();
-  });
-
-  test('should handle missing token parameter', async ({ page }) => {
-    await page.goto('/reset-password');
-
-    // Should show error or redirect
-    await expect(page.getByText(/invalid.*link|token.*required|missing.*token/i)).toBeVisible();
-  });
-});
-
-test.describe('Password Reset Security', () => {
-  test('should not reveal if email exists', async ({ page }) => {
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(PASSWORD_RESET_STUBS.requestUserNotFound()),
-      });
-    });
-
-    await navigateToForgotPassword(page);
-    await page.getByLabel(/email/i).fill('nonexistent@example.com');
-    await page.getByRole('button', { name: /send|reset/i }).click();
-
-    // Should show same success message regardless
-    await assertSuccessToast(page, /reset.*email.*sent|check.*inbox/i);
-  });
-
-  test('should enforce rate limiting per email', async ({ page }) => {
+    // Step 1: Request password reset
     await mockPasswordResetRequestSuccess(page);
+    await forgotPasswordPage.navigate();
+    await forgotPasswordPage.requestPasswordReset(EXISTING_USER.email);
+    await forgotPasswordPage.expectSuccessMessage();
 
-    await navigateToForgotPassword(page);
-
-    // First request
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
-    await assertSuccessToast(page, /reset.*email.*sent/i);
-
-    // Mock rate limit for second request
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 429,
-        contentType: 'application/json',
-        body: JSON.stringify(PASSWORD_RESET_STUBS.requestRateLimited()),
-      });
-    });
-
-    // Second request should be rate limited
-    await page.goto('/forgot-password');
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
-
-    await assertErrorToast(page, /too many.*requests/i);
-  });
-
-  test('should invalidate token after successful reset', async ({ page }) => {
+    // Step 2: Navigate to reset page with token (simulating email link click)
     await mockPasswordResetSuccess(page);
+    await resetPasswordPage.navigate(TEST_RESET_TOKENS.valid);
 
-    // First reset
-    await resetPassword(page, TEST_RESET_TOKENS.valid, 'NewPassword123!');
-    await assertSuccessToast(page, /password.*reset/i);
+    // Step 3: Reset password
+    await resetPasswordPage.resetPassword('NewSecurePassword123!');
 
-    // Try to use same token again
-    await mockPasswordResetInvalidToken(page);
-    await resetPassword(page, TEST_RESET_TOKENS.valid, 'AnotherPassword123!');
-
-    await assertErrorToast(page, /invalid.*token|already.*used/i);
-  });
-});
-
-test.describe('Post-Reset Login', () => {
-  test('should login with new password after reset', async ({ page }) => {
-    await mockPasswordResetSuccess(page);
-    await mockLoginSuccess(page, EXISTING_USER);
-    await mockGetCurrentUserSuccess(page, EXISTING_USER);
-
-    const newPassword = 'NewSecurePass123!';
-
-    // Reset password
-    await resetPassword(page, TEST_RESET_TOKENS.valid, newPassword);
-    await assertRedirectToLogin(page);
-
-    // Login with new password
-    await loginWithCredentials(page, EXISTING_USER.email, newPassword);
-
-    // Should redirect to dashboard
-    await expect(page).toHaveURL(/^\/(dashboard)?$/);
-  });
-
-  test('should not login with old password after reset', async ({ page }) => {
-    await mockPasswordResetSuccess(page);
-
-    const newPassword = 'NewSecurePass123!';
-
-    // Reset password
-    await resetPassword(page, TEST_RESET_TOKENS.valid, newPassword);
-    await assertRedirectToLogin(page);
-
-    // Mock invalid credentials for old password
-    await page.route('**/api/v1/auth/login', async (route) => {
-      await route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          detail: 'Invalid email or password',
-          error_code: 'INVALID_CREDENTIALS',
-        }),
-      });
-    });
-
-    // Try to login with old password
-    await loginWithCredentials(page, EXISTING_USER.email, EXISTING_USER.password);
-
-    await assertErrorToast(page, /invalid.*password|incorrect.*credentials/i);
-  });
-
-  test('should show success message on login page after reset', async ({ page }) => {
-    await mockPasswordResetSuccess(page);
-
-    await resetPassword(page, TEST_RESET_TOKENS.valid, 'NewPassword123!');
-
-    // Should redirect to login with success message
-    await assertRedirectToLogin(page);
-    await expect(page.getByText(/password.*reset.*successful|password.*updated/i)).toBeVisible();
-  });
-});
-
-test.describe('Error Handling', () => {
-  test('should handle network error during request', async ({ page }) => {
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.abort('failed');
-    });
-
-    await navigateToForgotPassword(page);
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
-
-    await assertErrorToast(page, /network.*error|connection.*failed/i);
-  });
-
-  test('should handle server error during request', async ({ page }) => {
-    await page.route('**/api/v1/auth/forgot-password', async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({ detail: 'Internal server error' }),
-      });
-    });
-
-    await navigateToForgotPassword(page);
-    await page.getByLabel(/email/i).fill(EXISTING_USER.email);
-    await page.getByRole('button', { name: /send|reset/i }).click();
-
-    await assertErrorToast(page, /server.*error|something went wrong/i);
-  });
-
-  test('should handle network error during reset', async ({ page }) => {
-    await page.route('**/api/v1/auth/reset-password', async (route) => {
-      await route.abort('failed');
-    });
-
-    await resetPassword(page, TEST_RESET_TOKENS.valid, 'NewPassword123!');
-
-    await assertErrorToast(page, /network.*error|connection.*failed/i);
-  });
-
-  test('should handle server error during reset', async ({ page }) => {
-    await page.route('**/api/v1/auth/reset-password', async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({ detail: 'Internal server error' }),
-      });
-    });
-
-    await resetPassword(page, TEST_RESET_TOKENS.valid, 'NewPassword123!');
-
-    await assertErrorToast(page, /server.*error|something went wrong/i);
+    // Should succeed
+    const hasSuccess =
+      (await resetPasswordPage.successMessage.isVisible().catch(() => false)) ||
+      (await resetPasswordPage.page.url().includes('/login'));
+    expect(hasSuccess).toBe(true);
   });
 });

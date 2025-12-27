@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 import { isAxiosError } from 'axios';
-import { Link, RouterProvider, createRouter } from '@tanstack/react-router';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from '@/routeTree.gen.ts';
 import { RouteContext } from '@/lib/types.ts';
 
@@ -24,19 +24,6 @@ export const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   context: { user: null } satisfies RouteContext,
-  defaultErrorComponent: () => (
-    <div className="flex size-full flex-col items-center justify-center gap-6">
-      {/*<Logo />*/}
-      <div className="flex flex-col items-center justify-center gap-3">
-        <h1 className="text-2xl font-bold text-text-primary">Oops! Something went wrong.</h1>
-        <p className="max-w-lg text-center text-sm text-text-secondary">
-          An unexpected error has occurred. Please try again later or contact support if the problem
-          persists.
-        </p>
-      </div>
-      <Link to="/">Return Home</Link>
-    </div>
-  ),
 });
 
 // Register the router instance for type safety

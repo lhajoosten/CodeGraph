@@ -10,18 +10,14 @@ const meta = {
       control: 'select',
       options: [
         'default',
-        'secondary',
-        'ghost',
         'destructive',
         'outline',
+        'secondary',
+        'ghost',
         'link',
         'success',
         'warning',
         'info',
-        'luminous',
-        'luminousGhost',
-        'luminousSecondary',
-        'luminousDanger',
       ],
     },
     size: {
@@ -44,87 +40,57 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default Button - Yellow/Gold theme
+ * Default Button - Primary Luminous style with cyan glow
  */
 export const Default: Story = {
   args: {
     variant: 'default',
-    children: 'Default Button',
-  },
-};
-
-/**
- * Primary Luminous Button - Cyan with glow
- */
-export const Luminous: Story = {
-  args: {
-    variant: 'luminous',
     children: 'Sign In',
   },
 };
 
 /**
- * Luminous Ghost Button - Teal border with glow
+ * Secondary Button - Elevated background
  */
-export const LuminousGhost: Story = {
+export const Secondary: Story = {
   args: {
-    variant: 'luminousGhost',
-    children: 'Sign Up',
-  },
-};
-
-/**
- * Luminous Secondary Button - Elevated background
- */
-export const LuminousSecondary: Story = {
-  args: {
-    variant: 'luminousSecondary',
+    variant: 'secondary',
     children: 'Cancel',
   },
 };
 
 /**
- * Luminous Danger Button - Red with error glow
+ * Ghost Button - Teal border with glow
  */
-export const LuminousDanger: Story = {
+export const Ghost: Story = {
   args: {
-    variant: 'luminousDanger',
+    variant: 'ghost',
+    children: 'Learn More',
+  },
+};
+
+/**
+ * Outline Button - Border style
+ */
+export const Outline: Story = {
+  args: {
+    variant: 'outline',
+    children: 'Sign Up',
+  },
+};
+
+/**
+ * Destructive Button - Red with error glow
+ */
+export const Destructive: Story = {
+  args: {
+    variant: 'destructive',
     children: 'Delete Account',
   },
 };
 
 /**
- * Secondary Button - Yellow theme
- */
-export const Secondary: Story = {
-  args: {
-    variant: 'secondary',
-    children: 'Secondary',
-  },
-};
-
-/**
- * Outline Button - Yellow theme
- */
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-    children: 'Outline',
-  },
-};
-
-/**
- * Ghost Button - Yellow theme
- */
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-    children: 'Ghost',
-  },
-};
-
-/**
- * Success Button
+ * Success Button - Green confirmation
  */
 export const Success: Story = {
   args: {
@@ -134,7 +100,7 @@ export const Success: Story = {
 };
 
 /**
- * Warning Button
+ * Warning Button - Orange caution
  */
 export const Warning: Story = {
   args: {
@@ -144,27 +110,7 @@ export const Warning: Story = {
 };
 
 /**
- * Destructive Button
- */
-export const Destructive: Story = {
-  args: {
-    variant: 'destructive',
-    children: 'Delete',
-  },
-};
-
-/**
- * Link Button
- */
-export const Link: Story = {
-  args: {
-    variant: 'link',
-    children: 'Forgot password?',
-  },
-};
-
-/**
- * Info Button
+ * Info Button - Blue informational
  */
 export const Info: Story = {
   args: {
@@ -174,11 +120,21 @@ export const Info: Story = {
 };
 
 /**
+ * Link Button - Text link style
+ */
+export const Link: Story = {
+  args: {
+    variant: 'link',
+    children: 'Forgot password?',
+  },
+};
+
+/**
  * Small Size
  */
 export const Small: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     size: 'sm',
     children: 'Small Button',
   },
@@ -189,7 +145,7 @@ export const Small: Story = {
  */
 export const Large: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     size: 'lg',
     children: 'Large Button',
   },
@@ -200,7 +156,7 @@ export const Large: Story = {
  */
 export const ExtraLarge: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     size: 'xl',
     children: 'Extra Large Button',
   },
@@ -211,7 +167,7 @@ export const ExtraLarge: Story = {
  */
 export const FullWidth: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     fullWidth: true,
     children: 'Full Width Button',
   },
@@ -222,7 +178,7 @@ export const FullWidth: Story = {
  */
 export const Disabled: Story = {
   args: {
-    variant: 'luminous',
+    variant: 'default',
     disabled: true,
     children: 'Disabled Button',
   },
@@ -236,37 +192,37 @@ export const LuminousVariantsShowcase: Story = {
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-3">
         <p className="font-semibold text-text-secondary-lum">Primary Action</p>
-        <Button variant="luminous">Sign In</Button>
+        <Button variant="default">Sign In</Button>
       </div>
 
       <div className="space-y-3">
         <p className="font-semibold text-text-secondary-lum">Secondary Action</p>
-        <Button variant="luminousSecondary">Cancel</Button>
+        <Button variant="secondary">Cancel</Button>
       </div>
 
       <div className="space-y-3">
         <p className="font-semibold text-text-secondary-lum">Ghost / Outline</p>
-        <Button variant="luminousGhost">Learn More</Button>
+        <Button variant="ghost">Learn More</Button>
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Danger</p>
-        <Button variant="luminousDanger">Delete</Button>
+        <p className="font-semibold text-text-secondary-lum">Destructive</p>
+        <Button variant="destructive">Delete</Button>
       </div>
 
       <div className="space-y-3">
         <p className="font-semibold text-text-secondary-lum">Size Variants</p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="luminous" size="sm">
+          <Button variant="default" size="sm">
             Small
           </Button>
-          <Button variant="luminous" size="default">
+          <Button variant="default" size="default">
             Default
           </Button>
-          <Button variant="luminous" size="lg">
+          <Button variant="default" size="lg">
             Large
           </Button>
-          <Button variant="luminous" size="xl">
+          <Button variant="default" size="xl">
             X-Large
           </Button>
         </div>
@@ -275,8 +231,8 @@ export const LuminousVariantsShowcase: Story = {
       <div className="space-y-3">
         <p className="font-semibold text-text-secondary-lum">States</p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="luminous">Normal</Button>
-          <Button variant="luminous" disabled>
+          <Button variant="default">Normal</Button>
+          <Button variant="default" disabled>
             Disabled
           </Button>
         </div>
@@ -293,29 +249,18 @@ export const AllVariants: Story = {
     <div className="w-full max-w-4xl space-y-12">
       <section className="space-y-4">
         <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Luminous Theme (New)
+          Luminous Theme Variants
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="luminous">Luminous Primary</Button>
-          <Button variant="luminousGhost">Luminous Ghost</Button>
-          <Button variant="luminousSecondary">Luminous Secondary</Button>
-          <Button variant="luminousDanger">Luminous Danger</Button>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
-          Yellow Theme (Existing)
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="default">Default</Button>
-          <Button variant="secondary">Secondary</Button>
+          <Button variant="default">Default (Primary)</Button>
           <Button variant="ghost">Ghost</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="destructive">Destructive</Button>
           <Button variant="outline">Outline</Button>
+          <Button variant="link">Link</Button>
           <Button variant="success">Success</Button>
           <Button variant="warning">Warning</Button>
           <Button variant="info">Info</Button>
-          <Button variant="destructive">Destructive</Button>
         </div>
       </section>
 
@@ -324,16 +269,16 @@ export const AllVariants: Story = {
           Size Variants
         </h3>
         <div className="space-y-3">
-          <Button variant="luminous" size="sm">
+          <Button variant="default" size="sm">
             Small
           </Button>
-          <Button variant="luminous" size="default">
+          <Button variant="default" size="default">
             Default
           </Button>
-          <Button variant="luminous" size="lg">
+          <Button variant="default" size="lg">
             Large
           </Button>
-          <Button variant="luminous" size="xl">
+          <Button variant="default" size="xl">
             X-Large
           </Button>
         </div>

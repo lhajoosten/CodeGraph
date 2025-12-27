@@ -78,6 +78,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         icon={EnvelopeIcon}
         disabled={isSubmitting || loginMutation.isPending}
         error={errors.email?.message}
+        autoComplete="email"
         {...register('email')}
       />
 
@@ -91,6 +92,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             disabled={isSubmitting || loginMutation.isPending}
             error={errors.password?.message}
             className="pr-10"
+            autoComplete="current-password"
             {...register('password')}
           />
           <button

@@ -88,4 +88,11 @@ i18n
     },
   });
 
+// Ensure i18n is initialized synchronously
+if (!i18n.isInitialized) {
+  // Force synchronous initialization if async init hasn't completed
+  const lng = localStorage.getItem('i18nextLng') || 'en';
+  i18n.changeLanguage(lng);
+}
+
 export default i18n;

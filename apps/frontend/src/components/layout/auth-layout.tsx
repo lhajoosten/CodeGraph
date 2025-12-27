@@ -14,7 +14,7 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
     <div
       className={cn(
         `
-          flex min-h-screen flex-col items-center justify-center bg-background
+          flex min-h-screen flex-col items-center justify-center bg-bg-primary-lum
           px-4 py-12
         `,
         `
@@ -30,20 +30,20 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
           <Link to="/" className="flex items-center gap-3">
             <div
               className={`
-                flex h-12 w-12 items-center justify-center rounded-xl bg-primary
+                flex h-12 w-12 items-center justify-center rounded-xl bg-brand-cyan
                 shadow-lg
               `}
             >
-              <span className="text-2xl font-bold text-text-button">C</span>
+              <span className="text-2xl font-bold text-white">C</span>
             </div>
-            <span className="text-3xl font-bold text-primary">{APP_NAME}</span>
+            <span className="text-3xl font-bold text-brand-cyan">{APP_NAME}</span>
           </Link>
         </div>
 
         {/* Content */}
         <div
           className={`
-            rounded-auth border border-border bg-background-2 p-8 shadow-card
+            rounded-auth border border-border-steel bg-bg-steel p-8 shadow-card
           `}
         >
           {children}
@@ -56,8 +56,8 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
               to="/login"
               search={{ redirect: '/' }}
               className={`
-                text-sm text-text-secondary transition-colors
-                hover:text-primary
+                text-sm text-text-secondary-lum transition-colors
+                hover:text-brand-cyan
               `}
             >
               &larr; Back to login
@@ -79,8 +79,8 @@ interface AuthTitleProps {
 function AuthTitle({ title, description, className }: AuthTitleProps) {
   return (
     <div className={cn('mb-6 space-y-2 text-center', className)}>
-      <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
-      {description && <p className="text-sm text-text-secondary">{description}</p>}
+      <h1 className="text-2xl font-bold text-text-primary-lum">{title}</h1>
+      {description && <p className="text-sm text-text-secondary-lum">{description}</p>}
     </div>
   );
 }
@@ -93,7 +93,9 @@ interface AuthFooterProps {
 
 function AuthFooter({ children, className }: AuthFooterProps) {
   return (
-    <div className={cn('mt-6 text-center text-sm text-text-secondary', className)}>{children}</div>
+    <div className={cn('mt-6 text-center text-sm text-text-secondary-lum', className)}>
+      {children}
+    </div>
   );
 }
 
@@ -107,10 +109,10 @@ function AuthDivider({ text = 'or', className }: AuthDividerProps) {
   return (
     <div className={cn('relative my-6', className)}>
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-border" />
+        <span className="w-full border-t border-border-steel" />
       </div>
       <div className="relative flex justify-center text-xs uppercase">
-        <span className="bg-background-2 px-2 text-text-tertiary">{text}</span>
+        <span className="bg-bg-steel px-2 text-text-muted-lum">{text}</span>
       </div>
     </div>
   );

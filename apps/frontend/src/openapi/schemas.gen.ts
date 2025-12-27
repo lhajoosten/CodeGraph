@@ -725,6 +725,10 @@ export const UserResponseSchema = {
       type: 'boolean',
       title: 'Email Verified',
     },
+    two_factor_enabled: {
+      type: 'boolean',
+      title: 'Two Factor Enabled',
+    },
     first_name: {
       anyOf: [
         {
@@ -791,6 +795,7 @@ export const UserResponseSchema = {
     'is_active',
     'is_superuser',
     'email_verified',
+    'two_factor_enabled',
     'profile_completed',
     'created_at',
     'updated_at',

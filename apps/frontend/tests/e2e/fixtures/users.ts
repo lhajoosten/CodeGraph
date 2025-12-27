@@ -1,8 +1,8 @@
 /**
- * Test user data fixtures for E2E authentication tests
+ * Test User Data Fixtures for E2E Authentication Tests
  *
- * These fixtures provide deterministic test data for various authentication scenarios.
- * All data is intentionally predictable to ensure test stability.
+ * Deterministic test data for authentication scenarios.
+ * All values are predictable to ensure test stability.
  */
 
 export interface TestUser {
@@ -19,8 +19,12 @@ export interface TestUserWithProfile extends TestUser {
   emailVerified: boolean;
 }
 
+// =============================================================================
+// Primary Test Users
+// =============================================================================
+
 /**
- * Valid test user for standard registration and login flows
+ * Valid user for standard registration and login flows
  */
 export const VALID_USER: TestUser = {
   email: 'test.user@codegraph.dev',
@@ -31,11 +35,7 @@ export const VALID_USER: TestUser = {
 };
 
 export const VALID_USER_WITH_PROFILE: TestUserWithProfile = {
-  email: 'test.user@codegraph.dev',
-  password: 'SecurePass123!',
-  firstName: 'Test',
-  lastName: 'User',
-  displayName: 'Test User',
+  ...VALID_USER,
   profileComplete: true,
   twoFactorEnabled: false,
   emailVerified: true,
@@ -53,39 +53,6 @@ export const VALID_USER_ALT: TestUser = {
 };
 
 /**
- * User with special characters in name (edge case)
- */
-export const USER_WITH_SPECIAL_CHARS: TestUser = {
-  email: 'special.chars@codegraph.dev',
-  password: 'SpecialPass789!',
-  firstName: "O'Brien",
-  lastName: 'Müller-Schmidt',
-  displayName: "O'Brien Müller-Schmidt",
-};
-
-export const USER_WITH_SPECIAL_CHARS_WITH_PROFILE: TestUserWithProfile = {
-  email: 'special.chars@codegraph.dev',
-  password: 'SpecialPass789!',
-  firstName: "O'Brien",
-  lastName: 'Müller-Schmidt',
-  displayName: "O'Brien Müller-Schmidt",
-  profileComplete: true,
-  twoFactorEnabled: false,
-  emailVerified: true,
-};
-
-/**
- * User with maximum length fields (edge case)
- */
-export const USER_WITH_MAX_LENGTH: TestUser = {
-  email: 'very.long.email.address.for.testing@codegraph.development.example.com',
-  password: 'VeryLongPassword123456789!@#$%',
-  firstName: 'Verylongfirstnamethatreachesmaximumlength',
-  lastName: 'Verylonglastnamethatreachesmaximumlength',
-  displayName: 'Verylongfirstnamethatreachesmaximumlength Verylonglastnamethatreachesmaximumlength',
-};
-
-/**
  * User already registered in the system (for testing login)
  */
 export const EXISTING_USER: TestUserWithProfile = {
@@ -99,8 +66,12 @@ export const EXISTING_USER: TestUserWithProfile = {
   emailVerified: true,
 };
 
+// =============================================================================
+// Special Scenario Users
+// =============================================================================
+
 /**
- * User with 2FA enabled (for testing 2FA flows)
+ * User with 2FA enabled
  */
 export const USER_WITH_2FA: TestUserWithProfile = {
   email: 'user.with.2fa@codegraph.dev',
@@ -114,7 +85,7 @@ export const USER_WITH_2FA: TestUserWithProfile = {
 };
 
 /**
- * User with unverified email (for testing email verification)
+ * User with unverified email
  */
 export const USER_UNVERIFIED_EMAIL: TestUserWithProfile = {
   email: 'unverified@codegraph.dev',
@@ -128,7 +99,7 @@ export const USER_UNVERIFIED_EMAIL: TestUserWithProfile = {
 };
 
 /**
- * User with incomplete profile (for testing profile completion)
+ * User with incomplete profile
  */
 export const USER_INCOMPLETE_PROFILE: TestUserWithProfile = {
   email: 'incomplete@codegraph.dev',
@@ -141,76 +112,36 @@ export const USER_INCOMPLETE_PROFILE: TestUserWithProfile = {
   emailVerified: true,
 };
 
+// =============================================================================
+// Edge Case Users
+// =============================================================================
+
 /**
- * Invalid credentials for testing error scenarios
+ * User with special characters in name
  */
-export const INVALID_CREDENTIALS = {
-  email: 'nonexistent@codegraph.dev',
-  password: 'WrongPassword123!',
+export const USER_WITH_SPECIAL_CHARS: TestUser = {
+  email: 'special.chars@codegraph.dev',
+  password: 'SpecialPass789!',
+  firstName: "O'Brien",
+  lastName: 'Muller-Schmidt',
+  displayName: "O'Brien Muller-Schmidt",
 };
 
 /**
- * Weak passwords for testing validation
+ * User with maximum length fields
  */
-export const WEAK_PASSWORDS = {
-  tooShort: 'Pass1!',
-  noUppercase: 'password123!',
-  noLowercase: 'PASSWORD123!',
-  noNumber: 'PasswordOnly!',
-  noSpecialChar: 'Password123',
-  allLowercase: 'password',
-  empty: '',
+export const USER_WITH_MAX_LENGTH: TestUser = {
+  email: 'very.long.email.address.for.testing@codegraph.development.example.com',
+  password: 'VeryLongPassword123456789!',
+  firstName: 'Verylongfirstnamethatreachesmaximumlength',
+  lastName: 'Verylonglastnamethatreachesmaximumlength',
+  displayName: 'Verylongfirstnamethatreachesmaximumlength Verylonglastnamethatreachesmaximumlength',
 };
 
-/**
- * Invalid email formats for testing validation
- */
-export const INVALID_EMAILS = {
-  noAtSign: 'invalidemail.com',
-  noDomain: 'invalid@',
-  noLocal: '@domain.com',
-  multipleDots: 'invalid..email@domain.com',
-  specialChars: 'invalid$email@domain.com',
-  spaces: 'invalid email@domain.com',
-  empty: '',
-};
+// =============================================================================
+// OAuth Users
+// =============================================================================
 
-/**
- * Test 2FA codes (deterministic for E2E tests)
- */
-export const TEST_2FA_CODES = {
-  valid: '000000',
-  validAlternate: '123456',
-  invalid: '999999',
-  expired: '111111',
-  tooShort: '123',
-  tooLong: '1234567',
-  nonNumeric: 'ABCDEF',
-};
-
-/**
- * Test verification tokens (deterministic for E2E tests)
- */
-export const TEST_VERIFICATION_TOKENS = {
-  valid: 'valid-verification-token-12345',
-  expired: 'expired-verification-token-67890',
-  invalid: 'invalid-verification-token-00000',
-  alreadyUsed: 'used-verification-token-11111',
-};
-
-/**
- * Test reset password tokens (deterministic for E2E tests)
- */
-export const TEST_RESET_TOKENS = {
-  valid: 'valid-reset-token-abcdef',
-  expired: 'expired-reset-token-ghijkl',
-  invalid: 'invalid-reset-token-mnopqr',
-  alreadyUsed: 'used-reset-token-stuvwx',
-};
-
-/**
- * OAuth test user data
- */
 export const OAUTH_USER_GOOGLE: TestUserWithProfile = {
   email: 'oauth.google@gmail.com',
   password: '', // OAuth users don't have passwords
@@ -242,4 +173,96 @@ export const OAUTH_USER_MICROSOFT: TestUserWithProfile = {
   profileComplete: true,
   twoFactorEnabled: false,
   emailVerified: true,
+};
+
+// =============================================================================
+// Invalid Credentials
+// =============================================================================
+
+export const INVALID_CREDENTIALS = {
+  email: 'nonexistent@codegraph.dev',
+  password: 'WrongPassword123!',
+};
+
+// =============================================================================
+// Weak Passwords (for validation testing)
+// =============================================================================
+
+export const WEAK_PASSWORDS = {
+  tooShort: 'Pass1!',
+  noUppercase: 'password123!',
+  noLowercase: 'PASSWORD123!',
+  noNumber: 'PasswordOnly!',
+  noSpecialChar: 'Password123',
+  allLowercase: 'password',
+  empty: '',
+};
+
+// =============================================================================
+// Invalid Emails (for validation testing)
+// =============================================================================
+
+export const INVALID_EMAILS = {
+  noAtSign: 'invalidemail.com',
+  noDomain: 'invalid@',
+  noLocal: '@domain.com',
+  multipleDots: 'invalid..email@domain.com',
+  specialChars: 'invalid$email@domain.com',
+  spaces: 'invalid email@domain.com',
+  empty: '',
+};
+
+// =============================================================================
+// Test Codes and Tokens
+// =============================================================================
+
+/**
+ * Deterministic 2FA codes for testing
+ */
+export const TEST_2FA_CODES = {
+  valid: '000000',
+  validAlternate: '123456',
+  invalid: '999999',
+  expired: '111111',
+  tooShort: '123',
+  tooLong: '1234567',
+  nonNumeric: 'ABCDEF',
+};
+
+/**
+ * Test verification tokens
+ */
+export const TEST_VERIFICATION_TOKENS = {
+  valid: 'valid-verification-token-12345',
+  expired: 'expired-verification-token-67890',
+  invalid: 'invalid-verification-token-00000',
+  alreadyUsed: 'used-verification-token-11111',
+};
+
+/**
+ * Test reset password tokens
+ */
+export const TEST_RESET_TOKENS = {
+  valid: 'valid-reset-token-abcdef',
+  expired: 'expired-reset-token-ghijkl',
+  invalid: 'invalid-reset-token-mnopqr',
+  alreadyUsed: 'used-reset-token-stuvwx',
+};
+
+/**
+ * Test OAuth state tokens
+ */
+export const TEST_OAUTH_STATE = {
+  valid: 'valid-oauth-state-token',
+  invalid: 'invalid-oauth-state-token',
+  expired: 'expired-oauth-state-token',
+};
+
+/**
+ * Test OAuth authorization codes
+ */
+export const TEST_OAUTH_CODES = {
+  valid: 'valid-auth-code-12345',
+  invalid: 'invalid-auth-code-99999',
+  expired: 'expired-auth-code-00000',
 };

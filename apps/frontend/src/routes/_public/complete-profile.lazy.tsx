@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowPathIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
@@ -14,7 +14,7 @@ export const Route = createLazyFileRoute('/_public/complete-profile')({
   component: CompleteProfilePage,
 });
 
-function CompleteProfilePage() {
+function CompleteProfileContent() {
   const { t } = useTranslationNamespace('auth');
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
@@ -152,5 +152,26 @@ function CompleteProfilePage() {
         </form>
       </AuthCard>
     </AuthLayout>
+  );
+}
+
+function CompleteProfileFallback() {
+  return (
+    <AuthLayout>
+      <AuthCard>
+        <div className="space-y-4">
+          <div className="h-8 w-32 animate-pulse rounded bg-bg-steel"></div>
+          <div className="h-4 w-48 animate-pulse rounded bg-bg-steel"></div>
+        </div>
+      </AuthCard>
+    </AuthLayout>
+  );
+}
+
+function CompleteProfilePage() {
+  return (
+    <Suspense fallback={<CompleteProfileFallback />}>
+      <CompleteProfileContent />
+    </Suspense>
   );
 }

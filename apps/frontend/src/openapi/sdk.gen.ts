@@ -558,8 +558,10 @@ export const updateProfileApiV1AuthProfilePut = <ThrowOnError extends boolean = 
  *
  * Get current user information.
  *
+ * Accepts both full and partial tokens (partial tokens during 2FA setup/verification).
+ *
  * Args:
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (via full or partial token)
  *
  * Returns:
  * Current user data
@@ -723,6 +725,8 @@ export const updateTaskApiV1TasksTaskIdPatch = <ThrowOnError extends boolean = f
  * Get Two Factor Status
  *
  * Get the current 2FA status for the authenticated user.
+ *
+ * Accepts both full and partial tokens (partial tokens during OAuth/2FA flows).
  *
  * Returns:
  * TwoFactorStatusResponse with enabled status and remaining backup codes.

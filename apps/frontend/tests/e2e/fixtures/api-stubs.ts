@@ -1,382 +1,423 @@
 /**
- * API response stubs for E2E tests
+ * API Response Stubs for E2E Tests
  *
- * These stubs provide deterministic API responses to ensure test stability
- * and avoid dependencies on backend state.
+ * Deterministic API responses for mocking authentication endpoints.
+ * These stubs match the actual API response structures.
  */
 
-import type { TestUser, TestUserWithProfile } from './users';
+import type { TestUserWithProfile } from './users';
+
+// =============================================================================
+// Response Types
+// =============================================================================
 
 export interface UserResponse {
-  id: number;
+  id: string;
   email: string;
-  first_name: string;
-  last_name: string;
+  first_name: string | null;
+  last_name: string | null;
   display_name: string | null;
+  avatar_url: string | null;
   email_verified: boolean;
   two_factor_enabled: boolean;
-  profile_complete: boolean;
   created_at: string;
   updated_at: string;
-}
-
-export interface RegisterResponse {
-  user: UserResponse;
-  message: string;
-  verification_sent: boolean;
 }
 
 export interface LoginResponse {
   access_token: string;
   token_type: string;
+  expires_in: number;
   user: UserResponse;
-  requires_2fa?: boolean;
+  email_verified: boolean;
+  two_factor_required: boolean;
+  two_factor_enabled: boolean;
+  two_factor_setup_required: boolean;
   temp_token?: string;
+}
+
+export interface RegisterResponse {
+  user: UserResponse;
+  message: string;
 }
 
 export interface TwoFactorSetupResponse {
   secret: string;
-  qr_code_url: string;
+  qr_code: string;
   backup_codes: string[];
 }
 
 export interface TwoFactorVerifyResponse {
-  verified: boolean;
-  backup_codes?: string[];
-}
-
-export interface EmailVerificationResponse {
-  message: string;
-  verified: boolean;
-}
-
-export interface PasswordResetRequestResponse {
-  message: string;
-  email_sent: boolean;
-}
-
-export interface PasswordResetResponse {
-  message: string;
   success: boolean;
+  backup_codes: string[];
 }
 
 export interface ErrorResponse {
   detail: string;
-  error_code?: string;
+  code?: string;
 }
 
-/**
- * Create user response stub from test user data
- */
-export function createUserResponse(user: TestUserWithProfile, id = 1): UserResponse {
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+function generateUserId(): string {
+  return `user-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+}
+
+function generateToken(): string {
+  return `test-token-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+}
+
+function userToResponse(user: TestUserWithProfile): UserResponse {
   return {
-    id,
+    id: generateUserId(),
     email: user.email,
-    first_name: user.firstName,
-    last_name: user.lastName,
-    display_name: user.displayName || `${user.firstName} ${user.lastName}`,
+    first_name: user.firstName || null,
+    last_name: user.lastName || null,
+    display_name: user.displayName || null,
+    avatar_url: null,
     email_verified: user.emailVerified,
     two_factor_enabled: user.twoFactorEnabled,
-    profile_complete: user.profileComplete,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 }
 
-/**
- * Registration API stubs
- */
-export const REGISTER_STUBS = {
-  success: (user: TestUser): RegisterResponse => ({
-    user: createUserResponse(
-      {
-        ...user,
-        profileComplete: false,
-        twoFactorEnabled: false,
-        emailVerified: false,
-      },
-      Math.floor(Math.random() * 10000)
-    ),
-    message: 'Registration successful. Please verify your email.',
-    verification_sent: true,
-  }),
+// =============================================================================
+// Login Stubs
+// =============================================================================
 
-  emailTaken: (): ErrorResponse => ({
-    detail: 'Email already registered',
-    error_code: 'EMAIL_ALREADY_EXISTS',
-  }),
-
-  invalidEmail: (): ErrorResponse => ({
-    detail: 'Invalid email format',
-    error_code: 'INVALID_EMAIL',
-  }),
-
-  weakPassword: (): ErrorResponse => ({
-    detail: 'Password must be at least 8 characters with uppercase, lowercase, number, and special character',
-    error_code: 'WEAK_PASSWORD',
-  }),
-
-  validationError: (field: string): ErrorResponse => ({
-    detail: `Validation error: ${field} is required`,
-    error_code: 'VALIDATION_ERROR',
-  }),
-};
-
-/**
- * Login API stubs
- */
 export const LOGIN_STUBS = {
   success: (user: TestUserWithProfile): LoginResponse => ({
-    access_token: `test-jwt-token-${Date.now()}`,
+    access_token: generateToken(),
     token_type: 'bearer',
-    user: createUserResponse(user),
+    expires_in: 86400,
+    user: userToResponse(user),
+    email_verified: user.emailVerified,
+    two_factor_required: false,
+    two_factor_enabled: user.twoFactorEnabled,
+    two_factor_setup_required: false,
   }),
 
   successWith2FA: (user: TestUserWithProfile): LoginResponse => ({
     access_token: '',
     token_type: 'bearer',
-    user: createUserResponse(user),
-    requires_2fa: true,
-    temp_token: `temp-token-${Date.now()}`,
+    expires_in: 0,
+    user: userToResponse(user),
+    email_verified: user.emailVerified,
+    two_factor_required: true,
+    two_factor_enabled: true,
+    two_factor_setup_required: false,
+    temp_token: generateToken(),
+  }),
+
+  successRequires2FASetup: (user: TestUserWithProfile): LoginResponse => ({
+    access_token: generateToken(),
+    token_type: 'bearer',
+    expires_in: 86400,
+    user: userToResponse(user),
+    email_verified: user.emailVerified,
+    two_factor_required: false,
+    two_factor_enabled: false,
+    two_factor_setup_required: true,
   }),
 
   invalidCredentials: (): ErrorResponse => ({
     detail: 'Invalid email or password',
-    error_code: 'INVALID_CREDENTIALS',
+    code: 'INVALID_CREDENTIALS',
   }),
 
   emailNotVerified: (): ErrorResponse => ({
-    detail: 'Please verify your email before logging in',
-    error_code: 'EMAIL_NOT_VERIFIED',
+    detail: 'Please verify your email address before logging in',
+    code: 'EMAIL_NOT_VERIFIED',
   }),
 
   accountLocked: (): ErrorResponse => ({
-    detail: 'Account locked due to too many failed login attempts',
-    error_code: 'ACCOUNT_LOCKED',
+    detail: 'Account is temporarily locked. Please try again later.',
+    code: 'ACCOUNT_LOCKED',
   }),
 
   accountDisabled: (): ErrorResponse => ({
-    detail: 'Account has been disabled',
-    error_code: 'ACCOUNT_DISABLED',
+    detail: 'This account has been disabled',
+    code: 'ACCOUNT_DISABLED',
   }),
 };
 
-/**
- * 2FA API stubs
- */
+// =============================================================================
+// Registration Stubs
+// =============================================================================
+
+export const REGISTER_STUBS = {
+  success: (user: TestUserWithProfile): RegisterResponse => ({
+    user: userToResponse({ ...user, emailVerified: false }),
+    message: 'Registration successful. Please check your email to verify your account.',
+  }),
+
+  emailTaken: (): ErrorResponse => ({
+    detail: 'An account with this email already exists',
+    code: 'EMAIL_ALREADY_EXISTS',
+  }),
+
+  validationError: (field: string): ErrorResponse => ({
+    detail: `Validation error on field: ${field}`,
+    code: 'VALIDATION_ERROR',
+  }),
+
+  weakPassword: (): ErrorResponse => ({
+    detail: 'Password does not meet security requirements',
+    code: 'WEAK_PASSWORD',
+  }),
+};
+
+// =============================================================================
+// Two-Factor Authentication Stubs
+// =============================================================================
+
 export const TWO_FACTOR_STUBS = {
   setupSuccess: (): TwoFactorSetupResponse => ({
     secret: 'JBSWY3DPEHPK3PXP',
-    qr_code_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    qr_code: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
     backup_codes: [
-      'ABCD-1234',
-      'EFGH-5678',
-      'IJKL-9012',
-      'MNOP-3456',
-      'QRST-7890',
+      'AAAA-BBBB',
+      'CCCC-DDDD',
+      'EEEE-FFFF',
+      'GGGG-HHHH',
+      'IIII-JJJJ',
+      'KKKK-LLLL',
+      'MMMM-NNNN',
+      'OOOO-PPPP',
     ],
   }),
 
   verifySuccess: (): TwoFactorVerifyResponse => ({
-    verified: true,
+    success: true,
     backup_codes: [
-      'ABCD-1234',
-      'EFGH-5678',
-      'IJKL-9012',
-      'MNOP-3456',
-      'QRST-7890',
+      'AAAA-BBBB',
+      'CCCC-DDDD',
+      'EEEE-FFFF',
+      'GGGG-HHHH',
+      'IIII-JJJJ',
+      'KKKK-LLLL',
+      'MMMM-NNNN',
+      'OOOO-PPPP',
     ],
   }),
 
   verifyInvalidCode: (): ErrorResponse => ({
     detail: 'Invalid verification code',
-    error_code: 'INVALID_2FA_CODE',
-  }),
-
-  verifyExpired: (): ErrorResponse => ({
-    detail: 'Verification code has expired',
-    error_code: '2FA_CODE_EXPIRED',
-  }),
-
-  alreadyEnabled: (): ErrorResponse => ({
-    detail: 'Two-factor authentication is already enabled',
-    error_code: '2FA_ALREADY_ENABLED',
+    code: 'INVALID_2FA_CODE',
   }),
 
   loginSuccess: (user: TestUserWithProfile): LoginResponse => ({
-    access_token: `test-jwt-token-${Date.now()}`,
+    access_token: generateToken(),
     token_type: 'bearer',
-    user: createUserResponse(user),
+    expires_in: 86400,
+    user: userToResponse(user),
+    email_verified: user.emailVerified,
+    two_factor_required: false,
+    two_factor_enabled: true,
+    two_factor_setup_required: false,
   }),
 
   loginInvalidCode: (): ErrorResponse => ({
-    detail: 'Invalid 2FA code',
-    error_code: 'INVALID_2FA_CODE',
+    detail: 'Invalid verification code',
+    code: 'INVALID_2FA_CODE',
   }),
 
-  loginExpiredToken: (): ErrorResponse => ({
-    detail: 'Temporary token expired',
-    error_code: 'TEMP_TOKEN_EXPIRED',
+  loginExpiredCode: (): ErrorResponse => ({
+    detail: 'Verification code has expired',
+    code: 'EXPIRED_2FA_CODE',
   }),
 };
 
-/**
- * Email verification API stubs
- */
+// =============================================================================
+// Email Verification Stubs
+// =============================================================================
+
 export const EMAIL_VERIFICATION_STUBS = {
-  success: (): EmailVerificationResponse => ({
+  success: () => ({
+    success: true,
     message: 'Email verified successfully',
-    verified: true,
   }),
 
   invalidToken: (): ErrorResponse => ({
     detail: 'Invalid verification token',
-    error_code: 'INVALID_TOKEN',
+    code: 'INVALID_TOKEN',
   }),
 
   expiredToken: (): ErrorResponse => ({
     detail: 'Verification token has expired',
-    error_code: 'TOKEN_EXPIRED',
+    code: 'EXPIRED_TOKEN',
   }),
 
-  alreadyVerified: (): ErrorResponse => ({
-    detail: 'Email already verified',
-    error_code: 'EMAIL_ALREADY_VERIFIED',
+  alreadyVerified: () => ({
+    success: true,
+    message: 'Email is already verified',
   }),
 
-  resendSuccess: (): { message: string } => ({
+  resendSuccess: () => ({
+    success: true,
     message: 'Verification email sent',
   }),
 
   resendRateLimited: (): ErrorResponse => ({
-    detail: 'Please wait before requesting another verification email',
-    error_code: 'RATE_LIMITED',
+    detail: 'Too many requests. Please wait before requesting another email.',
+    code: 'RATE_LIMITED',
   }),
 };
 
-/**
- * Password reset API stubs
- */
-export const PASSWORD_RESET_STUBS = {
-  requestSuccess: (): PasswordResetRequestResponse => ({
-    message: 'Password reset email sent',
-    email_sent: true,
-  }),
+// =============================================================================
+// Password Reset Stubs
+// =============================================================================
 
-  requestUserNotFound: (): PasswordResetRequestResponse => ({
-    message: 'If an account exists, a password reset email will be sent',
-    email_sent: false,
+export const PASSWORD_RESET_STUBS = {
+  requestSuccess: () => ({
+    success: true,
+    message: 'If an account with that email exists, a password reset link has been sent.',
   }),
 
   requestRateLimited: (): ErrorResponse => ({
-    detail: 'Too many password reset requests',
-    error_code: 'RATE_LIMITED',
+    detail: 'Too many password reset requests. Please try again later.',
+    code: 'RATE_LIMITED',
   }),
 
-  resetSuccess: (): PasswordResetResponse => ({
-    message: 'Password reset successfully',
+  resetSuccess: () => ({
     success: true,
+    message: 'Password has been reset successfully',
   }),
 
   resetInvalidToken: (): ErrorResponse => ({
     detail: 'Invalid or expired reset token',
-    error_code: 'INVALID_RESET_TOKEN',
+    code: 'INVALID_TOKEN',
+  }),
+
+  resetExpiredToken: (): ErrorResponse => ({
+    detail: 'Password reset token has expired',
+    code: 'EXPIRED_TOKEN',
+  }),
+
+  resetTokenUsed: (): ErrorResponse => ({
+    detail: 'This password reset link has already been used',
+    code: 'TOKEN_USED',
   }),
 
   resetWeakPassword: (): ErrorResponse => ({
-    detail: 'Password must be at least 8 characters with uppercase, lowercase, number, and special character',
-    error_code: 'WEAK_PASSWORD',
+    detail: 'Password does not meet security requirements',
+    code: 'WEAK_PASSWORD',
   }),
 };
 
-/**
- * Profile API stubs
- */
+// =============================================================================
+// Profile Stubs
+// =============================================================================
+
 export const PROFILE_STUBS = {
-  updateSuccess: (user: TestUserWithProfile): UserResponse => createUserResponse(user),
-
-  updateValidationError: (field: string): ErrorResponse => ({
-    detail: `Validation error: ${field} is invalid`,
-    error_code: 'VALIDATION_ERROR',
+  getCurrentUserSuccess: (user: TestUserWithProfile) => ({
+    ...userToResponse(user),
   }),
-
-  getCurrentUserSuccess: (user: TestUserWithProfile): UserResponse => createUserResponse(user),
 
   getCurrentUserUnauthorized: (): ErrorResponse => ({
     detail: 'Not authenticated',
-    error_code: 'UNAUTHORIZED',
+    code: 'UNAUTHORIZED',
+  }),
+
+  updateSuccess: (user: TestUserWithProfile) => ({
+    ...userToResponse(user),
+    message: 'Profile updated successfully',
+  }),
+
+  updateValidationError: (field: string): ErrorResponse => ({
+    detail: `Validation error on field: ${field}`,
+    code: 'VALIDATION_ERROR',
   }),
 };
 
-/**
- * OAuth API stubs
- */
+// =============================================================================
+// OAuth Stubs
+// =============================================================================
+
 export const OAUTH_STUBS = {
   callbackSuccess: (user: TestUserWithProfile): LoginResponse => ({
-    access_token: `oauth-jwt-token-${Date.now()}`,
+    access_token: generateToken(),
     token_type: 'bearer',
-    user: createUserResponse(user),
-  }),
-
-  callbackNewUser: (user: TestUserWithProfile): LoginResponse => ({
-    access_token: `oauth-jwt-token-${Date.now()}`,
-    token_type: 'bearer',
-    user: createUserResponse(
-      {
-        ...user,
-        profileComplete: false,
-      },
-      Math.floor(Math.random() * 10000)
-    ),
+    expires_in: 86400,
+    user: userToResponse(user),
+    email_verified: true,
+    two_factor_required: false,
+    two_factor_enabled: false,
+    two_factor_setup_required: false,
   }),
 
   callbackError: (): ErrorResponse => ({
     detail: 'OAuth authentication failed',
-    error_code: 'OAUTH_ERROR',
+    code: 'OAUTH_ERROR',
   }),
 
-  callbackStateMismatch: (): ErrorResponse => ({
-    detail: 'Invalid state parameter',
-    error_code: 'STATE_MISMATCH',
+  callbackCancelled: (): ErrorResponse => ({
+    detail: 'OAuth authentication was cancelled',
+    code: 'OAUTH_CANCELLED',
   }),
 
-  callbackProviderError: (provider: string): ErrorResponse => ({
-    detail: `${provider} returned an error`,
-    error_code: 'PROVIDER_ERROR',
+  callbackInvalidState: (): ErrorResponse => ({
+    detail: 'Invalid OAuth state parameter',
+    code: 'INVALID_STATE',
+  }),
+
+  callbackEmailInUse: (): ErrorResponse => ({
+    detail: 'An account with this email already exists',
+    code: 'EMAIL_IN_USE',
+  }),
+
+  newUserRequiresProfile: (user: TestUserWithProfile): LoginResponse => ({
+    access_token: generateToken(),
+    token_type: 'bearer',
+    expires_in: 86400,
+    user: { ...userToResponse(user), first_name: null, last_name: null },
+    email_verified: true,
+    two_factor_required: false,
+    two_factor_enabled: false,
+    two_factor_setup_required: false,
   }),
 };
 
-/**
- * Generic error stubs
- */
+// =============================================================================
+// Generic Error Stubs
+// =============================================================================
+
 export const ERROR_STUBS = {
   serverError: (): ErrorResponse => ({
-    detail: 'Internal server error',
-    error_code: 'INTERNAL_ERROR',
+    detail: 'An internal server error occurred',
+    code: 'SERVER_ERROR',
   }),
 
   networkError: (): ErrorResponse => ({
-    detail: 'Network error occurred',
-    error_code: 'NETWORK_ERROR',
+    detail: 'Network error. Please check your connection.',
+    code: 'NETWORK_ERROR',
+  }),
+
+  rateLimited: (): ErrorResponse => ({
+    detail: 'Too many requests. Please try again later.',
+    code: 'RATE_LIMITED',
   }),
 
   unauthorized: (): ErrorResponse => ({
-    detail: 'Unauthorized',
-    error_code: 'UNAUTHORIZED',
+    detail: 'Authentication required',
+    code: 'UNAUTHORIZED',
   }),
 
   forbidden: (): ErrorResponse => ({
-    detail: 'Forbidden',
-    error_code: 'FORBIDDEN',
+    detail: 'You do not have permission to perform this action',
+    code: 'FORBIDDEN',
   }),
 
   notFound: (): ErrorResponse => ({
     detail: 'Resource not found',
-    error_code: 'NOT_FOUND',
+    code: 'NOT_FOUND',
   }),
 
-  rateLimited: (): ErrorResponse => ({
-    detail: 'Too many requests',
-    error_code: 'RATE_LIMITED',
+  validationError: (message: string): ErrorResponse => ({
+    detail: message,
+    code: 'VALIDATION_ERROR',
   }),
 };

@@ -551,6 +551,10 @@ export type UserResponse = {
    */
   email_verified: boolean;
   /**
+   * Two Factor Enabled
+   */
+  two_factor_enabled: boolean;
+  /**
    * First Name
    */
   first_name?: string | null;

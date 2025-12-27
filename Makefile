@@ -1,5 +1,5 @@
 .PHONY: help install dev build test clean check lint format type-check api-generate
-.PHONY: docker-up docker-down docker-logs docker-build docker-full
+.PHONY: docker-up docker-down docker-logs docker-build docker-full docker-clean
 .PHONY: db-setup db-init db-migrate db-test db-fix-auth db-reset
 .PHONY: setup status
 
@@ -35,6 +35,7 @@ help:
 	@echo "  make docker-logs       - View Docker container logs"
 	@echo "  make docker-build      - Build Docker containers"
 	@echo "  make docker-full       - Rebuild and restart full Docker stack"
+	@echo "  make docker-clean      - Clean up Docker containers and volumes"
 	@echo ""
 	@echo "$(COLOR_BOLD)Database:$(COLOR_RESET)"
 	@echo "  make db-setup          - Full database setup (docker + auth fix + migrations)"
@@ -95,6 +96,9 @@ docker-build:
 
 docker-full:
 	@$(MAKE) -C $(BACKEND_DIR) docker-full
+
+docker-clean:
+	@$(MAKE) -C $(BACKEND_DIR) docker-clean
 
 # Database
 db-migrate:

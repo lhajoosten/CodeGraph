@@ -88,12 +88,12 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         >
           <div
             className={`
-              flex h-8 w-8 items-center justify-center rounded-lg bg-primary
+              flex h-8 w-8 items-center justify-center rounded-lg bg-brand-cyan
             `}
           >
-            <span className="text-lg font-bold text-text-button">C</span>
+            <span className="text-lg font-bold text-white">C</span>
           </div>
-          <span className="text-xl font-bold text-primary">{APP_NAME}</span>
+          <span className="text-xl font-bold text-brand-cyan">{APP_NAME}</span>
         </Link>
       </div>
 
@@ -129,7 +129,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm leading-none font-medium">{userName}</p>
-                <p className="text-xs leading-none text-text-tertiary">{user?.email}</p>
+                <p className="text-xs leading-none text-text-muted-lum">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
