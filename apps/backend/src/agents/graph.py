@@ -15,8 +15,10 @@ from typing import Any
 
 from langgraph.graph import END, START, StateGraph
 
+from src.agents.coder import coder_node
 from src.agents.planner import planner_node
 from src.agents.state import WorkflowState
+from src.agents.tester import tester_node
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -25,10 +27,13 @@ logger = get_logger(__name__)
 def create_workflow() -> StateGraph[WorkflowState]:
     """Create the multi-agent coding workflow graph.
 
-    In Phase 1, this is a simple linear graph:
+    In Phase 1, this was a simple linear graph:
         START -> planner -> END
 
-    In Phase 2, it will expand to:
+    In Phase 2, it expands to:
+        START -> planner -> coder -> tester -> END
+
+    In Phase 3, it will add conditional routing:
         START -> planner -> coder -> tester -> reviewer -> (conditional) -> END
 
     Returns:
@@ -36,28 +41,31 @@ def create_workflow() -> StateGraph[WorkflowState]:
 
     TODO: Make graph compilation conditional on environment config (Phase 4)
     TODO: Add error handling node for failure recovery (Phase 3)
+    TODO: Add reviewer node and conditional routing (Phase 3)
     """
     workflow = StateGraph(WorkflowState)
 
     # Add nodes
     workflow.add_node("planner", planner_node)
-    # TODO: Add coder node (Phase 2)
-    # workflow.add_node("coder", coder_node)
-    # TODO: Add tester node (Phase 2)
-    # workflow.add_node("tester", tester_node)
-    # TODO: Add reviewer node (Phase 2)
+    workflow.add_node("coder", coder_node)
+    workflow.add_node("tester", tester_node)
+    # TODO: Add reviewer node (Phase 3)
     # workflow.add_node("reviewer", reviewer_node)
 
-    # Add edges
+    # Add edges for Phase 2 linear flow
     workflow.add_edge(START, "planner")
-    workflow.add_edge("planner", END)
-    # TODO: Add conditional routing after planner (Phase 2)
-    # workflow.add_edge("planner", "coder")
-    # workflow.add_edge("coder", "tester")
+    workflow.add_edge("planner", "coder")
+    workflow.add_edge("coder", "tester")
+    workflow.add_edge("tester", END)
+    # TODO: Add conditional routing after tester (Phase 3)
     # workflow.add_edge("tester", "reviewer")
     # workflow.add_conditional_edges("reviewer", route_after_review, {...})
 
-    logger.info("Created workflow graph", nodes=["planner"], edges=["START->planner->END"])
+    logger.info(
+        "Created workflow graph",
+        nodes=["planner", "coder", "tester"],
+        edges=["START->planner->coder->tester->END"],
+    )
 
     return workflow
 

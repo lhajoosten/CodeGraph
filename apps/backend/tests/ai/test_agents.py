@@ -39,14 +39,13 @@ class TestAgentModels:
         """Test that ModelFactory can create Haiku model."""
         model = ModelFactory.create("haiku")
         assert model is not None
-        assert model.model == "claude-haiku-4-20250514"
+        assert model.model == "claude-haiku-4-5-20251001"
 
     def test_model_factory_creates_sonnet(self) -> None:
         """Test that ModelFactory can create Sonnet model."""
         model = ModelFactory.create("sonnet")
         assert model is not None
         assert model.model == "claude-sonnet-4-5-20251001"
-
 
     def test_model_factory_creates_opus(self) -> None:
         """Test that ModelFactory can create Opus model."""

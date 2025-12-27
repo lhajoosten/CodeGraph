@@ -24,7 +24,8 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.agents.graph import stream_workflow
-from src.api.deps import get_current_user, get_db
+from src.api.deps import get_current_user
+from src.core.database import get_db
 from src.core.logging import get_logger
 from src.models.user import User
 
@@ -181,7 +182,7 @@ async def cancel_task(
     task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> dict[str, str]:
+) -> dict[str, str | int]:
     """Cancel an ongoing task execution.
 
     Signals the workflow to stop and cleanup resources. If the task has

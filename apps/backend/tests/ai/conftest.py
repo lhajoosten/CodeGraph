@@ -149,6 +149,56 @@ async def login(email: str, password: str) -> dict:
     }
 
 
+@pytest.fixture
+def state_with_tests() -> WorkflowState:
+    """Create a workflow state after testing is complete.
+
+    Returns:
+        WorkflowState with test results but no review feedback yet
+    """
+    return {
+        "messages": [
+            HumanMessage(content="Create a FastAPI endpoint"),
+            AIMessage(content="Here is the code..."),
+            AIMessage(content="Here are the tests..."),
+        ],
+        "task_id": 1,
+        "task_description": "Create a FastAPI endpoint for user authentication",
+        "plan": "1. Create user schema\n2. Create authentication service",
+        "code": """
+from fastapi import APIRouter, Depends
+from src.models.user import User
+
+router = APIRouter()
+
+@router.post("/auth/login")
+async def login(email: str, password: str) -> dict:
+    # Authentication logic
+    return {"token": "..."}
+""",
+        "test_results": """
+import pytest
+from fastapi.testclient import TestClient
+
+def test_login_success(client: TestClient) -> None:
+    response = client.post("/auth/login", json={"email": "user@example.com", "password": "password"})
+    assert response.status_code == 200
+    assert "token" in response.json()
+""",
+        "review_feedback": "",
+        "iterations": 0,
+        "status": "reviewing",
+        "error": None,
+        "metadata": {
+            "created_at": "2025-12-27T22:00:00Z",
+            "user_id": 1,
+            "plan_generated_at": "2025-12-27T22:01:00Z",
+            "code_generated_at": "2025-12-27T22:02:00Z",
+            "tests_generated_at": "2025-12-27T22:03:00Z",
+        },
+    }
+
+
 # ============================================================================
 # MOCK CLAUDE API FIXTURES
 # ============================================================================
@@ -202,7 +252,7 @@ def mock_chat_anthropic(mock_claude_response: AIMessage) -> MagicMock:
         MagicMock of ChatAnthropic with ainvoke method
     """
     mock = MagicMock()
-    mock.model =  "claude-haiku-4-5-20251001"
+    mock.model = "claude-haiku-4-5-20251001"
 
     mock.ainvoke = AsyncMock(return_value=mock_claude_response)
     mock.astream = AsyncMock()
@@ -303,6 +353,55 @@ async def mock_planner_node() -> AsyncMock:
 
 
 @pytest_asyncio.fixture
+async def mock_coder_node() -> AsyncMock:
+    """Create a mock coder node.
+
+    Returns:
+        AsyncMock that simulates coder_node execution
+    """
+
+    async def mock_execution(state: WorkflowState, config: Any = None) -> dict[str, Any]:
+        return {
+            "code": "def example_function():\n    return 'Hello, World!'",
+            "status": "testing",
+            "messages": [AIMessage(content="Generated code")],
+            "iterations": state.get("iterations", 0),
+            "metadata": {
+                **state.get("metadata", {}),
+                "code_generated_at": "2025-12-27T22:01:00Z",
+                "coder_model": "sonnet",
+                "is_revision": bool(state.get("review_feedback")),
+            },
+        }
+
+    return AsyncMock(side_effect=mock_execution)
+
+
+@pytest_asyncio.fixture
+async def mock_tester_node() -> AsyncMock:
+    """Create a mock tester node.
+
+    Returns:
+        AsyncMock that simulates tester_node execution
+    """
+
+    async def mock_execution(state: WorkflowState, config: Any = None) -> dict[str, Any]:
+        return {
+            "test_results": "def test_example_function():\n    assert example_function() == 'Hello, World!'",
+            "status": "reviewing",
+            "messages": [AIMessage(content="Generated tests")],
+            "iterations": state.get("iterations", 0),
+            "metadata": {
+                **state.get("metadata", {}),
+                "tests_generated_at": "2025-12-27T22:02:00Z",
+                "tester_model": "sonnet",
+            },
+        }
+
+    return AsyncMock(side_effect=mock_execution)
+
+
+@pytest_asyncio.fixture
 async def patched_model_factory(mock_chat_anthropic: MagicMock) -> Any:
     """Patch ModelFactory to return mock models.
 
@@ -320,7 +419,10 @@ async def patched_model_factory(mock_chat_anthropic: MagicMock) -> Any:
         ):
             with patch("src.agents.models.get_planner_model", return_value=mock_chat_anthropic):
                 with patch("src.agents.models.get_coder_model", return_value=mock_chat_anthropic):
-                    yield
+                    with patch(
+                        "src.agents.models.get_tester_model", return_value=mock_chat_anthropic
+                    ):
+                        yield
 
 
 # ============================================================================

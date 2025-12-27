@@ -10,7 +10,8 @@ TODO: Add multi-file code generation (Phase 2)
 TODO: Add code quality metrics and scoring (Phase 3)
 """
 
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
