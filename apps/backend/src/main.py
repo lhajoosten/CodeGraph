@@ -9,7 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.api import auth, oauth, tasks, test_email, two_factor, users
+from src.api import agents, auth, oauth, tasks, test_email, two_factor, users
 from src.core.config import settings
 from src.core.database import close_db
 from src.core.exception_handlers import (
@@ -102,6 +102,7 @@ async def health_check() -> dict[str, str]:
 app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
+app.include_router(agents.router, prefix="/api/v1", tags=["agents"])
 app.include_router(two_factor.router, prefix="/api/v1", tags=["two-factor-auth"])
 # OAuth is public-facing and should not have API versioning prefix
 app.include_router(oauth.router, tags=["oauth"])
