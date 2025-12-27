@@ -5,9 +5,9 @@ import io
 import secrets
 from datetime import UTC, datetime
 
+import bcrypt
 import pyotp
 import qrcode
-from passlib.context import CryptContext
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,8 +18,8 @@ from src.models.user import User
 
 logger = get_logger(__name__)
 
-# Password context for backup code hashing
-backup_code_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# BCrypt work factor for backup codes (slightly lower than passwords for faster verification)
+BACKUP_CODE_BCRYPT_ROUNDS = 10
 
 
 class TwoFactorService:
@@ -119,7 +119,9 @@ class TwoFactorService:
         Returns:
             The hashed backup code.
         """
-        return backup_code_context.hash(code)
+        salt = bcrypt.gensalt(rounds=BACKUP_CODE_BCRYPT_ROUNDS)
+        hashed = bcrypt.hashpw(code.encode("utf-8"), salt)
+        return hashed.decode("utf-8")
 
     def verify_backup_code(self, code: str, hashed: str) -> bool:
         """Verify a backup code against its hash.
@@ -131,7 +133,10 @@ class TwoFactorService:
         Returns:
             True if the code matches, False otherwise.
         """
-        return backup_code_context.verify(code, hashed)
+        try:
+            return bcrypt.checkpw(code.encode("utf-8"), hashed.encode("utf-8"))
+        except (ValueError, TypeError):
+            return False
 
     async def setup_2fa(self, user: User) -> tuple[str, str]:
         """Start the 2FA setup process for a user.

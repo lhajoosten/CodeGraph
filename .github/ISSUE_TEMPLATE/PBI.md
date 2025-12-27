@@ -3,16 +3,21 @@ name: PBI (Product Backlog Item)
 about: A specific implementable task (1-5 days of work)
 title: "[PBI] "
 labels: "hierarchy: pbi"
+assignees: ""
 ---
 
-## Task Description
+## PBI Description
+
+**PBI ID:** PBI-[feature].[number] (e.g., PBI-1.1.3)
 
 [Clear, specific description of what needs to be implemented]
 
-## Parent Epic & Feature
+## Parent Hierarchy
 
-- **Epic:** [Link to epic issue]
-- **Feature:** [Link to feature issue]
+> ⚠️ **DO NOT use "Closes #"** - that would auto-close the parent!
+
+- **Part of Epic:** #[epic-issue-number]
+- **Part of Feature:** #[feature-issue-number]
 
 ## Acceptance Criteria
 
@@ -29,10 +34,12 @@ labels: "hierarchy: pbi"
 ### Files to Create/Modify
 
 **New Files:**
+
 - [ ] `/path/to/file1.py`
 - [ ] `/path/to/file2.tsx`
 
 **Existing Files to Modify:**
+
 - [ ] `/path/to/file3.py`
 - [ ] `/path/to/file4.tsx`
 
@@ -43,9 +50,21 @@ labels: "hierarchy: pbi"
 - [ ] Dependency 1
 - [ ] Dependency 2
 
+## Child Tasks
+
+> ⚠️ Tasks should use "Closes #[pbi-number]" only when the task COMPLETES the PBI.
+> Otherwise use "Part of #[pbi-number]".
+
+| Task | Title  | Status         | Estimate |
+| ---- | ------ | -------------- | -------- |
+| #000 | Task 1 | 🔴 Not Started | 2h       |
+| #000 | Task 2 | 🔴 Not Started | 4h       |
+| #000 | Task 3 | 🔴 Not Started | 2h       |
+
 ## Effort Estimate
 
 **Size:**
+
 - **Small** (1-2 days): Simple, well-defined, low risk
 - **Medium** (3-5 days): Moderate complexity, some unknowns
 - **Large** (1-2 weeks): Complex, multiple steps, research needed
@@ -53,13 +72,16 @@ labels: "hierarchy: pbi"
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Test case 1
 - [ ] Test case 2
 
 ### Integration Tests
+
 - [ ] Integration test 1
 
 ### Manual Testing
+
 - [ ] Manual test scenario 1
 
 ## Definition of Done

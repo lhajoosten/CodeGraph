@@ -179,73 +179,94 @@ class TestEmailTokenService:
 
 
 class TestEmailSendingService:
-    """Tests for EmailSendingService."""
+    """Tests for EmailSendingService.
+
+    These tests verify that EmailSendingService correctly delegates to the
+    underlying email service (mock or SMTP based on configuration).
+    Since tests run with email_service_mode="mock" by default, we test
+    that emails are sent successfully via the mock service.
+    """
 
     @pytest.mark.asyncio
     async def test_send_verification_email(self):
-        """Test sending verification email."""
-        with patch("src.services.email.smtp.aiosmtplib.SMTP") as mock_smtp:
-            # Mock the SMTP context manager
-            mock_smtp_instance = AsyncMock()
-            mock_smtp.return_value.__aenter__.return_value = mock_smtp_instance
+        """Test sending verification email (using mock service)."""
+        # Mock the email service to track calls
+        mock_email_service = AsyncMock()
+        mock_email_service.send_email = AsyncMock(return_value=True)
 
+        with patch("src.services.email.service.get_email_service", return_value=mock_email_service):
             service = EmailSendingService()
-            await service.send_verification_email("test@example.com", "test_token_123")
+            result = await service.send_verification_email("test@example.com", "test_token_123")
 
-            # Verify SMTP was called
-            mock_smtp_instance.login.assert_called_once()
-            mock_smtp_instance.send_message.assert_called_once()
+            assert result is True
+            mock_email_service.send_email.assert_called_once()
+            call_args = mock_email_service.send_email.call_args
+            assert call_args.kwargs["to"] == "test@example.com"
+            assert call_args.kwargs["template"] == "verification"
 
     @pytest.mark.asyncio
     async def test_send_password_reset_email(self):
-        """Test sending password reset email."""
-        with patch("src.services.email.smtp.aiosmtplib.SMTP") as mock_smtp:
-            mock_smtp_instance = AsyncMock()
-            mock_smtp.return_value.__aenter__.return_value = mock_smtp_instance
+        """Test sending password reset email (using mock service)."""
+        mock_email_service = AsyncMock()
+        mock_email_service.send_email = AsyncMock(return_value=True)
 
+        with patch("src.services.email.service.get_email_service", return_value=mock_email_service):
             service = EmailSendingService()
-            await service.send_password_reset_email("test@example.com", "reset_token_123")
+            result = await service.send_password_reset_email("test@example.com", "reset_token_123")
 
-            mock_smtp_instance.login.assert_called_once()
-            mock_smtp_instance.send_message.assert_called_once()
+            assert result is True
+            mock_email_service.send_email.assert_called_once()
+            call_args = mock_email_service.send_email.call_args
+            assert call_args.kwargs["to"] == "test@example.com"
+            assert call_args.kwargs["template"] == "password_reset"
 
     @pytest.mark.asyncio
     async def test_send_email_change_confirmation(self):
-        """Test sending email change confirmation."""
-        with patch("src.services.email.smtp.aiosmtplib.SMTP") as mock_smtp:
-            mock_smtp_instance = AsyncMock()
-            mock_smtp.return_value.__aenter__.return_value = mock_smtp_instance
+        """Test sending email change confirmation (using mock service)."""
+        mock_email_service = AsyncMock()
+        mock_email_service.send_email = AsyncMock(return_value=True)
 
+        with patch("src.services.email.service.get_email_service", return_value=mock_email_service):
             service = EmailSendingService()
-            await service.send_email_change_confirmation(
+            result = await service.send_email_change_confirmation(
                 "newemail@example.com", "confirmation_token_123"
             )
 
-            mock_smtp_instance.login.assert_called_once()
-            mock_smtp_instance.send_message.assert_called_once()
+            assert result is True
+            mock_email_service.send_email.assert_called_once()
+            call_args = mock_email_service.send_email.call_args
+            assert call_args.kwargs["to"] == "newemail@example.com"
+            assert call_args.kwargs["template"] == "email_change"
 
     @pytest.mark.asyncio
     async def test_send_welcome_email(self):
-        """Test sending welcome email."""
-        with patch("src.services.email.smtp.aiosmtplib.SMTP") as mock_smtp:
-            mock_smtp_instance = AsyncMock()
-            mock_smtp.return_value.__aenter__.return_value = mock_smtp_instance
+        """Test sending welcome email (using mock service)."""
+        mock_email_service = AsyncMock()
+        mock_email_service.send_email = AsyncMock(return_value=True)
 
+        with patch("src.services.email.service.get_email_service", return_value=mock_email_service):
             service = EmailSendingService()
-            await service.send_welcome_email("test@example.com")
+            result = await service.send_welcome_email("test@example.com")
 
-            mock_smtp_instance.login.assert_called_once()
-            mock_smtp_instance.send_message.assert_called_once()
+            assert result is True
+            mock_email_service.send_email.assert_called_once()
+            call_args = mock_email_service.send_email.call_args
+            assert call_args.kwargs["to"] == "test@example.com"
+            assert call_args.kwargs["template"] == "welcome"
 
     @pytest.mark.asyncio
     async def test_send_otp_email(self):
-        """Test sending OTP email."""
-        with patch("src.services.email.smtp.aiosmtplib.SMTP") as mock_smtp:
-            mock_smtp_instance = AsyncMock()
-            mock_smtp.return_value.__aenter__.return_value = mock_smtp_instance
+        """Test sending OTP email (using mock service)."""
+        mock_email_service = AsyncMock()
+        mock_email_service.send_email = AsyncMock(return_value=True)
 
+        with patch("src.services.email.service.get_email_service", return_value=mock_email_service):
             service = EmailSendingService()
-            await service.send_otp_email("test@example.com", "123456")
+            result = await service.send_otp_email("test@example.com", "123456")
 
-            mock_smtp_instance.login.assert_called_once()
-            mock_smtp_instance.send_message.assert_called_once()
+            assert result is True
+            mock_email_service.send_email.assert_called_once()
+            call_args = mock_email_service.send_email.call_args
+            assert call_args.kwargs["to"] == "test@example.com"
+            assert call_args.kwargs["template"] == "otp"
+            assert call_args.kwargs["context"]["otp_code"] == "123456"

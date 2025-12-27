@@ -6,8 +6,8 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from src.core.config import settings
 
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 # BCrypt has a maximum password length of 72 bytes
 BCRYPT_MAX_PASSWORD_LENGTH = 72
 
-# Password hashing context with bcrypt configuration
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+# BCrypt work factor (cost parameter) - 12 is a good balance of security and speed
+BCRYPT_ROUNDS = 12
 
 
 def _truncate_password(password: str) -> str:
@@ -54,7 +54,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         True if password matches, False otherwise
     """
     truncated = _truncate_password(plain_password)
-    return pwd_context.verify(truncated, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            truncated.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
+    except (ValueError, TypeError) as e:
+        logger.warning(f"Password verification failed: {e}")
+        return False
 
 
 def get_password_hash(password: str) -> str:
@@ -68,7 +75,9 @@ def get_password_hash(password: str) -> str:
         Hashed password string
     """
     truncated = _truncate_password(password)
-    return pwd_context.hash(truncated)
+    salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
+    hashed = bcrypt.hashpw(truncated.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
