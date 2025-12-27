@@ -3,9 +3,14 @@ name: Epic
 about: A major initiative spanning 3-6 months
 title: "[EPIC] "
 labels: "hierarchy: epic"
+assignees: ""
 ---
 
 ## Epic Overview
+
+**Epic ID:** E-[number]
+**Quarter:** Q[1-4] 2026
+**Status:** 🔴 Not Started | 🟡 In Progress | 🟢 Completed
 
 **Goal:**
 [Brief statement of what this epic aims to achieve]
@@ -19,26 +24,31 @@ labels: "hierarchy: epic"
 - [ ] Metric 2
 - [ ] Metric 3
 
-## Features Included
+## Child Features
 
-This epic contains the following features:
+> ⚠️ **DO NOT use "Closes #" here** - that would auto-close the Epic when the Feature is merged!
+> Instead, use "Part of #" or just link normally.
 
-- [ ] Feature 1 (link to issue)
-- [ ] Feature 2 (link to issue)
-- [ ] Feature 3 (link to issue)
+| Feature | Title     | Status         | PBI Count |
+| ------- | --------- | -------------- | --------- |
+| #000    | Feature 1 | 🔴 Not Started | 0/6       |
+| #000    | Feature 2 | 🔴 Not Started | 0/6       |
+| #000    | Feature 3 | 🔴 Not Started | 0/6       |
 
 ## Timeline
 
-- **Quarter:** Q_ 2026
+- **Quarter:** Q\_ 2026
 - **Target Completion:** [Month/Date]
 - **Priority:** [Critical/High/Medium]
 
 ## Dependencies
 
 ### Blockers
+
 - [ ] Dependency 1
 
 ### Enables
+
 - [ ] Future work 1
 
 ## Technical Considerations

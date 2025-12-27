@@ -29,38 +29,43 @@ from src.models import (  # noqa: F401
 # In-memory SQLite for unit tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
-# Create async engine with in-memory database
-test_engine = create_async_engine(
-    TEST_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-    echo=False,
-)
 
-# Create async session factory
-TestSessionLocal = sessionmaker(
-    test_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False,
-)
+@pytest_asyncio.fixture
+async def db_engine():
+    """Create and dispose async engine for each test."""
+    engine = create_async_engine(
+        TEST_DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+        echo=False,
+    )
+
+    # Create all tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield engine
+
+    # Drop all tables and dispose engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
     """Create a fresh database session for each unit test."""
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async_session_factory = sessionmaker(
+        db_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+        autocommit=False,
+        autoflush=False,
+    )
 
-    session = TestSessionLocal()
-    try:
+    async with async_session_factory() as session:
         yield session
-    finally:
-        await session.close()
-
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest.fixture

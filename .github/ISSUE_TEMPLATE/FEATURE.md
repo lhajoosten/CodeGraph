@@ -3,15 +3,20 @@ name: Feature
 about: A major feature within an epic (2-6 weeks of work)
 title: "[FEATURE] "
 labels: "hierarchy: feature"
+assignees: ""
 ---
 
 ## Feature Description
+
+**Feature ID:** F-[epic].[number] (e.g., F-1.1)
 
 [Clear description of what this feature does and why it's needed]
 
 ## Parent Epic
 
-Closes: [Link to parent epic issue]
+> ⚠️ **DO NOT use "Closes #"** - that would auto-close the Epic!
+
+**Part of Epic:** #[epic-issue-number]
 
 ## User Stories
 
@@ -23,29 +28,35 @@ As a [user type], I want to [action], so that [benefit].
 - [ ] Acceptance criterion 2
 - [ ] Acceptance criterion 3
 
-## Product Backlog Items (PBIs)
+## Child PBIs (Product Backlog Items)
 
-This feature is broken down into the following tasks:
+> ⚠️ **DO NOT use "Closes #" here** - that would auto-close the Feature!
+> Use "Part of #" in the PBI to link back here.
 
-- [ ] PBI 1 (link to issue)
-- [ ] PBI 2 (link to issue)
-- [ ] PBI 3 (link to issue)
-- [ ] PBI 4 (link to issue)
-- [ ] PBI 5 (link to issue)
-- [ ] PBI 6 (link to issue)
+| PBI  | Title | Status         | Tasks |
+| ---- | ----- | -------------- | ----- |
+| #000 | PBI 1 | 🔴 Not Started | 0/3   |
+| #000 | PBI 2 | 🔴 Not Started | 0/3   |
+| #000 | PBI 3 | 🔴 Not Started | 0/3   |
+| #000 | PBI 4 | 🔴 Not Started | 0/3   |
+| #000 | PBI 5 | 🔴 Not Started | 0/3   |
+| #000 | PBI 6 | 🔴 Not Started | 0/3   |
 
 ## Technical Details
 
 ### Components Affected
+
 - [ ] Backend
 - [ ] Frontend
 - [ ] Infrastructure
 - [ ] Agents/LLM
 
 ### Architecture
+
 [Describe the architecture or design approach for this feature]
 
 ### Dependencies
+
 - [Dependency 1]
 - [Dependency 2]
 
@@ -53,6 +64,7 @@ This feature is broken down into the following tasks:
 
 **Size:** S (Small) / M (Medium) / L (Large)
 **Estimated PBIs per size:**
+
 - Small: 1-2 days per PBI
 - Medium: 3-5 days per PBI
 - Large: 1-2 weeks per PBI
