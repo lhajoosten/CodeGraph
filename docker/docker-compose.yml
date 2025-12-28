@@ -98,7 +98,40 @@ services:
     # Host Storybook on 0.0.0.0 so it's accessible from host machine
     command: npm run storybook -- --host 0.0.0.0 -p 6006
 
+  # Local LLM service (default for development)
+  # Uses vLLM with Qwen 2.5 Coder 14B (AWQ quantized for 16GB VRAM)
+  # Provides OpenAI-compatible API at http://localhost:8001/v1
+  # Note: Model takes ~30-60 seconds to load on first start
+  local-llm:
+    image: vllm/vllm-openai:latest
+    container_name: codegraph-local-llm
+    ports:
+      - "8001:8000"
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+    command: >
+      --model Qwen/Qwen2.5-Coder-14B-Instruct-AWQ
+      --quantization awq
+      --max-model-len 8192
+      --gpu-memory-utilization 0.9
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/models"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
 volumes:
   postgres_data:
   redis_data:
   node_modules:
+  huggingface_cache:

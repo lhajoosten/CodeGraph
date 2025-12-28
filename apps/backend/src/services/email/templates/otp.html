@@ -3,86 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your One-Time Password</title>
+    <title>Your Authentication Code - CodeGraph</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #0f172a;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ecf2f9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .wrapper {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
         }
+
         .container {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
         }
+
         .header {
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #0f766e 0%, #164e63 100%);
+            padding: 60px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .header h1 {
-            color: #2c3e50;
-            margin: 0;
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(34, 197, 214, 0.15) 0%, transparent 50%);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
             font-size: 24px;
+            font-weight: 700;
+            color: #22c55e;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
         }
-        .content {
-            margin: 30px 0;
-            line-height: 1.8;
-        }
-        .otp-code {
-            background-color: #ecf0f1;
-            border: 2px solid #3498db;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
+
+        .header h1 {
+            font-family: 'Syne', sans-serif;
             font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            color: #2c3e50;
-            font-family: monospace;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
         }
-        .warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            color: #856404;
+
+        .content {
+            padding: 50px 40px;
         }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
+
+        .greeting {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #475569;
+            margin-bottom: 32px;
+        }
+
+        .code-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #06b6d4;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+        }
+
+        .code-label {
             font-size: 12px;
-            color: #7f8c8d;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .otp-code {
+            font-family: 'Space Mono', monospace;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: #0f766e;
+            word-spacing: 10px;
+            user-select: all;
+            line-height: 1.2;
+        }
+
+        .code-helper {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 12px;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%);
+            border-left: 4px solid #ef4444;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 28px 0;
+            font-size: 14px;
+            color: #7f1d1d;
+        }
+
+        .alert-box strong {
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .security-box {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(15, 118, 110, 0.08) 100%);
+            border-left: 4px solid #0891b2;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .security-box strong {
+            color: #0f766e;
+        }
+
+        .secondary-text {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 24px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: #f8fafc;
+            padding: 32px 40px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .security-note {
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 40px 24px 32px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 32px 24px;
+            }
+
+            .code-container {
+                padding: 24px;
+            }
+
+            .otp-code {
+                font-size: 28px;
+                letter-spacing: 6px;
+            }
+
+            .footer {
+                padding: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Your One-Time Password</h1>
-        </div>
-
-        <div class="content">
-            <p>Hello,</p>
-
-            <p>Your one-time password for CodeGraph is:</p>
-
-            <div class="otp-code">{{ otp_code }}</div>
-
-            <div class="warning">
-                <strong>This code expires in 10 minutes.</strong> Do not share this code with anyone, even if they claim to be from CodeGraph support.
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <div class="header-content">
+                    <div class="logo">◢ CodeGraph</div>
+                    <h1>Your Auth Code</h1>
+                </div>
             </div>
 
-            <p>If you didn't request this code, please ignore this email or contact our support team.</p>
-        </div>
+            <div class="content">
+                <p class="greeting">Hello,</p>
 
-        <div class="footer">
-            <p>CodeGraph Team</p>
-            <p>This is an automated email. Please do not reply to this message.</p>
+                <p class="message">
+                    Your one-time authentication code is below. Use this to complete your login or enable two-factor authentication.
+                </p>
+
+                <div class="code-container">
+                    <div class="code-label">Authentication Code</div>
+                    <div class="otp-code">{{ otp_code }}</div>
+                    <div class="code-helper">Click to select • Valid for 10 minutes</div>
+                </div>
+
+                <div class="alert-box">
+                    ⏱️ This code expires in <strong>10 minutes</strong>. Don't share it with anyone.
+                </div>
+
+                <div class="security-box">
+                    <strong>🔒 Security Tip:</strong> CodeGraph support will never ask for your authentication code. Be cautious of anyone requesting it.
+                </div>
+
+                <p class="secondary-text">
+                    Didn't request this code? If this wasn't you, your account might be under threat. Change your password immediately and enable two-factor authentication.
+                </p>
+            </div>
+
+            <div class="footer">
+                <p class="footer-text">CodeGraph • Multi-Agent AI Platform</p>
+                <p class="footer-text">This is an automated message—please don't reply.</p>
+                <p class="security-note">Protect your account security and never share authentication codes.</p>
+            </div>
         </div>
     </div>
 </body>

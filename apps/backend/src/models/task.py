@@ -11,6 +11,7 @@ from src.models.base import Base, TimestampMixin
 if TYPE_CHECKING:
     from src.models.agent_run import AgentRun
     from src.models.repository import Repository
+    from src.models.usage_metrics import UsageMetrics
     from src.models.user import User
 
 
@@ -75,6 +76,9 @@ class Task(Base, TimestampMixin):
     repository: Mapped["Repository | None"] = relationship("Repository", back_populates="tasks")
     agent_runs: Mapped[list["AgentRun"]] = relationship(
         "AgentRun", back_populates="task", cascade="all, delete-orphan"
+    )
+    usage_metrics: Mapped[list["UsageMetrics"]] = relationship(
+        "UsageMetrics", back_populates="task", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

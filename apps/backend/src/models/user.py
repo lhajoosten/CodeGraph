@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from src.models.repository import Repository
     from src.models.task import Task
     from src.models.user_session import UserSession
+    from src.models.webhook import Webhook
 
 
 class User(Base, TimestampMixin):
@@ -92,6 +93,9 @@ class User(Base, TimestampMixin):
     )
     oauth_accounts: Mapped[list["OAuthAccount"]] = relationship(
         "OAuthAccount", back_populates="user", cascade="all, delete-orphan"
+    )
+    webhooks: Mapped[list["Webhook"]] = relationship(
+        "Webhook", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
