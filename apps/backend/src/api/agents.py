@@ -10,7 +10,15 @@ Streaming Events:
 - node_end: Agent node completed
 - workflow_complete: Entire workflow finished
 
-TODO: Add webhook integration for async execution (Phase 2)
+Webhook Events:
+- task.started: Task execution began
+- task.completed: Task execution completed successfully
+- task.failed: Task execution failed
+- workflow.planning_completed: Planning stage finished
+- workflow.coding_completed: Coding stage finished
+- workflow.testing_completed: Testing stage finished
+- workflow.review_completed: Review stage finished
+
 TODO: Add execution history and metrics endpoints (Phase 3)
 TODO: Add rate limiting per user (Phase 4)
 """
@@ -30,7 +38,9 @@ from src.core.database import get_db
 from src.core.logging import get_logger
 from src.models.task import Task
 from src.models.user import User
+from src.models.webhook import WebhookEvent
 from src.services.agent_run_service import AgentRunService
+from src.services.webhook_service import WebhookService
 
 logger = get_logger(__name__)
 
@@ -87,14 +97,26 @@ async def execute_task_stream(
 
     task_description = task.description
 
+    # Dispatch task started webhook
+    webhook_service = WebhookService(db)
+    await webhook_service.dispatch_event(
+        event_type=WebhookEvent.TASK_STARTED,
+        data={"task_id": task_id, "title": task.title, "status": "started"},
+        task_id=task_id,
+        user_id=current_user.id,
+    )
+
     async def event_generator() -> AsyncGenerator[str, None]:
         """Generate SSE formatted events from the workflow.
 
         Converts LangGraph events into SSE format for streaming to client.
         Each event is a JSON object with event metadata and payload.
+        Also dispatches webhook events for node completions.
 
         TODO: Add event filtering options (Phase 3)
         """
+        completed_nodes: set[str] = set()
+
         try:
             async for event in stream_workflow(task_description, task_id, db=db):
                 event_type = event.get("event", "unknown")
@@ -118,12 +140,45 @@ async def execute_task_stream(
                     if node_name != "LangGraph":  # Skip workflow-level events for now
                         yield f"data: {json.dumps({'type': 'node_end', 'node': node_name, 'duration': duration})}\n\n"
 
+                        # Dispatch webhook for node completion (avoid duplicates)
+                        if node_name not in completed_nodes:
+                            completed_nodes.add(node_name)
+                            await _dispatch_node_webhook(
+                                webhook_service, node_name, task_id, current_user.id
+                            )
+
             # Send completion event
             yield 'data: {"type": "workflow_complete", "status": "success"}\n\n'
+
+            # Dispatch task completed webhook
+            await webhook_service.dispatch_event(
+                event_type=WebhookEvent.TASK_COMPLETED,
+                data={
+                    "task_id": task_id,
+                    "title": task.title,
+                    "status": "completed",
+                    "nodes_executed": list(completed_nodes),
+                },
+                task_id=task_id,
+                user_id=current_user.id,
+            )
 
         except Exception as e:
             logger.error("Error in event generator", task_id=task_id, error=str(e))
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+
+            # Dispatch task failed webhook
+            await webhook_service.dispatch_event(
+                event_type=WebhookEvent.TASK_FAILED,
+                data={
+                    "task_id": task_id,
+                    "title": task.title,
+                    "status": "failed",
+                    "error_message": str(e),
+                },
+                task_id=task_id,
+                user_id=current_user.id,
+            )
 
         finally:
             # Send done marker
@@ -316,3 +371,40 @@ async def get_task_result(
         "total_tokens": summary.get("total_tokens", 0),
         "total_duration_seconds": summary.get("total_duration_seconds", 0),
     }
+
+
+# Mapping of node names to webhook events
+NODE_WEBHOOK_EVENTS: dict[str, WebhookEvent] = {
+    "planner": WebhookEvent.PLANNING_COMPLETED,
+    "coder": WebhookEvent.CODING_COMPLETED,
+    "tester": WebhookEvent.TESTING_COMPLETED,
+    "reviewer": WebhookEvent.REVIEW_COMPLETED,
+}
+
+
+async def _dispatch_node_webhook(
+    service: WebhookService,
+    node_name: str,
+    task_id: int,
+    user_id: int,
+) -> None:
+    """Dispatch webhook event for node completion.
+
+    Args:
+        service: Webhook service instance
+        node_name: Name of the completed node
+        task_id: Associated task ID
+        user_id: Owner user ID
+    """
+    event = NODE_WEBHOOK_EVENTS.get(node_name.lower())
+    if event:
+        await service.dispatch_event(
+            event_type=event,
+            data={
+                "task_id": task_id,
+                "stage": node_name,
+                "status": "completed",
+            },
+            task_id=task_id,
+            user_id=user_id,
+        )

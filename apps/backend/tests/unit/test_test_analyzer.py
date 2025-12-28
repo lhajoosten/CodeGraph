@@ -235,25 +235,25 @@ def test_hello():
 
     def test_extract_async_test(self) -> None:
         """Test extracting async test function."""
-        code = '''
+        code = """
 async def test_async_operation():
     result = await do_something()
     assert result is not None
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_count == 1
         assert suite.test_cases[0].is_async
 
     def test_extract_test_class(self) -> None:
         """Test extracting tests from a class."""
-        code = '''
+        code = """
 class TestAuth:
     def test_login(self):
         assert login("user", "pass")
 
     def test_logout(self):
         assert logout()
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_count == 2
         assert suite.test_cases[0].class_name == "TestAuth"
@@ -261,7 +261,7 @@ class TestAuth:
 
     def test_extract_fixtures(self) -> None:
         """Test extracting fixtures."""
-        code = '''
+        code = """
 import pytest
 
 @pytest.fixture
@@ -274,7 +274,7 @@ def db():
 
 def test_with_fixture(client):
     assert client.get("/")
-'''
+"""
         suite = extract_test_functions(code)
         assert len(suite.fixtures) == 2
         assert "client" in suite.fixtures
@@ -282,64 +282,64 @@ def test_with_fixture(client):
 
     def test_extract_parametrized_test(self) -> None:
         """Test extracting parametrized test."""
-        code = '''
+        code = """
 import pytest
 
 @pytest.mark.parametrize("input,expected", [(1, 2), (2, 4)])
 def test_double(input, expected):
     assert double(input) == expected
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_count == 1
         assert suite.test_cases[0].is_parametrized
 
     def test_count_assertions(self) -> None:
         """Test counting assertions in test."""
-        code = '''
+        code = """
 def test_multiple_assertions():
     assert condition1()
     assert condition2()
     assert condition3()
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_cases[0].assertions == 3
 
     def test_classify_edge_case(self) -> None:
         """Test classifying edge case tests."""
-        code = '''
+        code = """
 def test_empty_input():
     assert handle_input("") == []
 
 def test_boundary_value():
     assert check_limit(100)
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_cases[0].test_type == TestType.EDGE_CASE
         assert suite.test_cases[1].test_type == TestType.EDGE_CASE
 
     def test_classify_error_handling(self) -> None:
         """Test classifying error handling tests."""
-        code = '''
+        code = """
 def test_invalid_input_raises_error():
     with pytest.raises(ValueError):
         process(None)
 
 def test_exception_handling():
     assert handle_exception()
-'''
+"""
         suite = extract_test_functions(code)
         assert suite.test_cases[0].test_type == TestType.ERROR_HANDLING
         assert suite.test_cases[1].test_type == TestType.ERROR_HANDLING
 
     def test_extract_imports(self) -> None:
         """Test extracting imports from test code."""
-        code = '''
+        code = """
 import pytest
 from mymodule import MyClass
 
 def test_something():
     pass
-'''
+"""
         suite = extract_test_functions(code)
         assert any("pytest" in imp for imp in suite.imports)
 
@@ -349,13 +349,13 @@ class TestAnalyzeCoverage:
 
     def test_coverage_full(self) -> None:
         """Test full coverage scenario."""
-        source = '''
+        source = """
 def authenticate(user, password):
     return True
 
 def logout():
     return True
-'''
+"""
         suite = TestSuite(
             test_cases=[
                 TestCase(name="test_authenticate"),
@@ -368,7 +368,7 @@ def logout():
 
     def test_coverage_partial(self) -> None:
         """Test partial coverage scenario."""
-        source = '''
+        source = """
 def authenticate(user, password):
     return True
 
@@ -377,7 +377,7 @@ def logout():
 
 def refresh_token():
     return True
-'''
+"""
         suite = TestSuite(
             test_cases=[
                 TestCase(name="test_authenticate"),
@@ -389,7 +389,7 @@ def refresh_token():
 
     def test_coverage_with_classes(self) -> None:
         """Test coverage analysis with classes."""
-        source = '''
+        source = """
 class AuthService:
     def login(self):
         pass
@@ -397,7 +397,7 @@ class AuthService:
 class UserService:
     def get_user(self):
         pass
-'''
+"""
         suite = TestSuite(
             test_cases=[
                 TestCase(name="test_auth_service"),
@@ -408,13 +408,13 @@ class UserService:
 
     def test_coverage_ignores_private(self) -> None:
         """Test that private functions are ignored."""
-        source = '''
+        source = """
 def public_function():
     pass
 
 def _private_function():
     pass
-'''
+"""
         suite = TestSuite(test_cases=[])
         metrics = analyze_coverage(source, suite)
         assert "_private_function" not in metrics.functions_in_code
@@ -477,9 +477,7 @@ class TestCalculateQualityScore:
         suite = TestSuite(
             test_cases=[
                 TestCase(name="test_unit", test_type=TestType.UNIT, assertions=3),
-                TestCase(
-                    name="test_edge", test_type=TestType.EDGE_CASE, assertions=2
-                ),
+                TestCase(name="test_edge", test_type=TestType.EDGE_CASE, assertions=2),
                 TestCase(
                     name="test_error",
                     test_type=TestType.ERROR_HANDLING,
@@ -536,20 +534,20 @@ class TestCreateTestAnalysis:
 
     def test_create_analysis(self) -> None:
         """Test creating complete analysis."""
-        test_code = '''
+        test_code = """
 def test_hello():
     assert hello() == "world"
 
 def test_goodbye():
     assert goodbye() == "farewell"
-'''
-        source_code = '''
+"""
+        source_code = """
 def hello():
     return "world"
 
 def goodbye():
     return "farewell"
-'''
+"""
         analysis = create_test_analysis(test_code, source_code)
         assert analysis.test_suite.test_count == 2
         assert analysis.summary.total == 2
@@ -557,10 +555,10 @@ def goodbye():
 
     def test_analysis_to_dict(self) -> None:
         """Test converting analysis to dictionary."""
-        test_code = '''
+        test_code = """
 def test_example():
     assert True
-'''
+"""
         analysis = create_test_analysis(test_code)
         result = analysis.to_dict()
         assert "test_suite" in result
@@ -577,10 +575,10 @@ def test_example():
 
     def test_analysis_without_source(self) -> None:
         """Test analysis without source code."""
-        test_code = '''
+        test_code = """
 def test_something():
     assert True
-'''
+"""
         analysis = create_test_analysis(test_code)
         assert analysis.test_suite.test_count == 1
         # Coverage should be 0 without source

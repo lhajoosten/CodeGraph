@@ -509,7 +509,9 @@ def analyze_coverage(source_code: str, test_suite: TestSuite) -> CoverageMetrics
             for f in func_pattern.findall(source_code)
             if not f.startswith("_") and not f.startswith("test_")
         ]
-        metrics.classes_in_code = [c for c in class_pattern.findall(source_code) if not c.startswith("_")]
+        metrics.classes_in_code = [
+            c for c in class_pattern.findall(source_code) if not c.startswith("_")
+        ]
 
     # Build list of tested items from test names
     tested_items = set()
@@ -672,7 +674,9 @@ def calculate_quality_score(
 
     # Assertion density (20%)
     if test_suite.test_cases:
-        avg_assertions = sum(t.assertions for t in test_suite.test_cases) / len(test_suite.test_cases)
+        avg_assertions = sum(t.assertions for t in test_suite.test_cases) / len(
+            test_suite.test_cases
+        )
         assertion_score = min(avg_assertions / 3, 1.0) * 20  # Target 3 assertions avg
         score += assertion_score
 

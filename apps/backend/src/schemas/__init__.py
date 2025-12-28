@@ -17,6 +17,21 @@ from src.schemas.metrics import (
     TimeseriesDataPoint,
     UsageMetricsResponse,
 )
+from src.schemas.webhook import (
+    AgentEventData,
+    TaskEventData,
+    WebhookCreate,
+    WebhookDeliveryListResponse,
+    WebhookDeliveryResponse,
+    WebhookEventPayload,
+    WebhookListResponse,
+    WebhookResponse,
+    WebhookTestRequest,
+    WebhookTestResponse,
+    WebhookUpdate,
+    WebhookWithSecretResponse,
+    WorkflowEventData,
+)
 
 __all__ = [
     # Agent schemas
@@ -34,4 +49,18 @@ __all__ = [
     "TaskMetricsResponse",
     "TimeseriesDataPoint",
     "UsageMetricsResponse",
+    # Webhook schemas
+    "WebhookCreate",
+    "WebhookUpdate",
+    "WebhookResponse",
+    "WebhookWithSecretResponse",
+    "WebhookListResponse",
+    "WebhookDeliveryResponse",
+    "WebhookDeliveryListResponse",
+    "WebhookTestRequest",
+    "WebhookTestResponse",
+    "WebhookEventPayload",
+    "TaskEventData",
+    "AgentEventData",
+    "WorkflowEventData",
 ]
