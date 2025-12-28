@@ -1,4 +1,4 @@
-.PHONY: help install dev test clean lint format type-check check build
+.PHONY: help install dev test test-fast test-ai test-all test-ci test-cov clean lint format type-check check build
 .PHONY: db-migrate db-reset db-test db-fix-auth db-init db-setup
 .PHONY: docker-up docker-down docker-logs docker-build docker-full docker-clean
 
@@ -46,6 +46,10 @@ help:
 	@echo ""
 	@echo "$(COLOR_BOLD)Testing:$(COLOR_RESET)"
 	@echo "  make test              - Run all tests"
+	@echo "  make test-fast         - Run fast tests only (unit + integration, no AI)"
+	@echo "  make test-ai           - Run AI tests only (requires vLLM running)"
+	@echo "  make test-all          - Run all tests (full suite, ~30 min)"
+	@echo "  make test-ci           - CI tests with coverage (no AI tests)"
 	@echo "  make test-cov          - Run tests with coverage report"
 	@echo ""
 	@echo "$(COLOR_BOLD)Build & Cleanup:$(COLOR_RESET)"
@@ -161,6 +165,29 @@ check: lint format type-check
 test:
 	@echo "$(COLOR_GREEN)Running backend tests...$(COLOR_RESET)"
 	@poetry run pytest tests/
+
+test-fast:
+	@echo "$(COLOR_GREEN)Running fast tests (unit + integration, no AI)...$(COLOR_RESET)"
+	@poetry run pytest tests/unit tests/integration --timeout=60
+	@echo "$(COLOR_GREEN)✓ Fast tests complete$(COLOR_RESET)"
+
+test-ai:
+	@echo "$(COLOR_GREEN)Running AI tests (requires vLLM running)...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Note: This may take ~30 minutes with local vLLM$(COLOR_RESET)"
+	@poetry run pytest tests/ai --timeout=600
+	@echo "$(COLOR_GREEN)✓ AI tests complete$(COLOR_RESET)"
+
+test-all:
+	@echo "$(COLOR_GREEN)Running all tests (full suite)...$(COLOR_RESET)"
+	@poetry run pytest tests/ --timeout=600
+	@echo "$(COLOR_GREEN)✓ All tests complete$(COLOR_RESET)"
+
+test-ci:
+	@echo "$(COLOR_GREEN)Running CI tests (unit + integration with coverage)...$(COLOR_RESET)"
+	@poetry run pytest tests/unit tests/integration \
+		--cov=src --cov-report=xml --cov-report=term-missing \
+		--timeout=60 --ignore=tests/ai
+	@echo "$(COLOR_GREEN)✓ CI tests complete$(COLOR_RESET)"
 
 test-cov:
 	@echo "$(COLOR_GREEN)Running backend tests with coverage...$(COLOR_RESET)"

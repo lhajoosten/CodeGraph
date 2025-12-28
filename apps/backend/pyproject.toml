@@ -95,3 +95,9 @@ python_functions = "test_*"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 addopts = "-v --cov=src --cov-report=term-missing --cov-report=html"
+markers = [
+    "ai: Tests requiring LLM (vLLM or Claude API)",
+    "slow: Tests that take more than 30 seconds",
+    "integration: Tests requiring real database",
+    "unit: Fast isolated unit tests",
+]

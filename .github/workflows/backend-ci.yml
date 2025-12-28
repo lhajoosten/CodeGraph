@@ -49,7 +49,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -86,9 +86,12 @@ jobs:
           SMTP_USERNAME: test@example.com
           SMTP_PASSWORD: test-password
           SMTP_FROM_EMAIL: noreply@example.com
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        timeout-minutes: 10
-        run: poetry run pytest --cov=src --cov-report=xml --cov-report=term --timeout=300
+        timeout-minutes: 5
+        run: |
+          echo "ℹ️  AI tests skipped in CI (require vLLM). Run locally: make test-ai"
+          poetry run pytest tests/unit tests/integration \
+            --cov=src --cov-report=xml --cov-report=term-missing \
+            --timeout=60 --ignore=tests/ai
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
