@@ -6,8 +6,16 @@ Provides:
 - tracing: LangSmith integration
 - error_handler: Error classification and recovery
 - streaming: Real-time output streaming
+- checkpointer: Workflow state persistence
 """
 
+from src.agents.infrastructure.checkpointer import (
+    check_checkpointer_health,
+    close_checkpointer,
+    get_checkpoint_state,
+    get_checkpointer,
+    list_checkpoints,
+)
 from src.agents.infrastructure.error_handler import ErrorHandler, ErrorType
 from src.agents.infrastructure.models import (
     ChatModel,
@@ -23,6 +31,7 @@ from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enab
 from src.agents.infrastructure.tracking import AgentRunTracker
 
 __all__ = [
+    # Models
     "ChatModel",
     "ModelFactory",
     "get_model_for_task",
@@ -30,11 +39,21 @@ __all__ = [
     "get_coder_model",
     "get_tester_model",
     "get_reviewer_model",
+    # Error handling
     "ErrorHandler",
     "ErrorType",
+    # Streaming
     "StreamingMetrics",
     "stream_with_metrics",
+    # Tracing
     "configure_tracing",
     "is_tracing_enabled",
+    # Tracking
     "AgentRunTracker",
+    # Checkpointing
+    "get_checkpointer",
+    "close_checkpointer",
+    "get_checkpoint_state",
+    "list_checkpoints",
+    "check_checkpointer_health",
 ]

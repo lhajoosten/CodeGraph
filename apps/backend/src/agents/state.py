@@ -5,16 +5,264 @@ State is defined using TypedDict with annotated reducers that control how
 updates merge across nodes without overwriting previous values.
 
 Features:
+- Typed metadata schemas for each node (Planner, Coder, Tester, Reviewer)
 - CouncilState for multi-judge review with personas
 - JudgeVerdictState for individual judge outcomes
 - Metrics collection for council deliberation
-
-TODO: Add state persistence integration with AsyncPostgresSaver (Phase 4)
+- State persistence via AsyncPostgresSaver checkpointer
 """
 
 from typing import Annotated, Any, Literal, TypedDict
 
 from langgraph.graph.message import add_messages
+
+
+# =============================================================================
+# Node Metadata Schemas
+# =============================================================================
+
+
+class LLMUsageMetadata(TypedDict, total=False):
+    """Common LLM usage metrics shared across all nodes.
+
+    Attributes:
+        input_tokens: Number of input/prompt tokens
+        output_tokens: Number of output/completion tokens
+        total_tokens: Total tokens used (input + output)
+        latency_ms: Response time in milliseconds
+        model: Model name used (e.g., "claude-3-5-sonnet-latest")
+    """
+
+    input_tokens: int
+    output_tokens: int
+    total_tokens: int
+    latency_ms: int
+    model: str
+
+
+class PlanValidationMetadata(TypedDict, total=False):
+    """Plan validation results from plan_validator.
+
+    Attributes:
+        is_valid: Whether the plan passed validation
+        total_steps: Number of steps extracted from the plan
+        complexity_level: "low", "medium", or "high"
+        complexity_score: Numeric complexity score
+        issues: List of validation issues found
+    """
+
+    is_valid: bool
+    total_steps: int
+    complexity_level: str
+    complexity_score: float
+    issues: list[dict[str, Any]]
+
+
+class PlannerMetadata(TypedDict, total=False):
+    """Metadata produced by the planner node.
+
+    Attributes:
+        plan_generated_at: ISO timestamp when plan was generated
+        planner_model: Model used for planning (e.g., "sonnet")
+        plan_validation: Validation results
+        plan_from_cache: Whether plan was retrieved from cache
+        plan_cached: Whether plan was stored in cache
+        cache_source_task_id: If from cache, the original task ID
+        cache_source_timestamp: If from cache, when it was cached
+        planner_usage: LLM token usage and latency
+    """
+
+    plan_generated_at: str
+    planner_model: str
+    plan_validation: PlanValidationMetadata
+    plan_from_cache: bool
+    plan_cached: bool
+    cache_source_task_id: int | None
+    cache_source_timestamp: str | None
+    planner_usage: LLMUsageMetadata
+
+
+class CodeBlockMetadata(TypedDict, total=False):
+    """Metadata for a single code block.
+
+    Attributes:
+        language: Programming language (python, javascript, etc.)
+        filepath: Inferred or specified file path
+        line_count: Number of lines in the block
+        is_test: Whether this is test code
+        functions: List of function names found
+        classes: List of class names found
+    """
+
+    language: str
+    filepath: str | None
+    line_count: int
+    is_test: bool
+    functions: list[str]
+    classes: list[str]
+
+
+class FormattingMetadata(TypedDict, total=False):
+    """Code formatting results.
+
+    Attributes:
+        all_valid: Whether all code passed syntax validation
+        files_formatted: Number of files that were auto-formatted
+        syntax_errors: Number of syntax errors found
+        lint_warnings: Total lint warnings across all files
+    """
+
+    all_valid: bool
+    files_formatted: int
+    syntax_errors: int
+    lint_warnings: int
+
+
+class CoderMetadata(TypedDict, total=False):
+    """Metadata produced by the coder node.
+
+    Attributes:
+        code_generated_at: ISO timestamp when code was generated
+        coder_model: Model used for code generation
+        is_revision: Whether this is a revision based on review feedback
+        code_blocks: List of code block metadata
+        code_block_count: Total number of code blocks
+        has_test_code: Whether test code was included
+        multi_file: Full multi-file result structure
+        formatting: Code formatting results
+        coder_usage: LLM token usage and latency
+    """
+
+    code_generated_at: str
+    coder_model: str
+    is_revision: bool
+    code_blocks: list[CodeBlockMetadata]
+    code_block_count: int
+    has_test_code: bool
+    multi_file: dict[str, Any]
+    formatting: FormattingMetadata
+    coder_usage: LLMUsageMetadata
+
+
+class TestCoverageMetadata(TypedDict, total=False):
+    """Test coverage metrics.
+
+    Attributes:
+        line_coverage: Percentage of lines covered
+        branch_coverage: Percentage of branches covered
+        function_coverage: Percentage of functions tested
+        estimated: Whether these are estimated values
+    """
+
+    line_coverage: float
+    branch_coverage: float
+    function_coverage: float
+    estimated: bool
+
+
+class TesterMetadata(TypedDict, total=False):
+    """Metadata produced by the tester node.
+
+    Attributes:
+        tests_generated_at: ISO timestamp when tests were generated
+        tester_model: Model used for test generation
+        test_count: Number of test functions generated
+        test_types: Types of tests (unit, integration, edge_case)
+        mock_recommendations: Suggested mocks for external dependencies
+        coverage: Coverage metrics (estimated)
+        test_quality_score: Overall test quality score (0-100)
+        tester_usage: LLM token usage and latency
+    """
+
+    tests_generated_at: str
+    tester_model: str
+    test_count: int
+    test_types: list[str]
+    mock_recommendations: list[str]
+    coverage: TestCoverageMetadata
+    test_quality_score: float
+    tester_usage: LLMUsageMetadata
+
+
+class ReviewerMetadata(TypedDict, total=False):
+    """Metadata produced by the reviewer node.
+
+    Attributes:
+        review_completed_at: ISO timestamp when review completed
+        reviewer_model: Model used for review
+        verdict: APPROVE, REVISE, or REJECT
+        confidence: Confidence in the verdict (0.0-1.0)
+        issues_found: Number of issues identified
+        issue_categories: Categories of issues found
+        reviewer_usage: LLM token usage and latency
+        is_council_review: Whether this was a council-based review
+    """
+
+    review_completed_at: str
+    reviewer_model: str
+    verdict: str
+    confidence: float
+    issues_found: int
+    issue_categories: list[str]
+    reviewer_usage: LLMUsageMetadata
+    is_council_review: bool
+
+
+class WorkflowMetadata(TypedDict, total=False):
+    """Combined metadata from all workflow nodes.
+
+    This provides a typed structure for the metadata field in WorkflowState,
+    ensuring consistent access to node-specific metadata.
+
+    Attributes:
+        workflow_started_at: ISO timestamp when workflow started
+        workflow_completed_at: ISO timestamp when workflow completed
+        thread_id: Thread ID for checkpointing
+        timeout_seconds: Configured timeout
+        planner: Planner node metadata
+        coder: Coder node metadata
+        tester: Tester node metadata
+        reviewer: Reviewer node metadata
+        error_node: Name of node that caused error (if any)
+        error_type: Type of error that occurred
+        error_message: Error message
+        recovered_from_error: Whether error recovery was successful
+        recovery_error_type: Type of error that was recovered from
+    """
+
+    # Workflow-level
+    workflow_started_at: str
+    workflow_completed_at: str
+    workflow_cancelled_at: str
+    workflow_timeout_at: str
+    thread_id: str | None
+    timeout_seconds: int
+    cancellation_token_id: int
+
+    # Node-specific
+    planner: PlannerMetadata
+    coder: CoderMetadata
+    tester: TesterMetadata
+    reviewer: ReviewerMetadata
+
+    # Error handling
+    error_node: str
+    error_type: str
+    error_message: str
+    recovered_from_error: bool
+    recovery_exhausted: bool
+    recovery_error_type: str
+
+    # Council review (added when council review is used)
+    verdict: str
+    confidence_score: float
+    consensus_type: str
+    council_mode: str
+
+
+# =============================================================================
+# Workflow State
+# =============================================================================
 
 
 class WorkflowState(TypedDict):
@@ -35,9 +283,14 @@ class WorkflowState(TypedDict):
         test_analysis: Structured test analysis with coverage and quality metrics
         review_feedback: Feedback from the reviewer
         iterations: Counter for review loop iterations
-        status: Current workflow status (planning -> coding -> testing -> reviewing -> complete)
+        status: Current workflow status (planning -> coding -> testing -> reviewing -> complete/error)
         error: Error message if any step fails
-        metadata: Additional context (timestamps, execution info, etc.)
+        metadata: Additional context - see WorkflowMetadata for typed structure
+
+    Note:
+        The metadata field uses dict[str, Any] for flexibility, but follows
+        the structure defined in WorkflowMetadata. Each node adds its own
+        metadata under its key (e.g., metadata["planner_usage"], metadata["verdict"]).
 
     Example:
         state = {
@@ -49,6 +302,11 @@ class WorkflowState(TypedDict):
             "code_files": {"files": [...], "all_valid": True},
             "test_analysis": {"summary": {...}, "coverage": {...}},
             "status": "coding",
+            "metadata": {
+                "workflow_started_at": "2025-01-15T10:00:00Z",
+                "plan_validation": {"is_valid": True, "complexity_level": "medium"},
+                "planner_usage": {"input_tokens": 500, "output_tokens": 1000},
+            },
             ...
         }
     """
@@ -64,10 +322,10 @@ class WorkflowState(TypedDict):
     review_feedback: str
     iterations: int
     status: Literal[
-        "planning", "coding", "testing", "reviewing", "complete", "timeout", "cancelled"
+        "planning", "coding", "testing", "reviewing", "complete", "timeout", "cancelled", "error"
     ]
     error: str | None
-    metadata: dict[str, Any]
+    metadata: dict[str, Any]  # See WorkflowMetadata for typed structure
 
 
 # =============================================================================

@@ -148,6 +148,10 @@ class Settings(BaseSettings):
     enable_error_recovery: bool = True
     max_retry_attempts: int = 3
 
+    # Workflow Checkpointing
+    # When True, workflow state is persisted to PostgreSQL for resumption
+    enable_checkpointing: bool = False
+
     # Test Execution
     # When True, actually runs pytest in isolated temp directories
     # When False (default), uses simulated test execution

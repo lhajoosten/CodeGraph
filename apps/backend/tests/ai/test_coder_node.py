@@ -45,7 +45,9 @@ class TestCoderNode:
         try:
             result = await coder_node(state)
         except Exception as e:
-            if "timeout" in str(e).lower():
+            error_str = str(e).lower()
+            error_type = type(e).__name__.lower()
+            if "timeout" in error_str or "timed out" in error_str or "timeout" in error_type:
                 pytest.skip("Coder node timed out - LLM backend is slow")
             raise
 
@@ -75,7 +77,9 @@ class TestCoderNode:
         try:
             result = await coder_node(state)
         except Exception as e:
-            if "timeout" in str(e).lower():
+            error_str = str(e).lower()
+            error_type = type(e).__name__.lower()
+            if "timeout" in error_str or "timed out" in error_str or "timeout" in error_type:
                 pytest.skip("Coder node timed out - LLM backend is slow")
             raise
 
@@ -102,7 +106,9 @@ class TestCoderNode:
         try:
             result = await coder_node(state)
         except Exception as e:
-            if "timeout" in str(e).lower():
+            error_str = str(e).lower()
+            error_type = type(e).__name__.lower()
+            if "timeout" in error_str or "timed out" in error_str or "timeout" in error_type:
                 pytest.skip("Coder node timed out - LLM backend is slow")
             raise
 
@@ -131,7 +137,9 @@ class TestCoderNode:
         try:
             result = await coder_node(state)
         except Exception as e:
-            if "timeout" in str(e).lower():
+            error_str = str(e).lower()
+            error_type = type(e).__name__.lower()
+            if "timeout" in error_str or "timed out" in error_str or "timeout" in error_type:
                 pytest.skip("Coder node timed out - LLM backend is slow")
             raise
 

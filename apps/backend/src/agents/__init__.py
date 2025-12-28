@@ -23,9 +23,12 @@ from src.agents.graph import (
     CancellationToken,
     WorkflowCancelledError,
     cancel_workflow,
+    create_resilient_node,
     create_workflow,
     get_compiled_graph,
+    get_compiled_graph_with_checkpointer,
     invoke_workflow,
+    reset_workflow_error_handler,
     stream_workflow,
 )
 from src.agents.state import CouncilState, JudgeVerdictState, WorkflowState
@@ -34,11 +37,15 @@ __all__ = [
     # Workflow management
     "create_workflow",
     "get_compiled_graph",
+    "get_compiled_graph_with_checkpointer",
     "invoke_workflow",
     "stream_workflow",
     "cancel_workflow",
     "CancellationToken",
     "WorkflowCancelledError",
+    # Error recovery
+    "create_resilient_node",
+    "reset_workflow_error_handler",
     # State types
     "WorkflowState",
     "CouncilState",
