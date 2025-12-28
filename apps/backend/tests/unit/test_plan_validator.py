@@ -303,7 +303,11 @@ class TestCalculateComplexity:
         sections = extract_plan_sections(plan)
         score = calculate_complexity(plan, sections)
         # High complexity plan with many technical keywords
-        assert score.level in [ComplexityLevel.MEDIUM, ComplexityLevel.HIGH, ComplexityLevel.VERY_HIGH]
+        assert score.level in [
+            ComplexityLevel.MEDIUM,
+            ComplexityLevel.HIGH,
+            ComplexityLevel.VERY_HIGH,
+        ]
         assert score.technical_score > 0.5  # Many high-complexity keywords
         assert score.step_count_score > 0.5  # 12 steps
 

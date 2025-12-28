@@ -25,8 +25,10 @@ class WorkflowState(TypedDict):
         task_id: ID of the task being executed
         task_description: User-provided description of the coding task
         plan: Step-by-step plan created by the planner
-        code: Generated code from the coder
-        test_results: Results from running tests
+        code: Generated code from the coder (primary file content)
+        code_files: Multi-file code generation result with all files
+        test_results: Generated test code from the tester
+        test_analysis: Structured test analysis with coverage and quality metrics
         review_feedback: Feedback from the reviewer
         iterations: Counter for review loop iterations
         status: Current workflow status (planning -> coding -> testing -> reviewing -> complete)
@@ -40,6 +42,8 @@ class WorkflowState(TypedDict):
             "messages": [...],
             "plan": "1. Design auth schema...",
             "code": "...",
+            "code_files": {"files": [...], "all_valid": True},
+            "test_analysis": {"summary": {...}, "coverage": {...}},
             "status": "coding",
             ...
         }
@@ -50,7 +54,9 @@ class WorkflowState(TypedDict):
     task_description: str
     plan: str
     code: str
+    code_files: dict[str, Any]
     test_results: str
+    test_analysis: dict[str, Any]
     review_feedback: str
     iterations: int
     status: Literal["planning", "coding", "testing", "reviewing", "complete", "timeout"]

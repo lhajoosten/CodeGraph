@@ -4,10 +4,8 @@ The tester is responsible for analyzing the generated code and plan, creating
 comprehensive pytest test cases with full coverage, and simulating test execution.
 It supports multiple test scenarios and integrates with the testing pipeline.
 
-TODO: Add test execution simulation (Phase 2)
-TODO: Add coverage metrics collection (Phase 2)
-TODO: Add parametrized test generation (Phase 2)
 TODO: Add mock strategy recommendations (Phase 3)
+TODO: Add integration with actual pytest execution (Phase 3)
 """
 
 from collections.abc import AsyncGenerator
@@ -16,9 +14,11 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
+from src.agents.code_parser import parse_code_blocks
 from src.agents.models import get_tester_model
 from src.agents.state import WorkflowState
 from src.agents.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.test_analyzer import create_test_analysis
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -53,7 +53,8 @@ async def tester_node(state: WorkflowState, config: RunnableConfig | None = None
 
     This node takes the generated code and execution plan, then produces
     comprehensive pytest test cases with full coverage including unit tests,
-    integration tests, and edge case scenarios.
+    integration tests, and edge case scenarios. It also analyzes the tests
+    for coverage metrics and quality scoring.
 
     Args:
         state: Current workflow state containing code and plan
@@ -62,17 +63,14 @@ async def tester_node(state: WorkflowState, config: RunnableConfig | None = None
     Returns:
         Dictionary with:
             - test_results: Generated pytest test code
+            - test_analysis: Structured analysis with coverage, quality, recommendations
             - status: Updated to "reviewing"
             - messages: Accumulated LLM messages
-            - metadata: Updated with test generation timestamp
+            - metadata: Updated with test generation timestamp, analysis summary
             - iterations: Preserved from state
 
     Raises:
         Exception: If Claude API call fails
-
-    TODO: Add test execution and result capture (Phase 2)
-    TODO: Add coverage percentage calculation (Phase 2)
-    TODO: Add test quality metrics (Phase 3)
     """
     logger.info(
         "Tester node executing",
@@ -119,7 +117,26 @@ Generate complete, production-ready pytest test cases with:
     )
     latency_ms = int((time.time() - start_time) * 1000)
 
-    test_content = response.content if isinstance(response, BaseMessage) else str(response)
+    raw_content = response.content if isinstance(response, BaseMessage) else str(response)
+
+    # Parse code blocks from response to extract test code
+    parsed = parse_code_blocks(str(raw_content))
+
+    # Get the primary test code (prefer parsed, fall back to raw)
+    if parsed.has_code and parsed.test_blocks:
+        test_content = "\n\n".join(block.content for block in parsed.test_blocks)
+    elif parsed.has_code and parsed.code_blocks:
+        test_content = parsed.code_blocks[0].content
+    else:
+        test_content = str(raw_content)
+
+    # Analyze the generated tests
+    source_code = state.get("code", "")
+    test_analysis = create_test_analysis(
+        test_code=test_content,
+        source_code=source_code,
+        filepath="tests/test_generated.py",
+    )
 
     # Extract usage metadata from response
     usage_metadata = getattr(response, "usage_metadata", None) or {}
@@ -131,6 +148,9 @@ Generate complete, production-ready pytest test cases with:
         "Tester generated tests",
         task_id=state.get("task_id"),
         test_length=len(test_content),
+        test_count=test_analysis.test_suite.test_count,
+        coverage=test_analysis.coverage.coverage_percentage,
+        quality_score=test_analysis.quality_score,
         input_tokens=input_tokens,
         output_tokens=output_tokens,
         latency_ms=latency_ms,
@@ -138,6 +158,7 @@ Generate complete, production-ready pytest test cases with:
 
     return {
         "test_results": test_content,
+        "test_analysis": test_analysis.to_dict(),
         "status": "reviewing",
         "messages": [response],
         "iterations": state.get("iterations", 0),
@@ -145,6 +166,14 @@ Generate complete, production-ready pytest test cases with:
             **(state.get("metadata", {})),
             "tests_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "tester_model": "sonnet",
+            "test_summary": {
+                "test_count": test_analysis.test_suite.test_count,
+                "coverage_percentage": test_analysis.coverage.coverage_percentage,
+                "quality_score": test_analysis.quality_score,
+                "passed": test_analysis.summary.passed,
+                "failed": test_analysis.summary.failed,
+                "recommendations": test_analysis.recommendations[:3],  # Top 3
+            },
             "tester_usage": {
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,

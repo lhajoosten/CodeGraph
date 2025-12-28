@@ -4,8 +4,6 @@ The coder is responsible for analyzing the plan from the planner and generating
 clean, well-documented, production-ready code. It supports multiple programming
 languages and integrates with the code generation pipeline.
 
-TODO: Add code formatting and linting integration (Phase 2)
-TODO: Add multi-file code generation (Phase 2)
 TODO: Add code quality metrics and scoring (Phase 3)
 """
 
@@ -15,6 +13,11 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
+from src.agents.code_formatter import (
+    create_multi_file_result,
+    format_python_code,
+    infer_filepath,
+)
 from src.agents.code_parser import parse_code_blocks
 from src.agents.models import get_coder_model
 from src.agents.state import WorkflowState
@@ -50,8 +53,8 @@ async def coder_node(state: WorkflowState, config: RunnableConfig | None = None)
     """Code generation node - implements code from the plan.
 
     This node takes the execution plan created by the planner and generates
-    production-ready code. It can handle multiple programming languages and
-    incorporates feedback from previous review iterations.
+    production-ready code. It supports multi-file generation, code formatting,
+    linting, and syntax validation.
 
     Args:
         state: Current workflow state containing plan and review feedback
@@ -59,18 +62,15 @@ async def coder_node(state: WorkflowState, config: RunnableConfig | None = None)
 
     Returns:
         Dictionary with:
-            - code: Generated source code
+            - code: Generated source code (primary file content)
+            - code_files: Multi-file result with all generated files
             - status: Updated to "testing"
             - messages: Accumulated LLM messages
-            - metadata: Updated with code generation timestamp
+            - metadata: Updated with code generation timestamp, formatting, validation
             - iterations: Incremented if this is a revision
 
     Raises:
         Exception: If Claude API call fails
-
-    TODO: Add language parameter for multi-language support (Phase 2)
-    TODO: Add code complexity metrics (Phase 2)
-    TODO: Add syntax validation before returning (Phase 2)
     """
     logger.info(
         "Coder node executing",
@@ -118,17 +118,30 @@ Please address all the feedback above in your revised code."""
     # Parse code blocks from response
     parsed = parse_code_blocks(str(raw_content))
 
-    # Use primary code block if available, otherwise use raw content
-    if parsed.has_code and parsed.primary_code:
-        code_content = parsed.primary_code.content
-    else:
-        code_content = str(raw_content)
-
     # Extract usage metadata from response
     usage_metadata = getattr(response, "usage_metadata", None) or {}
     input_tokens = usage_metadata.get("input_tokens", 0)
     output_tokens = usage_metadata.get("output_tokens", 0)
     total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
+
+    # Build multi-file result with formatting
+    code_blocks_tuples: list[tuple[str, str, str]] = []
+    for i, block in enumerate(parsed.code_blocks):
+        filepath = block.filepath or infer_filepath(block.content, i)
+        code_blocks_tuples.append((filepath, block.content, block.language.value))
+
+    # Create multi-file result with formatting and validation
+    multi_file_result = create_multi_file_result(code_blocks_tuples, format_code=True)
+
+    # Use primary file content, or fall back to raw content
+    if multi_file_result.primary_file:
+        code_content = multi_file_result.primary_file.content
+    elif parsed.has_code and parsed.primary_code:
+        # Format single code block if no multi-file result
+        format_result = format_python_code(parsed.primary_code.content)
+        code_content = format_result.formatted_code
+    else:
+        code_content = str(raw_content)
 
     # Build structured code info for metadata
     code_blocks_info = [
@@ -143,11 +156,27 @@ Please address all the feedback above in your revised code."""
         for block in parsed.code_blocks
     ]
 
+    # Collect formatting results
+    format_summary = {
+        "all_valid": multi_file_result.all_valid,
+        "files_formatted": sum(
+            1 for f in multi_file_result.files if f.format_result and f.format_result.was_modified
+        ),
+        "syntax_errors": sum(
+            1 for f in multi_file_result.files if f.format_result and f.format_result.syntax_error
+        ),
+        "lint_warnings": sum(
+            f.format_result.warning_count for f in multi_file_result.files if f.format_result
+        ),
+    }
+
     logger.info(
         "Coder generated code",
         task_id=state.get("task_id"),
         code_length=len(code_content),
         code_blocks=len(parsed.code_blocks),
+        file_count=len(multi_file_result.files),
+        all_valid=multi_file_result.all_valid,
         is_revision=bool(state.get("review_feedback")),
         input_tokens=input_tokens,
         output_tokens=output_tokens,
@@ -161,6 +190,7 @@ Please address all the feedback above in your revised code."""
 
     return {
         "code": code_content,
+        "code_files": multi_file_result.to_dict(),
         "status": "testing",
         "messages": [response],
         "iterations": iterations,
@@ -172,6 +202,8 @@ Please address all the feedback above in your revised code."""
             "code_blocks": code_blocks_info,
             "code_block_count": len(parsed.code_blocks),
             "has_test_code": any(block.is_test for block in parsed.code_blocks),
+            "multi_file": multi_file_result.to_dict(),
+            "formatting": format_summary,
             "coder_usage": {
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,
