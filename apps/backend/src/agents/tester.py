@@ -18,6 +18,7 @@ from langchain_core.runnables import RunnableConfig
 
 from src.agents.models import get_tester_model
 from src.agents.state import WorkflowState
+from src.agents.streaming import StreamingMetrics, stream_with_metrics
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -159,11 +160,12 @@ async def test_with_stream(
     plan: str,
     task_id: int,
     config: RunnableConfig | None = None,
-) -> AsyncGenerator[str, None]:
-    """Generate tests with streaming output.
+) -> AsyncGenerator[tuple[str, StreamingMetrics | None], None]:
+    """Generate tests with streaming output and metrics collection.
 
-    This function streams the test generation process to the client in real-time,
-    useful for showing progress during long test generation tasks.
+    This function streams the test generation process to the client in real-time
+    while collecting usage metrics. Yields (chunk, None) for content chunks,
+    then ("", metrics) as the final item with complete usage metrics.
 
     Args:
         code: Generated code to test
@@ -172,9 +174,15 @@ async def test_with_stream(
         config: Optional RunnableConfig for tracing
 
     Yields:
-        Chunks of generated test code as they stream from Claude
+        Tuple of (content_chunk, None) for content, then ("", StreamingMetrics) at end
 
-    TODO: Implement streaming collection for test metrics (Phase 2)
+    Example:
+        async for chunk, metrics in test_with_stream(code, plan, task_id):
+            if metrics is None:
+                send_to_client(chunk)  # Stream to client
+            else:
+                # Final metrics available
+                log_usage(metrics.input_tokens, metrics.output_tokens)
     """
     logger.info("Starting stream test generation", task_id=task_id)
 
@@ -198,17 +206,21 @@ Generate complete, production-ready pytest test cases with:
 - Parametrized tests for multiple scenarios
 - At least 80% code coverage target"""
 
-    async for chunk in model.astream(
-        [
-            ("system", TESTER_SYSTEM_PROMPT),
-            ("human", test_prompt),
-        ],
-        config,
-    ):
-        if chunk.content:
-            content = chunk.content
-            if isinstance(content, str):
-                logger.debug("Streaming test chunk", task_id=task_id, chunk_length=len(content))
-                yield content
+    messages: list[tuple[str, str]] = [
+        ("system", TESTER_SYSTEM_PROMPT),
+        ("human", test_prompt),
+    ]
 
-    logger.info("Finished stream test generation", task_id=task_id)
+    async for chunk, metrics in stream_with_metrics(model, messages, config):
+        if metrics is None:
+            logger.debug("Streaming test chunk", task_id=task_id, chunk_length=len(chunk))
+            yield chunk, None
+        else:
+            logger.info(
+                "Finished stream test generation",
+                task_id=task_id,
+                input_tokens=metrics.input_tokens,
+                output_tokens=metrics.output_tokens,
+                latency_ms=metrics.latency_ms,
+            )
+            yield "", metrics

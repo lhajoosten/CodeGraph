@@ -197,14 +197,18 @@ class TestWorkflowMocked:
 
     def test_model_configuration(self) -> None:
         """Verify model configuration is correct."""
-        from src.agents.models import ModelFactory
+        from src.agents.models import ModelConfig
 
-        # Verify all models are configured
-        assert "haiku" in ModelFactory.MODEL_NAMES
-        assert "sonnet" in ModelFactory.MODEL_NAMES
-        assert "opus" in ModelFactory.MODEL_NAMES
+        # Verify all model tiers are configured
+        assert "haiku" in ModelConfig.TIERS
+        assert "sonnet" in ModelConfig.TIERS
+        assert "opus" in ModelConfig.TIERS
 
-        # Verify model names contain expected pattern
-        for model_type, model_name in ModelFactory.MODEL_NAMES.items():
-            assert "claude" in model_name, f"{model_type} should be a Claude model"
-            assert "haiku" in model_name, "All models should use Haiku for testing"
+        # Verify Claude fallback models are configured
+        assert "haiku" in ModelConfig.CLAUDE_MODELS
+        assert "sonnet" in ModelConfig.CLAUDE_MODELS
+        assert "opus" in ModelConfig.CLAUDE_MODELS
+
+        # Verify Claude model names contain expected pattern
+        for tier, model_name in ModelConfig.CLAUDE_MODELS.items():
+            assert "claude" in model_name, f"{tier} should be a Claude model"

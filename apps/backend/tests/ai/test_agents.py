@@ -21,7 +21,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 
 from src.agents.graph import get_compiled_graph, invoke_workflow
-from src.agents.models import ModelFactory
+from src.agents.models import ModelConfig, ModelFactory
 from src.agents.planner import planner_node
 from src.agents.state import WorkflowState
 from src.core.config import settings
@@ -62,7 +62,7 @@ class TestAgentModels:
         if settings.use_local_llm:
             assert model_name == settings.local_llm_model
         else:
-            assert model_name == ModelFactory.MODEL_NAMES["sonnet"]
+            assert model_name == ModelConfig.CLAUDE_MODELS["sonnet"]
 
     def test_model_factory_creates_opus(self) -> None:
         """Test that ModelFactory can create Opus model."""
@@ -73,7 +73,7 @@ class TestAgentModels:
         if settings.use_local_llm:
             assert model_name == settings.local_llm_model
         else:
-            assert model_name == ModelFactory.MODEL_NAMES["opus"]
+            assert model_name == ModelConfig.CLAUDE_MODELS["opus"]
 
     def test_model_factory_invalid_model(self) -> None:
         """Test that ModelFactory rejects invalid model names."""
@@ -92,9 +92,9 @@ class TestAgentModels:
             assert get_model_name(sonnet) == settings.local_llm_model
             assert get_model_name(opus) == settings.local_llm_model
         else:
-            assert get_model_name(haiku) == ModelFactory.MODEL_NAMES["haiku"]
-            assert get_model_name(sonnet) == ModelFactory.MODEL_NAMES["sonnet"]
-            assert get_model_name(opus) == ModelFactory.MODEL_NAMES["opus"]
+            assert get_model_name(haiku) == ModelConfig.CLAUDE_MODELS["haiku"]
+            assert get_model_name(sonnet) == ModelConfig.CLAUDE_MODELS["sonnet"]
+            assert get_model_name(opus) == ModelConfig.CLAUDE_MODELS["opus"]
 
 
 class TestWorkflowState:

@@ -4,7 +4,6 @@ The coder is responsible for analyzing the plan from the planner and generating
 clean, well-documented, production-ready code. It supports multiple programming
 languages and integrates with the code generation pipeline.
 
-TODO: Add structured output for code blocks (Phase 2)
 TODO: Add code formatting and linting integration (Phase 2)
 TODO: Add multi-file code generation (Phase 2)
 TODO: Add code quality metrics and scoring (Phase 3)
@@ -16,8 +15,10 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
+from src.agents.code_parser import parse_code_blocks
 from src.agents.models import get_coder_model
 from src.agents.state import WorkflowState
+from src.agents.streaming import StreamingMetrics, stream_with_metrics
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -112,7 +113,16 @@ Please address all the feedback above in your revised code."""
     )
     latency_ms = int((time.time() - start_time) * 1000)
 
-    code_content = response.content if isinstance(response, BaseMessage) else str(response)
+    raw_content = response.content if isinstance(response, BaseMessage) else str(response)
+
+    # Parse code blocks from response
+    parsed = parse_code_blocks(str(raw_content))
+
+    # Use primary code block if available, otherwise use raw content
+    if parsed.has_code and parsed.primary_code:
+        code_content = parsed.primary_code.content
+    else:
+        code_content = str(raw_content)
 
     # Extract usage metadata from response
     usage_metadata = getattr(response, "usage_metadata", None) or {}
@@ -120,10 +130,24 @@ Please address all the feedback above in your revised code."""
     output_tokens = usage_metadata.get("output_tokens", 0)
     total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
 
+    # Build structured code info for metadata
+    code_blocks_info = [
+        {
+            "language": block.language.value,
+            "filepath": block.filepath,
+            "line_count": block.line_count,
+            "is_test": block.is_test,
+            "functions": block.metadata.get("functions", []),
+            "classes": block.metadata.get("classes", []),
+        }
+        for block in parsed.code_blocks
+    ]
+
     logger.info(
         "Coder generated code",
         task_id=state.get("task_id"),
         code_length=len(code_content),
+        code_blocks=len(parsed.code_blocks),
         is_revision=bool(state.get("review_feedback")),
         input_tokens=input_tokens,
         output_tokens=output_tokens,
@@ -145,6 +169,9 @@ Please address all the feedback above in your revised code."""
             "code_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "coder_model": "sonnet",
             "is_revision": bool(state.get("review_feedback")),
+            "code_blocks": code_blocks_info,
+            "code_block_count": len(parsed.code_blocks),
+            "has_test_code": any(block.is_test for block in parsed.code_blocks),
             "coder_usage": {
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,
@@ -160,11 +187,12 @@ async def code_with_stream(
     task_id: int,
     review_feedback: str | None = None,
     config: RunnableConfig | None = None,
-) -> AsyncGenerator[str, None]:
-    """Generate code with streaming output.
+) -> AsyncGenerator[tuple[str, StreamingMetrics | None], None]:
+    """Generate code with streaming output and metrics collection.
 
-    This function streams the code generation process to the client in real-time,
-    useful for showing progress during long code generation tasks.
+    This function streams the code generation process to the client in real-time
+    while collecting usage metrics. Yields (chunk, None) for content chunks,
+    then ("", metrics) as the final item with complete usage metrics.
 
     Args:
         plan: Execution plan from planner
@@ -173,9 +201,15 @@ async def code_with_stream(
         config: Optional RunnableConfig for tracing
 
     Yields:
-        Chunks of generated code as they stream from Claude
+        Tuple of (content_chunk, None) for content, then ("", StreamingMetrics) at end
 
-    TODO: Implement streaming collection for metrics (Phase 2)
+    Example:
+        async for chunk, metrics in code_with_stream(plan, task_id):
+            if metrics is None:
+                send_to_client(chunk)  # Stream to client
+            else:
+                # Final metrics available
+                log_usage(metrics.input_tokens, metrics.output_tokens)
     """
     logger.info("Starting stream code generation", task_id=task_id)
 
@@ -194,17 +228,21 @@ Previous Review Feedback:
 
 Please address all the feedback above in your revised code."""
 
-    async for chunk in model.astream(
-        [
-            ("system", CODER_SYSTEM_PROMPT),
-            ("human", code_prompt),
-        ],
-        config,
-    ):
-        if chunk.content:
-            content = chunk.content
-            if isinstance(content, str):
-                logger.debug("Streaming code chunk", task_id=task_id, chunk_length=len(content))
-                yield content
+    messages: list[tuple[str, str]] = [
+        ("system", CODER_SYSTEM_PROMPT),
+        ("human", code_prompt),
+    ]
 
-    logger.info("Finished stream code generation", task_id=task_id)
+    async for chunk, metrics in stream_with_metrics(model, messages, config):
+        if metrics is None:
+            logger.debug("Streaming code chunk", task_id=task_id, chunk_length=len(chunk))
+            yield chunk, None
+        else:
+            logger.info(
+                "Finished stream code generation",
+                task_id=task_id,
+                input_tokens=metrics.input_tokens,
+                output_tokens=metrics.output_tokens,
+                latency_ms=metrics.latency_ms,
+            )
+            yield "", metrics

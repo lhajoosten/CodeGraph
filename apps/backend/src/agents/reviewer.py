@@ -17,6 +17,7 @@ from langchain_core.runnables import RunnableConfig
 
 from src.agents.models import get_reviewer_model
 from src.agents.state import WorkflowState
+from src.agents.streaming import StreamingMetrics, stream_with_metrics
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -226,11 +227,12 @@ async def review_with_stream(
     plan: str,
     task_id: int,
     config: RunnableConfig | None = None,
-) -> AsyncGenerator[str, None]:
-    """Generate review with streaming output.
+) -> AsyncGenerator[tuple[str, StreamingMetrics | None], None]:
+    """Generate review with streaming output and metrics collection.
 
-    This function streams the review process to the client in real-time,
-    useful for showing progress during the review phase.
+    This function streams the review process to the client in real-time
+    while collecting usage metrics. Yields (chunk, None) for content chunks,
+    then ("", metrics) as the final item with complete usage metrics.
 
     Args:
         code: Generated code to review
@@ -240,9 +242,15 @@ async def review_with_stream(
         config: Optional RunnableConfig for tracing
 
     Yields:
-        Chunks of review feedback as they stream from Claude
+        Tuple of (content_chunk, None) for content, then ("", StreamingMetrics) at end
 
-    TODO: Implement streaming collection for review metrics (Phase 2)
+    Example:
+        async for chunk, metrics in review_with_stream(code, tests, plan, task_id):
+            if metrics is None:
+                send_to_client(chunk)  # Stream to client
+            else:
+                # Final metrics available
+                log_usage(metrics.input_tokens, metrics.output_tokens)
     """
     logger.info("Starting stream code review", task_id=task_id)
 
@@ -269,17 +277,21 @@ Please provide a thorough review covering:
 
 End with a clear verdict: APPROVE (code is production-ready), REVISE (needs iterations), or REJECT (fundamental issues)."""
 
-    async for chunk in model.astream(
-        [
-            ("system", REVIEWER_SYSTEM_PROMPT),
-            ("human", review_prompt),
-        ],
-        config,
-    ):
-        if chunk.content:
-            content = chunk.content
-            if isinstance(content, str):
-                logger.debug("Streaming review chunk", task_id=task_id, chunk_length=len(content))
-                yield content
+    messages: list[tuple[str, str]] = [
+        ("system", REVIEWER_SYSTEM_PROMPT),
+        ("human", review_prompt),
+    ]
 
-    logger.info("Finished stream code review", task_id=task_id)
+    async for chunk, metrics in stream_with_metrics(model, messages, config):
+        if metrics is None:
+            logger.debug("Streaming review chunk", task_id=task_id, chunk_length=len(chunk))
+            yield chunk, None
+        else:
+            logger.info(
+                "Finished stream code review",
+                task_id=task_id,
+                input_tokens=metrics.input_tokens,
+                output_tokens=metrics.output_tokens,
+                latency_ms=metrics.latency_ms,
+            )
+            yield "", metrics

@@ -58,7 +58,7 @@ class WorkflowState(TypedDict):
     metadata: dict[str, Any]
 
 
-# TODO: Phase 2 - Add council state when implementing multi-model review
+# TODO: Phase 3 - Add council state when implementing multi-model review
 # class CouncilState(TypedDict):
 #     """Extended state for council review with multiple judges."""
 #     base_state: WorkflowState
