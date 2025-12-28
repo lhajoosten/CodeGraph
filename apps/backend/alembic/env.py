@@ -2,16 +2,47 @@
 
 import asyncio
 from logging.config import fileConfig
+from typing import Any
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.types import TypeEngine
 
 from alembic import context
 
 # Import settings and models
 from src.core.config import settings
+from src.core.encryption import EncryptedString
 from src.models import Base
+
+
+def compare_type(
+    context: Any,
+    inspected_column: Any,
+    metadata_column: Any,
+    inspected_type: TypeEngine[Any],
+    metadata_type: TypeEngine[Any],
+) -> bool | None:
+    """Custom type comparison to handle EncryptedString.
+
+    EncryptedString uses String/TEXT as its underlying storage type,
+    so we should ignore type differences when the model uses EncryptedString
+    and the database has TEXT/VARCHAR.
+
+    Returns:
+        False if types should be considered equal (no migration needed)
+        True if types are different (migration needed)
+        None to use default comparison
+    """
+    # If the model uses EncryptedString, ignore the type comparison
+    # since it stores as TEXT/VARCHAR in the database
+    if isinstance(metadata_type, EncryptedString):
+        return False
+
+    # Use default comparison for other types
+    return None
+
 
 # this is the Alembic Config object
 config = context.config
@@ -42,7 +73,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True,
+        compare_type=compare_type,
     )
 
     with context.begin_transaction():
@@ -54,7 +85,7 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        compare_type=True,
+        compare_type=compare_type,
     )
 
     with context.begin_transaction():
