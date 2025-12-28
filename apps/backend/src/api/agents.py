@@ -19,15 +19,18 @@ import json
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.agents.graph import stream_workflow
 from src.api.deps import get_current_user
 from src.core.database import get_db
 from src.core.logging import get_logger
+from src.models.task import Task
 from src.models.user import User
+from src.services.agent_run_service import AgentRunService
 
 logger = get_logger(__name__)
 
@@ -68,18 +71,21 @@ async def execute_task_stream(
             data: {"type": "token", "content": "Step 1: "}\n\n
             data: {"type": "node_end", "node": "planner", "duration": 2.5}\n\n
 
-    TODO: Add task permission checking (Phase 2)
     TODO: Add execution timeout (Phase 3)
     TODO: Add error recovery with checkpoints (Phase 4)
     """
     logger.info("Execute task stream requested", task_id=task_id, user_id=current_user.id)
 
-    # TODO: Fetch task from database and verify ownership
-    # task = await task_service.get_task(task_id, current_user.id)
-    # if not task:
-    #     raise HTTPException(status_code=404, detail="Task not found")
+    # Fetch task from database and verify ownership
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
 
-    task_description = f"Task {task_id}"  # Placeholder
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task_description = task.description
 
     async def event_generator() -> AsyncGenerator[str, None]:
         """Generate SSE formatted events from the workflow.
@@ -87,11 +93,10 @@ async def execute_task_stream(
         Converts LangGraph events into SSE format for streaming to client.
         Each event is a JSON object with event metadata and payload.
 
-        TODO: Add error event handling (Phase 2)
         TODO: Add event filtering options (Phase 3)
         """
         try:
-            async for event in stream_workflow(task_description, task_id):
+            async for event in stream_workflow(task_description, task_id, db=db):
                 event_type = event.get("event", "unknown")
 
                 # Map LangGraph events to client event format
@@ -156,24 +161,48 @@ async def get_task_status(
 
     Raises:
         HTTPException: If task not found
-
-    TODO: Implement task state tracking in database (Phase 2)
-    TODO: Add progress percentage calculation (Phase 2)
     """
     logger.info("Get task status requested", task_id=task_id, user_id=current_user.id)
 
-    # TODO: Implement actual status lookup from database
-    # status = await task_service.get_task_status(task_id, current_user.id)
-    # if not status:
-    #     raise HTTPException(status_code=404, detail="Task not found")
-    # return status
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Get execution summary from AgentRun records
+    service = AgentRunService(db)
+    summary = await service.get_task_execution_summary(task_id)
+
+    # Calculate progress based on completed stages
+    runs_by_type = summary.get("runs_by_type", {})
+    stages_complete = len(runs_by_type)
+    total_stages = 4  # planner, coder, tester, reviewer
+    progress = int((stages_complete / total_stages) * 100)
+
+    # Determine current node
+    current_node = None
+    if "reviewer" in runs_by_type:
+        current_node = "reviewer"
+    elif "tester" in runs_by_type:
+        current_node = "tester"
+    elif "coder" in runs_by_type:
+        current_node = "coder"
+    elif "planner" in runs_by_type:
+        current_node = "planner"
 
     return {
         "task_id": task_id,
-        "status": "planning",
-        "current_node": "planner",
-        "progress": 25,
-        "error": None,
+        "status": summary.get("status", "not_started"),
+        "current_node": current_node,
+        "progress": progress,
+        "total_runs": summary.get("total_runs", 0),
+        "total_tokens": summary.get("total_tokens", 0),
+        "total_duration_seconds": summary.get("total_duration_seconds", 0),
+        "runs_by_type": runs_by_type,
     }
 
 
@@ -232,23 +261,58 @@ async def get_task_result(
     Raises:
         HTTPException: If task not found or still executing
 
-    TODO: Implement result retrieval from database (Phase 2)
     TODO: Add result caching (Phase 3)
     TODO: Add result expiration (Phase 4)
     """
     logger.info("Get task result requested", task_id=task_id, user_id=current_user.id)
 
-    # TODO: Implement actual result lookup
-    # result = await task_service.get_task_result(task_id, current_user.id)
-    # if not result:
-    #     raise HTTPException(status_code=404, detail="Task not found")
-    # return result
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Get all agent runs for this task
+    service = AgentRunService(db)
+    runs = await service.get_runs_for_task(task_id)
+
+    if not runs:
+        raise HTTPException(status_code=404, detail="No execution data found")
+
+    # Extract outputs from each agent run
+    plan = ""
+    code = ""
+    test_results = ""
+    review_feedback = ""
+    verdict = None
+
+    for run in runs:
+        output = run.output_data or {}
+        if run.agent_type.value == "planner":
+            plan = output.get("plan_preview", "")
+        elif run.agent_type.value == "coder":
+            code = output.get("code_preview", "")
+        elif run.agent_type.value == "tester":
+            test_results = output.get("tests_preview", "")
+        elif run.agent_type.value == "reviewer":
+            review_feedback = output.get("feedback_preview", "")
+            verdict = run.verdict
+
+    # Get execution summary
+    summary = await service.get_task_execution_summary(task_id)
 
     return {
         "task_id": task_id,
-        "status": "complete",
-        "plan": "...",
-        "code": "...",
-        "test_results": "...",
-        "review_feedback": "...",
+        "status": summary.get("status", "unknown"),
+        "plan": plan,
+        "code": code,
+        "test_results": test_results,
+        "review_feedback": review_feedback,
+        "verdict": verdict,
+        "iterations": summary.get("runs_by_type", {}).get("coder", [{}])[-1].get("iteration", 1),
+        "total_tokens": summary.get("total_tokens", 0),
+        "total_duration_seconds": summary.get("total_duration_seconds", 0),
     }

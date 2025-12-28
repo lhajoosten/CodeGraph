@@ -53,7 +53,7 @@ class WorkflowState(TypedDict):
     test_results: str
     review_feedback: str
     iterations: int
-    status: Literal["planning", "coding", "testing", "reviewing", "complete"]
+    status: Literal["planning", "coding", "testing", "reviewing", "complete", "timeout"]
     error: str | None
     metadata: dict[str, Any]
 

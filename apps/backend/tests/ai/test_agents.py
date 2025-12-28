@@ -12,24 +12,31 @@ This test module uses the comprehensive test infrastructure including:
 - Fixtures from tests/ai/conftest.py
 - Test utilities from tests/ai/utils/
 - Mock responses from tests/ai/fixtures/
-
-TODO: Add test for concurrent task execution (Phase 2)
-TODO: Add test for task cancellation (Phase 2)
-TODO: Add test for checkpoint resumption (Phase 4)
 """
 
 from typing import Any
 
 import pytest
+from langchain_anthropic import ChatAnthropic
+from langchain_openai import ChatOpenAI
 
 from src.agents.graph import get_compiled_graph, invoke_workflow
 from src.agents.models import ModelFactory
 from src.agents.planner import planner_node
 from src.agents.state import WorkflowState
+from src.core.config import settings
 from src.core.logging import get_logger
+from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 from tests.ai.utils import WorkflowStateBuilder, assert_workflow_state_valid
 
 logger = get_logger(__name__)
+
+
+def get_model_name(model: ChatAnthropic | ChatOpenAI) -> str:
+    """Get model name from either ChatAnthropic or ChatOpenAI."""
+    if isinstance(model, ChatOpenAI):
+        return model.model_name
+    return model.model
 
 
 class TestAgentModels:
@@ -39,19 +46,34 @@ class TestAgentModels:
         """Test that ModelFactory can create Haiku model."""
         model = ModelFactory.create("haiku")
         assert model is not None
-        assert model.model == "claude-haiku-4-5-20251001"
+        model_name = get_model_name(model)
+        # When using local LLM, model name will be the local model
+        if settings.use_local_llm:
+            assert model_name == settings.local_llm_model
+        else:
+            assert model_name == "claude-haiku-4-5-20251001"
 
     def test_model_factory_creates_sonnet(self) -> None:
         """Test that ModelFactory can create Sonnet model."""
         model = ModelFactory.create("sonnet")
         assert model is not None
-        assert model.model == "claude-sonnet-4-5-20251001"
+        model_name = get_model_name(model)
+        # When using local LLM, all models use the same local model
+        if settings.use_local_llm:
+            assert model_name == settings.local_llm_model
+        else:
+            assert model_name == ModelFactory.MODEL_NAMES["sonnet"]
 
     def test_model_factory_creates_opus(self) -> None:
         """Test that ModelFactory can create Opus model."""
         model = ModelFactory.create("opus")
         assert model is not None
-        assert model.model == "claude-opus-4-5-20251001"
+        model_name = get_model_name(model)
+        # When using local LLM, all models use the same local model
+        if settings.use_local_llm:
+            assert model_name == settings.local_llm_model
+        else:
+            assert model_name == ModelFactory.MODEL_NAMES["opus"]
 
     def test_model_factory_invalid_model(self) -> None:
         """Test that ModelFactory rejects invalid model names."""
@@ -64,9 +86,15 @@ class TestAgentModels:
         sonnet = ModelFactory.create_for_task("medium")
         opus = ModelFactory.create_for_task("high")
 
-        assert haiku.model == "claude-haiku-4-5-20251001"
-        assert sonnet.model == "claude-sonnet-4-5-20251001"
-        assert opus.model == "claude-opus-4-5-20251001"
+        # When using local LLM, all complexity levels use the same model
+        if settings.use_local_llm:
+            assert get_model_name(haiku) == settings.local_llm_model
+            assert get_model_name(sonnet) == settings.local_llm_model
+            assert get_model_name(opus) == settings.local_llm_model
+        else:
+            assert get_model_name(haiku) == ModelFactory.MODEL_NAMES["haiku"]
+            assert get_model_name(sonnet) == ModelFactory.MODEL_NAMES["sonnet"]
+            assert get_model_name(opus) == ModelFactory.MODEL_NAMES["opus"]
 
 
 class TestWorkflowState:
@@ -125,11 +153,11 @@ class TestWorkflowState:
         assert state["status"] == "complete"
 
 
+@pytest.mark.skipif(not is_llm_available(), reason=get_llm_skip_reason())
 class TestPlannerNode:
     """Test the planner node execution.
 
-    Note: These tests require ANTHROPIC_API_KEY to be set in the environment.
-    If not available, tests are skipped.
+    Note: These tests require an LLM (either local vLLM or Claude API).
     """
 
     @pytest.mark.asyncio
@@ -149,21 +177,14 @@ class TestPlannerNode:
             "metadata": {},
         }
 
-        # TODO: Mock the Claude API to avoid rate limits in tests
-        # For now, skip this test if ANTHROPIC_API_KEY is not set
-        try:
-            result = await planner_node(state)
+        result = await planner_node(state)
 
-            assert "plan" in result
-            assert result["plan"]  # Plan should not be empty
-            assert result["status"] == "coding"
-            assert len(result["messages"]) > 0
+        assert "plan" in result
+        assert result["plan"]  # Plan should not be empty
+        assert result["status"] == "coding"
+        assert len(result["messages"]) > 0
 
-            logger.info("Planner generated plan", plan_length=len(result["plan"]))
-
-        except Exception as e:
-            logger.warning(f"Planner test skipped: {e}")
-            pytest.skip("Claude API not available")
+        logger.info("Planner generated plan", plan_length=len(result["plan"]))
 
     @pytest.mark.asyncio
     async def test_planner_node_state_accumulation(self) -> None:
@@ -182,19 +203,14 @@ class TestPlannerNode:
             "metadata": {"initial_key": "initial_value"},
         }
 
-        try:
-            result = await planner_node(state)
+        result = await planner_node(state)
 
-            # Verify state accumulation
-            assert result["status"] == "coding"
-            assert "plan" in result
-            assert "metadata" in result
-            # Original metadata should be preserved
-            assert result["metadata"].get("initial_key") == "initial_value"
-
-        except Exception as e:
-            logger.warning(f"State accumulation test skipped: {e}")
-            pytest.skip("Claude API not available")
+        # Verify state accumulation
+        assert result["status"] == "coding"
+        assert "plan" in result
+        assert "metadata" in result
+        # Original metadata should be preserved
+        assert result["metadata"].get("initial_key") == "initial_value"
 
 
 class TestWorkflowGraph:
@@ -216,89 +232,72 @@ class TestWorkflowGraph:
         assert hasattr(graph, "astream_events")
 
 
+@pytest.mark.skipif(not is_llm_available(), reason=get_llm_skip_reason())
 class TestWorkflowExecution:
     """Test end-to-end workflow execution.
 
-    TODO: Mock Claude API calls for reliable testing
-    TODO: Add test for timeout handling
-    TODO: Add test for error recovery
+    Note: Full workflow tests may take several minutes with local LLM.
     """
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(600)  # 10 minutes for full workflow
     async def test_invoke_workflow_structure(self) -> None:
         """Test that invoke_workflow returns proper state structure."""
-        try:
-            result = await invoke_workflow(
-                task_description="Simple test task",
-                task_id=1,
-            )
+        result = await invoke_workflow(
+            task_description="Simple test task",
+            task_id=1,
+        )
 
-            # Verify result structure
-            assert isinstance(result, dict)
-            assert "plan" in result
-            assert "status" in result
-            assert "metadata" in result
-            assert result["task_id"] == 1
+        # Verify result structure
+        assert isinstance(result, dict)
+        assert "plan" in result
+        assert "status" in result
+        assert "metadata" in result
+        assert result["task_id"] == 1
 
-            logger.info("Workflow execution completed", status=result.get("status"))
-
-        except Exception as e:
-            logger.warning(f"Workflow execution test skipped: {e}")
-            pytest.skip("Claude API not available or rate limited")
+        logger.info("Workflow execution completed", status=result.get("status"))
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(600)  # 10 minutes for full workflow
     async def test_workflow_with_thread_id(self) -> None:
-        """Test workflow execution with resumable thread ID.
+        """Test workflow execution with resumable thread ID."""
+        thread_id = "test-thread-phase1"
+        result = await invoke_workflow(
+            task_description="Test with thread ID",
+            task_id=2,
+            thread_id=thread_id,
+        )
 
-        TODO: Implement checkpoint resumption in Phase 4
-        """
-        try:
-            thread_id = "test-thread-phase1"
-            result = await invoke_workflow(
-                task_description="Test with thread ID",
-                task_id=2,
-                thread_id=thread_id,
-            )
-
-            # Verify thread ID is in metadata
-            assert result["metadata"].get("thread_id") == thread_id
-
-        except Exception as e:
-            logger.warning(f"Thread ID test skipped: {e}")
-            pytest.skip("Claude API not available")
+        # Verify thread ID is in metadata
+        assert result["metadata"].get("thread_id") == thread_id
 
 
+@pytest.mark.skipif(not is_llm_available(), reason=get_llm_skip_reason())
 class TestEventStreaming:
-    """Test event streaming from the workflow.
-
-    TODO: Add tests for event filtering and sampling
-    TODO: Add tests for backpressure handling
-    TODO: Add tests for stream interruption and recovery
-    """
+    """Test event streaming from the workflow."""
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(600)  # 10 minutes for full workflow
     async def test_stream_events_generation(self) -> None:
-        """Test that stream_workflow generates events."""
+        """Test that stream_workflow generates events.
+
+        Note: This test may take longer when using local LLM.
+        """
         from src.agents.graph import stream_workflow
 
         event_count = 0
 
-        try:
-            async for event in stream_workflow(
-                task_description="Stream test",
-                task_id=3,
-            ):
-                event_count += 1
-                # Basic event structure check
-                assert isinstance(event, dict)
-                assert "event" in event or event_count > 0
+        async for event in stream_workflow(
+            task_description="Stream test",
+            task_id=3,
+        ):
+            event_count += 1
+            # Basic event structure check
+            assert isinstance(event, dict)
+            assert "event" in event or event_count > 0
 
-            assert event_count > 0, "Stream should generate at least one event"
-            logger.info("Stream generated events", count=event_count)
-
-        except Exception as e:
-            logger.warning(f"Stream test skipped: {e}")
-            pytest.skip("Claude API not available")
+        assert event_count > 0, "Stream should generate at least one event"
+        logger.info("Stream generated events", count=event_count)
 
 
 class TestWorkflowStateBuilder:

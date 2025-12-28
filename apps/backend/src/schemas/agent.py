@@ -14,6 +14,8 @@ class AgentRunResponse(BaseModel):
     id: int
     agent_type: AgentType
     status: AgentRunStatus
+    iteration: int
+    verdict: str | None
     task_id: int
     model_used: str | None
     tokens_used: int | None

@@ -9,6 +9,7 @@ from src.models.password_reset_token import PasswordResetToken
 from src.models.refresh_token import RefreshToken
 from src.models.repository import Repository
 from src.models.task import Task, TaskPriority, TaskStatus
+from src.models.usage_metrics import UsageMetrics
 from src.models.user import User
 from src.models.user_session import UserSession
 
@@ -23,6 +24,7 @@ __all__ = [
     "AgentRun",
     "AgentType",
     "AgentRunStatus",
+    "UsageMetrics",
     "BackupCode",
     "EmailVerificationToken",
     "OAuthAccount",

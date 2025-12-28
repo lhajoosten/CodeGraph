@@ -100,6 +100,9 @@ Please address all the feedback above in your revised code."""
     messages.append(HumanMessage(content=code_prompt))
 
     # Invoke the model with system prompt
+    import time
+
+    start_time = time.time()
     response = await model.ainvoke(
         [
             ("system", CODER_SYSTEM_PROMPT),
@@ -107,14 +110,24 @@ Please address all the feedback above in your revised code."""
         ],
         config,
     )
+    latency_ms = int((time.time() - start_time) * 1000)
 
     code_content = response.content if isinstance(response, BaseMessage) else str(response)
+
+    # Extract usage metadata from response
+    usage_metadata = getattr(response, "usage_metadata", None) or {}
+    input_tokens = usage_metadata.get("input_tokens", 0)
+    output_tokens = usage_metadata.get("output_tokens", 0)
+    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
 
     logger.info(
         "Coder generated code",
         task_id=state.get("task_id"),
         code_length=len(code_content),
         is_revision=bool(state.get("review_feedback")),
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        latency_ms=latency_ms,
     )
 
     # Increment iterations if this is a revision
@@ -132,6 +145,12 @@ Please address all the feedback above in your revised code."""
             "code_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "coder_model": "sonnet",
             "is_revision": bool(state.get("review_feedback")),
+            "coder_usage": {
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "total_tokens": total_tokens,
+                "latency_ms": latency_ms,
+            },
         },
     }
 

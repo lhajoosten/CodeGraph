@@ -106,6 +106,9 @@ Generate complete, production-ready pytest test cases with:
     messages.append(HumanMessage(content=test_prompt))
 
     # Invoke the model with system prompt
+    import time
+
+    start_time = time.time()
     response = await model.ainvoke(
         [
             ("system", TESTER_SYSTEM_PROMPT),
@@ -113,13 +116,23 @@ Generate complete, production-ready pytest test cases with:
         ],
         config,
     )
+    latency_ms = int((time.time() - start_time) * 1000)
 
     test_content = response.content if isinstance(response, BaseMessage) else str(response)
+
+    # Extract usage metadata from response
+    usage_metadata = getattr(response, "usage_metadata", None) or {}
+    input_tokens = usage_metadata.get("input_tokens", 0)
+    output_tokens = usage_metadata.get("output_tokens", 0)
+    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
 
     logger.info(
         "Tester generated tests",
         task_id=state.get("task_id"),
         test_length=len(test_content),
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        latency_ms=latency_ms,
     )
 
     return {
@@ -131,6 +144,12 @@ Generate complete, production-ready pytest test cases with:
             **(state.get("metadata", {})),
             "tests_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "tester_model": "sonnet",
+            "tester_usage": {
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "total_tokens": total_tokens,
+                "latency_ms": latency_ms,
+            },
         },
     }
 

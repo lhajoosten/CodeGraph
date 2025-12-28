@@ -89,6 +89,9 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
     )
 
     # Invoke the model with system prompt
+    import time
+
+    start_time = time.time()
     response = await model.ainvoke(
         [
             ("system", PLANNER_SYSTEM_PROMPT),
@@ -96,13 +99,23 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
         ],
         config,
     )
+    latency_ms = int((time.time() - start_time) * 1000)
 
     plan_content = response.content if isinstance(response, BaseMessage) else str(response)
+
+    # Extract usage metadata from response
+    usage_metadata = getattr(response, "usage_metadata", None) or {}
+    input_tokens = usage_metadata.get("input_tokens", 0)
+    output_tokens = usage_metadata.get("output_tokens", 0)
+    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
 
     logger.info(
         "Planner generated plan",
         task_id=state.get("task_id"),
         plan_length=len(plan_content),
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        latency_ms=latency_ms,
     )
 
     return {
@@ -113,6 +126,12 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             **(state.get("metadata", {})),
             "plan_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "planner_model": "sonnet",
+            "planner_usage": {
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "total_tokens": total_tokens,
+                "latency_ms": latency_ms,
+            },
         },
     }
 

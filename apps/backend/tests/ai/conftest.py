@@ -8,15 +8,14 @@ LangGraph workflows, agent nodes, and AI integrations. It includes:
 - Model factory fixtures with configurable behavior
 - Graph compilation and execution fixtures
 - Assertion helpers and test utilities
-
-TODO: Add checkpoint testing utilities (Phase 4)
-TODO: Add token tracking and cost calculation (Phase 2)
-TODO: Add performance profiling fixtures (Phase 3)
+- LLM availability checking (local vLLM or Claude API)
 """
 
+import socket
 from collections.abc import AsyncGenerator
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
+from urllib.parse import urlparse
 
 import pytest
 import pytest_asyncio
@@ -25,6 +24,71 @@ from langchain_core.messages import AIMessage, HumanMessage
 from src.agents.graph import create_workflow, get_compiled_graph
 from src.agents.models import ModelFactory
 from src.agents.state import WorkflowState
+from src.core.config import settings
+
+# ============================================================================
+# LLM AVAILABILITY HELPERS
+# ============================================================================
+
+
+def is_vllm_available() -> bool:
+    """Check if local vLLM server is running.
+
+    Returns:
+        True if vLLM server is accessible
+    """
+    try:
+        parsed = urlparse(settings.local_llm_base_url)
+        host = parsed.hostname or "localhost"
+        port = parsed.port or 8080
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(2)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        return result == 0
+    except Exception:
+        return False
+
+
+def is_claude_available() -> bool:
+    """Check if Claude API is configured.
+
+    Returns:
+        True if Anthropic API key is set
+    """
+    return (
+        bool(settings.anthropic_api_key)
+        and settings.anthropic_api_key != "your-anthropic-api-key-here"
+    )
+
+
+def is_llm_available() -> bool:
+    """Check if any LLM backend is available.
+
+    Returns:
+        True if either vLLM or Claude API is available
+    """
+    if settings.use_local_llm:
+        return is_vllm_available()
+    return is_claude_available()
+
+
+def get_llm_skip_reason() -> str:
+    """Get the reason for skipping LLM tests.
+
+    Returns:
+        Human-readable reason for skip
+    """
+    if settings.use_local_llm:
+        return f"Local vLLM not available at {settings.local_llm_base_url}"
+    return "ANTHROPIC_API_KEY not configured"
+
+
+# Pytest marker for tests requiring LLM
+requires_llm = pytest.mark.skipif(
+    not is_llm_available(),
+    reason=get_llm_skip_reason(),
+)
 
 # ============================================================================
 # WORKFLOW STATE FIXTURES

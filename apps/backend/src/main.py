@@ -9,7 +9,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.api import agents, auth, oauth, tasks, test_email, two_factor, users
+from src.agents.tracing import configure_tracing, get_tracing_status
+from src.api import agents, auth, metrics, oauth, tasks, test_email, two_factor, users
 from src.core.config import settings
 from src.core.database import close_db
 from src.core.exception_handlers import (
@@ -22,6 +23,9 @@ from src.core.logging import configure_logging, get_logger
 # Configure logging
 configure_logging()
 logger = get_logger(__name__)
+
+# Configure LangSmith tracing (must be done before any LangChain imports in routes)
+configure_tracing()
 
 
 @asynccontextmanager
@@ -36,11 +40,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         None during application runtime
     """
     # Startup
+    tracing_status = get_tracing_status()
     logger.info(
         "application_startup",
         app_name=settings.app_name,
         version=settings.app_version,
         environment=settings.environment,
+        langsmith_tracing=tracing_status["enabled"],
+        langsmith_project=tracing_status["project"] if tracing_status["enabled"] else None,
     )
 
     yield
@@ -103,6 +110,7 @@ app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
 app.include_router(agents.router, prefix="/api/v1", tags=["agents"])
+app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["metrics"])
 app.include_router(two_factor.router, prefix="/api/v1", tags=["two-factor-auth"])
 # OAuth is public-facing and should not have API versioning prefix
 app.include_router(oauth.router, tags=["oauth"])

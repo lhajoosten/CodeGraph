@@ -77,14 +77,25 @@ class Settings(BaseSettings):
             return [origin.strip() for origin in v.split(",")]
         return v
 
-    # Anthropic API
-    anthropic_api_key: str
+    # Anthropic API (optional - only needed when USE_LOCAL_LLM=false)
+    # For local development, you can leave this empty
+    anthropic_api_key: str = ""
     anthropic_default_model: str = "claude-haiku-4-5-20251001"
 
-    # LangSmith (optional)
-    langsmith_api_key: str | None = None
-    langsmith_project: str = "codegraph"
-    langsmith_tracing: bool = False
+    # LangSmith Tracing (optional)
+    # Set LANGCHAIN_TRACING_V2=true in .env to enable
+    # Set LANGCHAIN_API_KEY to your LangSmith API key
+    langchain_tracing_v2: bool = False
+    langchain_api_key: str | None = None
+    langchain_project: str = "codegraph"
+    langchain_endpoint: str = "https://api.smith.langchain.com"
+
+    # Local LLM Configuration (default for development)
+    # Uses vLLM with Qwen2.5-Coder-14B for cost-free local development
+    # Set USE_LOCAL_LLM=false to use Claude API instead (requires ANTHROPIC_API_KEY)
+    use_local_llm: bool = True
+    local_llm_base_url: str = "http://localhost:8001/v1"
+    local_llm_model: str = "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
 
     # GitHub Integration (for code operations)
     github_token: str | None = None

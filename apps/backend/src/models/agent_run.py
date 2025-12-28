@@ -11,6 +11,7 @@ from src.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from src.models.task import Task
+    from src.models.usage_metrics import UsageMetrics
 
 
 class AgentType(str, enum.Enum):
@@ -40,6 +41,8 @@ class AgentRun(Base, TimestampMixin):
         id (int): Primary key.
         agent_type (AgentType): Type of the agent.
         status (AgentRunStatus): Current status of the agent run.
+        iteration (int): Iteration number for agents that run multiple times (coder in review loop).
+        verdict (str | None): Review verdict (APPROVE, REVISE, REJECT) for reviewer runs.
         started_at (datetime | None): Timestamp when the agent run started.
         completed_at (datetime | None): Timestamp when the agent run completed.
         model_used (str | None): The model used during the agent run.
@@ -52,6 +55,9 @@ class AgentRun(Base, TimestampMixin):
 
     Relationships:
         task (Task): The task associated with the agent run.
+
+    TODO: Add performance metrics collection (Phase 3)
+    TODO: Add cost tracking for different models (Phase 3)
     """
 
     __tablename__ = "agent_runs"
@@ -61,6 +67,9 @@ class AgentRun(Base, TimestampMixin):
     status: Mapped[AgentRunStatus] = mapped_column(
         Enum(AgentRunStatus), default=AgentRunStatus.PENDING, nullable=False, index=True
     )
+    iteration: Mapped[int] = mapped_column(Integer, default=1, nullable=False, index=True)
+    verdict: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
@@ -79,6 +88,9 @@ class AgentRun(Base, TimestampMixin):
 
     # Relationships
     task: Mapped["Task"] = relationship("Task", back_populates="agent_runs")
+    usage_metrics: Mapped[list["UsageMetrics"]] = relationship(
+        "UsageMetrics", back_populates="agent_run"
+    )
 
     def __repr__(self) -> str:
         """String representation of the agent run."""

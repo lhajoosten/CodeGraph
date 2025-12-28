@@ -10,11 +10,13 @@ import pytest
 
 from src.agents.tester import tester_node
 from src.core.logging import get_logger
+from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 from tests.ai.utils import WorkflowStateBuilder
 
 logger = get_logger(__name__)
 
 
+@pytest.mark.skipif(not is_llm_available(), reason=get_llm_skip_reason())
 class TestTesterNode:
     """Test the tester node execution.
 
@@ -23,6 +25,7 @@ class TestTesterNode:
     """
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(300)  # 5 minutes
     async def test_tester_generates_tests_from_code(self) -> None:
         """Test that tester generates tests from code."""
         state = (
@@ -35,20 +38,16 @@ class TestTesterNode:
             .build()
         )
 
-        try:
-            result = await tester_node(state)
+        result = await tester_node(state)
 
-            assert "test_results" in result
-            assert result["test_results"]
-            assert result["status"] == "reviewing"
-            assert "tests_generated_at" in result["metadata"]
-            logger.info("Tester node test passed", test_length=len(result["test_results"]))
-
-        except Exception as e:
-            logger.warning(f"Tester test skipped: {e}")
-            pytest.skip("Claude API not available")
+        assert "test_results" in result
+        assert result["test_results"]
+        assert result["status"] == "reviewing"
+        assert "tests_generated_at" in result["metadata"]
+        logger.info("Tester node test passed", test_length=len(result["test_results"]))
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(300)  # 5 minutes
     async def test_tester_preserves_state(self) -> None:
         """Test that tester preserves workflow state properly."""
         state = (
@@ -64,21 +63,17 @@ class TestTesterNode:
             .build()
         )
 
-        try:
-            result = await tester_node(state)
+        result = await tester_node(state)
 
-            # Verify state preservation
-            assert result["iterations"] == 2  # Should be preserved
-            assert result["metadata"].get("user_id") == 99
-            assert result["metadata"].get("source") == "api"
-            assert "tests_generated_at" in result["metadata"]
-            logger.info("Tester state preservation test passed")
-
-        except Exception as e:
-            logger.warning(f"Tester state test skipped: {e}")
-            pytest.skip("Claude API not available")
+        # Verify state preservation
+        assert result["iterations"] == 2  # Should be preserved
+        assert result["metadata"].get("user_id") == 99
+        assert result["metadata"].get("source") == "api"
+        assert "tests_generated_at" in result["metadata"]
+        logger.info("Tester state preservation test passed")
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(300)  # 5 minutes
     async def test_tester_extends_metadata(self) -> None:
         """Test that tester extends metadata without losing original data."""
         state = (
@@ -93,21 +88,17 @@ class TestTesterNode:
             .build()
         )
 
-        try:
-            result = await tester_node(state)
+        result = await tester_node(state)
 
-            # Original timestamps should be preserved
-            assert result["metadata"].get("plan_generated_at") == "2025-12-27T22:00:00Z"
-            assert result["metadata"].get("code_generated_at") == "2025-12-27T22:01:00Z"
-            # New timestamp should be added
-            assert "tests_generated_at" in result["metadata"]
-            logger.info("Tester metadata extension test passed")
-
-        except Exception as e:
-            logger.warning(f"Tester metadata test skipped: {e}")
-            pytest.skip("Claude API not available")
+        # Original timestamps should be preserved
+        assert result["metadata"].get("plan_generated_at") == "2025-12-27T22:00:00Z"
+        assert result["metadata"].get("code_generated_at") == "2025-12-27T22:01:00Z"
+        # New timestamp should be added
+        assert "tests_generated_at" in result["metadata"]
+        logger.info("Tester metadata extension test passed")
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(300)  # 5 minutes
     async def test_tester_handles_complex_code(self) -> None:
         """Test that tester handles complex code with multiple functions."""
         complex_code = '''
@@ -133,20 +124,16 @@ async def fetch_user_data(user_id: int) -> dict:
             .build()
         )
 
-        try:
-            result = await tester_node(state)
+        result = await tester_node(state)
 
-            assert result["test_results"]
-            assert result["status"] == "reviewing"
-            # Should contain tests for both functions
-            assert "def test_" in result["test_results"] or "class Test" in result["test_results"]
-            logger.info("Tester complex code test passed")
-
-        except Exception as e:
-            logger.warning(f"Tester complex code test skipped: {e}")
-            pytest.skip("Claude API not available")
+        assert result["test_results"]
+        assert result["status"] == "reviewing"
+        # Should contain tests for both functions
+        assert "def test_" in result["test_results"] or "class Test" in result["test_results"]
+        logger.info("Tester complex code test passed")
 
     @pytest.mark.asyncio
+    @pytest.mark.timeout(300)  # 5 minutes
     async def test_tester_status_transition(self) -> None:
         """Test that tester correctly transitions status to reviewing."""
         state = (
@@ -159,13 +146,8 @@ async def fetch_user_data(user_id: int) -> dict:
             .build()
         )
 
-        try:
-            result = await tester_node(state)
+        result = await tester_node(state)
 
-            # Status should transition from testing to reviewing
-            assert result["status"] == "reviewing"
-            logger.info("Tester status transition test passed")
-
-        except Exception as e:
-            logger.warning(f"Tester status test skipped: {e}")
-            pytest.skip("Claude API not available")
+        # Status should transition from testing to reviewing
+        assert result["status"] == "reviewing"
+        logger.info("Tester status transition test passed")
