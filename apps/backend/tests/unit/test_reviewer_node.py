@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.agents.reviewer import ReviewVerdict, extract_verdict, reviewer_node
+from src.agents.reviewer import ReviewVerdict, extract_verdict_from_text, reviewer_node
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.utils import WorkflowStateBuilder
@@ -25,7 +25,7 @@ class TestReviewerNode:
         This is excellent code with great structure and comprehensive tests.
         APPROVE - The code is production-ready.
         """
-        assert extract_verdict(feedback) == ReviewVerdict.APPROVE
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.APPROVE
 
     def test_extract_verdict_revise(self) -> None:
         """Test extraction of REVISE verdict."""
@@ -35,7 +35,7 @@ class TestReviewerNode:
         1. Add more error handling
         2. Improve test coverage
         """
-        assert extract_verdict(feedback) == ReviewVerdict.REVISE
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.REVISE
 
     def test_extract_verdict_reject(self) -> None:
         """Test extraction of REJECT verdict."""
@@ -43,20 +43,20 @@ class TestReviewerNode:
         This code has fundamental issues and needs major rework.
         REJECT - The approach needs to be reconsidered.
         """
-        assert extract_verdict(feedback) == ReviewVerdict.REJECT
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.REJECT
 
     def test_extract_verdict_case_insensitive(self) -> None:
         """Test that verdict extraction is case-insensitive."""
         feedback = "approve this code"
-        assert extract_verdict(feedback) == ReviewVerdict.APPROVE
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.APPROVE
 
         feedback = "revise the implementation"
-        assert extract_verdict(feedback) == ReviewVerdict.REVISE
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.REVISE
 
     def test_extract_verdict_default_to_revise(self) -> None:
         """Test that unclear verdicts default to REVISE."""
         feedback = "The code seems okay but could be better"
-        assert extract_verdict(feedback) == ReviewVerdict.REVISE
+        assert extract_verdict_from_text(feedback) == ReviewVerdict.REVISE
 
     @pytest.mark.asyncio
     async def test_reviewer_node_approve_verdict(self) -> None:

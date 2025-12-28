@@ -4,7 +4,7 @@ The reviewer is the final node in the workflow and is responsible for analyzing
 the generated code and test suite, identifying quality issues, and determining
 whether the code should be approved, revised, or rejected.
 
-Phase 3 Features:
+Features:
 - Structured review output with confidence scoring
 - Council-based review with multiple judges (see council.py)
 - Detailed metrics collection per review
@@ -30,7 +30,7 @@ logger = get_logger(__name__)
 
 
 # =============================================================================
-# Structured Review Output Models (Phase 3)
+# Structured Review Output Models
 # =============================================================================
 
 
@@ -362,7 +362,7 @@ async def reviewer_node(
     This node is the final quality gate. It analyzes the generated code,
     test suite, and determines if the work is ready or needs revision.
 
-    Phase 3 Features:
+    Features:
     - Structured JSON output parsing with confidence scores
     - Detailed issue categorization (security, performance, etc.)
     - Fallback to text parsing if JSON fails
@@ -504,7 +504,7 @@ Respond with a JSON object containing your review verdict."""
                 "total_tokens": total_tokens,
                 "latency_ms": latency_ms,
             },
-            # Structured verdict metrics (Phase 3)
+            # Structured verdict metrics
             "structured_verdict": {
                 "summary": structured_verdict.summary,
                 "verdict": structured_verdict.verdict,

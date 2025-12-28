@@ -50,7 +50,7 @@ __all__ = [
     "WebhookEvent",
     "WebhookStatus",
     "DeliveryStatus",
-    # Council Review (Phase 3)
+    # Council Review
     "CouncilReview",
     "JudgeVerdict",
     "ReviewVerdict",

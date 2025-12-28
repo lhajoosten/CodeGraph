@@ -49,13 +49,13 @@ class AgentRun(Base, TimestampMixin):
         model_used: The model name used during the agent run.
         model_tier: The model tier (haiku, sonnet, opus, local).
         tokens_used: Total number of tokens used during the run.
-        input_tokens: Number of input/prompt tokens (Phase 3).
-        output_tokens: Number of output/completion tokens (Phase 3).
-        cost_usd: Estimated cost in USD (Phase 3).
-        first_token_latency_ms: Time to first token in milliseconds (Phase 3).
-        total_latency_ms: Total execution time in milliseconds (Phase 3).
-        code_quality_score: Quality score 0-100 for coder output (Phase 3).
-        lint_warning_count: Number of lint warnings in generated code (Phase 3).
+        input_tokens: Number of input/prompt tokens.
+        output_tokens: Number of output/completion tokens.
+        cost_usd: Estimated cost in USD.
+        first_token_latency_ms: Time to first token in milliseconds.
+        total_latency_ms: Total execution time in milliseconds.
+        code_quality_score: Quality score 0-100 for coder output.
+        lint_warning_count: Number of lint warnings in generated code.
         error_message: Error message if the run failed.
         input_data: Input data provided to the agent.
         output_data: Output data produced by the agent.
@@ -87,16 +87,16 @@ class AgentRun(Base, TimestampMixin):
     tokens_used: Mapped[int | None] = mapped_column(Integer, nullable=True)
     error_message: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 
-    # Phase 3: Detailed token metrics
+    # Detailed token metrics
     input_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
     output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    # Phase 3: Latency metrics
+    # Latency metrics
     first_token_latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     total_latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    # Phase 3: Code quality metrics (for coder runs)
+    # Code quality metrics (for coder runs)
     code_quality_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     lint_warning_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
 

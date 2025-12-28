@@ -1,14 +1,14 @@
 """LangGraph workflow definitions for agent orchestration.
 
 This module defines the StateGraph that orchestrates all agent nodes in the
-multi-agent coding workflow. In Phase 1, it's a simple linear flow from
-planner to completion. Phase 2 adds coder, tester, and reviewer nodes
-with conditional routing for review loops and iteration limits.
+multi-agent coding workflow. The workflow includes planner, coder, tester,
+and reviewer nodes with conditional routing for review loops and iteration limits.
 
-Phase 3 Features:
+Features:
 - Council-based review with multiple judges (optional, config-driven)
 - Enhanced routing with confidence-based decisions
 - Detailed metrics collection
+- Graceful cancellation support
 
 TODO: Add supervisor pattern for node orchestration (Phase 4)
 TODO: Add checkpointer integration (Phase 4)
@@ -16,6 +16,7 @@ TODO: Add workflow interrupts for user intervention (Phase 4)
 """
 
 import asyncio
+import threading
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
@@ -40,6 +41,119 @@ MAX_REVIEW_ITERATIONS = 3  # Maximum number of coder revisions after review feed
 WORKFLOW_TIMEOUT_SECONDS = 300  # 5 minutes total workflow timeout
 
 
+class CancellationToken:
+    """Thread-safe token for workflow cancellation.
+
+    Provides a mechanism to signal cancellation to running workflows
+    and check cancellation status from within workflow nodes.
+
+    Usage:
+        token = CancellationToken()
+
+        # In main code
+        token.cancel()  # Signal cancellation
+
+        # In workflow node
+        if token.is_cancelled:
+            raise WorkflowCancelledError()
+
+    Thread Safety:
+        The token is thread-safe and can be checked/set from any thread.
+    """
+
+    def __init__(self) -> None:
+        """Initialize an uncancelled token."""
+        self._cancelled = threading.Event()
+        self._cancel_reason: str | None = None
+
+    @property
+    def is_cancelled(self) -> bool:
+        """Check if cancellation has been requested."""
+        return self._cancelled.is_set()
+
+    @property
+    def cancel_reason(self) -> str | None:
+        """Get the reason for cancellation, if provided."""
+        return self._cancel_reason
+
+    def cancel(self, reason: str | None = None) -> None:
+        """Request cancellation of the workflow.
+
+        Args:
+            reason: Optional reason for the cancellation
+        """
+        self._cancel_reason = reason
+        self._cancelled.set()
+
+    def reset(self) -> None:
+        """Reset the token to uncancelled state."""
+        self._cancelled.clear()
+        self._cancel_reason = None
+
+    def raise_if_cancelled(self) -> None:
+        """Raise WorkflowCancelledError if cancelled.
+
+        Raises:
+            WorkflowCancelledError: If cancellation was requested
+        """
+        if self.is_cancelled:
+            raise WorkflowCancelledError(self._cancel_reason or "Workflow cancelled")
+
+
+class WorkflowCancelledError(Exception):
+    """Raised when a workflow is cancelled."""
+
+    pass
+
+
+# Global registry for active workflow cancellation tokens
+_active_tokens: dict[int, CancellationToken] = {}
+_token_lock = threading.Lock()
+
+
+def get_cancellation_token(task_id: int) -> CancellationToken:
+    """Get or create a cancellation token for a task.
+
+    Args:
+        task_id: The task ID
+
+    Returns:
+        CancellationToken for the task
+    """
+    with _token_lock:
+        if task_id not in _active_tokens:
+            _active_tokens[task_id] = CancellationToken()
+        return _active_tokens[task_id]
+
+
+def cancel_workflow(task_id: int, reason: str | None = None) -> bool:
+    """Cancel a running workflow.
+
+    Args:
+        task_id: The task ID to cancel
+        reason: Optional reason for cancellation
+
+    Returns:
+        True if a token was found and cancelled, False otherwise
+    """
+    with _token_lock:
+        if task_id in _active_tokens:
+            _active_tokens[task_id].cancel(reason)
+            logger.info("Workflow cancellation requested", task_id=task_id, reason=reason)
+            return True
+        return False
+
+
+def cleanup_cancellation_token(task_id: int) -> None:
+    """Remove a cancellation token after workflow completion.
+
+    Args:
+        task_id: The task ID
+    """
+    with _token_lock:
+        _active_tokens.pop(task_id, None)
+
+
 def create_workflow(use_council_review: bool | None = None) -> StateGraph[WorkflowState]:
     """Create the multi-agent coding workflow graph.
 
@@ -49,7 +163,7 @@ def create_workflow(use_council_review: bool | None = None) -> StateGraph[Workfl
     In Phase 2, it's a full pipeline with review loop:
         START -> planner -> coder -> tester -> reviewer -> (conditional) -> coder or END
 
-    In Phase 3 (current), it adds:
+    Current features:
         - Council-based review with multiple judges (when use_council_review=True)
         - Enhanced routing with confidence-based decisions
 
@@ -204,11 +318,13 @@ async def invoke_workflow(
     thread_id: str | None = None,
     timeout_seconds: int | None = None,
     db: "AsyncSession | None" = None,
+    cancellation_token: CancellationToken | None = None,
 ) -> WorkflowState:
     """Execute the complete workflow and return final state.
 
-    This function executes the complete multi-agent workflow with optional timeout.
-    If the workflow exceeds the timeout, execution is cancelled and an error is returned.
+    This function executes the complete multi-agent workflow with optional timeout
+    and cancellation support. If the workflow exceeds the timeout or is cancelled,
+    execution is stopped and an appropriate error state is returned.
 
     Args:
         task_description: Description of the coding task
@@ -216,14 +332,15 @@ async def invoke_workflow(
         thread_id: Optional thread ID for resuming checkpointed execution
         timeout_seconds: Optional timeout in seconds (defaults to WORKFLOW_TIMEOUT_SECONDS)
         db: Optional database session for tracking AgentRun records
+        cancellation_token: Optional token for cancellation support
 
     Returns:
         Final workflow state with all accumulated results
 
     Raises:
         asyncio.TimeoutError: If workflow exceeds timeout
+        WorkflowCancelledError: If workflow is cancelled
 
-    TODO: Add graceful cancellation handling (Phase 3)
     TODO: Add checkpoint save on timeout (Phase 4)
     """
     logger.info(
@@ -269,14 +386,46 @@ async def invoke_workflow(
         tracker = AgentRunTracker(db=db, task_id=task_id)
         config["callbacks"] = [tracker]
 
+    # Get or use provided cancellation token
+    token = cancellation_token or get_cancellation_token(task_id)
+
+    # Store cancellation check in metadata for nodes to access
+    initial_state["metadata"]["cancellation_token_id"] = task_id
+
     try:
+        # Check for pre-cancellation
+        token.raise_if_cancelled()
+
         result: WorkflowState = await asyncio.wait_for(
             graph.ainvoke(initial_state, config), timeout=timeout
         )
+
+        # Check for cancellation after completion
+        if token.is_cancelled:
+            raise WorkflowCancelledError(token.cancel_reason or "Workflow cancelled")
+
         logger.info(
             "Workflow execution completed", task_id=task_id, final_status=result.get("status")
         )
         return result
+
+    except WorkflowCancelledError as e:
+        logger.warning(
+            "Workflow cancelled",
+            task_id=task_id,
+            reason=str(e),
+        )
+        # Cleanup any active tracking runs
+        if tracker:
+            await tracker.cleanup()
+
+        # Return state with cancellation information
+        initial_state["error"] = f"Workflow cancelled: {e}"
+        initial_state["status"] = "cancelled"
+        initial_state["metadata"]["workflow_cancelled_at"] = datetime.now(UTC).isoformat()
+        initial_state["metadata"]["cancel_reason"] = str(e)
+        return initial_state
+
     except TimeoutError:
         logger.error(
             "Workflow execution timeout",
@@ -292,6 +441,10 @@ async def invoke_workflow(
         initial_state["status"] = "timeout"
         initial_state["metadata"]["workflow_timeout_at"] = datetime.now(UTC).isoformat()
         return initial_state
+
+    finally:
+        # Cleanup the cancellation token
+        cleanup_cancellation_token(task_id)
 
 
 async def stream_workflow(
@@ -318,8 +471,8 @@ async def stream_workflow(
         Events from the workflow (node starts, LLM tokens, node completions)
         On timeout, yields an error event before stopping
 
-    TODO: Document event format and types (Phase 3)
-    TODO: Add event filtering and sampling options (Phase 3)
+    TODO: Document event format and types
+    TODO: Add event filtering and sampling options
     """
     logger.info(
         "Starting workflow stream",

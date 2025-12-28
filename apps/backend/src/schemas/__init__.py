@@ -50,7 +50,7 @@ __all__ = [
     "AgentExecutionRequest",
     "AgentRunResponse",
     "AgentStreamEvent",
-    # Council schemas (Phase 3)
+    # Council schemas
     "CouncilComparisonResponse",
     "CouncilConfigRequest",
     "CouncilMetricsResponse",

@@ -3,7 +3,7 @@
 This module provides request/response schemas for council-based code reviews
 where multiple judges evaluate code and aggregate their verdicts.
 
-Phase 3 Features:
+Features:
 - JudgeVerdictResponse: Individual judge evaluation data
 - CouncilReviewResponse: Aggregate council review data
 - CouncilConfigRequest: Configuration for council setup

@@ -3,8 +3,6 @@
 The coder is responsible for analyzing the plan from the planner and generating
 clean, well-documented, production-ready code. It supports multiple programming
 languages and integrates with the code generation pipeline.
-
-TODO: Add code quality metrics and scoring (Phase 3)
 """
 
 from collections.abc import AsyncGenerator

@@ -4,7 +4,7 @@ This module provides database models for tracking council-based code reviews
 where multiple judges (personas or models) evaluate code independently
 and their verdicts are aggregated into a final decision.
 
-Phase 3 Features:
+Features:
 - CouncilReview: Aggregate review data with consensus tracking
 - JudgeVerdict: Individual judge evaluation with detailed metrics
 

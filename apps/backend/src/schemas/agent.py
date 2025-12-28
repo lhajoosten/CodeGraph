@@ -25,7 +25,7 @@ class AgentRunResponse(BaseModel):
     completed_at: datetime | None
     created_at: datetime
     updated_at: datetime
-    # Phase 3: Detailed metrics
+    # Detailed metrics
     input_tokens: int | None = None
     output_tokens: int | None = None
     cost_usd: float | None = None

@@ -4,7 +4,7 @@ This module implements a council of judges for code review, where multiple
 reviewers (either different models or different personas) independently
 review code and their verdicts are aggregated into a final decision.
 
-Phase 3 Features:
+Features:
 - Prompt-based personas for local vLLM (security, performance, maintainability)
 - Real multi-model judges for Claude API (haiku, sonnet, opus)
 - Parallel judge execution for efficiency

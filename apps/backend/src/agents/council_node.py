@@ -4,7 +4,7 @@ This module provides the council_reviewer_node function that integrates
 the CodeReviewCouncil into the multi-agent workflow. It replaces the
 standard reviewer_node when council review is enabled.
 
-Phase 3 Features:
+Features:
 - Multi-judge code review with parallel execution
 - Verdict aggregation with confidence scoring
 - Detailed metrics collection per judge
@@ -131,7 +131,7 @@ async def council_reviewer_node(
                 "total_tokens": total_tokens,
                 "latency_ms": council_state["deliberation_time_ms"],
             },
-            # Council-specific metadata (Phase 3)
+            # Council-specific metadata
             "council_review": {
                 "final_verdict": council_state["final_verdict"],
                 "confidence_score": council_state["confidence_score"],

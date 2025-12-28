@@ -4,7 +4,7 @@ This module provides comprehensive queries for task execution history,
 timeline visualization, and council review data. It builds on the
 AgentRunService for more complex history and analytics queries.
 
-Phase 3 Features:
+Features:
 - Complete execution timeline with all events
 - User execution history with filtering and pagination
 - Council review history and metrics

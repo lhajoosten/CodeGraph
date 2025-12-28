@@ -368,8 +368,6 @@ def get_coder_model() -> ChatModel:
 
     Returns:
         Chat model for coding
-
-    TODO: Add code quality scoring to adjust tier (Phase 3)
     """
     return ModelFactory.create("sonnet")
 
@@ -398,7 +396,7 @@ def get_reviewer_model() -> ChatModel:
 
 
 # =============================================================================
-# Phase 3: Council Review and Task Complexity
+# Council Review and Task Complexity
 # =============================================================================
 
 
@@ -572,3 +570,125 @@ def get_model_for_task(task_description: str) -> ChatModel:
     """
     complexity = TaskComplexityAnalyzer.analyze(task_description)
     return ModelFactory.create_for_task(complexity)
+
+
+# =============================================================================
+# Quality-Based Tier Adjustment
+# =============================================================================
+
+
+class QualityBasedTierSelector:
+    """Select model tier based on code quality scores.
+
+    When reviewing code, lower quality code may benefit from more thorough
+    review by a more capable model (opus). Higher quality code can be
+    reviewed efficiently by a faster model (haiku).
+
+    This enables cost optimization by using expensive models only when needed.
+
+    Thresholds:
+    - score < 50: Use opus (low quality needs deep analysis)
+    - 50 <= score < 75: Use sonnet (medium quality, balanced)
+    - score >= 75: Use haiku (high quality, quick verification)
+    """
+
+    # Quality score thresholds for tier selection
+    OPUS_THRESHOLD = 50  # Below this, use opus
+    HAIKU_THRESHOLD = 75  # At or above this, use haiku
+
+    @classmethod
+    def get_tier_for_quality(cls, quality_score: float) -> ModelTier:
+        """Get recommended model tier based on quality score.
+
+        Args:
+            quality_score: Code quality score (0-100)
+
+        Returns:
+            Recommended model tier
+        """
+        if quality_score < cls.OPUS_THRESHOLD:
+            logger.debug(
+                "Low quality score, recommending opus tier",
+                quality_score=quality_score,
+            )
+            return "opus"
+        elif quality_score >= cls.HAIKU_THRESHOLD:
+            logger.debug(
+                "High quality score, recommending haiku tier",
+                quality_score=quality_score,
+            )
+            return "haiku"
+        else:
+            logger.debug(
+                "Medium quality score, recommending sonnet tier",
+                quality_score=quality_score,
+            )
+            return "sonnet"
+
+    @classmethod
+    def get_model_for_review(
+        cls,
+        quality_score: float | None = None,
+        code: str | None = None,
+    ) -> ChatModel:
+        """Get a model for code review, adjusted by quality if available.
+
+        If quality_score is provided, uses it to select tier.
+        If only code is provided, analyzes it first.
+        If neither, defaults to sonnet tier.
+
+        Args:
+            quality_score: Pre-calculated quality score (0-100)
+            code: Source code to analyze if score not provided
+
+        Returns:
+            Chat model for review
+        """
+        tier: ModelTier = "sonnet"  # Default
+
+        if quality_score is not None:
+            tier = cls.get_tier_for_quality(quality_score)
+        elif code is not None:
+            # Analyze code quality on demand
+            from src.agents.code_quality import analyze_code_quality
+
+            analysis = analyze_code_quality(code)
+            tier = cls.get_tier_for_quality(analysis.overall_score)
+            logger.info(
+                "Analyzed code quality for tier selection",
+                quality_score=analysis.overall_score,
+                selected_tier=tier,
+            )
+        else:
+            logger.debug("No quality info provided, using default sonnet tier")
+
+        return ModelFactory.create(tier)
+
+
+def get_reviewer_model_for_code(code: str) -> ChatModel:
+    """Get a review model with tier automatically adjusted for code quality.
+
+    Convenience function that analyzes code and returns an appropriate
+    model for reviewing it.
+
+    Args:
+        code: The source code to be reviewed
+
+    Returns:
+        Chat model with tier adjusted for code quality
+    """
+    return QualityBasedTierSelector.get_model_for_review(code=code)
+
+
+def get_tier_for_quality_score(quality_score: float) -> ModelTier:
+    """Get recommended tier for a quality score.
+
+    Convenience function for external use.
+
+    Args:
+        quality_score: Code quality score (0-100)
+
+    Returns:
+        Recommended model tier
+    """
+    return QualityBasedTierSelector.get_tier_for_quality(quality_score)

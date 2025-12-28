@@ -4,7 +4,11 @@ The planner is the first node in the workflow and is responsible for analyzing
 the task description and creating a detailed, step-by-step execution plan.
 This plan guides all subsequent coding, testing, and review stages.
 
-TODO: Add plan caching for similar tasks (Phase 3)
+Features:
+- Plan caching for similar tasks (reduces LLM calls)
+- Plan validation and complexity scoring
+- Streaming support for real-time output
+
 TODO: Add plan versioning and history (Phase 4)
 """
 
@@ -18,6 +22,7 @@ from src.agents.models import get_planner_model
 from src.agents.plan_validator import validate_plan
 from src.agents.state import WorkflowState
 from src.agents.streaming import StreamingMetrics, stream_with_metrics
+from src.core.config import settings
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -43,6 +48,70 @@ Requirements:
 Output a professional plan that a senior developer could follow directly."""
 
 
+async def _get_cached_plan(task_description: str) -> dict[str, Any] | None:
+    """Try to retrieve a cached plan for the task description.
+
+    Only attempts cache retrieval if plan caching is enabled in settings.
+    Returns None on any error or if caching is disabled.
+
+    Args:
+        task_description: The task description to look up
+
+    Returns:
+        Cached plan data or None if not found/disabled
+    """
+    if not getattr(settings, "enable_plan_caching", False):
+        return None
+
+    try:
+        from src.services.cache_service import WorkflowCacheService, get_redis_client
+
+        redis = await get_redis_client()
+        cache = WorkflowCacheService(redis=redis)
+        cached = await cache.get_cached_plan(task_description)
+
+        if cached:
+            logger.info(
+                "Plan cache hit",
+                original_task_id=cached.get("task_id"),
+                cached_at=cached.get("cached_at"),
+            )
+        return cached
+
+    except Exception as e:
+        logger.debug("Plan cache lookup failed", error=str(e))
+        return None
+
+
+async def _cache_plan(task_id: int, task_description: str, plan: str) -> bool:
+    """Cache a successfully generated plan.
+
+    Only attempts caching if plan caching is enabled in settings.
+    Failures are logged but don't raise exceptions.
+
+    Args:
+        task_id: The task ID
+        task_description: The task description
+        plan: The generated plan text
+
+    Returns:
+        True if cached successfully, False otherwise
+    """
+    if not getattr(settings, "enable_plan_caching", False):
+        return False
+
+    try:
+        from src.services.cache_service import WorkflowCacheService, get_redis_client
+
+        redis = await get_redis_client()
+        cache = WorkflowCacheService(redis=redis)
+        return await cache.cache_plan(task_id, task_description, plan)
+
+    except Exception as e:
+        logger.debug("Plan cache store failed", error=str(e))
+        return False
+
+
 async def planner_node(
     state: WorkflowState, config: RunnableConfig | None = None
 ) -> dict[str, Any]:
@@ -66,13 +135,51 @@ async def planner_node(
     Raises:
         Exception: If Claude API call fails
 
-    TODO: Add plan refinement loop if validation fails (Phase 3)
+    TODO: Add plan refinement loop if validation fails
     """
+    task_id = state.get("task_id", 0)
+    task_description = state.get("task_description", "")
+
     logger.info(
         "Planner node executing",
-        task_id=state.get("task_id"),
-        description_length=len(state.get("task_description", "")),
+        task_id=task_id,
+        description_length=len(task_description),
     )
+
+    # Check cache first
+    cached_plan = await _get_cached_plan(task_description)
+    if cached_plan:
+        plan_content = cached_plan.get("plan", "")
+        validation = validate_plan(plan_content)
+
+        logger.info(
+            "Using cached plan",
+            task_id=task_id,
+            original_task_id=cached_plan.get("task_id"),
+            cached_at=cached_plan.get("cached_at"),
+            plan_length=len(plan_content),
+        )
+
+        return {
+            "plan": plan_content,
+            "status": "coding",
+            "messages": [],  # No new messages when using cache
+            "metadata": {
+                **(state.get("metadata", {})),
+                "plan_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
+                "planner_model": "sonnet",
+                "plan_validation": validation.to_dict(),
+                "plan_from_cache": True,
+                "cache_source_task_id": cached_plan.get("task_id"),
+                "cache_source_timestamp": cached_plan.get("cached_at"),
+                "planner_usage": {
+                    "input_tokens": 0,
+                    "output_tokens": 0,
+                    "total_tokens": 0,
+                    "latency_ms": 0,
+                },
+            },
+        }
 
     model = get_planner_model()
 
@@ -114,7 +221,7 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
 
     logger.info(
         "Planner generated plan",
-        task_id=state.get("task_id"),
+        task_id=task_id,
         plan_length=len(plan_content),
         input_tokens=input_tokens,
         output_tokens=output_tokens,
@@ -123,6 +230,11 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
         complexity_level=validation.complexity.level.value,
         total_steps=validation.total_steps,
     )
+
+    # Cache the plan for future similar tasks (non-blocking)
+    plan_cached = await _cache_plan(task_id, task_description, str(plan_content))
+    if plan_cached:
+        logger.debug("Plan cached for future use", task_id=task_id)
 
     return {
         "plan": plan_content,
@@ -133,6 +245,8 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             "plan_generated_at": __import__("datetime").datetime.utcnow().isoformat(),
             "planner_model": "sonnet",
             "plan_validation": validation.to_dict(),
+            "plan_from_cache": False,
+            "plan_cached": plan_cached,
             "planner_usage": {
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,

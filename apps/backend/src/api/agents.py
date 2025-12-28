@@ -19,7 +19,7 @@ Webhook Events:
 - workflow.testing_completed: Testing stage finished
 - workflow.review_completed: Review stage finished
 
-Phase 3 Additions:
+Additional Features:
 - Execution history endpoints for task and user history
 - Council review endpoints for multi-judge review data
 - Timeline endpoints for visualization
@@ -92,7 +92,6 @@ async def execute_task_stream(
             data: {"type": "token", "content": "Step 1: "}\n\n
             data: {"type": "node_end", "node": "planner", "duration": 2.5}\n\n
 
-    TODO: Add execution timeout (Phase 3)
     TODO: Add error recovery with checkpoints (Phase 4)
     """
     logger.info("Execute task stream requested", task_id=task_id, user_id=current_user.id)
@@ -123,8 +122,6 @@ async def execute_task_stream(
         Converts LangGraph events into SSE format for streaming to client.
         Each event is a JSON object with event metadata and payload.
         Also dispatches webhook events for node completions.
-
-        TODO: Add event filtering options (Phase 3)
         """
         completed_nodes: set[str] = set()
 
@@ -327,7 +324,6 @@ async def get_task_result(
     Raises:
         HTTPException: If task not found or still executing
 
-    TODO: Add result caching (Phase 3)
     TODO: Add result expiration (Phase 4)
     """
     logger.info("Get task result requested", task_id=task_id, user_id=current_user.id)
@@ -422,7 +418,7 @@ async def _dispatch_node_webhook(
 
 
 # =============================================================================
-# Phase 3: Execution History and Council Review Endpoints
+# Execution History and Council Review Endpoints
 # =============================================================================
 
 

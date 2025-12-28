@@ -4,7 +4,7 @@ This module defines the shared state that flows through all agent nodes.
 State is defined using TypedDict with annotated reducers that control how
 updates merge across nodes without overwriting previous values.
 
-Phase 3 Features:
+Features:
 - CouncilState for multi-judge review with personas
 - JudgeVerdictState for individual judge outcomes
 - Metrics collection for council deliberation
@@ -63,13 +63,15 @@ class WorkflowState(TypedDict):
     test_analysis: dict[str, Any]
     review_feedback: str
     iterations: int
-    status: Literal["planning", "coding", "testing", "reviewing", "complete", "timeout"]
+    status: Literal[
+        "planning", "coding", "testing", "reviewing", "complete", "timeout", "cancelled"
+    ]
     error: str | None
     metadata: dict[str, Any]
 
 
 # =============================================================================
-# Phase 3: Council Review State Definitions
+# Council Review State Definitions
 # =============================================================================
 
 
@@ -186,7 +188,9 @@ class CouncilWorkflowState(TypedDict):
     test_analysis: dict[str, Any]
     review_feedback: str
     iterations: int
-    status: Literal["planning", "coding", "testing", "reviewing", "complete", "timeout"]
+    status: Literal[
+        "planning", "coding", "testing", "reviewing", "complete", "timeout", "cancelled"
+    ]
     error: str | None
     metadata: dict[str, Any]
 

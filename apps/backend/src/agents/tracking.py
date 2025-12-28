@@ -7,7 +7,7 @@ LangGraph's callback system to capture node start/end events.
 It also records token usage metrics via MetricsService for analytics
 and dashboard display.
 
-Phase 3 Additions:
+Features:
 - Council review tracking with judge verdicts
 - Extended metrics (tokens, latency, cost, quality)
 - Enhanced output summaries
@@ -504,7 +504,7 @@ class AgentRunTracker(AsyncCallbackHandler):
         lint_warning_count: int | None = None,
         model_tier: str | None = None,
     ) -> AgentRun | None:
-        """Update an AgentRun with extended Phase 3 metrics.
+        """Update an AgentRun with extended metrics.
 
         Args:
             run_id: ID of the AgentRun to update
