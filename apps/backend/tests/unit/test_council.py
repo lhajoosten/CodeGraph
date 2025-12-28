@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.agents.council import (
+from src.agents.council.orchestrator import (
     MAINTAINABILITY_JUDGE_PROMPT,
     PERFORMANCE_JUDGE_PROMPT,
     SECURITY_JUDGE_PROMPT,

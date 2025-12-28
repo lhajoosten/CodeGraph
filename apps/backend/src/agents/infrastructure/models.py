@@ -650,7 +650,7 @@ class QualityBasedTierSelector:
             tier = cls.get_tier_for_quality(quality_score)
         elif code is not None:
             # Analyze code quality on demand
-            from src.agents.code_quality import analyze_code_quality
+            from src.agents.analyzers.code_quality import analyze_code_quality
 
             analysis = analyze_code_quality(code)
             tier = cls.get_tier_for_quality(analysis.overall_score)

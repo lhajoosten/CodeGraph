@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.agents.code_quality import (
+from src.agents.analyzers.code_quality import (
     CodeIssue,
     CodeQualityAnalyzer,
     ComplexityMetrics,

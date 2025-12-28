@@ -3,7 +3,7 @@
 Tests the test extraction, simulation, and coverage metrics functionality.
 """
 
-from src.agents.test_analyzer import (
+from src.agents.analyzers.test_analyzer import (
     CoverageMetrics,
     ExecutionSummary,
     TestAnalysis,

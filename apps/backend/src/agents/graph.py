@@ -22,12 +22,12 @@ from typing import TYPE_CHECKING, Any
 
 from langgraph.graph import END, START, StateGraph
 
-from src.agents.coder import coder_node
-from src.agents.council_node import council_reviewer_node
-from src.agents.planner import planner_node
-from src.agents.reviewer import reviewer_node
+from src.agents.council.node import council_reviewer_node
+from src.agents.nodes.coder import coder_node
+from src.agents.nodes.planner import planner_node
+from src.agents.nodes.reviewer import reviewer_node
+from src.agents.nodes.tester import tester_node
 from src.agents.state import WorkflowState
-from src.agents.tester import tester_node
 from src.core.config import settings
 from src.core.logging import get_logger
 
@@ -381,7 +381,7 @@ async def invoke_workflow(
     # Add tracking callback if database session provided
     tracker = None
     if db is not None:
-        from src.agents.tracking import AgentRunTracker
+        from src.agents.infrastructure.tracking import AgentRunTracker
 
         tracker = AgentRunTracker(db=db, task_id=task_id)
         config["callbacks"] = [tracker]
@@ -512,7 +512,7 @@ async def stream_workflow(
     # Add tracking callback if database session provided
     tracker = None
     if db is not None:
-        from src.agents.tracking import AgentRunTracker
+        from src.agents.infrastructure.tracking import AgentRunTracker
 
         tracker = AgentRunTracker(db=db, task_id=task_id)
         config["callbacks"] = [tracker]

@@ -16,8 +16,8 @@ from typing import Any
 
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.council import CodeReviewCouncil, CouncilConfig
-from src.agents.reviewer import ReviewVerdict
+from src.agents.council.orchestrator import CodeReviewCouncil, CouncilConfig
+from src.agents.nodes.reviewer import ReviewVerdict
 from src.agents.state import WorkflowState
 from src.core.config import settings
 from src.core.logging import get_logger
@@ -184,6 +184,6 @@ async def get_council_reviewer_node(
     if use_council:
         return council_reviewer_node
     else:
-        from src.agents.reviewer import reviewer_node
+        from src.agents.nodes.reviewer import reviewer_node
 
         return reviewer_node

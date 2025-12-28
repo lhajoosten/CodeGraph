@@ -19,11 +19,11 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.code_parser import parse_code_blocks
-from src.agents.models import get_tester_model
+from src.agents.analyzers.test_analyzer import create_test_analysis
+from src.agents.infrastructure.models import get_tester_model
+from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.processing.parser import parse_code_blocks
 from src.agents.state import WorkflowState
-from src.agents.streaming import StreamingMetrics, stream_with_metrics
-from src.agents.test_analyzer import create_test_analysis
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)

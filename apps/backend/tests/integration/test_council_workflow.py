@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from src.agents.council import CodeReviewCouncil, CouncilConfig, JudgeConfig
-from src.agents.council_node import council_reviewer_node
+from src.agents.council.node import council_reviewer_node
+from src.agents.council.orchestrator import CodeReviewCouncil, CouncilConfig, JudgeConfig
 from src.agents.state import CouncilState, JudgeVerdictState, WorkflowState
 from src.core.database import Base
 from src.models import Task, User
@@ -181,7 +181,7 @@ def greet(name: str) -> str:
     ) -> None:
         """Test council reviewer node returns APPROVE verdict."""
         # Mock the council
-        with patch("src.agents.council_node.CodeReviewCouncil") as MockCouncil:
+        with patch("src.agents.council.node.CodeReviewCouncil") as MockCouncil:
             mock_instance = MagicMock()
             mock_instance.convene = AsyncMock(return_value=mock_council_state)
             MockCouncil.return_value = mock_instance
@@ -267,7 +267,7 @@ def greet(name: str) -> str:
             llm_mode="local",
         )
 
-        with patch("src.agents.council_node.CodeReviewCouncil") as MockCouncil:
+        with patch("src.agents.council.node.CodeReviewCouncil") as MockCouncil:
             mock_instance = MagicMock()
             mock_instance.convene = AsyncMock(return_value=revise_state)
             MockCouncil.return_value = mock_instance
@@ -285,7 +285,7 @@ def greet(name: str) -> str:
         mock_council_state: CouncilState,
     ) -> None:
         """Test that council metrics are tracked in metadata."""
-        with patch("src.agents.council_node.CodeReviewCouncil") as MockCouncil:
+        with patch("src.agents.council.node.CodeReviewCouncil") as MockCouncil:
             mock_instance = MagicMock()
             mock_instance.convene = AsyncMock(return_value=mock_council_state)
             MockCouncil.return_value = mock_instance
@@ -321,7 +321,7 @@ def greet(name: str) -> str:
         Errors from the council are expected to propagate up to the workflow
         level for handling.
         """
-        with patch("src.agents.council_node.CodeReviewCouncil") as MockCouncil:
+        with patch("src.agents.council.node.CodeReviewCouncil") as MockCouncil:
             mock_instance = MagicMock()
             mock_instance.convene = AsyncMock(side_effect=Exception("API Error"))
             MockCouncil.return_value = mock_instance

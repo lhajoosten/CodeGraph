@@ -4,7 +4,7 @@ Tests the AgentRunService and AgentRunTracker for persisting
 agent node executions during workflow processing.
 """
 
-from src.agents.tracking import NODE_TO_AGENT_TYPE, AgentRunTracker
+from src.agents.infrastructure.tracking import NODE_TO_AGENT_TYPE, AgentRunTracker
 from src.models.agent_run import AgentRunStatus, AgentType
 from src.services.agent_run_service import AgentRunService
 

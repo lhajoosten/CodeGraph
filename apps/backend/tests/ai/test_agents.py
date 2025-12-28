@@ -10,7 +10,7 @@ moved to tests/unit/test_agent_models.py for faster execution without LLM.
 import pytest
 
 from src.agents.graph import invoke_workflow, stream_workflow
-from src.agents.planner import planner_node
+from src.agents.nodes.planner import planner_node
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available

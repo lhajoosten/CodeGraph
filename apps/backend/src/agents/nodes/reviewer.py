@@ -21,9 +21,9 @@ from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, Field
 
-from src.agents.models import get_reviewer_model
+from src.agents.infrastructure.models import get_reviewer_model
+from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
 from src.agents.state import WorkflowState
-from src.agents.streaming import StreamingMetrics, stream_with_metrics
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)

@@ -20,8 +20,8 @@ from typing import Literal
 from langchain_core.messages import BaseMessage
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.models import ModelFactory
-from src.agents.reviewer import (
+from src.agents.infrastructure.models import ModelFactory
+from src.agents.nodes.reviewer import (
     create_fallback_verdict,
     parse_structured_verdict,
 )

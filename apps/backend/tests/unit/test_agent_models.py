@@ -15,7 +15,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 
 from src.agents.graph import get_compiled_graph
-from src.agents.models import ModelConfig, ModelFactory
+from src.agents.infrastructure.models import ModelConfig, ModelFactory
 from src.agents.state import WorkflowState
 from src.core.config import settings
 from src.core.logging import get_logger

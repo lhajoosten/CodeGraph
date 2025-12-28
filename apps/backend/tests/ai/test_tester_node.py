@@ -8,7 +8,7 @@ Tests the test generation functionality of the tester node, including:
 
 import pytest
 
-from src.agents.tester import tester_node
+from src.agents.nodes.tester import tester_node
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 from tests.ai.utils import WorkflowStateBuilder

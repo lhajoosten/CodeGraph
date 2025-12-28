@@ -17,7 +17,7 @@ import os
 import pytest
 
 from src.agents.graph import get_compiled_graph, invoke_workflow
-from src.agents.tracing import configure_tracing, is_tracing_enabled
+from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enabled
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 
@@ -199,7 +199,7 @@ class TestWorkflowMocked:
 
     def test_model_configuration(self) -> None:
         """Verify model configuration is correct."""
-        from src.agents.models import ModelConfig
+        from src.agents.infrastructure.models import ModelConfig
 
         # Verify all model tiers are configured
         assert "haiku" in ModelConfig.TIERS

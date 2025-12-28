@@ -3,7 +3,7 @@
 Tests formatting, linting, and syntax validation of generated code.
 """
 
-from src.agents.code_formatter import (
+from src.agents.processing.formatter import (
     CodeFile,
     FormatResult,
     LintCategory,

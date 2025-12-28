@@ -16,7 +16,7 @@ from typing import Any
 from langchain_core.messages import AIMessageChunk, BaseMessage
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.models import ChatModel
+from src.agents.infrastructure.models import ChatModel
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)

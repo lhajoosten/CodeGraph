@@ -11,7 +11,7 @@ timeout/error conditions gracefully by skipping when the LLM is slow.
 
 import pytest
 
-from src.agents.coder import coder_node
+from src.agents.nodes.coder import coder_node
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 from tests.ai.utils import WorkflowStateBuilder

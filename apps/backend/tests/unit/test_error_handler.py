@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.agents.error_handler import (
+from src.agents.infrastructure.error_handler import (
     ErrorClassifier,
     ErrorHandler,
     ErrorType,
@@ -159,7 +159,7 @@ class TestErrorHandler:
     @pytest.fixture
     def handler(self) -> ErrorHandler:
         """Create handler instance with error recovery enabled."""
-        with patch("src.agents.error_handler.settings") as mock_settings:
+        with patch("src.agents.infrastructure.error_handler.settings") as mock_settings:
             mock_settings.enable_error_recovery = True
             mock_settings.max_retry_attempts = 3
             return ErrorHandler()
@@ -167,7 +167,7 @@ class TestErrorHandler:
     @pytest.fixture
     def disabled_handler(self) -> ErrorHandler:
         """Create handler instance with error recovery disabled."""
-        with patch("src.agents.error_handler.settings") as mock_settings:
+        with patch("src.agents.infrastructure.error_handler.settings") as mock_settings:
             mock_settings.enable_error_recovery = False
             mock_settings.max_retry_attempts = 3
             return ErrorHandler()
@@ -319,7 +319,7 @@ class TestFallbackTier:
     @pytest.fixture
     def handler(self) -> ErrorHandler:
         """Create handler instance."""
-        with patch("src.agents.error_handler.settings") as mock_settings:
+        with patch("src.agents.infrastructure.error_handler.settings") as mock_settings:
             mock_settings.enable_error_recovery = True
             mock_settings.max_retry_attempts = 3
             return ErrorHandler()
@@ -351,7 +351,7 @@ class TestStateTruncation:
     @pytest.fixture
     def handler(self) -> ErrorHandler:
         """Create handler instance."""
-        with patch("src.agents.error_handler.settings") as mock_settings:
+        with patch("src.agents.infrastructure.error_handler.settings") as mock_settings:
             mock_settings.enable_error_recovery = True
             mock_settings.max_retry_attempts = 3
             return ErrorHandler()

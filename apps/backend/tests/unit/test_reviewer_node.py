@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.agents.reviewer import ReviewVerdict, extract_verdict_from_text, reviewer_node
+from src.agents.nodes.reviewer import ReviewVerdict, extract_verdict_from_text, reviewer_node
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.utils import WorkflowStateBuilder
@@ -72,7 +72,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = "Excellent code! APPROVE - This is production-ready."
@@ -110,7 +110,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = """Issues found:
@@ -150,7 +150,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = """The approach is fundamentally flawed.
@@ -189,7 +189,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
@@ -204,7 +204,7 @@ class TestReviewerNode:
 
         # Second iteration
         state["iterations"] = 1
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
@@ -233,7 +233,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
