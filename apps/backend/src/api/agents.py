@@ -19,15 +19,20 @@ Webhook Events:
 - workflow.testing_completed: Testing stage finished
 - workflow.review_completed: Review stage finished
 
-TODO: Add execution history and metrics endpoints (Phase 3)
+Phase 3 Additions:
+- Execution history endpoints for task and user history
+- Council review endpoints for multi-judge review data
+- Timeline endpoints for visualization
+
 TODO: Add rate limiting per user (Phase 4)
 """
 
 import json
 from collections.abc import AsyncGenerator
+from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,7 +44,13 @@ from src.core.logging import get_logger
 from src.models.task import Task
 from src.models.user import User
 from src.models.webhook import WebhookEvent
+from src.schemas.council import (
+    CouncilMetricsResponse,
+    CouncilReviewListResponse,
+    CouncilReviewSummary,
+)
 from src.services.agent_run_service import AgentRunService
+from src.services.execution_history_service import ExecutionHistoryService
 from src.services.webhook_service import WebhookService
 
 logger = get_logger(__name__)
@@ -408,3 +419,269 @@ async def _dispatch_node_webhook(
             task_id=task_id,
             user_id=user_id,
         )
+
+
+# =============================================================================
+# Phase 3: Execution History and Council Review Endpoints
+# =============================================================================
+
+
+@router.get("/tasks/{task_id}/history")
+async def get_task_history(
+    task_id: int,
+    include_council: bool = True,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Get complete execution history for a task.
+
+    Returns a comprehensive view of all agent runs, including timing,
+    tokens, costs, and optionally council review data.
+
+    Args:
+        task_id: ID of the task
+        include_council: Whether to include council review details (default True)
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Complete task execution history with all agent runs and metrics
+
+    Raises:
+        HTTPException: If task not found or user lacks permission
+    """
+    logger.info("Get task history requested", task_id=task_id, user_id=current_user.id)
+
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    service = ExecutionHistoryService(db)
+    history = await service.get_task_history(task_id, include_council=include_council)
+
+    return history
+
+
+@router.get("/history")
+async def get_user_execution_history(
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    status: str | None = Query(None, description="Filter by task status"),
+    date_from: datetime | None = Query(None, description="Start date filter"),
+    date_to: datetime | None = Query(None, description="End date filter"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Get paginated execution history for the current user.
+
+    Returns a list of all tasks with their execution summary,
+    supporting filtering by status and date range.
+
+    Args:
+        page: Page number (1-indexed)
+        page_size: Number of items per page (max 100)
+        status: Optional filter by task status
+        date_from: Optional start date filter
+        date_to: Optional end date filter
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Paginated list of task execution summaries
+    """
+    logger.info(
+        "Get user execution history requested",
+        user_id=current_user.id,
+        page=page,
+        page_size=page_size,
+    )
+
+    service = ExecutionHistoryService(db)
+    history = await service.get_user_execution_history(
+        user_id=current_user.id,
+        page=page,
+        page_size=page_size,
+        status_filter=status,
+        date_from=date_from,
+        date_to=date_to,
+    )
+
+    return history
+
+
+@router.get("/tasks/{task_id}/timeline")
+async def get_execution_timeline(
+    task_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[dict[str, Any]]:
+    """Get detailed execution timeline for visualization.
+
+    Returns a chronological list of all events during task execution,
+    suitable for timeline visualization in the frontend.
+
+    Args:
+        task_id: ID of the task
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        List of timeline events with timestamps and event data
+
+    Raises:
+        HTTPException: If task not found or user lacks permission
+    """
+    logger.info("Get execution timeline requested", task_id=task_id, user_id=current_user.id)
+
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    service = ExecutionHistoryService(db)
+    timeline = await service.get_execution_timeline(task_id)
+
+    return timeline
+
+
+@router.get("/tasks/{task_id}/council-reviews", response_model=CouncilReviewListResponse)
+async def get_task_council_reviews(
+    task_id: int,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> CouncilReviewListResponse:
+    """Get council review history for a specific task.
+
+    Returns paginated list of all council reviews for the task,
+    including verdict, consensus type, and judge count.
+
+    Args:
+        task_id: ID of the task
+        page: Page number (1-indexed)
+        page_size: Number of items per page (max 100)
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Paginated list of council reviews
+
+    Raises:
+        HTTPException: If task not found or user lacks permission
+    """
+    logger.info(
+        "Get task council reviews requested",
+        task_id=task_id,
+        user_id=current_user.id,
+    )
+
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    service = ExecutionHistoryService(db)
+    reviews = await service.get_council_review_history(
+        task_id=task_id,
+        page=page,
+        page_size=page_size,
+    )
+
+    return CouncilReviewListResponse(
+        items=[CouncilReviewSummary(**item) for item in reviews["items"]],
+        total=reviews["total"],
+        page=reviews["page"],
+        page_size=reviews["page_size"],
+        has_more=reviews["has_more"],
+    )
+
+
+@router.get("/council-reviews", response_model=CouncilReviewListResponse)
+async def get_user_council_reviews(
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> CouncilReviewListResponse:
+    """Get all council reviews for the current user's tasks.
+
+    Returns paginated list of all council reviews across all user's tasks,
+    useful for analytics and history views.
+
+    Args:
+        page: Page number (1-indexed)
+        page_size: Number of items per page (max 100)
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Paginated list of council reviews
+    """
+    logger.info(
+        "Get user council reviews requested",
+        user_id=current_user.id,
+        page=page,
+        page_size=page_size,
+    )
+
+    service = ExecutionHistoryService(db)
+    reviews = await service.get_council_review_history(
+        user_id=current_user.id,
+        page=page,
+        page_size=page_size,
+    )
+
+    return CouncilReviewListResponse(
+        items=[CouncilReviewSummary(**item) for item in reviews["items"]],
+        total=reviews["total"],
+        page=reviews["page"],
+        page_size=reviews["page_size"],
+        has_more=reviews["has_more"],
+    )
+
+
+@router.get("/council-metrics", response_model=CouncilMetricsResponse)
+async def get_council_metrics(
+    date_from: datetime | None = Query(None, description="Start date filter"),
+    date_to: datetime | None = Query(None, description="End date filter"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> CouncilMetricsResponse:
+    """Get aggregate metrics for council reviews.
+
+    Returns comprehensive metrics including verdict distribution,
+    consensus breakdown, and per-judge performance statistics.
+
+    Args:
+        date_from: Optional start date filter
+        date_to: Optional end date filter
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Aggregate council review metrics
+    """
+    logger.info("Get council metrics requested", user_id=current_user.id)
+
+    service = ExecutionHistoryService(db)
+    metrics = await service.get_council_metrics(
+        user_id=current_user.id,
+        date_from=date_from,
+        date_to=date_to,
+    )
+
+    return CouncilMetricsResponse(**metrics)

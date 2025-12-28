@@ -5,7 +5,12 @@ multi-agent coding workflow. In Phase 1, it's a simple linear flow from
 planner to completion. Phase 2 adds coder, tester, and reviewer nodes
 with conditional routing for review loops and iteration limits.
 
-TODO: Add supervisor pattern for node orchestration (Phase 3)
+Phase 3 Features:
+- Council-based review with multiple judges (optional, config-driven)
+- Enhanced routing with confidence-based decisions
+- Detailed metrics collection
+
+TODO: Add supervisor pattern for node orchestration (Phase 4)
 TODO: Add checkpointer integration (Phase 4)
 TODO: Add workflow interrupts for user intervention (Phase 4)
 """
@@ -17,10 +22,12 @@ from typing import TYPE_CHECKING, Any
 from langgraph.graph import END, START, StateGraph
 
 from src.agents.coder import coder_node
+from src.agents.council_node import council_reviewer_node
 from src.agents.planner import planner_node
 from src.agents.reviewer import reviewer_node
 from src.agents.state import WorkflowState
 from src.agents.tester import tester_node
+from src.core.config import settings
 from src.core.logging import get_logger
 
 if TYPE_CHECKING:
@@ -33,33 +40,47 @@ MAX_REVIEW_ITERATIONS = 3  # Maximum number of coder revisions after review feed
 WORKFLOW_TIMEOUT_SECONDS = 300  # 5 minutes total workflow timeout
 
 
-def create_workflow() -> StateGraph[WorkflowState]:
+def create_workflow(use_council_review: bool | None = None) -> StateGraph[WorkflowState]:
     """Create the multi-agent coding workflow graph.
 
     In Phase 1, this was a simple linear graph:
         START -> planner -> END
 
-    In Phase 2 (current), it's a full pipeline with review loop:
+    In Phase 2, it's a full pipeline with review loop:
         START -> planner -> coder -> tester -> reviewer -> (conditional) -> coder or END
 
-    In Phase 3, it will add:
-        - Council-based review with multiple judges
-        - Supervisor pattern for orchestration
+    In Phase 3 (current), it adds:
+        - Council-based review with multiple judges (when use_council_review=True)
+        - Enhanced routing with confidence-based decisions
+
+    Args:
+        use_council_review: Whether to use council-based review. If None, uses
+                           settings.use_council_review (defaults to True).
 
     Returns:
         Compiled StateGraph ready for execution
 
     TODO: Make graph compilation conditional on environment config (Phase 4)
-    TODO: Add error handling node for failure recovery (Phase 3)
-    TODO: Add council review (Phase 3)
+    TODO: Add error handling node for failure recovery (Phase 4)
     """
+    # Determine if we should use council review
+    if use_council_review is None:
+        use_council_review = getattr(settings, "use_council_review", True)
+
     workflow = StateGraph(WorkflowState)
 
     # Add nodes
     workflow.add_node("planner", planner_node)
     workflow.add_node("coder", coder_node)
     workflow.add_node("tester", tester_node)
-    workflow.add_node("reviewer", reviewer_node)
+
+    # Use council reviewer or standard reviewer based on config
+    if use_council_review:
+        workflow.add_node("reviewer", council_reviewer_node)
+        logger.info("Using council-based reviewer with multiple judges")
+    else:
+        workflow.add_node("reviewer", reviewer_node)
+        logger.info("Using standard single-judge reviewer")
 
     # Add edges for Phase 2 flow with review loop
     workflow.add_edge(START, "planner")
@@ -76,29 +97,45 @@ def create_workflow() -> StateGraph[WorkflowState]:
         1. The reviewer verdict is REVISE
         2. We haven't exceeded the maximum review iterations
 
+        Supports both standard and council-based review verdicts.
+
         Args:
             state: Current workflow state with review_feedback and iterations
 
         Returns:
             "coder" if REVISE and iterations < MAX, otherwise "END"
-
-        TODO: Add feedback to state when max iterations reached (Phase 3)
         """
-        feedback = state.get("review_feedback", "").upper()
+        # Get verdict - check metadata first (council/structured), then feedback text
+        metadata = state.get("metadata", {})
+        verdict = metadata.get("verdict", "")
+
+        # Fallback to checking feedback text for legacy compatibility
+        if not verdict:
+            feedback = state.get("review_feedback", "").upper()
+            if "REVISE" in feedback:
+                verdict = "REVISE"
+            elif "APPROVE" in feedback:
+                verdict = "APPROVE"
+            elif "REJECT" in feedback:
+                verdict = "REJECT"
+
         iterations = state.get("iterations", 0)
+        confidence = metadata.get("confidence_score", 1.0)
 
         # Check if we should loop back to coder for revisions
-        if "REVISE" in feedback and iterations < MAX_REVIEW_ITERATIONS:
+        if verdict == "REVISE" and iterations < MAX_REVIEW_ITERATIONS:
             logger.info(
                 "Routing back to coder for revision",
                 task_id=state.get("task_id"),
                 iteration=iterations + 1,
                 max_iterations=MAX_REVIEW_ITERATIONS,
+                verdict=verdict,
+                confidence=confidence,
             )
             return "coder"
 
         # End workflow if approved, rejected, or max iterations reached
-        if iterations >= MAX_REVIEW_ITERATIONS and "REVISE" in feedback:
+        if iterations >= MAX_REVIEW_ITERATIONS and verdict == "REVISE":
             logger.warning(
                 "Maximum review iterations reached",
                 task_id=state.get("task_id"),
@@ -110,13 +147,23 @@ def create_workflow() -> StateGraph[WorkflowState]:
                 f"\n\n[Note: Maximum revisions ({MAX_REVIEW_ITERATIONS}) reached]"
             )
 
+        logger.info(
+            "Workflow completing",
+            task_id=state.get("task_id"),
+            verdict=verdict,
+            confidence=confidence,
+            iterations=iterations,
+        )
+
         return END
 
     workflow.add_conditional_edges("reviewer", route_after_review)
 
+    reviewer_type = "council" if use_council_review else "standard"
     logger.info(
         "Created workflow graph",
         nodes=["planner", "coder", "tester", "reviewer"],
+        reviewer_type=reviewer_type,
         edges=["START->planner->coder->tester->reviewer", "reviewer->(conditional)->coder/END"],
     )
 

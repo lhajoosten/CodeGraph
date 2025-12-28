@@ -328,13 +328,14 @@ class ModelFactory:
         - medium → sonnet (balanced, default)
         - high → opus (powerful, thorough)
 
+        For automatic complexity detection, use get_model_for_task()
+        which analyzes the task description.
+
         Args:
             task_complexity: Task difficulty level
 
         Returns:
             Chat model optimized for the task complexity
-
-        TODO: Add task complexity auto-detection (Phase 3)
         """
         tier_map: dict[str, ModelTier] = {
             "low": "haiku",
@@ -388,10 +389,186 @@ def get_reviewer_model() -> ChatModel:
     """Get model for code review.
 
     Review is critical for quality, uses sonnet tier.
+    For council review, use get_council_judge_model() instead.
 
     Returns:
         Chat model for review
-
-    TODO: For council review, use multiple models (Phase 3)
     """
     return ModelFactory.create("sonnet")
+
+
+# =============================================================================
+# Phase 3: Council Review and Task Complexity
+# =============================================================================
+
+
+class TaskComplexityAnalyzer:
+    """Analyze task description to determine complexity level.
+
+    Uses keyword matching to classify tasks as low, medium, or high complexity.
+    This helps with model tier selection and cost optimization.
+
+    Example:
+        analyzer = TaskComplexityAnalyzer()
+        complexity = analyzer.analyze("Create a simple hello world function")
+        # Returns: "low"
+
+        complexity = analyzer.analyze("Design a distributed caching system")
+        # Returns: "high"
+    """
+
+    # Keywords that indicate high complexity tasks
+    HIGH_COMPLEXITY_KEYWORDS = [
+        "distributed",
+        "concurrent",
+        "security",
+        "cryptography",
+        "database migration",
+        "api design",
+        "architecture",
+        "machine learning",
+        "optimization",
+        "real-time",
+        "authentication",
+        "authorization",
+        "microservices",
+        "scalable",
+        "high availability",
+        "fault tolerant",
+        "race condition",
+        "thread safe",
+        "async",
+        "websocket",
+    ]
+
+    # Keywords that indicate low complexity tasks
+    LOW_COMPLEXITY_KEYWORDS = [
+        "simple",
+        "basic",
+        "hello world",
+        "print",
+        "format",
+        "rename",
+        "refactor",
+        "comment",
+        "typo",
+        "fix bug",
+        "update",
+        "add docstring",
+        "lint",
+        "style",
+        "trivial",
+    ]
+
+    @classmethod
+    def analyze(cls, task_description: str) -> Literal["low", "medium", "high"]:
+        """Analyze task description and return complexity level.
+
+        Args:
+            task_description: The task description to analyze
+
+        Returns:
+            Complexity level: "low", "medium", or "high"
+        """
+        desc_lower = task_description.lower()
+
+        # Count keyword matches
+        high_matches = sum(1 for keyword in cls.HIGH_COMPLEXITY_KEYWORDS if keyword in desc_lower)
+        low_matches = sum(1 for keyword in cls.LOW_COMPLEXITY_KEYWORDS if keyword in desc_lower)
+
+        # Determine complexity based on matches
+        if high_matches >= 2:
+            logger.debug(
+                "Task classified as high complexity",
+                high_matches=high_matches,
+                low_matches=low_matches,
+            )
+            return "high"
+        elif low_matches >= 2 and high_matches == 0:
+            logger.debug(
+                "Task classified as low complexity",
+                high_matches=high_matches,
+                low_matches=low_matches,
+            )
+            return "low"
+        else:
+            logger.debug(
+                "Task classified as medium complexity",
+                high_matches=high_matches,
+                low_matches=low_matches,
+            )
+            return "medium"
+
+
+def get_council_judge_model(
+    persona: str,
+    tier: ModelTier | None = None,
+) -> ChatModel:
+    """Get a model configured for a specific council judge persona.
+
+    For local vLLM: Returns the same model for all personas (differentiation
+    is done via system prompts in the council module).
+
+    For Claude API: Can optionally use different tiers for different personas.
+
+    Args:
+        persona: The judge persona (e.g., "security", "performance")
+        tier: Optional model tier override. If None, uses sonnet.
+
+    Returns:
+        Chat model configured for the judge
+    """
+    # Default all judges to sonnet tier for consistency
+    model_tier = tier or "sonnet"
+
+    logger.debug(
+        "Creating council judge model",
+        persona=persona,
+        tier=model_tier,
+        backend="local" if settings.use_local_llm else "cloud",
+    )
+
+    return ModelFactory.create(model_tier)
+
+
+def get_council_models() -> dict[str, ChatModel]:
+    """Get all models needed for a council review.
+
+    For local vLLM: Returns three identical model instances (differentiation
+    is done via system prompts).
+
+    For Claude API: Returns three different model tiers for diverse perspectives.
+
+    Returns:
+        Dictionary mapping judge persona to model instance
+    """
+    if settings.use_local_llm:
+        # Local mode: same model, different prompts
+        return {
+            "security_judge": ModelFactory.create("sonnet"),
+            "performance_judge": ModelFactory.create("sonnet"),
+            "maintainability_judge": ModelFactory.create("sonnet"),
+        }
+    else:
+        # Cloud mode: different model tiers
+        return {
+            "security_judge": ModelFactory.create("haiku"),  # Quick security scan
+            "performance_judge": ModelFactory.create("opus"),  # Deep performance analysis
+            "maintainability_judge": ModelFactory.create("sonnet"),  # Balanced review
+        }
+
+
+def get_model_for_task(task_description: str) -> ChatModel:
+    """Get a model automatically selected based on task complexity.
+
+    Analyzes the task description to determine complexity and returns
+    an appropriately-sized model.
+
+    Args:
+        task_description: The task to be performed
+
+    Returns:
+        Chat model optimized for the task complexity
+    """
+    complexity = TaskComplexityAnalyzer.analyze(task_description)
+    return ModelFactory.create_for_task(complexity)

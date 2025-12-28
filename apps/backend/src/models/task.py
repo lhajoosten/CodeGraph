@@ -10,6 +10,7 @@ from src.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from src.models.agent_run import AgentRun
+    from src.models.council_review import CouncilReview
     from src.models.repository import Repository
     from src.models.usage_metrics import UsageMetrics
     from src.models.user import User
@@ -79,6 +80,9 @@ class Task(Base, TimestampMixin):
     )
     usage_metrics: Mapped[list["UsageMetrics"]] = relationship(
         "UsageMetrics", back_populates="task", cascade="all, delete-orphan"
+    )
+    council_reviews: Mapped[list["CouncilReview"]] = relationship(
+        "CouncilReview", back_populates="task", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

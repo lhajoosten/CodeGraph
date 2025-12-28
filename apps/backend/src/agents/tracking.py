@@ -7,19 +7,32 @@ LangGraph's callback system to capture node start/end events.
 It also records token usage metrics via MetricsService for analytics
 and dashboard display.
 
+Phase 3 Additions:
+- Council review tracking with judge verdicts
+- Extended metrics (tokens, latency, cost, quality)
+- Enhanced output summaries
+
 Usage:
     tracker = AgentRunTracker(db_session, task_id)
     config = {"callbacks": [tracker]}
     result = await graph.ainvoke(state, config)
 """
 
+from datetime import UTC, datetime
 from typing import Any
 
 from langchain_core.callbacks import AsyncCallbackHandler
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.logging import get_logger
-from src.models.agent_run import AgentType
+from src.models.agent_run import AgentRun, AgentType
+from src.models.council_review import (
+    ConsensusType,
+    CouncilReview,
+    JudgeVerdict,
+    LLMMode,
+    ReviewVerdict,
+)
 from src.services.agent_run_service import AgentRunService
 from src.services.metrics_service import MetricsService
 
@@ -352,3 +365,204 @@ class AgentRunTracker(AsyncCallbackHandler):
                 )
 
         self.active_runs.clear()
+
+    async def track_council_review(
+        self,
+        agent_run_id: int | None,
+        council_state: dict[str, Any],
+    ) -> CouncilReview | None:
+        """Track a council review with all judge verdicts.
+
+        Persists the council review and individual judge verdicts
+        to the database for history and analytics.
+
+        Args:
+            agent_run_id: ID of the reviewer AgentRun (if tracked)
+            council_state: Full council state from CodeReviewCouncil.convene()
+
+        Returns:
+            Created CouncilReview record, or None if tracking failed
+        """
+        try:
+            # Map verdict strings to enum
+            verdict_map = {
+                "APPROVE": ReviewVerdict.APPROVE,
+                "REVISE": ReviewVerdict.REVISE,
+                "REJECT": ReviewVerdict.REJECT,
+            }
+
+            consensus_map = {
+                "unanimous": ConsensusType.UNANIMOUS,
+                "majority": ConsensusType.MAJORITY,
+                "tie_broken": ConsensusType.TIE_BROKEN,
+                "dissent": ConsensusType.DISSENT,
+            }
+
+            llm_mode_map = {
+                "local": LLMMode.LOCAL,
+                "cloud": LLMMode.CLOUD,
+            }
+
+            # Create council review record
+            council_review = CouncilReview(
+                task_id=self.task_id,
+                agent_run_id=agent_run_id,
+                final_verdict=verdict_map.get(
+                    council_state.get("final_verdict", "REVISE"),
+                    ReviewVerdict.REVISE,
+                ),
+                consensus_type=consensus_map.get(
+                    council_state.get("consensus_type", "majority"),
+                    ConsensusType.MAJORITY,
+                ),
+                confidence_score=council_state.get("confidence_score", 0.0),
+                deliberation_time_ms=council_state.get("deliberation_time_ms", 0),
+                total_cost_usd=council_state.get("total_cost_usd", 0.0),
+                llm_mode=llm_mode_map.get(
+                    council_state.get("llm_mode", "local"),
+                    LLMMode.LOCAL,
+                ),
+                council_conclusion=council_state.get("council_conclusion"),
+                dissenting_opinions=council_state.get("dissenting_opinions", []),
+                reviewed_at=datetime.now(UTC),
+            )
+
+            # Calculate aggregate issue counts
+            total_issues = 0
+            critical_issues = 0
+            major_issues = 0
+
+            for jv_data in council_state.get("judge_verdicts", {}).values():
+                issues = jv_data.get("issues", [])
+                total_issues += len(issues)
+                for issue in issues:
+                    if issue.get("severity") == "critical":
+                        critical_issues += 1
+                    elif issue.get("severity") == "major":
+                        major_issues += 1
+
+            council_review.total_issues = total_issues
+            council_review.critical_issues = critical_issues
+            council_review.major_issues = major_issues
+
+            self.db.add(council_review)
+            await self.db.flush()
+
+            # Create judge verdict records
+            for judge_name, jv_data in council_state.get("judge_verdicts", {}).items():
+                judge_verdict = JudgeVerdict(
+                    council_review_id=council_review.id,
+                    judge_name=judge_name,
+                    persona=jv_data.get("persona", "unknown"),
+                    model_tier=jv_data.get("model_tier", "local"),
+                    verdict=verdict_map.get(
+                        jv_data.get("verdict", "REVISE"),
+                        ReviewVerdict.REVISE,
+                    ),
+                    confidence=jv_data.get("confidence", 0.0),
+                    reasoning=jv_data.get("reasoning"),
+                    issues_found=jv_data.get("issues", []),
+                    strengths_found=jv_data.get("strengths", []),
+                    input_tokens=jv_data.get("input_tokens", 0),
+                    output_tokens=jv_data.get("output_tokens", 0),
+                    total_tokens=jv_data.get("tokens_used", 0),
+                    latency_ms=jv_data.get("latency_ms", 0),
+                    cost_usd=jv_data.get("cost_usd", 0.0),
+                    judged_at=datetime.now(UTC),
+                )
+                self.db.add(judge_verdict)
+
+            await self.db.flush()
+
+            logger.info(
+                "Tracked council review",
+                council_review_id=council_review.id,
+                task_id=self.task_id,
+                final_verdict=council_state.get("final_verdict"),
+                judge_count=len(council_state.get("judge_verdicts", {})),
+            )
+
+            return council_review
+
+        except Exception as e:
+            logger.error(
+                "Failed to track council review",
+                task_id=self.task_id,
+                error=str(e),
+            )
+            return None
+
+    async def update_run_metrics(
+        self,
+        run_id: int,
+        input_tokens: int | None = None,
+        output_tokens: int | None = None,
+        cost_usd: float | None = None,
+        first_token_latency_ms: int | None = None,
+        total_latency_ms: int | None = None,
+        code_quality_score: int | None = None,
+        lint_warning_count: int | None = None,
+        model_tier: str | None = None,
+    ) -> AgentRun | None:
+        """Update an AgentRun with extended Phase 3 metrics.
+
+        Args:
+            run_id: ID of the AgentRun to update
+            input_tokens: Number of input tokens
+            output_tokens: Number of output tokens
+            cost_usd: Estimated cost in USD
+            first_token_latency_ms: Time to first token
+            total_latency_ms: Total execution time
+            code_quality_score: Quality score 0-100 (for coder)
+            lint_warning_count: Number of lint warnings (for coder)
+            model_tier: Model tier used (haiku/sonnet/opus/local)
+
+        Returns:
+            Updated AgentRun or None if not found
+        """
+        try:
+            run = await self.db.get(AgentRun, run_id)
+            if not run:
+                logger.warning("AgentRun not found for metrics update", run_id=run_id)
+                return None
+
+            if input_tokens is not None:
+                run.input_tokens = input_tokens
+            if output_tokens is not None:
+                run.output_tokens = output_tokens
+            if cost_usd is not None:
+                run.cost_usd = cost_usd
+            if first_token_latency_ms is not None:
+                run.first_token_latency_ms = first_token_latency_ms
+            if total_latency_ms is not None:
+                run.total_latency_ms = total_latency_ms
+            if code_quality_score is not None:
+                run.code_quality_score = code_quality_score
+            if lint_warning_count is not None:
+                run.lint_warning_count = lint_warning_count
+            if model_tier is not None:
+                run.model_tier = model_tier
+
+            # Update tokens_used as aggregate
+            if input_tokens is not None or output_tokens is not None:
+                run.tokens_used = (run.input_tokens or 0) + (run.output_tokens or 0)
+
+            await self.db.flush()
+
+            logger.debug(
+                "Updated AgentRun metrics",
+                run_id=run_id,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost_usd=cost_usd,
+            )
+
+            return run
+
+        except Exception as e:
+            logger.error(
+                "Failed to update AgentRun metrics",
+                run_id=run_id,
+                error=str(e),
+            )
+            return None

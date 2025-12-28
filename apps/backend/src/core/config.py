@@ -130,6 +130,24 @@ class Settings(BaseSettings):
     max_agent_iterations: int = 20
     agent_timeout_seconds: int = 300
 
+    # Council Review (Phase 3)
+    # When True, uses multiple judges (personas for local vLLM, models for Claude API)
+    # When False, uses single reviewer
+    use_council_review: bool = True
+
+    # Council judge personas for local vLLM mode
+    # Options: security, performance, maintainability
+    council_judges: list[str] = ["security", "performance", "maintainability"]
+
+    # Caching Configuration (Phase 3)
+    enable_result_caching: bool = False
+    enable_plan_caching: bool = False
+    cache_ttl_seconds: int = 3600
+
+    # Workflow Error Recovery (Phase 3)
+    enable_error_recovery: bool = True
+    max_retry_attempts: int = 3
+
     # Logging
     log_level: str = "INFO"
     log_format: str = "json"
