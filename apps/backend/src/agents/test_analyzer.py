@@ -586,7 +586,7 @@ def simulate_test_execution(test_suite: TestSuite) -> tuple[list[TestResult], Ex
             base_duration = 30
 
         # Add some randomness for realism
-        duration = base_duration + random.randint(1, 20)
+        duration = base_duration + random.randint(1, 20)  # nosec: B311 - not for security
 
         # Determine status - most tests pass in simulation
         # Tests with no assertions or very few assertions might indicate issues

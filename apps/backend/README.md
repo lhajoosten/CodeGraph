@@ -4,7 +4,7 @@ FastAPI backend for the CodeGraph AI coding agent platform.
 
 ## Overview
 
-This is the backend service for CodeGraph, built with FastAPI and Python 3.11+. It provides RESTful APIs for managing coding tasks, orchestrating AI agents, and integrating with GitHub repositories.
+This is the backend service for CodeGraph, built with FastAPI and Python 3.12+. It provides RESTful APIs for managing coding tasks, orchestrating AI agents, and integrating with GitHub repositories.
 
 ## Tech Stack
 
