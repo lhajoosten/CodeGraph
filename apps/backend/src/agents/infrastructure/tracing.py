@@ -14,7 +14,7 @@ Environment Variables (set in .env):
     LANGCHAIN_ENDPOINT: LangSmith API endpoint (default: https://api.smith.langchain.com)
 
 Usage:
-    from src.agents.tracing import configure_tracing, is_tracing_enabled
+    from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enabled
 
     # Call early in application startup
     configure_tracing()

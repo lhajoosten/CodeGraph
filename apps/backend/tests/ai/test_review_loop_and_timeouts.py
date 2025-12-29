@@ -6,12 +6,9 @@ and timeout handling mechanisms.
 
 import pytest
 
-from src.agents.graph import (
-    MAX_REVIEW_ITERATIONS,
-    WORKFLOW_TIMEOUT_SECONDS,
-    invoke_workflow,
-    stream_workflow,
-)
+from src.agents import invoke_workflow, stream_workflow
+from src.agents.execution import WORKFLOW_TIMEOUT_SECONDS
+from src.agents.graph import MAX_REVIEW_ITERATIONS
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.utils import WorkflowStateBuilder
@@ -163,7 +160,9 @@ class TestWorkflowGraphStructure:
             "task_description": "test",
             "plan": "",
             "code": "",
+            "code_files": {},
             "test_results": "",
+            "test_analysis": {},
             "review_feedback": "",
             "iterations": 0,  # Phase 2 addition
             "status": "planning",
@@ -186,7 +185,9 @@ class TestWorkflowGraphStructure:
                 "task_description": "test",
                 "plan": "",
                 "code": "",
+                "code_files": {},
                 "test_results": "",
+                "test_analysis": {},
                 "review_feedback": "",
                 "iterations": 0,
                 "status": status,  # type: ignore
@@ -302,7 +303,9 @@ class TestCompleteWorkflowFlow:
             "task_description": "Create user endpoint",
             "plan": "1. Create endpoint\n2. Add tests",
             "code": "def login(): pass",
+            "code_files": {},
             "test_results": "def test_login(): pass",
+            "test_analysis": {},
             "review_feedback": "APPROVE - Production ready",
             "iterations": 0,
             "status": "complete",
@@ -332,7 +335,9 @@ class TestCompleteWorkflowFlow:
             "task_description": "Create user endpoint",
             "plan": "1. Create endpoint\n2. Add tests",
             "code": "def login(): pass  # v2 - improved error handling",
+            "code_files": {},
             "test_results": "def test_login(): pass",
+            "test_analysis": {},
             "review_feedback": "APPROVE - All improvements made",
             "iterations": 1,  # First revision completed
             "status": "complete",
@@ -353,7 +358,9 @@ class TestCompleteWorkflowFlow:
             "task_description": "Create user endpoint",
             "plan": "1. Create endpoint\n2. Add tests",
             "code": "def login(): pass",
+            "code_files": {},
             "test_results": "def test_login(): pass",
+            "test_analysis": {},
             "review_feedback": f"REVISE - More improvements needed\n\n[Note: Maximum revisions ({MAX_REVIEW_ITERATIONS}) reached]",
             "iterations": MAX_REVIEW_ITERATIONS,
             "status": "complete",

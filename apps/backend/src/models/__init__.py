@@ -3,6 +3,13 @@
 from src.models.agent_run import AgentRun, AgentRunStatus, AgentType
 from src.models.backup_code import BackupCode
 from src.models.base import Base, TimestampMixin
+from src.models.council_review import (
+    ConsensusType,
+    CouncilReview,
+    JudgeVerdict,
+    LLMMode,
+    ReviewVerdict,
+)
 from src.models.email_verification_token import EmailVerificationToken
 from src.models.oauth_account import OAuthAccount
 from src.models.password_reset_token import PasswordResetToken
@@ -43,4 +50,10 @@ __all__ = [
     "WebhookEvent",
     "WebhookStatus",
     "DeliveryStatus",
+    # Council Review
+    "CouncilReview",
+    "JudgeVerdict",
+    "ReviewVerdict",
+    "ConsensusType",
+    "LLMMode",
 ]

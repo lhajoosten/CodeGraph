@@ -16,8 +16,8 @@ import os
 
 import pytest
 
-from src.agents.graph import get_compiled_graph, invoke_workflow
-from src.agents.tracing import configure_tracing, is_tracing_enabled
+from src.agents import get_compiled_graph, invoke_workflow
+from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enabled
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 
@@ -174,7 +174,9 @@ class TestWorkflowMocked:
             "task_description": "Test task",
             "plan": "",
             "code": "",
+            "code_files": {},
             "test_results": "",
+            "test_analysis": {},
             "review_feedback": "",
             "iterations": 0,
             "status": "planning",
@@ -190,14 +192,15 @@ class TestWorkflowMocked:
 
     def test_workflow_configuration(self) -> None:
         """Verify workflow configuration constants."""
-        from src.agents.graph import MAX_REVIEW_ITERATIONS, WORKFLOW_TIMEOUT_SECONDS
+        from src.agents.execution import WORKFLOW_TIMEOUT_SECONDS
+        from src.agents.graph import MAX_REVIEW_ITERATIONS
 
         assert MAX_REVIEW_ITERATIONS == 3, "Max iterations should be 3"
         assert WORKFLOW_TIMEOUT_SECONDS == 300, "Timeout should be 5 minutes"
 
     def test_model_configuration(self) -> None:
         """Verify model configuration is correct."""
-        from src.agents.models import ModelConfig
+        from src.agents.infrastructure.models import ModelConfig
 
         # Verify all model tiers are configured
         assert "haiku" in ModelConfig.TIERS

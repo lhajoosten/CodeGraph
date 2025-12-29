@@ -1,104 +1,216 @@
 """LangGraph workflow definitions for agent orchestration.
 
 This module defines the StateGraph that orchestrates all agent nodes in the
-multi-agent coding workflow. In Phase 1, it's a simple linear flow from
-planner to completion. Phase 2 adds coder, tester, and reviewer nodes
-with conditional routing for review loops and iteration limits.
+multi-agent coding workflow. The workflow includes planner, coder, tester,
+and reviewer nodes with conditional routing for review loops and iteration limits.
 
-TODO: Add supervisor pattern for node orchestration (Phase 3)
-TODO: Add checkpointer integration (Phase 4)
-TODO: Add workflow interrupts for user intervention (Phase 4)
+Features:
+- Council-based review with multiple judges (optional, config-driven)
+- Enhanced routing with confidence-based decisions
+- Error recovery with retry and fallback strategies
+- Checkpointing for workflow persistence and resumption
+
+Related modules:
+- cancellation.py: Workflow cancellation support
+- interrupts.py: Human-in-the-loop interrupt support
+- resilience.py: Error recovery and retry logic
+- execution.py: Workflow invocation and streaming
+
+Supervisor pattern available via create_supervised_workflow() for dynamic routing.
 """
 
-import asyncio
-from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from collections.abc import Awaitable, Callable
+from typing import Any, cast
 
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph._node import StateNode
 
-from src.agents.coder import coder_node
-from src.agents.planner import planner_node
-from src.agents.reviewer import reviewer_node
+from src.agents.council.node import council_reviewer_node
+from src.agents.nodes.coder import coder_node
+from src.agents.nodes.planner import planner_node
+from src.agents.nodes.reviewer import reviewer_node
+from src.agents.nodes.tester import tester_node
+from src.agents.resilience import create_resilient_node, reset_workflow_error_handler
 from src.agents.state import WorkflowState
-from src.agents.tester import tester_node
+from src.core.config import settings
 from src.core.logging import get_logger
 
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
+# Type alias for our node functions
+NodeFunc = Callable[[WorkflowState, RunnableConfig], Awaitable[dict[str, Any]]]
+
+# LangGraph's type stubs use Never which prevents proper typing.
+# We use cast() to work around this documented type stub limitation.
+# See: https://github.com/langchain-ai/langgraph/issues/type-stubs
+LangGraphNode = StateNode[WorkflowState, None]
 
 logger = get_logger(__name__)
 
 # Workflow configuration constants
 MAX_REVIEW_ITERATIONS = 3  # Maximum number of coder revisions after review feedback
-WORKFLOW_TIMEOUT_SECONDS = 300  # 5 minutes total workflow timeout
 
 
-def create_workflow() -> StateGraph[WorkflowState]:
+def create_workflow(
+    use_council_review: bool | None = None,
+    use_error_recovery: bool | None = None,
+) -> StateGraph[WorkflowState]:
     """Create the multi-agent coding workflow graph.
 
     In Phase 1, this was a simple linear graph:
         START -> planner -> END
 
-    In Phase 2 (current), it's a full pipeline with review loop:
+    In Phase 2, it's a full pipeline with review loop:
         START -> planner -> coder -> tester -> reviewer -> (conditional) -> coder or END
 
-    In Phase 3, it will add:
-        - Council-based review with multiple judges
-        - Supervisor pattern for orchestration
+    Current features:
+        - Council-based review with multiple judges (when use_council_review=True)
+        - Enhanced routing with confidence-based decisions
+        - Error recovery with retry and fallback (when use_error_recovery=True)
+
+    Args:
+        use_council_review: Whether to use council-based review. If None, uses
+                           settings.use_council_review (defaults to True).
+        use_error_recovery: Whether to wrap nodes with error recovery. If None,
+                           uses settings.enable_error_recovery (defaults to True).
 
     Returns:
         Compiled StateGraph ready for execution
 
-    TODO: Make graph compilation conditional on environment config (Phase 4)
-    TODO: Add error handling node for failure recovery (Phase 3)
-    TODO: Add council review (Phase 3)
+    Example:
+        workflow = create_workflow()
+        graph = workflow.compile()
+        result = await graph.ainvoke(initial_state, config)
     """
+    # Determine if we should use council review
+    if use_council_review is None:
+        use_council_review = getattr(settings, "use_council_review", True)
+
+    # Determine if we should use error recovery
+    if use_error_recovery is None:
+        use_error_recovery = getattr(settings, "enable_error_recovery", True)
+
     workflow = StateGraph(WorkflowState)
 
-    # Add nodes
-    workflow.add_node("planner", planner_node)
-    workflow.add_node("coder", coder_node)
-    workflow.add_node("tester", tester_node)
-    workflow.add_node("reviewer", reviewer_node)
+    # Reset error handler for clean state
+    if use_error_recovery:
+        reset_workflow_error_handler()
 
-    # Add edges for Phase 2 flow with review loop
+    # Prepare node functions - optionally wrap with error recovery
+    if use_error_recovery:
+        planner = create_resilient_node(planner_node, "planner", "sonnet")
+        coder = create_resilient_node(coder_node, "coder", "sonnet")
+        tester = create_resilient_node(tester_node, "tester", "sonnet")
+        reviewer = create_resilient_node(
+            council_reviewer_node if use_council_review else reviewer_node,
+            "reviewer",
+            "sonnet",
+        )
+        logger.info("Using resilient nodes with error recovery")
+    else:
+        planner = planner_node
+        coder = coder_node
+        tester = tester_node
+        reviewer = council_reviewer_node if use_council_review else reviewer_node
+
+    # Add nodes - cast to LangGraphNode to work around type stub limitations
+    workflow.add_node("planner", cast(LangGraphNode, cast(object, planner)))
+    workflow.add_node("coder", cast(LangGraphNode, cast(object, coder)))
+    workflow.add_node("tester", cast(LangGraphNode, cast(object, tester)))
+    workflow.add_node("reviewer", cast(LangGraphNode, cast(object, reviewer)))
+
+    # Log configuration
+    if use_council_review:
+        logger.info("Using council-based reviewer with multiple judges")
+    else:
+        logger.info("Using standard single-judge reviewer")
+
+    # Helper function to check for error state and route accordingly
+    def route_or_end_on_error(next_node: str) -> Callable[[WorkflowState], str]:
+        """Create a routing function that ends workflow on error.
+
+        Args:
+            next_node: The node to route to if no error
+
+        Returns:
+            Routing function that checks for errors
+        """
+
+        def router(state: WorkflowState) -> str:
+            if state.get("status") == "error" or state.get("error"):
+                logger.warning(
+                    "Routing to END due to error state",
+                    task_id=state.get("task_id"),
+                    error=state.get("error"),
+                )
+                return END
+            return next_node
+
+        return router
+
+    # Add edges with error checking
     workflow.add_edge(START, "planner")
-    workflow.add_edge("planner", "coder")
-    workflow.add_edge("coder", "tester")
-    workflow.add_edge("tester", "reviewer")
+    workflow.add_conditional_edges("planner", route_or_end_on_error("coder"))
+    workflow.add_conditional_edges("coder", route_or_end_on_error("tester"))
+    workflow.add_conditional_edges("tester", route_or_end_on_error("reviewer"))
 
     # Add conditional routing after reviewer
-    # Routes based on reviewer verdict and iteration limit
+    # Routes based on reviewer verdict, iteration limit, and error state
     def route_after_review(state: WorkflowState) -> str:
         """Determine next node based on reviewer verdict and iteration limits.
 
         The workflow will only loop back to the coder if:
-        1. The reviewer verdict is REVISE
-        2. We haven't exceeded the maximum review iterations
+        1. No error occurred
+        2. The reviewer verdict is REVISE
+        3. We haven't exceeded the maximum review iterations
+
+        Supports both standard and council-based review verdicts.
 
         Args:
             state: Current workflow state with review_feedback and iterations
 
         Returns:
             "coder" if REVISE and iterations < MAX, otherwise "END"
-
-        TODO: Add feedback to state when max iterations reached (Phase 3)
         """
-        feedback = state.get("review_feedback", "").upper()
+        # Check for error state first
+        if state.get("status") == "error" or state.get("error"):
+            logger.warning(
+                "Workflow ending due to error",
+                task_id=state.get("task_id"),
+                error=state.get("error"),
+            )
+            return END
+
+        # Get verdict - check metadata first (council/structured), then feedback text
+        metadata = state.get("metadata", {})
+        verdict = metadata.get("verdict", "")
+
+        # Fallback to checking feedback text for legacy compatibility
+        if not verdict:
+            feedback = state.get("review_feedback", "").upper()
+            if "REVISE" in feedback:
+                verdict = "REVISE"
+            elif "APPROVE" in feedback:
+                verdict = "APPROVE"
+            elif "REJECT" in feedback:
+                verdict = "REJECT"
+
         iterations = state.get("iterations", 0)
+        confidence = metadata.get("confidence_score", 1.0)
 
         # Check if we should loop back to coder for revisions
-        if "REVISE" in feedback and iterations < MAX_REVIEW_ITERATIONS:
+        if verdict == "REVISE" and iterations < MAX_REVIEW_ITERATIONS:
             logger.info(
                 "Routing back to coder for revision",
                 task_id=state.get("task_id"),
                 iteration=iterations + 1,
                 max_iterations=MAX_REVIEW_ITERATIONS,
+                verdict=verdict,
+                confidence=confidence,
             )
             return "coder"
 
         # End workflow if approved, rejected, or max iterations reached
-        if iterations >= MAX_REVIEW_ITERATIONS and "REVISE" in feedback:
+        if iterations >= MAX_REVIEW_ITERATIONS and verdict == "REVISE":
             logger.warning(
                 "Maximum review iterations reached",
                 task_id=state.get("task_id"),
@@ -110,20 +222,144 @@ def create_workflow() -> StateGraph[WorkflowState]:
                 f"\n\n[Note: Maximum revisions ({MAX_REVIEW_ITERATIONS}) reached]"
             )
 
+        logger.info(
+            "Workflow completing",
+            task_id=state.get("task_id"),
+            verdict=verdict,
+            confidence=confidence,
+            iterations=iterations,
+        )
+
         return END
 
     workflow.add_conditional_edges("reviewer", route_after_review)
 
+    reviewer_type = "council" if use_council_review else "standard"
     logger.info(
         "Created workflow graph",
         nodes=["planner", "coder", "tester", "reviewer"],
+        reviewer_type=reviewer_type,
         edges=["START->planner->coder->tester->reviewer", "reviewer->(conditional)->coder/END"],
     )
 
     return workflow
 
 
-def get_compiled_graph() -> Any:
+def create_supervised_workflow(
+    use_council_review: bool | None = None,
+    use_error_recovery: bool | None = None,
+) -> StateGraph[WorkflowState]:
+    """Create a workflow with supervisor-based dynamic routing.
+
+    Unlike the standard workflow which has fixed edges, the supervised workflow
+    uses a supervisor node to dynamically decide the next step based on
+    the current state. This enables:
+
+    - Skipping tests for simple tasks
+    - Adding extra review cycles for security-sensitive code
+    - Adaptive behavior based on intermediate results
+    - Dynamic complexity-based routing
+
+    The supervisor analyzes:
+    - Plan complexity score
+    - Security-related keywords in code
+    - Current iteration count
+    - Review verdicts
+
+    Args:
+        use_council_review: Whether to use council-based review
+        use_error_recovery: Whether to wrap nodes with error recovery
+
+    Returns:
+        StateGraph with supervisor-based routing
+
+    Example:
+        workflow = create_supervised_workflow()
+        graph = workflow.compile()
+
+        # The supervisor will dynamically route based on state
+        result = await graph.ainvoke(initial_state)
+    """
+    from src.agents.nodes.supervisor import (
+        SupervisorConfig,
+        create_supervisor_router,
+        supervisor_node,
+    )
+
+    # Determine settings
+    if use_council_review is None:
+        use_council_review = getattr(settings, "use_council_review", True)
+
+    if use_error_recovery is None:
+        use_error_recovery = getattr(settings, "enable_error_recovery", True)
+
+    workflow = StateGraph(WorkflowState)
+
+    # Reset error handler for clean state
+    if use_error_recovery:
+        reset_workflow_error_handler()
+
+    # Prepare node functions
+    if use_error_recovery:
+        planner = create_resilient_node(planner_node, "planner", "sonnet")
+        coder = create_resilient_node(coder_node, "coder", "sonnet")
+        tester = create_resilient_node(tester_node, "tester", "sonnet")
+        reviewer = create_resilient_node(
+            council_reviewer_node if use_council_review else reviewer_node,
+            "reviewer",
+            "sonnet",
+        )
+    else:
+        planner = planner_node
+        coder = coder_node
+        tester = tester_node
+        reviewer = council_reviewer_node if use_council_review else reviewer_node
+
+    # Add all nodes including supervisor - cast to LangGraphNode to work around type stub limitations
+    workflow.add_node("supervisor", cast(LangGraphNode, cast(object, supervisor_node)))
+    workflow.add_node("planner", cast(LangGraphNode, cast(object, planner)))
+    workflow.add_node("coder", cast(LangGraphNode, cast(object, coder)))
+    workflow.add_node("tester", cast(LangGraphNode, cast(object, tester)))
+    workflow.add_node("reviewer", cast(LangGraphNode, cast(object, reviewer)))
+
+    # Start with supervisor
+    workflow.add_edge(START, "supervisor")
+
+    # Create supervisor router
+    router = create_supervisor_router(SupervisorConfig())
+
+    # All nodes route back to supervisor for next decision
+    workflow.add_edge("planner", "supervisor")
+    workflow.add_edge("coder", "supervisor")
+    workflow.add_edge("tester", "supervisor")
+    workflow.add_edge("reviewer", "supervisor")
+
+    # Supervisor routes to next node or END
+    workflow.add_conditional_edges(
+        "supervisor",
+        router,
+        {
+            "planner": "planner",
+            "coder": "coder",
+            "tester": "tester",
+            "reviewer": "reviewer",
+            "__end__": END,
+        },
+    )
+
+    logger.info(
+        "Created supervised workflow graph",
+        nodes=["supervisor", "planner", "coder", "tester", "reviewer"],
+        pattern="supervisor",
+    )
+
+    return workflow
+
+
+def get_compiled_graph(
+    use_checkpointer: bool | None = None,
+    checkpointer: Any | None = None,
+) -> Any:
     """Get a compiled graph ready for execution.
 
     This is the entry point for running the workflow. The graph can be
@@ -132,213 +368,66 @@ def get_compiled_graph() -> Any:
         - astream() for streaming output
         - astream_events() for detailed event tracking
 
-    Returns:
-        Compiled StateGraph
+    Args:
+        use_checkpointer: Whether to enable checkpointing. If None, uses
+            settings.enable_checkpointing (defaults to False).
+            Checkpointing enables workflow persistence and resumption.
+        checkpointer: Optional pre-configured checkpointer instance.
+            If provided, use_checkpointer is ignored.
 
-    TODO: Add checkpointer when available (Phase 4)
+    Returns:
+        Compiled StateGraph (with or without checkpointing)
+
+    Note:
+        When checkpointing is enabled, you must provide a thread_id in the
+        config to enable state persistence:
+            config = {"configurable": {"thread_id": "my-thread"}}
+            result = await graph.ainvoke(state, config)
     """
     workflow = create_workflow()
 
-    # TODO: Add checkpointer integration here (Phase 4)
-    # from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-    # checkpointer = AsyncPostgresSaver(pool)
-    # compiled = workflow.compile(checkpointer=checkpointer)
+    # Determine if we should use checkpointing
+    if use_checkpointer is None:
+        use_checkpointer = getattr(settings, "enable_checkpointing", False)
 
-    compiled = workflow.compile()
-
-    logger.info("Compiled workflow graph")
+    if checkpointer is not None:
+        compiled = workflow.compile(checkpointer=checkpointer)
+        logger.info("Compiled workflow graph with provided checkpointer")
+    elif use_checkpointer:
+        # Import here to avoid circular imports and allow lazy loading
+        logger.info("Checkpointing requested but must be initialized separately")
+        logger.info("Use get_compiled_graph_with_checkpointer() for async initialization")
+        compiled = workflow.compile()
+    else:
+        compiled = workflow.compile()
+        logger.info("Compiled workflow graph (no checkpointing)")
 
     return compiled
 
 
-async def invoke_workflow(
-    task_description: str,
-    task_id: int,
-    thread_id: str | None = None,
-    timeout_seconds: int | None = None,
-    db: "AsyncSession | None" = None,
-) -> WorkflowState:
-    """Execute the complete workflow and return final state.
+async def get_compiled_graph_with_checkpointer() -> Any:
+    """Get a compiled graph with AsyncPostgresSaver checkpointing enabled.
 
-    This function executes the complete multi-agent workflow with optional timeout.
-    If the workflow exceeds the timeout, execution is cancelled and an error is returned.
-
-    Args:
-        task_description: Description of the coding task
-        task_id: ID of the task in the database
-        thread_id: Optional thread ID for resuming checkpointed execution
-        timeout_seconds: Optional timeout in seconds (defaults to WORKFLOW_TIMEOUT_SECONDS)
-        db: Optional database session for tracking AgentRun records
+    This is an async version of get_compiled_graph() that initializes
+    the PostgreSQL checkpointer for workflow persistence.
 
     Returns:
-        Final workflow state with all accumulated results
+        Compiled StateGraph with checkpointing enabled
 
     Raises:
-        asyncio.TimeoutError: If workflow exceeds timeout
+        ConnectionError: If unable to connect to PostgreSQL
 
-    TODO: Add graceful cancellation handling (Phase 3)
-    TODO: Add checkpoint save on timeout (Phase 4)
+    Example:
+        graph = await get_compiled_graph_with_checkpointer()
+        config = {"configurable": {"thread_id": f"task-{task_id}"}}
+        result = await graph.ainvoke(initial_state, config)
     """
-    logger.info(
-        "Invoking workflow",
-        task_id=task_id,
-        has_thread_id=thread_id is not None,
-        timeout_seconds=timeout_seconds or WORKFLOW_TIMEOUT_SECONDS,
-        tracking_enabled=db is not None,
-    )
+    from src.agents.infrastructure.checkpointer import get_checkpointer
 
-    graph = get_compiled_graph()
-    timeout = timeout_seconds or WORKFLOW_TIMEOUT_SECONDS
+    workflow = create_workflow()
+    checkpointer = await get_checkpointer()
+    compiled = workflow.compile(checkpointer=checkpointer)
 
-    initial_state: WorkflowState = {
-        "messages": [],
-        "task_id": task_id,
-        "task_description": task_description,
-        "plan": "",
-        "code": "",
-        "code_files": {},
-        "test_results": "",
-        "test_analysis": {},
-        "review_feedback": "",
-        "iterations": 0,
-        "status": "planning",
-        "error": None,
-        "metadata": {
-            "workflow_started_at": datetime.now(UTC).isoformat(),
-            "thread_id": thread_id,
-            "timeout_seconds": timeout,
-        },
-    }
+    logger.info("Compiled workflow graph with AsyncPostgresSaver checkpointing")
 
-    config: dict[str, Any] = {}
-    if thread_id:
-        config["configurable"] = {"thread_id": thread_id}
-
-    # Add tracking callback if database session provided
-    tracker = None
-    if db is not None:
-        from src.agents.tracking import AgentRunTracker
-
-        tracker = AgentRunTracker(db=db, task_id=task_id)
-        config["callbacks"] = [tracker]
-
-    try:
-        result: WorkflowState = await asyncio.wait_for(
-            graph.ainvoke(initial_state, config), timeout=timeout
-        )
-        logger.info(
-            "Workflow execution completed", task_id=task_id, final_status=result.get("status")
-        )
-        return result
-    except TimeoutError:
-        logger.error(
-            "Workflow execution timeout",
-            task_id=task_id,
-            timeout_seconds=timeout,
-        )
-        # Cleanup any active tracking runs
-        if tracker:
-            await tracker.cleanup()
-
-        # Return state with error information
-        initial_state["error"] = f"Workflow execution exceeded timeout of {timeout} seconds"
-        initial_state["status"] = "timeout"
-        initial_state["metadata"]["workflow_timeout_at"] = datetime.now(UTC).isoformat()
-        return initial_state
-
-
-async def stream_workflow(
-    task_description: str,
-    task_id: int,
-    thread_id: str | None = None,
-    timeout_seconds: int | None = None,
-    db: "AsyncSession | None" = None,
-) -> Any:
-    """Stream workflow execution with full event tracking and timeout.
-
-    This streams detailed execution events from the graph, useful for
-    sending real-time updates to the frontend via SSE. If the workflow
-    exceeds the timeout, streaming stops and a timeout event is yielded.
-
-    Args:
-        task_description: Description of the coding task
-        task_id: ID of the task
-        thread_id: Optional thread ID for resumable execution
-        timeout_seconds: Optional timeout in seconds (defaults to WORKFLOW_TIMEOUT_SECONDS)
-        db: Optional database session for tracking AgentRun records
-
-    Yields:
-        Events from the workflow (node starts, LLM tokens, node completions)
-        On timeout, yields an error event before stopping
-
-    TODO: Document event format and types (Phase 3)
-    TODO: Add event filtering and sampling options (Phase 3)
-    """
-    logger.info(
-        "Starting workflow stream",
-        task_id=task_id,
-        has_thread_id=thread_id is not None,
-        timeout_seconds=timeout_seconds or WORKFLOW_TIMEOUT_SECONDS,
-        tracking_enabled=db is not None,
-    )
-
-    graph = get_compiled_graph()
-    timeout = timeout_seconds or WORKFLOW_TIMEOUT_SECONDS
-
-    initial_state: WorkflowState = {
-        "messages": [],
-        "task_id": task_id,
-        "task_description": task_description,
-        "plan": "",
-        "code": "",
-        "code_files": {},
-        "test_results": "",
-        "test_analysis": {},
-        "review_feedback": "",
-        "iterations": 0,
-        "status": "planning",
-        "error": None,
-        "metadata": {
-            "workflow_started_at": datetime.now(UTC).isoformat(),
-            "thread_id": thread_id,
-            "timeout_seconds": timeout,
-        },
-    }
-
-    config: dict[str, Any] = {}
-    if thread_id:
-        config["configurable"] = {"thread_id": thread_id}
-
-    # Add tracking callback if database session provided
-    tracker = None
-    if db is not None:
-        from src.agents.tracking import AgentRunTracker
-
-        tracker = AgentRunTracker(db=db, task_id=task_id)
-        config["callbacks"] = [tracker]
-
-    try:
-        async with asyncio.timeout(timeout):
-            async for event in graph.astream_events(initial_state, config, version="v2"):
-                yield event
-    except TimeoutError:
-        logger.error(
-            "Workflow stream timeout",
-            task_id=task_id,
-            timeout_seconds=timeout,
-        )
-        # Cleanup any active tracking runs
-        if tracker:
-            await tracker.cleanup()
-
-        # Yield a timeout error event
-        yield {
-            "type": "error",
-            "data": {
-                "error": f"Workflow execution exceeded timeout of {timeout} seconds",
-                "task_id": task_id,
-            },
-            "timestamp": datetime.now(UTC).isoformat(),
-        }
-
-    logger.info("Workflow stream completed", task_id=task_id)
+    return compiled

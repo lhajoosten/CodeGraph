@@ -3,7 +3,7 @@
 Tests the extraction and parsing of code blocks from LLM responses.
 """
 
-from src.agents.code_parser import (
+from src.agents.processing.parser import (
     CodeBlock,
     Language,
     combine_code_blocks,

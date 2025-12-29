@@ -3,8 +3,6 @@
 The coder is responsible for analyzing the plan from the planner and generating
 clean, well-documented, production-ready code. It supports multiple programming
 languages and integrates with the code generation pipeline.
-
-TODO: Add code quality metrics and scoring (Phase 3)
 """
 
 from collections.abc import AsyncGenerator
@@ -13,15 +11,15 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.code_formatter import (
+from src.agents.infrastructure.models import get_coder_model
+from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.processing.formatter import (
     create_multi_file_result,
     format_python_code,
     infer_filepath,
 )
-from src.agents.code_parser import parse_code_blocks
-from src.agents.models import get_coder_model
+from src.agents.processing.parser import parse_code_blocks
 from src.agents.state import WorkflowState
-from src.agents.streaming import StreamingMetrics, stream_with_metrics
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -49,7 +47,10 @@ Include comments for complex logic but keep comments concise.
 When reviewing feedback, be thorough in addressing all concerns and improving code quality."""
 
 
-async def coder_node(state: WorkflowState, config: RunnableConfig | None = None) -> dict[str, Any]:
+async def coder_node(
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
+) -> dict[str, Any]:
     """Code generation node - implements code from the plan.
 
     This node takes the execution plan created by the planner and generates

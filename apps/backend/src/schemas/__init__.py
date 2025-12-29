@@ -5,6 +5,18 @@ from src.schemas.agent import (
     AgentRunResponse,
     AgentStreamEvent,
 )
+from src.schemas.council import (
+    CouncilComparisonResponse,
+    CouncilConfigRequest,
+    CouncilMetricsResponse,
+    CouncilReviewListResponse,
+    CouncilReviewResponse,
+    CouncilReviewSummary,
+    JudgeConfigRequest,
+    JudgeVerdictResponse,
+    JudgeVerdictSummary,
+    ReviewIssueResponse,
+)
 from src.schemas.metrics import (
     AgentMetricsResponse,
     CostBreakdownResponse,
@@ -38,6 +50,17 @@ __all__ = [
     "AgentExecutionRequest",
     "AgentRunResponse",
     "AgentStreamEvent",
+    # Council schemas
+    "CouncilComparisonResponse",
+    "CouncilConfigRequest",
+    "CouncilMetricsResponse",
+    "CouncilReviewListResponse",
+    "CouncilReviewResponse",
+    "CouncilReviewSummary",
+    "JudgeConfigRequest",
+    "JudgeVerdictResponse",
+    "JudgeVerdictSummary",
+    "ReviewIssueResponse",
     # Metrics schemas
     "AgentMetricsResponse",
     "CostBreakdownResponse",

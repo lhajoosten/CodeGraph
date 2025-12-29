@@ -34,7 +34,9 @@ class WorkflowStateBuilder:
             "task_description": "",
             "plan": "",
             "code": "",
+            "code_files": {},
             "test_results": "",
+            "test_analysis": {},
             "review_feedback": "",
             "iterations": 0,
             "status": "planning",
@@ -118,7 +120,7 @@ class WorkflowStateBuilder:
         """Set the workflow status.
 
         Args:
-            status: One of: planning, coding, testing, reviewing, complete
+            status: One of: planning, coding, testing, reviewing, complete, timeout, cancelled
 
         Returns:
             Self for chaining
@@ -126,10 +128,42 @@ class WorkflowStateBuilder:
         Raises:
             ValueError: If status is invalid
         """
-        valid_statuses = ["planning", "coding", "testing", "reviewing", "complete"]
+        valid_statuses = [
+            "planning",
+            "coding",
+            "testing",
+            "reviewing",
+            "complete",
+            "timeout",
+            "cancelled",
+        ]
         if status not in valid_statuses:
             raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
         self._state["status"] = status
+        return self
+
+    def with_code_files(self, code_files: dict[str, Any]) -> "WorkflowStateBuilder":
+        """Set the code files dictionary.
+
+        Args:
+            code_files: Dictionary of code files with metadata
+
+        Returns:
+            Self for chaining
+        """
+        self._state["code_files"] = code_files
+        return self
+
+    def with_test_analysis(self, test_analysis: dict[str, Any]) -> "WorkflowStateBuilder":
+        """Set the test analysis dictionary.
+
+        Args:
+            test_analysis: Test analysis with coverage and quality metrics
+
+        Returns:
+            Self for chaining
+        """
+        self._state["test_analysis"] = test_analysis
         return self
 
     def with_iterations(self, count: int) -> "WorkflowStateBuilder":

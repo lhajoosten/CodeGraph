@@ -3,7 +3,7 @@
 Tests the validation and complexity scoring of execution plans.
 """
 
-from src.agents.plan_validator import (
+from src.agents.analyzers.plan_validator import (
     ComplexityLevel,
     ComplexityScore,
     PlanSection,

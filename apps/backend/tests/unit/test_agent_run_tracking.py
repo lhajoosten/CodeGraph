@@ -4,7 +4,7 @@ Tests the AgentRunService and AgentRunTracker for persisting
 agent node executions during workflow processing.
 """
 
-from src.agents.tracking import NODE_TO_AGENT_TYPE, AgentRunTracker
+from src.agents.infrastructure.tracking import NODE_TO_AGENT_TYPE, AgentRunTracker
 from src.models.agent_run import AgentRunStatus, AgentType
 from src.services.agent_run_service import AgentRunService
 
@@ -156,7 +156,7 @@ class TestWorkflowTrackingIntegration:
         """Test that invoke_workflow accepts optional db parameter."""
         import inspect
 
-        from src.agents.graph import invoke_workflow
+        from src.agents import invoke_workflow
 
         sig = inspect.signature(invoke_workflow)
         assert "db" in sig.parameters
@@ -167,7 +167,7 @@ class TestWorkflowTrackingIntegration:
         """Test that stream_workflow accepts optional db parameter."""
         import inspect
 
-        from src.agents.graph import stream_workflow
+        from src.agents import stream_workflow
 
         sig = inspect.signature(stream_workflow)
         assert "db" in sig.parameters

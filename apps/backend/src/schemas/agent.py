@@ -18,12 +18,21 @@ class AgentRunResponse(BaseModel):
     verdict: str | None
     task_id: int
     model_used: str | None
+    model_tier: str | None
     tokens_used: int | None
     error_message: str | None
     started_at: datetime | None
     completed_at: datetime | None
     created_at: datetime
     updated_at: datetime
+    # Detailed metrics
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    cost_usd: float | None = None
+    first_token_latency_ms: int | None = None
+    total_latency_ms: int | None = None
+    code_quality_score: int | None = None
+    lint_warning_count: int | None = None
 
     model_config = {"from_attributes": True}
 

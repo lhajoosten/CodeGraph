@@ -130,6 +130,34 @@ class Settings(BaseSettings):
     max_agent_iterations: int = 20
     agent_timeout_seconds: int = 300
 
+    # Council Review
+    # When True, uses multiple judges (personas for local vLLM, models for Claude API)
+    # When False, uses single reviewer
+    use_council_review: bool = True
+
+    # Council judge personas for local vLLM mode
+    # Options: security, performance, maintainability
+    council_judges: list[str] = ["security", "performance", "maintainability"]
+
+    # Caching Configuration
+    enable_result_caching: bool = False
+    enable_plan_caching: bool = False
+    cache_ttl_seconds: int = 3600
+
+    # Workflow Error Recovery
+    enable_error_recovery: bool = True
+    max_retry_attempts: int = 3
+
+    # Workflow Checkpointing
+    # When True, workflow state is persisted to PostgreSQL for resumption
+    enable_checkpointing: bool = False
+
+    # Test Execution
+    # When True, actually runs pytest in isolated temp directories
+    # When False (default), uses simulated test execution
+    enable_real_test_execution: bool = False
+    test_execution_timeout: int = 30  # seconds
+
     # Logging
     log_level: str = "INFO"
     log_format: str = "json"

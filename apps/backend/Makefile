@@ -1,4 +1,4 @@
-.PHONY: help install dev test test-fast test-ai test-ai-seq test-all test-ci test-cov clean lint format type-check check build
+.PHONY: help install dev test test-fast test-ai test-ai-seq test-all test-ci test-cov clean lint format type-check security check check-full build
 .PHONY: db-migrate db-reset db-test db-fix-auth db-init db-setup
 .PHONY: docker-up docker-down docker-logs docker-build docker-full docker-clean
 
@@ -39,10 +39,12 @@ help:
 	@echo "  make docker-clean      - Remove Docker volumes and artifacts (destructive)"
 	@echo ""
 	@echo "$(COLOR_BOLD)Code Quality:$(COLOR_RESET)"
-	@echo "  make check             - Full check pipeline (lint + format + type-check)"
+	@echo "  make check             - Quick check pipeline (lint + format + type-check)"
+	@echo "  make check-full        - Full check pipeline (lint + format + type-check + security)"
 	@echo "  make lint              - Run linter (ruff)"
 	@echo "  make format            - Format code (ruff)"
 	@echo "  make type-check        - Type check (mypy)"
+	@echo "  make security          - Security scan (bandit)"
 	@echo ""
 	@echo "$(COLOR_BOLD)Testing:$(COLOR_RESET)"
 	@echo "  make test              - Run all tests"
@@ -159,23 +161,35 @@ type-check:
 	@echo "$(COLOR_GREEN)Type checking backend...$(COLOR_RESET)"
 	@poetry run mypy src/
 
+security:
+	@echo "$(COLOR_GREEN)Running security scan (bandit)...$(COLOR_RESET)"
+	@poetry run bandit -r src/ -c pyproject.toml
+
 check: lint format type-check
 	@echo "$(COLOR_GREEN)✓ Backend checks passed (lint + format + type-check)$(COLOR_RESET)"
 
+check-full: lint format type-check security
+	@echo "$(COLOR_GREEN)✓ Backend full checks passed (lint + format + type-check + security)$(COLOR_RESET)"
+
 # Testing
+# AI_WORKERS: Optimal for local vLLM is 2-4 (GPU queues requests internally)
+# For Claude API, can increase to 6-8 (rate limit dependent)
+AI_WORKERS ?= 3
+
 test:
 	@echo "$(COLOR_GREEN)Running backend tests...$(COLOR_RESET)"
 	@poetry run pytest tests/
 
 test-fast:
 	@echo "$(COLOR_GREEN)Running fast tests (unit + integration, no AI)...$(COLOR_RESET)"
-	@poetry run pytest tests/unit tests/integration --timeout=60
+	@poetry run pytest tests/unit tests/integration -n auto --timeout=60
 	@echo "$(COLOR_GREEN)✓ Fast tests complete$(COLOR_RESET)"
 
 test-ai:
-	@echo "$(COLOR_GREEN)Running AI tests in parallel (requires vLLM running)...$(COLOR_RESET)"
-	@echo "$(COLOR_YELLOW)Note: Running with -n auto for parallel execution$(COLOR_RESET)"
-	@poetry run pytest tests/ai -n auto --timeout=600 --dist=loadfile
+	@echo "$(COLOR_GREEN)Running AI tests (requires vLLM or Claude API)...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Note: Using $(AI_WORKERS) workers (optimal for LLM throughput)$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Tip: Adjust with AI_WORKERS=N make test-ai$(COLOR_RESET)"
+	@poetry run pytest tests/ai -n $(AI_WORKERS) --timeout=600 --dist=loadscope
 	@echo "$(COLOR_GREEN)✓ AI tests complete$(COLOR_RESET)"
 
 test-ai-seq:
@@ -183,21 +197,35 @@ test-ai-seq:
 	@poetry run pytest tests/ai --timeout=600
 	@echo "$(COLOR_GREEN)✓ AI tests complete$(COLOR_RESET)"
 
+test-ai-fast:
+	@echo "$(COLOR_GREEN)Running AI tests - quick tests only (no full workflow)...$(COLOR_RESET)"
+	@poetry run pytest tests/ai -k "not workflow and not full" -n $(AI_WORKERS) --timeout=300
+	@echo "$(COLOR_GREEN)✓ Quick AI tests complete$(COLOR_RESET)"
+
 test-all:
-	@echo "$(COLOR_GREEN)Running all tests (full suite, parallel)...$(COLOR_RESET)"
-	@poetry run pytest tests/ -n auto --timeout=600 --dist=loadfile
+	@echo "$(COLOR_GREEN)Running all tests (optimized parallel strategy)...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Step 1: Fast tests (unit + integration) with auto workers$(COLOR_RESET)"
+	@poetry run pytest tests/unit tests/integration -n auto --timeout=60
+	@echo "$(COLOR_YELLOW)Step 2: AI tests with $(AI_WORKERS) workers$(COLOR_RESET)"
+	@poetry run pytest tests/ai -n $(AI_WORKERS) --timeout=600 --dist=loadscope
+	@echo "$(COLOR_GREEN)✓ All tests complete$(COLOR_RESET)"
+
+test-all-parallel:
+	@echo "$(COLOR_GREEN)Running ALL tests in parallel (fast + AI together)...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)Warning: This runs everything with limited workers to avoid LLM bottleneck$(COLOR_RESET)"
+	@poetry run pytest tests/ -n $(AI_WORKERS) --timeout=600 --dist=loadscope
 	@echo "$(COLOR_GREEN)✓ All tests complete$(COLOR_RESET)"
 
 test-ci:
 	@echo "$(COLOR_GREEN)Running CI tests (unit + integration with coverage)...$(COLOR_RESET)"
 	@poetry run pytest tests/unit tests/integration \
-		--cov=src --cov-report=xml --cov-report=term-missing \
+		-n auto --cov=src --cov-report=xml --cov-report=term-missing \
 		--timeout=60 --ignore=tests/ai
 	@echo "$(COLOR_GREEN)✓ CI tests complete$(COLOR_RESET)"
 
 test-cov:
 	@echo "$(COLOR_GREEN)Running backend tests with coverage...$(COLOR_RESET)"
-	@poetry run pytest --cov=src --cov-report=html --cov-report=term tests/
+	@poetry run pytest --cov=src --cov-report=html --cov-report=term tests/ -n auto --timeout=300
 	@echo "$(COLOR_GREEN)✓ Coverage report generated in htmlcov/$(COLOR_RESET)"
 
 # Build
