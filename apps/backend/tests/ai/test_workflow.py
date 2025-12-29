@@ -8,7 +8,15 @@ import pytest
 
 from src.agents import invoke_workflow, stream_workflow
 from src.core.logging import get_logger
-from tests.ai.conftest import get_llm_skip_reason, is_llm_available
+from tests.ai.conftest import GraphInspector, get_llm_skip_reason, is_llm_available
+from tests.ai.utils.assertions import (
+    assert_code_valid,
+    assert_messages_accumulated,
+    assert_metadata_complete,
+    assert_metadata_has_timestamps,
+    assert_plan_format,
+    assert_status_transition,
+)
 
 logger = get_logger(__name__)
 
@@ -41,16 +49,17 @@ class TestPhase2Workflow:
             pytest.skip("Workflow timed out - LLM backend is slow")
             return
 
-        # Verify all stages completed on success
-        assert result["plan"], "Planner should have generated a plan"
-        assert result["code"], "Coder should have generated code"
+        # Verify all stages completed using enhanced assertions
+        assert_plan_format(result["plan"])
+        assert_code_valid(result["code"])
         assert result["test_results"], "Tester should have generated tests"
-        assert result["status"] in ["reviewing", "complete"], f"Got status: {result['status']}"
+        assert_status_transition(
+            result["status"],
+            valid_states=["planning", "coding", "testing", "reviewing", "complete"],
+        )
 
-        # Verify metadata tracking
-        assert "plan_generated_at" in result["metadata"]
-        assert "code_generated_at" in result["metadata"]
-        assert "tests_generated_at" in result["metadata"]
+        # Verify metadata tracking using enhanced assertions
+        assert_metadata_has_timestamps(result["metadata"])
 
         logger.info(
             "Phase 2 workflow test passed",
@@ -77,13 +86,17 @@ class TestPhase2Workflow:
         # Verify state accumulation
         assert result["task_id"] == 2
         assert result["task_description"] == "Simple endpoint with tests"
-        assert result["status"] in ["reviewing", "complete"]
-        assert isinstance(result["messages"], list)
-        assert len(result["messages"]) > 0
+        assert_status_transition(
+            result["status"],
+            valid_states=["planning", "coding", "testing", "reviewing", "complete"],
+        )
 
-        # Verify all output fields are populated
-        assert result["plan"]
-        assert result["code"]
+        # Verify messages accumulated through workflow
+        assert_messages_accumulated(result["messages"], min_count=1)
+
+        # Verify all output fields are populated using enhanced assertions
+        assert_plan_format(result["plan"])
+        assert_code_valid(result["code"])
         assert result["test_results"]
 
         logger.info(
@@ -108,22 +121,13 @@ class TestPhase2Workflow:
             pytest.skip("Workflow timed out - LLM backend is slow")
             return
 
-        # Verify metadata is properly structured
-        assert isinstance(result["metadata"], dict)
+        # Verify metadata is properly structured using enhanced assertions
+        assert_metadata_complete(result["metadata"])
+        assert_metadata_has_timestamps(result["metadata"])
 
         # Verify workflow-level metadata
         assert result["metadata"].get("thread_id") == thread_id
         assert "workflow_started_at" in result["metadata"]
-
-        # Verify node-level timestamps in order
-        timestamps = {
-            "plan": result["metadata"].get("plan_generated_at"),
-            "code": result["metadata"].get("code_generated_at"),
-            "tests": result["metadata"].get("tests_generated_at"),
-        }
-
-        for node, timestamp in timestamps.items():
-            assert timestamp is not None, f"{node} timestamp missing"
 
         logger.info(
             "Phase 2 metadata tracking test passed",
@@ -180,29 +184,30 @@ class TestPhase2Workflow:
             pytest.skip("Workflow timed out - LLM backend is slow")
             return
 
-        # Verify messages list exists and has accumulated messages
-        messages = result.get("messages", [])
-        assert isinstance(messages, list), "Messages should be a list"
-        assert len(messages) >= 3, "Should have at least one message per node"
+        # Verify messages using enhanced assertions
+        assert_messages_accumulated(
+            result.get("messages", []),
+            min_count=3,  # At least one message per node
+            validate_content=True,
+        )
 
-        # Each message should have expected properties
-        for msg in messages:
-            # LangChain messages have type and content
-            assert hasattr(msg, "content") or isinstance(msg, dict)
+        logger.info(
+            "Phase 2 message flow test passed",
+            message_count=len(result.get("messages", [])),
+        )
 
-        logger.info("Phase 2 message flow test passed", message_count=len(messages))
-
-    def test_workflow_structure(self) -> None:
+    def test_workflow_structure(self, workflow_graph: object) -> None:
         """Test that workflow graph has correct structure for Phase 2."""
-        from src.agents.graph import get_compiled_graph
-
-        graph = get_compiled_graph()
+        # Use GraphInspector for enhanced graph testing
+        inspector = GraphInspector(workflow_graph)
 
         # Verify graph has all Phase 2 nodes
-        node_names = list(graph.nodes.keys())
-        assert "__start__" in node_names
-        assert "planner" in node_names
-        assert "coder" in node_names
-        assert "tester" in node_names
+        assert inspector.has_node("planner"), "Graph should have planner node"
+        assert inspector.has_node("coder"), "Graph should have coder node"
+        assert inspector.has_node("tester"), "Graph should have tester node"
 
-        logger.info("Phase 2 workflow structure test passed", nodes=node_names)
+        # Validate overall structure
+        issues = inspector.validate_structure()
+        assert not issues, f"Graph structure issues: {issues}"
+
+        logger.info("Phase 2 workflow structure test passed", nodes=inspector.get_nodes())

@@ -11,9 +11,14 @@ import pytest
 
 from src.agents import invoke_workflow, stream_workflow
 from src.agents.nodes.planner import planner_node
-from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
+from tests.ai.utils import WorkflowStateBuilder
+from tests.ai.utils.assertions import (
+    assert_metadata_complete,
+    assert_plan_format,
+    assert_status_transition,
+)
 
 logger = get_logger(__name__)
 
@@ -28,56 +33,42 @@ class TestPlannerNode:
     @pytest.mark.asyncio
     async def test_planner_node_produces_plan(self) -> None:
         """Test that planner node generates a plan from task description."""
-        state: WorkflowState = {
-            "messages": [],
-            "task_id": 1,
-            "task_description": "Create a simple FastAPI endpoint that returns hello world",
-            "plan": "",
-            "code": "",
-            "code_files": {},
-            "test_results": "",
-            "test_analysis": {},
-            "review_feedback": "",
-            "iterations": 0,
-            "status": "planning",
-            "error": None,
-            "metadata": {},
-        }
+        state = (
+            WorkflowStateBuilder()
+            .with_task_id(1)
+            .with_description("Create a simple FastAPI endpoint that returns hello world")
+            .with_status("planning")
+            .build()
+        )
 
         result = await planner_node(state)
 
+        # Use enhanced assertions
         assert "plan" in result
-        assert result["plan"]  # Plan should not be empty
-        assert result["status"] == "coding"
-        assert len(result["messages"]) >= 0  # May be 0 if from cache
+        assert_plan_format(result["plan"])
+        assert_status_transition(result["status"], valid_states=["coding"])
 
         logger.info("Planner generated plan", plan_length=len(result["plan"]))
 
     @pytest.mark.asyncio
     async def test_planner_node_state_accumulation(self) -> None:
         """Test that planner node properly accumulates messages."""
-        state: WorkflowState = {
-            "messages": [],
-            "task_id": 1,
-            "task_description": "Test task",
-            "plan": "",
-            "code": "",
-            "code_files": {},
-            "test_results": "",
-            "test_analysis": {},
-            "review_feedback": "",
-            "iterations": 0,
-            "status": "planning",
-            "error": None,
-            "metadata": {"initial_key": "initial_value"},
-        }
+        state = (
+            WorkflowStateBuilder()
+            .with_task_id(1)
+            .with_description("Test task")
+            .with_status("planning")
+            .add_metadata("initial_key", "initial_value")
+            .build()
+        )
 
         result = await planner_node(state)
 
-        # Verify state accumulation
-        assert result["status"] == "coding"
-        assert "plan" in result
-        assert "metadata" in result
+        # Verify state accumulation using enhanced assertions
+        assert_status_transition(result["status"], valid_states=["coding"])
+        assert_plan_format(result["plan"])
+        assert_metadata_complete(result["metadata"])
+
         # Original metadata should be preserved
         assert result["metadata"].get("initial_key") == "initial_value"
 
