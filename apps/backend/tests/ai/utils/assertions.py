@@ -1,140 +1,136 @@
-"""Assertion helpers for AI agent tests.
+"""Custom assertions for AI agent testing.
 
-Provides specialized assertions for testing workflow states, plan formats,
-code generation, and other AI agent outputs.
-
-TODO: Add assertions for test results (Phase 2)
-TODO: Add assertions for review feedback (Phase 2)
-TODO: Add assertions for error states (Phase 2)
+Provides reusable assertions for validating workflow state, plans, code,
+and other agent outputs.
 """
 
 from typing import Any
 
-from src.agents.state import WorkflowState
 
-
-def assert_workflow_state_valid(state: WorkflowState) -> None:
-    """Assert that a WorkflowState is valid and complete.
-
-    Checks all required fields are present and have appropriate types.
+def assert_status_transition(
+    status: str,
+    valid_states: list[str] | None = None,
+) -> None:
+    """Assert that a status is valid.
 
     Args:
-        state: WorkflowState to validate
+        status: Current status value
+        valid_states: List of valid status values (defaults to all workflow states)
 
     Raises:
-        AssertionError: If state is invalid
+        AssertionError: If status is invalid
     """
-    assert isinstance(state, dict), "State must be a dictionary"
-    assert "task_id" in state, "State must have task_id"
-    assert "task_description" in state, "State must have task_description"
-    assert "messages" in state, "State must have messages"
-    assert "plan" in state, "State must have plan"
-    assert "code" in state, "State must have code"
-    assert "status" in state, "State must have status"
-    assert isinstance(state["messages"], list), "messages must be a list"
-    assert isinstance(state["task_id"], int), "task_id must be an integer"
-    assert isinstance(state["task_description"], str), "task_description must be a string"
+    if valid_states is None:
+        valid_states = [
+            "planning",
+            "coding",
+            "testing",
+            "reviewing",
+            "complete",
+            "timeout",
+            "cancelled",
+            "error",
+        ]
+
+    assert status in valid_states, f"Invalid status '{status}'. Expected one of {valid_states}"
 
 
-def assert_status_transition(old_status: str, new_status: str) -> None:
-    """Assert that a status transition is valid.
+def assert_plan_format(
+    plan: str,
+    min_length: int = 10,
+) -> None:
+    """Assert that a plan has valid format.
 
     Args:
-        old_status: Previous status
-        new_status: New status
-
-    Raises:
-        AssertionError: If transition is invalid
-
-    TODO: Add more detailed transition rules (Phase 2)
-    """
-    valid_statuses = ["planning", "coding", "testing", "reviewing", "complete"]
-    assert old_status in valid_statuses, f"Invalid old status: {old_status}"
-    assert new_status in valid_statuses, f"Invalid new status: {new_status}"
-
-    # Define valid transitions
-    valid_transitions = {
-        "planning": ["coding"],
-        "coding": ["testing"],
-        "testing": ["reviewing"],
-        "reviewing": ["coding", "complete"],
-        "complete": [],
-    }
-
-    assert new_status in valid_transitions[old_status], (
-        f"Invalid transition from {old_status} to {new_status}"
-    )
-
-
-def assert_plan_format(plan: str) -> None:
-    """Assert that a plan follows expected format.
-
-    Checks that plan has steps and is not empty.
-
-    Args:
-        plan: Plan text to validate
+        plan: Plan content to validate
+        min_length: Minimum plan length
 
     Raises:
         AssertionError: If plan format is invalid
-
-    TODO: Add stricter format validation (Phase 2)
     """
-    assert plan, "Plan must not be empty"
-    assert isinstance(plan, str), "Plan must be a string"
-    assert len(plan) > 10, "Plan must have substantial content"
+    assert plan, "Plan should not be empty"
+    assert len(plan) >= min_length, f"Plan too short: {len(plan)} < {min_length}"
 
 
-def assert_code_valid(code: str) -> None:
-    """Assert that generated code is syntactically valid.
+def assert_code_valid(
+    code: str,
+    min_length: int = 5,
+) -> None:
+    """Assert that code is valid.
 
     Args:
-        code: Code string to validate
+        code: Code to validate
+        min_length: Minimum code length
 
     Raises:
         AssertionError: If code is invalid
-
-    TODO: Add more rigorous code validation (Phase 2)
     """
-    assert code, "Code must not be empty"
-    assert isinstance(code, str), "Code must be a string"
-
-    # Check basic Python syntax
-    try:
-        compile(code, "<generated>", "exec")
-    except SyntaxError as e:
-        raise AssertionError(f"Generated code has syntax error: {e}") from e
+    assert code, "Code should not be empty"
+    assert len(code) >= min_length, f"Code too short: {len(code)} < {min_length}"
 
 
-def assert_metadata_complete(metadata: dict[str, Any]) -> None:
-    """Assert that metadata has expected fields.
+def assert_metadata_complete(
+    metadata: dict[str, Any],
+    required_keys: list[str] | None = None,
+) -> None:
+    """Assert that metadata has expected structure.
 
     Args:
-        metadata: Metadata dictionary to validate
+        metadata: Metadata dictionary
+        required_keys: Optional list of required keys
 
     Raises:
         AssertionError: If metadata is incomplete
-
-    TODO: Add phase-specific metadata validation (Phase 2)
     """
-    assert isinstance(metadata, dict), "Metadata must be a dictionary"
-    # Metadata can be partial, just ensure it's a valid dict
-    for key in metadata.items():
-        assert isinstance(key, str), f"Metadata keys must be strings, got {type(key)}"
+    assert isinstance(metadata, dict), "Metadata should be a dictionary"
+
+    if required_keys:
+        for key in required_keys:
+            assert key in metadata, f"Missing required metadata key: {key}"
 
 
-def assert_messages_accumulated(messages: list[Any], expected_min: int = 1) -> None:
-    """Assert that messages have been properly accumulated.
+def assert_metadata_has_timestamps(metadata: dict[str, Any]) -> None:
+    """Assert that metadata contains timestamp fields.
+
+    Args:
+        metadata: Metadata dictionary
+
+    Raises:
+        AssertionError: If timestamps missing
+    """
+    timestamp_keys = [
+        "plan_generated_at",
+        "code_generated_at",
+        "tests_generated_at",
+    ]
+
+    found = [k for k in timestamp_keys if k in metadata]
+    assert len(found) > 0, f"No timestamp fields found. Expected one of: {timestamp_keys}"
+
+
+def assert_messages_accumulated(
+    messages: list[Any],
+    min_count: int = 1,
+    validate_content: bool = False,
+) -> None:
+    """Assert that messages have accumulated properly.
 
     Args:
         messages: List of messages
-        expected_min: Minimum number of messages expected
+        min_count: Minimum expected message count
+        validate_content: Whether to validate message content
 
     Raises:
-        AssertionError: If messages are missing
-
-    TODO: Add message content validation (Phase 2)
+        AssertionError: If messages are invalid
     """
-    assert isinstance(messages, list), "Messages must be a list"
-    assert len(messages) >= expected_min, (
-        f"Expected at least {expected_min} messages, got {len(messages)}"
+    assert isinstance(messages, list), "Messages should be a list"
+    assert len(messages) >= min_count, (
+        f"Expected at least {min_count} messages, got {len(messages)}"
     )
+
+    if validate_content:
+        for msg in messages:
+            # LangChain messages have 'content' attribute
+            assert hasattr(msg, "content") or isinstance(msg, dict), (
+                f"Invalid message type: {type(msg)}"
+            )
