@@ -18,7 +18,7 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage
 from langchain_core.runnables import RunnableConfig
 
 from src.agents.analyzers.plan_validator import (
@@ -113,7 +113,9 @@ async def _invoke_planner(
     response = await model.ainvoke(messages, config)
     latency_ms = int((time.time() - start_time) * 1000)
 
-    plan_content = response.content if isinstance(response, BaseMessage) else str(response)
+    # Extract content - BaseMessage.content can be str or list, ensure we get str
+    raw_content = response.content if isinstance(response, BaseMessage) else response
+    plan_content = str(raw_content) if not isinstance(raw_content, str) else raw_content
 
     usage_metadata = getattr(response, "usage_metadata", None) or {}
     input_tokens = usage_metadata.get("input_tokens", 0)
@@ -232,7 +234,8 @@ async def _cache_plan(task_id: int, task_description: str, plan: str) -> bool:
 
 
 async def planner_node(
-    state: WorkflowState, config: RunnableConfig | None = None
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
     """Plan execution node - breaks down task into actionable steps.
 
@@ -395,14 +398,16 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
 
         # Track new version
         plan_version += 1
-        plan_history.append({
-            "version": plan_version,
-            "created_at": datetime.utcnow().isoformat(),
-            "plan_content": str(plan_content),
-            "validation": validation.to_dict(),
-            "is_refinement": True,
-            "refinement_reason": refinement_reason,
-        })
+        plan_history.append(
+            {
+                "version": plan_version,
+                "created_at": datetime.utcnow().isoformat(),
+                "plan_content": str(plan_content),
+                "validation": validation.to_dict(),
+                "is_refinement": True,
+                "refinement_reason": refinement_reason,
+            }
+        )
 
         logger.info(
             "Plan refined",

@@ -270,7 +270,9 @@ async def resume_workflow(
                 },
             },
         )
-        return await graph.aget_state(config)
+        state_snapshot = await graph.aget_state(config)
+        # The values from state snapshot are compatible with WorkflowState
+        return state_snapshot.values  # type: ignore[no-any-return]
 
     # Resume execution
     logger.info(
@@ -281,7 +283,7 @@ async def resume_workflow(
     )
 
     # Continue execution with None to resume from interrupt
-    result = await graph.ainvoke(None, config)
+    result: WorkflowState = await graph.ainvoke(None, config)
 
     return result
 

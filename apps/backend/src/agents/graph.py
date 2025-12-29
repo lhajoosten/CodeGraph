@@ -19,10 +19,12 @@ Related modules:
 Supervisor pattern available via create_supervised_workflow() for dynamic routing.
 """
 
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Awaitable, Callable
+from typing import Any, cast
 
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph._node import StateNode
 
 from src.agents.council.node import council_reviewer_node
 from src.agents.nodes.coder import coder_node
@@ -33,6 +35,14 @@ from src.agents.resilience import create_resilient_node, reset_workflow_error_ha
 from src.agents.state import WorkflowState
 from src.core.config import settings
 from src.core.logging import get_logger
+
+# Type alias for our node functions
+NodeFunc = Callable[[WorkflowState, RunnableConfig], Awaitable[dict[str, Any]]]
+
+# LangGraph's type stubs use Never which prevents proper typing.
+# We use cast() to work around this documented type stub limitation.
+# See: https://github.com/langchain-ai/langgraph/issues/type-stubs
+LangGraphNode = StateNode[WorkflowState, None]
 
 logger = get_logger(__name__)
 
@@ -102,11 +112,11 @@ def create_workflow(
         tester = tester_node
         reviewer = council_reviewer_node if use_council_review else reviewer_node
 
-    # Add nodes
-    workflow.add_node("planner", planner)
-    workflow.add_node("coder", coder)
-    workflow.add_node("tester", tester)
-    workflow.add_node("reviewer", reviewer)
+    # Add nodes - cast to LangGraphNode to work around type stub limitations
+    workflow.add_node("planner", cast(LangGraphNode, cast(object, planner)))
+    workflow.add_node("coder", cast(LangGraphNode, cast(object, coder)))
+    workflow.add_node("tester", cast(LangGraphNode, cast(object, tester)))
+    workflow.add_node("reviewer", cast(LangGraphNode, cast(object, reviewer)))
 
     # Log configuration
     if use_council_review:
@@ -305,12 +315,12 @@ def create_supervised_workflow(
         tester = tester_node
         reviewer = council_reviewer_node if use_council_review else reviewer_node
 
-    # Add all nodes including supervisor
-    workflow.add_node("supervisor", supervisor_node)
-    workflow.add_node("planner", planner)
-    workflow.add_node("coder", coder)
-    workflow.add_node("tester", tester)
-    workflow.add_node("reviewer", reviewer)
+    # Add all nodes including supervisor - cast to LangGraphNode to work around type stub limitations
+    workflow.add_node("supervisor", cast(LangGraphNode, cast(object, supervisor_node)))
+    workflow.add_node("planner", cast(LangGraphNode, cast(object, planner)))
+    workflow.add_node("coder", cast(LangGraphNode, cast(object, coder)))
+    workflow.add_node("tester", cast(LangGraphNode, cast(object, tester)))
+    workflow.add_node("reviewer", cast(LangGraphNode, cast(object, reviewer)))
 
     # Start with supervisor
     workflow.add_edge(START, "supervisor")

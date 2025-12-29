@@ -27,7 +27,7 @@ logger = get_logger(__name__)
 
 async def council_reviewer_node(
     state: WorkflowState,
-    config: RunnableConfig | None = None,
+    config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
     """Council-based review node with multiple judges.
 

@@ -26,15 +26,13 @@ Note:
 """
 
 import asyncio
-from typing import TYPE_CHECKING, Any
+from typing import Any, cast
 
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.core.config import settings
 from src.core.logging import get_logger
-
-if TYPE_CHECKING:
-    from psycopg import AsyncConnection
 
 logger = get_logger(__name__)
 
@@ -97,12 +95,17 @@ async def get_checkpointer() -> AsyncPostgresSaver:
 
         logger.info(
             "Initializing AsyncPostgresSaver checkpointer",
-            database=connection_string.split("@")[-1].split("/")[0] if "@" in connection_string else "localhost",
+            database=connection_string.split("@")[-1].split("/")[0]
+            if "@" in connection_string
+            else "localhost",
         )
 
         try:
             # Create the checkpointer with async context manager
-            _checkpointer = AsyncPostgresSaver.from_conn_string(connection_string)
+            # from_conn_string returns an async context manager in type stubs,
+            # but actually returns a checkpointer directly in runtime
+            checkpointer_instance = AsyncPostgresSaver.from_conn_string(connection_string)
+            _checkpointer = cast(AsyncPostgresSaver, checkpointer_instance)
 
             # Setup the checkpointer tables if they don't exist
             await _checkpointer.setup()
@@ -162,7 +165,7 @@ async def get_checkpoint_state(
         checkpointer = await get_checkpointer()
 
     try:
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
         checkpoint_tuple = await checkpointer.aget_tuple(config)
 
         if checkpoint_tuple and checkpoint_tuple.checkpoint:
@@ -205,16 +208,24 @@ async def list_checkpoints(
         checkpointer = await get_checkpointer()
 
     try:
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
         checkpoints = []
 
         async for checkpoint_tuple in checkpointer.alist(config, limit=limit):
-            checkpoints.append({
-                "checkpoint_id": checkpoint_tuple.checkpoint.get("id") if checkpoint_tuple.checkpoint else None,
-                "thread_id": thread_id,
-                "parent_checkpoint_id": checkpoint_tuple.parent_config.get("configurable", {}).get("checkpoint_id") if checkpoint_tuple.parent_config else None,
-                "metadata": checkpoint_tuple.metadata,
-            })
+            checkpoints.append(
+                {
+                    "checkpoint_id": checkpoint_tuple.checkpoint.get("id")
+                    if checkpoint_tuple.checkpoint
+                    else None,
+                    "thread_id": thread_id,
+                    "parent_checkpoint_id": checkpoint_tuple.parent_config.get(
+                        "configurable", {}
+                    ).get("checkpoint_id")
+                    if checkpoint_tuple.parent_config
+                    else None,
+                    "metadata": checkpoint_tuple.metadata,
+                }
+            )
 
         return checkpoints
 
@@ -280,7 +291,7 @@ async def check_checkpointer_health() -> dict[str, Any]:
 
         # Try a simple operation to verify connectivity
         # List checkpoints for a non-existent thread (should return empty)
-        config = {"configurable": {"thread_id": "__health_check__"}}
+        config: RunnableConfig = {"configurable": {"thread_id": "__health_check__"}}
         async for _ in checkpointer.alist(config, limit=1):
             pass
 

@@ -29,8 +29,8 @@ from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-# Type alias for node functions
-NodeFunction = Callable[[WorkflowState, RunnableConfig | None], Awaitable[dict[str, Any]]]
+# Type alias for node functions - matches LangGraph's expected signature
+NodeFunction = Callable[[WorkflowState, RunnableConfig], Awaitable[dict[str, Any]]]
 
 # Global error handler instance for the workflow
 _workflow_error_handler = ErrorHandler()
@@ -64,7 +64,8 @@ def create_resilient_node(
 
     @wraps(node_fn)
     async def resilient_wrapper(
-        state: WorkflowState, config: RunnableConfig | None = None
+        state: WorkflowState,
+        config: RunnableConfig = {},  # noqa: B006
     ) -> dict[str, Any]:
         handler = _workflow_error_handler
         current_state = state
@@ -171,4 +172,4 @@ def get_node_retry_counts() -> dict[str, int]:
     Returns:
         Dictionary mapping node names to retry counts
     """
-    return _workflow_error_handler._retry_counts.copy()
+    return _workflow_error_handler.retry_counts.copy()

@@ -19,7 +19,8 @@ Example:
     result = await graph.ainvoke(initial_state)
 """
 
-from typing import Any, Literal
+from collections.abc import Callable
+from typing import Any, Final, Literal
 
 from langchain_core.runnables import RunnableConfig
 
@@ -28,15 +29,15 @@ from src.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-# Node names for routing
-PLANNER = "planner"
-CODER = "coder"
-TESTER = "tester"
-REVIEWER = "reviewer"
-END = "__end__"
-
-# Routing decisions
+# Routing decisions type
 RoutingDecision = Literal["planner", "coder", "tester", "reviewer", "__end__"]
+
+# Node names for routing - typed as Final to preserve literal types
+PLANNER: Final[RoutingDecision] = "planner"
+CODER: Final[RoutingDecision] = "coder"
+TESTER: Final[RoutingDecision] = "tester"
+REVIEWER: Final[RoutingDecision] = "reviewer"
+END: Final[RoutingDecision] = "__end__"
 
 
 class SupervisorConfig:
@@ -191,7 +192,8 @@ def get_next_node(state: WorkflowState, config: SupervisorConfig | None = None) 
 
 
 async def supervisor_node(
-    state: WorkflowState, config: RunnableConfig | None = None
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
     """Supervisor node that determines workflow routing.
 
@@ -226,7 +228,9 @@ async def supervisor_node(
     }
 
 
-def create_supervisor_router(config: SupervisorConfig | None = None):
+def create_supervisor_router(
+    config: SupervisorConfig | None = None,
+) -> Callable[[WorkflowState], RoutingDecision]:
     """Create a routing function for supervised workflow edges.
 
     This creates a function that can be used with add_conditional_edges
@@ -244,12 +248,22 @@ def create_supervisor_router(config: SupervisorConfig | None = None):
     """
     config = config or SupervisorConfig()
 
-    def router(state: WorkflowState) -> str:
+    def router(state: WorkflowState) -> RoutingDecision:
         """Route to next node based on supervisor decision."""
         # Check if supervisor already made a decision
         decision = state.get("metadata", {}).get("supervisor_decision")
-        if decision:
-            return decision
+        if decision and isinstance(decision, str):
+            # Validate that decision is a valid routing decision
+            if decision == "planner":
+                return PLANNER
+            elif decision == "coder":
+                return CODER
+            elif decision == "tester":
+                return TESTER
+            elif decision == "reviewer":
+                return REVIEWER
+            elif decision == "__end__":
+                return END
 
         # Otherwise, compute routing
         return get_next_node(state, config)
@@ -267,14 +281,14 @@ def is_simple_task(state: WorkflowState) -> bool:
     Returns:
         True if the task is simple (low complexity, few steps)
     """
-    metadata = state.get("metadata", {})
-    validation = metadata.get("plan_validation", {})
-    complexity = validation.get("complexity", {})
+    metadata: dict[str, Any] = state.get("metadata", {})
+    validation: dict[str, Any] = metadata.get("plan_validation", {})
+    complexity: dict[str, Any] = validation.get("complexity", {})
 
-    complexity_score = complexity.get("overall_score", 0.5)
-    total_steps = validation.get("total_steps", 5)
+    complexity_score: float = complexity.get("overall_score", 0.5)
+    total_steps: int = validation.get("total_steps", 5)
 
-    return complexity_score < 0.3 and total_steps <= 3
+    return bool(complexity_score < 0.3 and total_steps <= 3)
 
 
 def should_skip_tests(state: WorkflowState) -> bool:
@@ -287,13 +301,13 @@ def should_skip_tests(state: WorkflowState) -> bool:
         True if tests can be safely skipped
     """
     # Never skip tests for security-related code
-    task_desc = state.get("task_description", "")
-    code = state.get("code", "")
+    task_desc: str = state.get("task_description", "")
+    code: str = state.get("code", "")
     if SupervisorConfig.has_security_concerns(task_desc, code):
         return False
 
     # Skip for simple tasks
-    return is_simple_task(state)
+    return bool(is_simple_task(state))
 
 
 def needs_extra_review(state: WorkflowState) -> bool:
@@ -306,15 +320,15 @@ def needs_extra_review(state: WorkflowState) -> bool:
         True if extra review is recommended
     """
     # Security concerns need extra review
-    task_desc = state.get("task_description", "")
-    code = state.get("code", "")
+    task_desc: str = state.get("task_description", "")
+    code: str = state.get("code", "")
     if SupervisorConfig.has_security_concerns(task_desc, code):
         return True
 
     # High complexity needs extra review
-    metadata = state.get("metadata", {})
-    validation = metadata.get("plan_validation", {})
-    complexity = validation.get("complexity", {})
-    complexity_score = complexity.get("overall_score", 0.5)
+    metadata: dict[str, Any] = state.get("metadata", {})
+    validation: dict[str, Any] = metadata.get("plan_validation", {})
+    complexity: dict[str, Any] = validation.get("complexity", {})
+    complexity_score: float = complexity.get("overall_score", 0.5)
 
-    return complexity_score > 0.7
+    return bool(complexity_score > 0.7)

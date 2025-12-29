@@ -47,7 +47,10 @@ Include comments for complex logic but keep comments concise.
 When reviewing feedback, be thorough in addressing all concerns and improving code quality."""
 
 
-async def coder_node(state: WorkflowState, config: RunnableConfig | None = None) -> dict[str, Any]:
+async def coder_node(
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
+) -> dict[str, Any]:
     """Code generation node - implements code from the plan.
 
     This node takes the execution plan created by the planner and generates

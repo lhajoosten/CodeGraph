@@ -490,7 +490,10 @@ Add comments for complex test logic but keep them concise.
 When reviewing previous feedback, thoroughly address all concerns and improve test coverage."""
 
 
-async def tester_node(state: WorkflowState, config: RunnableConfig | None = None) -> dict[str, Any]:
+async def tester_node(
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
+) -> dict[str, Any]:
     """Test generation node - creates comprehensive tests for generated code.
 
     This node takes the generated code and execution plan, then produces

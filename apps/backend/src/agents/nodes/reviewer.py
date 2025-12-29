@@ -355,7 +355,8 @@ def create_fallback_verdict(feedback: str) -> StructuredReviewVerdict:
 
 
 async def reviewer_node(
-    state: WorkflowState, config: RunnableConfig | None = None
+    state: WorkflowState,
+    config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
     """Code review node - comprehensively reviews code and tests.
 
