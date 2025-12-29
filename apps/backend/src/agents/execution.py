@@ -269,6 +269,8 @@ async def invoke_workflow(
             "thread_id": thread_id,
             "timeout_seconds": timeout,
         },
+        "workspace_path": None,
+        "tool_calls": [],
     }
 
     config: dict[str, Any] = {}
@@ -433,6 +435,8 @@ async def stream_workflow(
             "thread_id": thread_id,
             "timeout_seconds": timeout,
         },
+        "workspace_path": None,
+        "tool_calls": [],
     }
 
     config: dict[str, Any] = {}
