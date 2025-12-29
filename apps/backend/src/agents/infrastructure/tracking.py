@@ -33,6 +33,7 @@ from src.models.council_review import (
     LLMMode,
     ReviewVerdict,
 )
+from src.models.task import Task, TaskStatus
 from src.services.agent_run_service import AgentRunService
 from src.services.metrics_service import MetricsService
 
@@ -46,6 +47,14 @@ NODE_TO_AGENT_TYPE: dict[str, AgentType] = {
     "reviewer": AgentType.REVIEWER,
 }
 
+# Map node names to TaskStatus for real-time status updates
+NODE_TO_TASK_STATUS: dict[str, TaskStatus] = {
+    "planner": TaskStatus.PLANNING,
+    "coder": TaskStatus.IN_PROGRESS,
+    "tester": TaskStatus.TESTING,
+    "reviewer": TaskStatus.REVIEWING,
+}
+
 
 class AgentRunTracker(AsyncCallbackHandler):
     """Callback handler that tracks agent node executions.
@@ -56,12 +65,14 @@ class AgentRunTracker(AsyncCallbackHandler):
     - Token usage
     - Output data
     - Errors and timeouts
+    - Task status updates (real-time)
 
     Attributes:
         db: Database session for persistence
         task_id: ID of the task being executed
         iteration: Current iteration of the review loop
         active_runs: Map of node names to active AgentRun IDs
+        update_task_status: Whether to update task status as nodes execute
     """
 
     def __init__(
@@ -70,6 +81,7 @@ class AgentRunTracker(AsyncCallbackHandler):
         task_id: int,
         iteration: int = 1,
         model_used: str | None = None,
+        update_task_status: bool = True,
     ) -> None:
         """Initialize the tracker.
 
@@ -78,15 +90,54 @@ class AgentRunTracker(AsyncCallbackHandler):
             task_id: ID of the task being processed
             iteration: Current iteration number
             model_used: Name of the model being used
+            update_task_status: Whether to update task status as nodes execute
         """
         super().__init__()
         self.db = db
         self.task_id = task_id
         self.iteration = iteration
         self.model_used = model_used
+        self.update_task_status = update_task_status
         self.service = AgentRunService(db)
         self.metrics_service = MetricsService(db)
         self.active_runs: dict[str, int] = {}  # node_name -> run_id
+
+    async def _update_task_status(self, node_name: str) -> None:
+        """Update task status based on current node.
+
+        Args:
+            node_name: Name of the currently executing node
+        """
+        if not self.update_task_status:
+            return
+
+        new_status = NODE_TO_TASK_STATUS.get(node_name)
+        if not new_status:
+            return
+
+        try:
+            from sqlalchemy import select
+
+            result = await self.db.execute(select(Task).where(Task.id == self.task_id))
+            task = result.scalar_one_or_none()
+
+            if task and task.status != new_status:
+                task.status = new_status
+                await self.db.commit()
+                logger.debug(
+                    "task_status_updated_by_tracker",
+                    task_id=self.task_id,
+                    node=node_name,
+                    status=new_status.value,
+                )
+        except Exception as e:
+            # Log but don't fail the workflow for status update errors
+            logger.warning(
+                "failed_to_update_task_status",
+                task_id=self.task_id,
+                node=node_name,
+                error=str(e),
+            )
 
     async def on_chain_start(
         self,
@@ -119,6 +170,9 @@ class AgentRunTracker(AsyncCallbackHandler):
             return
 
         agent_type = NODE_TO_AGENT_TYPE[node_name]
+
+        # Update task status to reflect current node
+        await self._update_task_status(node_name)
 
         # Prepare input data (avoid storing large content)
         input_summary = {
