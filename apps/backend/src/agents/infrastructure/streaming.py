@@ -99,7 +99,7 @@ async def stream_with_metrics(
     response = StreamingResponse(_store_chunks=store_chunks)
 
     # Track the last chunk for extracting usage metadata
-    last_chunk: AIMessageChunk | None = None
+    last_chunk: AIMessageChunk | BaseMessage | None = None
 
     async for chunk in model.astream(messages, config):
         if isinstance(chunk, (AIMessageChunk, BaseMessage)):

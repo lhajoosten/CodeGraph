@@ -47,6 +47,7 @@ psycopg2-binary = "^2.9.11"
 types-qrcode = "^8.2.0.20250914"
 pytest-timeout = "^2.4.0"
 pytest-xdist = "^3.8.0"
+bandit = "^1.9.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -102,3 +103,7 @@ markers = [
     "integration: Tests requiring real database",
     "unit: Fast isolated unit tests",
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests", "alembic"]
+skips = ["B101"]  # Skip assert_used in production code (used for type narrowing)

@@ -22,7 +22,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Literal
+from typing import Literal, TypeAlias, Union
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
@@ -34,7 +34,7 @@ logger = get_logger(__name__)
 
 # Type aliases
 ModelTier = Literal["haiku", "sonnet", "opus"]
-ChatModel = ChatAnthropic | ChatOpenAI
+ChatModel: TypeAlias = Union[ChatAnthropic, ChatOpenAI]
 
 
 # =============================================================================

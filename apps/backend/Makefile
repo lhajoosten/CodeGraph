@@ -1,4 +1,4 @@
-.PHONY: help install dev test test-fast test-ai test-ai-seq test-all test-ci test-cov clean lint format type-check check build
+.PHONY: help install dev test test-fast test-ai test-ai-seq test-all test-ci test-cov clean lint format type-check security check check-full build
 .PHONY: db-migrate db-reset db-test db-fix-auth db-init db-setup
 .PHONY: docker-up docker-down docker-logs docker-build docker-full docker-clean
 
@@ -39,10 +39,12 @@ help:
 	@echo "  make docker-clean      - Remove Docker volumes and artifacts (destructive)"
 	@echo ""
 	@echo "$(COLOR_BOLD)Code Quality:$(COLOR_RESET)"
-	@echo "  make check             - Full check pipeline (lint + format + type-check)"
+	@echo "  make check             - Quick check pipeline (lint + format + type-check)"
+	@echo "  make check-full        - Full check pipeline (lint + format + type-check + security)"
 	@echo "  make lint              - Run linter (ruff)"
 	@echo "  make format            - Format code (ruff)"
 	@echo "  make type-check        - Type check (mypy)"
+	@echo "  make security          - Security scan (bandit)"
 	@echo ""
 	@echo "$(COLOR_BOLD)Testing:$(COLOR_RESET)"
 	@echo "  make test              - Run all tests"
@@ -159,8 +161,15 @@ type-check:
 	@echo "$(COLOR_GREEN)Type checking backend...$(COLOR_RESET)"
 	@poetry run mypy src/
 
+security:
+	@echo "$(COLOR_GREEN)Running security scan (bandit)...$(COLOR_RESET)"
+	@poetry run bandit -r src/ -c pyproject.toml
+
 check: lint format type-check
 	@echo "$(COLOR_GREEN)✓ Backend checks passed (lint + format + type-check)$(COLOR_RESET)"
+
+check-full: lint format type-check security
+	@echo "$(COLOR_GREEN)✓ Backend full checks passed (lint + format + type-check + security)$(COLOR_RESET)"
 
 # Testing
 # AI_WORKERS: Optimal for local vLLM is 2-4 (GPU queues requests internally)

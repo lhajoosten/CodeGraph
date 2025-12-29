@@ -531,7 +531,7 @@ class CodeQualityAnalyzer:
         for pattern_info in SECURITY_PATTERNS:
             pattern = re.compile(str(pattern_info["pattern"]), re.IGNORECASE)
             severity = pattern_info["severity"]
-            assert isinstance(severity, IssueSeverity)  # For type checker
+            assert isinstance(severity, IssueSeverity)  # nosec B101
             for i, line in enumerate(lines):
                 if pattern.search(line):
                     issues.append(
@@ -561,7 +561,7 @@ class CodeQualityAnalyzer:
         for pattern_info in PERFORMANCE_PATTERNS:
             pattern = re.compile(str(pattern_info["pattern"]))
             severity = pattern_info["severity"]
-            assert isinstance(severity, IssueSeverity)  # For type checker
+            assert isinstance(severity, IssueSeverity)  # nosec B101
             for i, line in enumerate(lines):
                 if pattern.search(line):
                     issues.append(
