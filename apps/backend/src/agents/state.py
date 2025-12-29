@@ -309,6 +309,8 @@ class WorkflowState(TypedDict):
         status: Current workflow status (planning -> coding -> testing -> reviewing -> complete/error)
         error: Error message if any step fails
         metadata: Additional context - see WorkflowMetadata for typed structure
+        workspace_path: Path to the workspace directory for file operations (optional)
+        tool_calls: List of tool calls made during workflow execution (optional)
 
     Note:
         The metadata field uses dict[str, Any] for flexibility, but follows
@@ -325,6 +327,7 @@ class WorkflowState(TypedDict):
             "code_files": {"files": [...], "all_valid": True},
             "test_analysis": {"summary": {...}, "coverage": {...}},
             "status": "coding",
+            "workspace_path": "/tmp/codegraph_workspaces/task_123",
             "metadata": {
                 "workflow_started_at": "2025-01-15T10:00:00Z",
                 "plan_validation": {"is_valid": True, "complexity_level": "medium"},
@@ -349,6 +352,8 @@ class WorkflowState(TypedDict):
     ]
     error: str | None
     metadata: dict[str, Any]  # See WorkflowMetadata for typed structure
+    workspace_path: str | None  # Path to workspace for file operations
+    tool_calls: list[dict[str, Any]]  # Tool calls made during execution
 
 
 # =============================================================================
@@ -474,6 +479,8 @@ class CouncilWorkflowState(TypedDict):
     ]
     error: str | None
     metadata: dict[str, Any]
+    workspace_path: str | None  # Path to workspace for file operations
+    tool_calls: list[dict[str, Any]]  # Tool calls made during execution
 
     # Council-specific field
     council_state: CouncilState | None

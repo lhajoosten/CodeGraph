@@ -22,7 +22,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Literal
+from typing import Any, Literal
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
@@ -979,3 +979,37 @@ def get_tier_for_quality_score(quality_score: float) -> ModelTier:
         Recommended model tier
     """
     return QualityBasedTierSelector.get_tier_for_quality(quality_score)
+
+
+# =============================================================================
+# Tool Binding Support
+# =============================================================================
+
+
+def get_coder_model_with_tools() -> Any:
+    """Get the coder model with tools bound for file/git operations.
+
+    This returns a model instance with filesystem and git tools bound,
+    enabling the coder agent to read, write, and manipulate files.
+
+    Returns:
+        Chat model with tools bound (Runnable with tool bindings)
+
+    Example:
+        model = get_coder_model_with_tools()
+        response = await model.ainvoke(messages)
+        if response.tool_calls:
+            # Handle tool calls
+            ...
+    """
+    from src.tools import bind_tools_to_model, register_all_tools
+    from src.tools.registry import AgentType
+
+    # Ensure tools are registered
+    register_all_tools()
+
+    # Get base model
+    model = get_coder_model()
+
+    # Bind tools for coder agent
+    return bind_tools_to_model(model, AgentType.CODER)
