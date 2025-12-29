@@ -534,3 +534,85 @@ class TypeCheckResult(BaseModel):
     error_count: int = Field(default=0, description="Number of type errors")
     files_checked: int = Field(..., description="Number of files checked")
     success: bool = Field(..., description="Whether type check passed")
+
+
+class FormatResult(BaseModel):
+    """Result of running code formatter."""
+
+    files_changed: list[str] = Field(
+        default_factory=list, description="Files that were reformatted"
+    )
+    files_unchanged: int = Field(default=0, description="Number of files unchanged")
+    would_change: list[str] = Field(
+        default_factory=list, description="Files that would be changed (check mode)"
+    )
+    success: bool = Field(..., description="Whether format check passed")
+
+
+class ResourceLimits(BaseModel):
+    """Resource limits for sandboxed execution."""
+
+    memory_mb: int = Field(
+        default=256,
+        description="Maximum memory in megabytes",
+        ge=64,
+        le=4096,
+    )
+    cpu_count: float = Field(
+        default=1.0,
+        description="Number of CPUs to allocate",
+        ge=0.1,
+        le=4.0,
+    )
+    timeout_seconds: int = Field(
+        default=30,
+        description="Maximum execution time in seconds",
+        ge=1,
+        le=300,
+    )
+    network_enabled: bool = Field(
+        default=False,
+        description="Whether network access is allowed",
+    )
+
+
+class SandboxConfig(BaseModel):
+    """Configuration for sandboxed code execution."""
+
+    workspace_path: str = Field(..., description="Path to workspace directory")
+    image: str = Field(
+        default="python:3.12-slim",
+        description="Docker image to use for execution",
+    )
+    limits: ResourceLimits = Field(
+        default_factory=ResourceLimits,
+        description="Resource limits for execution",
+    )
+    environment: dict[str, str] = Field(
+        default_factory=dict,
+        description="Environment variables to set",
+    )
+    working_dir: str = Field(
+        default="/workspace",
+        description="Working directory inside container",
+    )
+
+
+class SandboxStatus(str, Enum):
+    """Status of a sandbox container."""
+
+    CREATING = "creating"
+    READY = "ready"
+    RUNNING = "running"
+    STOPPED = "stopped"
+    ERROR = "error"
+
+
+class SandboxInfo(BaseModel):
+    """Information about a sandbox container."""
+
+    sandbox_id: str = Field(..., description="Unique sandbox identifier")
+    status: SandboxStatus = Field(..., description="Current sandbox status")
+    image: str = Field(..., description="Docker image used")
+    created_at: datetime = Field(..., description="When the sandbox was created")
+    workspace_path: str = Field(..., description="Mounted workspace path")

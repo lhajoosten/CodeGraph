@@ -49,6 +49,7 @@ AGENT_TOOL_MAPPING: dict[AgentType, list[ToolCategory]] = {
         ToolCategory.GIT,
         ToolCategory.SEARCH,
         ToolCategory.DATABASE,  # Full database access
+        ToolCategory.EXECUTION,  # Run code, tests, linters
     ],
     AgentType.TESTER: [
         ToolCategory.FILESYSTEM,

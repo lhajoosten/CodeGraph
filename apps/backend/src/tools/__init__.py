@@ -5,6 +5,7 @@ This module provides all tools available to agents including:
 - Git operations (status, commit, branch management)
 - Directory operations (list, create)
 - Database operations (introspection, query execution)
+- Code execution (Python, shell, tests, linting, type checking)
 
 Tools are registered with the ToolRegistry and can be bound to
 agents using the registry's get_tools_for_agent() function.
@@ -38,6 +39,17 @@ from src.tools.exceptions import (
     ToolError,
     ToolExecutionError,
     WorkspaceNotFoundError,
+)
+from src.tools.execution import (
+    SandboxManager,
+    get_sandbox_manager,
+    run_black_check,
+    run_mypy,
+    run_pytest,
+    run_python,
+    run_python_file,
+    run_ruff,
+    run_shell,
 )
 from src.tools.filesystem import (
     create_directory,
@@ -132,6 +144,20 @@ def register_all_tools() -> None:
         ToolCategory.DATABASE,
     )
 
+    # Register execution tools
+    registry.register_many(
+        [
+            run_python,
+            run_python_file,
+            run_shell,
+            run_pytest,
+            run_ruff,
+            run_black_check,
+            run_mypy,
+        ],
+        ToolCategory.EXECUTION,
+    )
+
 
 __all__ = [
     # Base classes
@@ -188,4 +214,14 @@ __all__ = [
     "get_table_relationships",
     "execute_query",
     "explain_query",
+    # Execution tools
+    "SandboxManager",
+    "get_sandbox_manager",
+    "run_python",
+    "run_python_file",
+    "run_shell",
+    "run_pytest",
+    "run_ruff",
+    "run_black_check",
+    "run_mypy",
 ]
