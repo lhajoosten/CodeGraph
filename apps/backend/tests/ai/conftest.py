@@ -21,7 +21,7 @@ import pytest
 import pytest_asyncio
 from langchain_core.messages import AIMessage, HumanMessage
 
-from src.agents.graph import create_workflow, get_compiled_graph
+from src.agents import create_workflow, get_compiled_graph
 from src.agents.infrastructure.models import ModelFactory
 from src.agents.state import WorkflowState
 from src.core.config import settings

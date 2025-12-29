@@ -37,7 +37,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.agents.graph import stream_workflow
+from src.agents import stream_workflow
 from src.api.deps import get_current_user
 from src.core.database import get_db
 from src.core.logging import get_logger

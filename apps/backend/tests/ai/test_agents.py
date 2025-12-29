@@ -9,7 +9,7 @@ moved to tests/unit/test_agent_models.py for faster execution without LLM.
 
 import pytest
 
-from src.agents.graph import invoke_workflow, stream_workflow
+from src.agents import invoke_workflow, stream_workflow
 from src.agents.nodes.planner import planner_node
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger

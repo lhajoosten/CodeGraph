@@ -156,7 +156,7 @@ class TestWorkflowTrackingIntegration:
         """Test that invoke_workflow accepts optional db parameter."""
         import inspect
 
-        from src.agents.graph import invoke_workflow
+        from src.agents import invoke_workflow
 
         sig = inspect.signature(invoke_workflow)
         assert "db" in sig.parameters
@@ -167,7 +167,7 @@ class TestWorkflowTrackingIntegration:
         """Test that stream_workflow accepts optional db parameter."""
         import inspect
 
-        from src.agents.graph import stream_workflow
+        from src.agents import stream_workflow
 
         sig = inspect.signature(stream_workflow)
         assert "db" in sig.parameters

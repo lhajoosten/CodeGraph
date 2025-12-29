@@ -6,7 +6,7 @@ transitions, message accumulation, metadata tracking, and event streaming.
 
 import pytest
 
-from src.agents.graph import invoke_workflow, stream_workflow
+from src.agents import invoke_workflow, stream_workflow
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
 

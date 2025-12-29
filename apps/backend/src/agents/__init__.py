@@ -13,32 +13,58 @@ Subpackages:
 - processing: Code parsing and formatting
 - infrastructure: Models, tracking, tracing, error handling
 
+Module organization:
+- graph.py: Core workflow definitions (create_workflow, get_compiled_graph)
+- execution.py: Workflow invocation and streaming
+- cancellation.py: Graceful cancellation support
+- interrupts.py: Human-in-the-loop interrupt handling
+- resilience.py: Error recovery and retry logic
+- state.py: Workflow state type definitions
+
 Key exports:
 - WorkflowState: TypedDict for workflow state management
 - create_workflow/invoke_workflow: Workflow creation and execution
 - Agent nodes: planner_node, coder_node, tester_node, reviewer_node
 """
 
-from src.agents.graph import (
+# Core workflow creation
+# Cancellation support
+from src.agents.cancellation import (
     CancellationToken,
-    InterruptPoint,
-    StreamEventType,
     WorkflowCancelledError,
-    WorkflowInterruptedError,
     cancel_workflow,
-    create_resilient_node,
-    create_supervised_workflow,
-    create_workflow,
+)
+
+# Workflow execution
+from src.agents.execution import (
+    StreamEventType,
     filter_stream_events,
-    get_compiled_graph,
-    get_compiled_graph_with_checkpointer,
-    get_interrupt_status,
-    get_interruptible_graph,
     invoke_workflow,
-    reset_workflow_error_handler,
-    resume_workflow,
     stream_workflow,
 )
+from src.agents.graph import (
+    create_supervised_workflow,
+    create_workflow,
+    get_compiled_graph,
+    get_compiled_graph_with_checkpointer,
+)
+
+# Human-in-the-loop interrupts
+from src.agents.interrupts import (
+    InterruptPoint,
+    WorkflowInterruptedError,
+    get_interrupt_status,
+    get_interruptible_graph,
+    resume_workflow,
+)
+
+# Error recovery
+from src.agents.resilience import (
+    create_resilient_node,
+    reset_workflow_error_handler,
+)
+
+# State types
 from src.agents.state import CouncilState, JudgeVerdictState, WorkflowState
 
 __all__ = [

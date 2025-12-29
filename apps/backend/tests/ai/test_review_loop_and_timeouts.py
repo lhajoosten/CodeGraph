@@ -6,12 +6,9 @@ and timeout handling mechanisms.
 
 import pytest
 
-from src.agents.graph import (
-    MAX_REVIEW_ITERATIONS,
-    WORKFLOW_TIMEOUT_SECONDS,
-    invoke_workflow,
-    stream_workflow,
-)
+from src.agents import invoke_workflow, stream_workflow
+from src.agents.execution import WORKFLOW_TIMEOUT_SECONDS
+from src.agents.graph import MAX_REVIEW_ITERATIONS
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
 from tests.ai.utils import WorkflowStateBuilder

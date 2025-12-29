@@ -16,7 +16,7 @@ import os
 
 import pytest
 
-from src.agents.graph import get_compiled_graph, invoke_workflow
+from src.agents import get_compiled_graph, invoke_workflow
 from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enabled
 from src.core.logging import get_logger
 from tests.ai.conftest import get_llm_skip_reason, is_llm_available
@@ -192,7 +192,8 @@ class TestWorkflowMocked:
 
     def test_workflow_configuration(self) -> None:
         """Verify workflow configuration constants."""
-        from src.agents.graph import MAX_REVIEW_ITERATIONS, WORKFLOW_TIMEOUT_SECONDS
+        from src.agents.execution import WORKFLOW_TIMEOUT_SECONDS
+        from src.agents.graph import MAX_REVIEW_ITERATIONS
 
         assert MAX_REVIEW_ITERATIONS == 3, "Max iterations should be 3"
         assert WORKFLOW_TIMEOUT_SECONDS == 300, "Timeout should be 5 minutes"
