@@ -72,17 +72,16 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = "Excellent code! APPROVE - This is production-ready."
 
-            # Create a mock response that simulates BaseMessage
-            # Since the code checks isinstance(response, BaseMessage),
-            # we need to either patch that or make sure str() of the mock works
+            # Create a mock response that simulates BaseMessage with no tool calls
             from langchain_core.messages import AIMessage
 
             mock_response = AIMessage(content=feedback_content)
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 
@@ -110,7 +109,7 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = """Issues found:
@@ -118,10 +117,11 @@ class TestReviewerNode:
             2. Improve test coverage
             REVISE - Please address these points."""
 
-            # Create a mock response that simulates BaseMessage
+            # Create a mock response that simulates BaseMessage with no tool calls
             from langchain_core.messages import AIMessage
 
             mock_response = AIMessage(content=feedback_content)
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 
@@ -150,16 +150,17 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             # Mock the reviewer model instance
             mock_model = AsyncMock()
             feedback_content = """The approach is fundamentally flawed.
             REJECT - This needs to be reconsidered from scratch."""
 
-            # Create a mock response that simulates BaseMessage
+            # Create a mock response that simulates BaseMessage with no tool calls
             from langchain_core.messages import AIMessage
 
             mock_response = AIMessage(content=feedback_content)
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 
@@ -189,11 +190,12 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
             mock_response = AIMessage(content="REVISE - Please improve")
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 
@@ -204,11 +206,12 @@ class TestReviewerNode:
 
         # Second iteration
         state["iterations"] = 1
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
             mock_response = AIMessage(content="REVISE - Still needs work")
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 
@@ -233,11 +236,12 @@ class TestReviewerNode:
             .build()
         )
 
-        with patch("src.agents.nodes.reviewer.get_reviewer_model") as mock_model_factory:
+        with patch("src.agents.nodes.reviewer.get_reviewer_model_with_tools") as mock_model_factory:
             from langchain_core.messages import AIMessage
 
             mock_model = AsyncMock()
             mock_response = AIMessage(content="APPROVE - Ready to ship!")
+            mock_response.tool_calls = []  # No tool calls to end the ReAct loop
             mock_model.ainvoke = AsyncMock(return_value=mock_response)
             mock_model_factory.return_value = mock_model
 

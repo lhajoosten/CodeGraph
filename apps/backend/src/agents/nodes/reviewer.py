@@ -5,6 +5,7 @@ the generated code and test suite, identifying quality issues, and determining
 whether the code should be approved, revised, or rejected.
 
 Features:
+- Tool access for reading and verifying code (read-only)
 - Structured review output with confidence scoring
 - Council-based review with multiple judges (see council.py)
 - Detailed metrics collection per review
@@ -17,14 +18,20 @@ from datetime import UTC
 from enum import Enum
 from typing import Any, Literal
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, Field
 
-from src.agents.infrastructure.models import get_reviewer_model
+from src.agents.infrastructure.models import get_reviewer_model, get_reviewer_model_with_tools
 from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.nodes.react_executor import (
+    count_tool_calls_by_type,
+    execute_react_loop,
+    extract_final_response,
+)
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
+from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -165,7 +172,24 @@ REVIEWER_SYSTEM_PROMPT = """You are a senior code review expert with expertise i
 
 Your role is to thoroughly review generated code and test suites, identifying strengths, weaknesses, and areas for improvement.
 
-Requirements:
+## Available Tools
+
+You have read-only tools to verify the code:
+
+**File Operations:**
+- read_file: Read code files to verify implementation
+- list_directory: Explore project structure
+- grep_content: Search for patterns and potential issues
+
+## Process
+
+1. Use read_file to examine the actual files in the workspace
+2. Use grep_content to search for patterns (e.g., security issues, TODO comments)
+3. Use list_directory to understand the project structure
+4. Provide a thorough review based on your findings
+
+## Requirements
+
 1. Analyze code structure, logic, and correctness
 2. Check for security vulnerabilities and anti-patterns
 3. Evaluate test coverage and quality
@@ -177,12 +201,15 @@ Requirements:
 9. Provide actionable, specific feedback
 10. Make a clear verdict: APPROVE, REVISE, or REJECT
 
-Verdict Guidelines:
+## Verdict Guidelines
+
 - APPROVE: Code is production-ready, well-tested, and meets quality standards
 - REVISE: Code has issues that can be fixed with iterations (send back to coder)
 - REJECT: Code has fundamental problems requiring major rework or re-planning
 
-IMPORTANT: You MUST respond with a valid JSON object following this exact schema:
+## Output Format
+
+After reviewing the code, respond with a valid JSON object:
 {
   "summary": "2-3 sentence summary of code quality",
   "verdict": "APPROVE" | "REVISE" | "REJECT",
@@ -358,12 +385,14 @@ async def reviewer_node(
     state: WorkflowState,
     config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
-    """Code review node - comprehensively reviews code and tests.
+    """Code review node - comprehensively reviews code and tests using tools.
 
     This node is the final quality gate. It analyzes the generated code,
     test suite, and determines if the work is ready or needs revision.
+    The reviewer can use read-only tools to verify the implementation.
 
     Features:
+    - Tool access for reading and verifying code (read-only)
     - Structured JSON output parsing with confidence scores
     - Detailed issue categorization (security, performance, etc.)
     - Fallback to text parsing if JSON fails
@@ -377,6 +406,7 @@ async def reviewer_node(
             - review_feedback: Human-readable review findings
             - status: "complete" if APPROVE, "coding" if REVISE
             - messages: Accumulated LLM messages
+            - tool_calls: List of tool calls made during review
             - iterations: Incremented if revision needed
             - metadata: Updated with review metrics including:
                 - structured_verdict: Full StructuredReviewVerdict data
@@ -387,20 +417,32 @@ async def reviewer_node(
     Raises:
         Exception: If LLM API call fails
     """
-    import time
     from datetime import datetime
 
     logger.info(
-        "Reviewer node executing",
+        "Reviewer node executing with tools",
         task_id=state.get("task_id"),
         code_length=len(state.get("code", "")),
         test_length=len(state.get("test_results", "")),
+        workspace=state.get("workspace_path"),
     )
 
-    model = get_reviewer_model()
+    # Get model with tools bound
+    model = get_reviewer_model_with_tools()
 
-    # Build messages for the reviewer
-    messages = list(state.get("messages", []))
+    # Build initial messages
+    initial_messages: list[BaseMessage] = [
+        SystemMessage(content=REVIEWER_SYSTEM_PROMPT),
+    ]
+
+    # Add any existing conversation context
+    for msg in state.get("messages", []):
+        initial_messages.append(msg)
+
+    # Build workspace info
+    workspace_info = ""
+    if state.get("workspace_path"):
+        workspace_info = f"\n\nWorkspace: {state['workspace_path']}"
 
     # Create the review prompt requesting JSON output
     review_prompt = f"""Please provide a comprehensive code review for the following:
@@ -412,7 +454,7 @@ async def reviewer_node(
 {state["test_results"]}
 
 ## Context (Execution Plan)
-{state["plan"]}
+{state["plan"]}{workspace_info}
 
 Review the code thoroughly covering:
 1. Code quality, correctness, and architecture
@@ -422,27 +464,22 @@ Review the code thoroughly covering:
 5. Performance considerations
 6. Maintainability and documentation
 
-Respond with a JSON object containing your review verdict."""
+You may use tools to read files in the workspace for additional context.
+When done, respond with a JSON object containing your review verdict."""
 
-    messages.append(HumanMessage(content=review_prompt))
+    initial_messages.append(HumanMessage(content=review_prompt))
 
-    # Invoke the model with structured output system prompt
-    start_time = time.time()
-    response = await model.ainvoke(
-        [
-            ("system", REVIEWER_SYSTEM_PROMPT),
-            *[(msg.type, msg.content) for msg in messages],
-        ],
-        config,
+    # Execute ReAct loop with tools
+    all_messages, tool_call_records, usage = await execute_react_loop(
+        model=model,
+        messages=initial_messages,
+        state=dict(state),
+        agent_type=AgentType.REVIEWER,
+        config=config,
     )
-    latency_ms = int((time.time() - start_time) * 1000)
 
-    raw_content = response.content if isinstance(response, BaseMessage) else str(response)
-    # Handle the case where content might be a list (e.g., for tool calls)
-    if isinstance(raw_content, list):
-        response_text = " ".join(str(item) for item in raw_content)
-    else:
-        response_text = str(raw_content)
+    # Extract the final response
+    response_text = extract_final_response(all_messages)
 
     # Try to parse structured verdict, fall back to text extraction
     structured_verdict = parse_structured_verdict(response_text)
@@ -459,23 +496,22 @@ Respond with a JSON object containing your review verdict."""
     # Generate human-readable feedback from structured verdict
     feedback_content = structured_verdict.to_feedback_text()
 
-    # Extract usage metadata from response
-    usage_metadata = getattr(response, "usage_metadata", None) or {}
-    input_tokens = usage_metadata.get("input_tokens", 0)
-    output_tokens = usage_metadata.get("output_tokens", 0)
-    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
+    # Track tool calls
+    tool_counts = count_tool_calls_by_type(tool_call_records)
 
     logger.info(
-        "Reviewer completed review",
+        "Reviewer completed with tools",
         task_id=state.get("task_id"),
         verdict=verdict,
         confidence=confidence,
         issue_count=len(structured_verdict.issues),
         critical_issues=structured_verdict.critical_issue_count,
         feedback_length=len(feedback_content),
-        input_tokens=input_tokens,
-        output_tokens=output_tokens,
-        latency_ms=latency_ms,
+        tool_calls_made=len(tool_call_records),
+        tool_counts=tool_counts,
+        input_tokens=usage.get("input_tokens", 0),
+        output_tokens=usage.get("output_tokens", 0),
+        latency_ms=usage.get("latency_ms", 0),
     )
 
     # Determine next status based on verdict
@@ -488,10 +524,15 @@ Respond with a JSON object containing your review verdict."""
     if verdict == ReviewVerdict.REVISE:
         iterations += 1
 
+    # Combine existing tool calls with new ones
+    existing_tool_calls = list(state.get("tool_calls", []))
+    existing_tool_calls.extend(tool_call_records)
+
     return {
         "review_feedback": feedback_content,
         "status": next_status,
-        "messages": [response],
+        "messages": all_messages[len(initial_messages) :],
+        "tool_calls": existing_tool_calls,
         "iterations": iterations,
         "metadata": {
             **(state.get("metadata", {})),
@@ -500,10 +541,11 @@ Respond with a JSON object containing your review verdict."""
             "verdict": verdict,
             "confidence_score": confidence,
             "reviewer_usage": {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": total_tokens,
-                "latency_ms": latency_ms,
+                "input_tokens": usage.get("input_tokens", 0),
+                "output_tokens": usage.get("output_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
+                "latency_ms": usage.get("latency_ms", 0),
+                "iterations": usage.get("iterations", 0),
             },
             # Structured verdict metrics
             "structured_verdict": {
@@ -528,6 +570,10 @@ Respond with a JSON object containing your review verdict."""
             "issues_by_category": structured_verdict.issues_by_category,
             "critical_issue_count": structured_verdict.critical_issue_count,
             "major_issue_count": structured_verdict.major_issue_count,
+            "tool_calls_summary": {
+                "total": len(tool_call_records),
+                "by_tool": tool_counts,
+            },
         },
     }
 
