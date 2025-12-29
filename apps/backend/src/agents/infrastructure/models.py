@@ -17,18 +17,23 @@ Token usage tracking and cost estimation is implemented via:
 Rate limiting is implemented via ModelRateLimiter to prevent API errors.
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 
 from src.core.config import settings
 from src.core.logging import get_logger
+
+if TYPE_CHECKING:
+    from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -986,11 +991,45 @@ def get_tier_for_quality_score(quality_score: float) -> ModelTier:
 # =============================================================================
 
 
+def get_model_with_tools(agent_type: AgentType, tier: ModelTier = "sonnet") -> Any:
+    """Get a model with tools bound for a specific agent type.
+
+    This is the generic function for creating tool-bound models.
+    Use the specific getters (get_coder_model_with_tools, etc.) for convenience.
+
+    Args:
+        agent_type: The type of agent (determines which tools are bound)
+        tier: Model tier to use (default: sonnet)
+
+    Returns:
+        Chat model with appropriate tools bound
+
+    Example:
+        from src.tools.registry import AgentType
+        model = get_model_with_tools(AgentType.CODER, "sonnet")
+        response = await model.ainvoke(messages)
+    """
+    from src.tools import bind_tools_to_model, register_all_tools
+
+    # Ensure tools are registered
+    register_all_tools()
+
+    # Get base model
+    model = ModelFactory.create(tier)
+
+    # Bind tools for the agent type
+    return bind_tools_to_model(model, agent_type)
+
+
 def get_coder_model_with_tools() -> Any:
     """Get the coder model with tools bound for file/git operations.
 
     This returns a model instance with filesystem and git tools bound,
     enabling the coder agent to read, write, and manipulate files.
+
+    Tools available: read_file, write_file, edit_file, list_directory,
+    grep_content, git_status, git_diff, run_python, run_ruff, run_mypy,
+    run_pytest, etc.
 
     Returns:
         Chat model with tools bound (Runnable with tool bindings)
@@ -1002,14 +1041,77 @@ def get_coder_model_with_tools() -> Any:
             # Handle tool calls
             ...
     """
-    from src.tools import bind_tools_to_model, register_all_tools
     from src.tools.registry import AgentType
 
-    # Ensure tools are registered
-    register_all_tools()
+    return get_model_with_tools(AgentType.CODER, "sonnet")
 
-    # Get base model
-    model = get_coder_model()
 
-    # Bind tools for coder agent
-    return bind_tools_to_model(model, AgentType.CODER)
+def get_planner_model_with_tools() -> Any:
+    """Get the planner model with read-only tools bound.
+
+    This returns a model instance with read-only tools for exploring
+    the codebase during planning. The planner can read files and search
+    but cannot modify anything.
+
+    Tools available: read_file, list_directory, grep_content
+
+    Returns:
+        Chat model with read-only tools bound
+
+    Example:
+        model = get_planner_model_with_tools()
+        response = await model.ainvoke(messages)
+        if response.tool_calls:
+            # Handle tool calls (read-only)
+            ...
+    """
+    from src.tools.registry import AgentType
+
+    return get_model_with_tools(AgentType.PLANNER, "sonnet")
+
+
+def get_tester_model_with_tools() -> Any:
+    """Get the tester model with execution tools bound.
+
+    This returns a model instance with read and execution tools,
+    enabling the tester to read code and run tests.
+
+    Tools available: read_file, list_directory, grep_content,
+    write_file (for test files), run_pytest, run_python
+
+    Returns:
+        Chat model with read/execute tools bound
+
+    Example:
+        model = get_tester_model_with_tools()
+        response = await model.ainvoke(messages)
+        if response.tool_calls:
+            # Handle tool calls
+            ...
+    """
+    from src.tools.registry import AgentType
+
+    return get_model_with_tools(AgentType.TESTER, "sonnet")
+
+
+def get_reviewer_model_with_tools() -> Any:
+    """Get the reviewer model with read-only tools bound.
+
+    This returns a model instance with read-only tools for reviewing
+    code. The reviewer can read files and search but cannot modify.
+
+    Tools available: read_file, list_directory, grep_content
+
+    Returns:
+        Chat model with read-only tools bound
+
+    Example:
+        model = get_reviewer_model_with_tools()
+        response = await model.ainvoke(messages)
+        if response.tool_calls:
+            # Handle tool calls (read-only)
+            ...
+    """
+    from src.tools.registry import AgentType
+
+    return get_model_with_tools(AgentType.REVIEWER, "sonnet")

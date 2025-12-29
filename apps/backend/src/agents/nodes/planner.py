@@ -5,6 +5,7 @@ the task description and creating a detailed, step-by-step execution plan.
 This plan guides all subsequent coding, testing, and review stages.
 
 Features:
+- Tool access for codebase exploration (read-only)
 - Plan caching for similar tasks (reduces LLM calls)
 - Plan validation and complexity scoring
 - Plan refinement loop on validation failure
@@ -18,7 +19,7 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any
 
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 
 from src.agents.analyzers.plan_validator import (
@@ -27,11 +28,17 @@ from src.agents.analyzers.plan_validator import (
     needs_refinement,
     validate_plan,
 )
-from src.agents.infrastructure.models import get_planner_model
+from src.agents.infrastructure.models import get_planner_model, get_planner_model_with_tools
 from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.nodes.react_executor import (
+    count_tool_calls_by_type,
+    execute_react_loop,
+    extract_final_response,
+)
 from src.agents.state import WorkflowState
 from src.core.config import settings
 from src.core.logging import get_logger
+from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -44,7 +51,24 @@ PLANNER_SYSTEM_PROMPT = """You are a senior software architect specializing in b
 Your role is to analyze a task description and create a detailed, step-by-step execution plan.
 The plan should be specific, actionable, and guide other agents through implementation.
 
-Requirements:
+## Available Tools
+
+You have read-only tools to explore the codebase before creating your plan:
+
+**File Operations:**
+- read_file: Read file contents to understand existing code
+- list_directory: Explore directory structure
+- grep_content: Search for patterns in the codebase
+
+## Process
+
+1. First, use list_directory to understand the project structure
+2. Use grep_content to find relevant code and patterns
+3. Use read_file to understand specific implementations
+4. Create a detailed plan based on your exploration
+
+## Requirements
+
 1. Start with understanding the requirements and edge cases
 2. Break the task into logical phases (design -> implementation -> testing -> deployment considerations)
 3. For each step, specify:
@@ -56,7 +80,10 @@ Requirements:
 5. Be concise but comprehensive
 6. Format as a numbered list with clear sections
 
-Output a professional plan that a senior developer could follow directly."""
+## Output
+
+After exploring the codebase, provide a professional plan that a senior developer could follow directly.
+Reference specific files and patterns you discovered during exploration."""
 
 
 REFINEMENT_PROMPT_TEMPLATE = """Your previous plan needs improvement. Here's the feedback:
@@ -237,13 +264,14 @@ async def planner_node(
     state: WorkflowState,
     config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
-    """Plan execution node - breaks down task into actionable steps.
+    """Plan execution node - breaks down task into actionable steps using tools.
 
     This node is the entry point to the workflow. It receives a task description
     and produces a detailed execution plan that guides the coder, tester, and
-    reviewer nodes. The plan is validated and scored for complexity.
+    reviewer nodes. The planner can explore the codebase using read-only tools.
 
     Features:
+    - Tool access for codebase exploration (read-only)
     - Plan caching for similar tasks
     - Plan validation with complexity scoring
     - Automatic plan refinement loop if validation fails (max 2 attempts)
@@ -257,8 +285,9 @@ async def planner_node(
             - plan: Generated execution plan
             - status: Updated to "coding"
             - messages: Accumulated LLM messages
+            - tool_calls: List of tool calls made during exploration
             - metadata: Updated with planning timestamp, validation, complexity,
-              and refinement history if applicable
+              tool usage, and refinement history if applicable
 
     Raises:
         Exception: If Claude API call fails
@@ -267,9 +296,10 @@ async def planner_node(
     task_description = state.get("task_description", "")
 
     logger.info(
-        "Planner node executing",
+        "Planner node executing with tools",
         task_id=task_id,
         description_length=len(task_description),
+        workspace=state.get("workspace_path"),
     )
 
     # Check cache first
@@ -289,7 +319,8 @@ async def planner_node(
         return {
             "plan": plan_content,
             "status": "coding",
-            "messages": [],  # No new messages when using cache
+            "messages": [],
+            "tool_calls": [],
             "metadata": {
                 **(state.get("metadata", {})),
                 "plan_generated_at": datetime.utcnow().isoformat(),
@@ -303,49 +334,73 @@ async def planner_node(
                     "output_tokens": 0,
                     "total_tokens": 0,
                     "latency_ms": 0,
+                    "iterations": 0,
                 },
+                "tool_calls_summary": {"total": 0, "by_tool": {}},
             },
         }
 
-    model = get_planner_model()
+    # Get model with tools bound
+    model = get_planner_model_with_tools()
 
-    # Build initial messages for the planner
-    initial_prompt = f"""Please create a detailed execution plan for the following coding task:
-
-Task: {task_description}
-
-Provide a comprehensive step-by-step plan that will guide implementation, testing, and review."""
-
-    messages = [
-        ("system", PLANNER_SYSTEM_PROMPT),
-        ("human", initial_prompt),
+    # Build initial messages
+    initial_messages: list[BaseMessage] = [
+        SystemMessage(content=PLANNER_SYSTEM_PROMPT),
     ]
 
-    # Generate initial plan
-    plan_content, usage, latency_ms = await _invoke_planner(model, messages, config)
+    # Build task prompt with workspace info
+    workspace_info = ""
+    if state.get("workspace_path"):
+        workspace_info = f"\n\nWorkspace: {state['workspace_path']}"
 
-    # Track total usage across refinement attempts
-    total_usage = {
-        "input_tokens": usage["input_tokens"],
-        "output_tokens": usage["output_tokens"],
-        "total_tokens": usage["total_tokens"],
-    }
-    total_latency_ms = latency_ms
+    initial_prompt = f"""Please create a detailed execution plan for the following coding task:
+
+Task: {task_description}{workspace_info}
+
+First, explore the codebase to understand the existing structure and patterns, then provide a comprehensive step-by-step plan that will guide implementation, testing, and review."""
+
+    initial_messages.append(HumanMessage(content=initial_prompt))
+
+    # Execute ReAct loop with tools
+    all_messages, tool_call_records, usage = await execute_react_loop(
+        model=model,
+        messages=initial_messages,
+        state=dict(state),
+        agent_type=AgentType.PLANNER,
+        config=config,
+    )
+
+    # Extract the final response as the plan
+    plan_content = extract_final_response(all_messages)
+
+    # Track tool calls
+    tool_counts = count_tool_calls_by_type(tool_call_records)
 
     # Validate the plan
     validation = validate_plan(str(plan_content))
 
     logger.info(
-        "Planner generated initial plan",
+        "Planner generated initial plan with tools",
         task_id=task_id,
         plan_length=len(plan_content),
-        input_tokens=usage["input_tokens"],
-        output_tokens=usage["output_tokens"],
-        latency_ms=latency_ms,
+        tool_calls_made=len(tool_call_records),
+        tool_counts=tool_counts,
+        input_tokens=usage.get("input_tokens", 0),
+        output_tokens=usage.get("output_tokens", 0),
+        latency_ms=usage.get("latency_ms", 0),
+        iterations=usage.get("iterations", 0),
         is_valid=validation.is_valid,
         complexity_level=validation.complexity.level.value,
         total_steps=validation.total_steps,
     )
+
+    # Track total usage across refinement attempts
+    total_usage = {
+        "input_tokens": usage.get("input_tokens", 0),
+        "output_tokens": usage.get("output_tokens", 0),
+        "total_tokens": usage.get("total_tokens", 0),
+    }
+    total_latency_ms = usage.get("latency_ms", 0)
 
     # Plan versioning - track all plan versions
     plan_version = 1
@@ -357,11 +412,13 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             "validation": validation.to_dict(),
             "is_refinement": False,
             "refinement_reason": None,
+            "tool_calls": len(tool_call_records),
         }
     ]
 
-    # Plan refinement loop
+    # Plan refinement loop (uses base model without tools for refinement)
     refinement_attempts = 0
+    base_model = get_planner_model()
 
     while needs_refinement(validation) and refinement_attempts < MAX_REFINEMENT_ATTEMPTS:
         refinement_attempts += 1
@@ -378,9 +435,9 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
         # Track refinement reason before generating new version
         refinement_reason = _format_validation_issues(validation)
 
-        # Refine the plan
+        # Refine the plan (without tools - just improving the text)
         plan_content, refinement_usage, refinement_latency = await _refine_plan(
-            model=model,
+            model=base_model,
             task_description=task_description,
             previous_plan=str(plan_content),
             validation=validation,
@@ -406,6 +463,7 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
                 "validation": validation.to_dict(),
                 "is_refinement": True,
                 "refinement_reason": refinement_reason,
+                "tool_calls": 0,
             }
         )
 
@@ -451,10 +509,16 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             "output_tokens": total_usage["output_tokens"],
             "total_tokens": total_usage["total_tokens"],
             "latency_ms": total_latency_ms,
+            "iterations": usage.get("iterations", 0),
         },
         # Plan versioning
         "plan_version": plan_version,
         "plan_history": plan_history,
+        # Tool usage
+        "tool_calls_summary": {
+            "total": len(tool_call_records),
+            "by_tool": tool_counts,
+        },
     }
 
     # Add refinement summary if any refinement occurred
@@ -469,7 +533,8 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
     return {
         "plan": plan_content,
         "status": "coding",
-        "messages": [],  # Messages tracked in metadata instead
+        "messages": all_messages[len(initial_messages) :],  # Only new messages
+        "tool_calls": tool_call_records,
         "metadata": metadata,
     }
 

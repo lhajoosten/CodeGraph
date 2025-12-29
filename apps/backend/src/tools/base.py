@@ -6,17 +6,22 @@ This module provides the foundation for all agent tools including:
 - execute_tool: Helper to execute tool calls from LLM responses
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool
 
 from src.core.logging import get_logger
 from src.tools.exceptions import ToolError, ToolExecutionError
+
+if TYPE_CHECKING:
+    from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -119,7 +124,7 @@ class ToolResult:
         data: Any = None,
         execution_time_ms: float | None = None,
         metadata: dict[str, Any] | None = None,
-    ) -> "ToolResult":
+    ) -> ToolResult:
         """Create a successful result.
 
         Args:
@@ -146,7 +151,7 @@ class ToolResult:
         output: str | None = None,
         execution_time_ms: float | None = None,
         metadata: dict[str, Any] | None = None,
-    ) -> "ToolResult":
+    ) -> ToolResult:
         """Create a failed result.
 
         Args:
@@ -348,3 +353,79 @@ def with_context[T](func: Callable[..., T]) -> Callable[..., T]:
         return result
 
     return wrapper  # type: ignore[return-value]
+
+
+# =============================================================================
+# Tool Context Builder
+# =============================================================================
+
+
+def build_tool_context(
+    state: dict[str, Any],
+    agent_type: AgentType,
+) -> ToolContext:
+    """Build a ToolContext from workflow state with appropriate permissions.
+
+    This helper creates a ToolContext configured for a specific agent type,
+    ensuring each agent has the correct permission level for its role.
+
+    Permission mapping:
+        - PLANNER: READ only (explore codebase, cannot modify)
+        - CODER: READ, WRITE, EXECUTE (full access for implementation)
+        - TESTER: READ, EXECUTE (can run tests but not modify production code)
+        - REVIEWER: READ only (verification without modification)
+
+    Args:
+        state: Workflow state dict containing task_id, workspace_path, etc.
+        agent_type: The type of agent requesting tool access
+
+    Returns:
+        Configured ToolContext with appropriate permissions
+
+    Example:
+        >>> from src.tools.registry import AgentType
+        >>> state = {"task_id": 123, "workspace_path": "/tmp/workspace"}
+        >>> context = build_tool_context(state, AgentType.CODER)
+        >>> context.has_permission(ToolPermission.WRITE)
+        True
+    """
+    from src.tools.registry import AgentType
+
+    # Map agent types to their permission sets
+    permission_map: dict[AgentType, set[ToolPermission]] = {
+        AgentType.PLANNER: {ToolPermission.READ},
+        AgentType.CODER: {
+            ToolPermission.READ,
+            ToolPermission.WRITE,
+            ToolPermission.EXECUTE,
+        },
+        AgentType.TESTER: {
+            ToolPermission.READ,
+            ToolPermission.EXECUTE,
+        },
+        AgentType.REVIEWER: {ToolPermission.READ},
+    }
+
+    # Get permissions for this agent type (default to READ only)
+    permissions = permission_map.get(agent_type, {ToolPermission.READ})
+
+    # Extract workspace path from state
+    workspace_path = state.get("workspace_path")
+    if not workspace_path:
+        # Default to a temp workspace if not specified
+        import tempfile
+
+        workspace_path = tempfile.gettempdir() + "/codegraph_workspaces"
+
+    # Build the context
+    return ToolContext(
+        workspace_path=workspace_path,
+        task_id=state.get("task_id"),
+        user_id=state.get("user_id"),
+        repository_path=state.get("repository_path"),
+        permissions=permissions,
+        metadata={
+            "agent_type": agent_type.value if hasattr(agent_type, "value") else str(agent_type),
+            "status": state.get("status"),
+        },
+    )

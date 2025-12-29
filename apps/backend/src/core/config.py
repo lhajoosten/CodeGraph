@@ -130,6 +130,10 @@ class Settings(BaseSettings):
     max_agent_iterations: int = 20
     agent_timeout_seconds: int = 300
 
+    # Tool Execution Configuration
+    max_tool_iterations: int = 10  # Max ReAct loop iterations per agent node
+    enable_tool_execution: bool = True  # Whether agents can execute tools
+
     # Council Review
     # When True, uses multiple judges (personas for local vLLM, models for Claude API)
     # When False, uses single reviewer

@@ -1,10 +1,11 @@
 """Tester agent node for generating and executing tests for generated code.
 
 The tester is responsible for analyzing the generated code and plan, creating
-comprehensive pytest test cases with full coverage, and simulating test execution.
+comprehensive pytest test cases with full coverage, and executing tests.
 It supports multiple test scenarios and integrates with the testing pipeline.
 
 Features:
+- Tool access for reading code and running tests
 - Mock strategy recommendations for external dependencies
 - Validation of mock usage in generated tests
 - Enhanced test metadata with mock analysis
@@ -16,15 +17,21 @@ from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
 from typing import Any
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 
 from src.agents.analyzers.test_analyzer import create_test_analysis
-from src.agents.infrastructure.models import get_tester_model
+from src.agents.infrastructure.models import get_tester_model, get_tester_model_with_tools
 from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.nodes.react_executor import (
+    count_tool_calls_by_type,
+    execute_react_loop,
+    extract_final_response,
+)
 from src.agents.processing.parser import parse_code_blocks
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
+from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -470,7 +477,30 @@ TESTER_SYSTEM_PROMPT = """You are an expert QA engineer specializing in pytest a
 
 Your role is to analyze generated code and create thorough, production-ready test suites.
 
-Requirements:
+## Available Tools
+
+You have tools to read code and execute tests:
+
+**File Operations:**
+- read_file: Read source code and existing tests
+- write_file: Write test files
+- list_directory: Explore test directory structure
+- grep_content: Search for test patterns
+
+**Test Execution:**
+- run_pytest: Run tests and see results
+- run_python: Execute Python code for verification
+
+## Process
+
+1. Use read_file to examine the code being tested
+2. Use list_directory to see existing test structure
+3. Write comprehensive tests using write_file
+4. Use run_pytest to verify tests pass
+5. Iterate and fix any failing tests
+
+## Requirements
+
 1. Analyze the code and identify all functions, classes, and edge cases
 2. Write comprehensive pytest test cases with clear, descriptive names
 3. Include unit tests for individual functions
@@ -482,7 +512,13 @@ Requirements:
 9. Ensure tests are deterministic and isolated
 10. Add parametrized tests for multiple input scenarios
 
-Output format: Provide complete, ready-to-run pytest test code.
+## Output
+
+After writing and running tests, provide:
+- Summary of tests created
+- Test results (pass/fail)
+- Coverage recommendations
+
 Include all necessary imports and fixtures.
 Structure tests in a clear, logical order.
 Add comments for complex test logic but keep them concise.
@@ -494,12 +530,12 @@ async def tester_node(
     state: WorkflowState,
     config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
-    """Test generation node - creates comprehensive tests for generated code.
+    """Test generation node - creates and executes tests using tools.
 
     This node takes the generated code and execution plan, then produces
     comprehensive pytest test cases with full coverage including unit tests,
-    integration tests, and edge case scenarios. It also analyzes the tests
-    for coverage metrics and quality scoring.
+    integration tests, and edge case scenarios. The tester can write test files
+    and run pytest to verify they pass.
 
     Args:
         state: Current workflow state containing code and plan
@@ -511,6 +547,7 @@ async def tester_node(
             - test_analysis: Structured analysis with coverage, quality, recommendations
             - status: Updated to "reviewing"
             - messages: Accumulated LLM messages
+            - tool_calls: List of tool calls made during testing
             - metadata: Updated with test generation timestamp, analysis summary
             - iterations: Preserved from state
 
@@ -518,15 +555,28 @@ async def tester_node(
         Exception: If Claude API call fails
     """
     logger.info(
-        "Tester node executing",
+        "Tester node executing with tools",
         task_id=state.get("task_id"),
         code_length=len(state.get("code", "")),
+        workspace=state.get("workspace_path"),
     )
 
-    model = get_tester_model()
+    # Get model with tools bound
+    model = get_tester_model_with_tools()
 
-    # Build messages for the tester
-    messages = list(state.get("messages", []))
+    # Build initial messages
+    initial_messages: list[BaseMessage] = [
+        SystemMessage(content=TESTER_SYSTEM_PROMPT),
+    ]
+
+    # Add any existing conversation context
+    for msg in state.get("messages", []):
+        initial_messages.append(msg)
+
+    # Build workspace info
+    workspace_info = ""
+    if state.get("workspace_path"):
+        workspace_info = f"\n\nWorkspace: {state['workspace_path']}"
 
     # Create the test generation prompt
     test_prompt = f"""Analyze the following code and execution plan, then generate comprehensive pytest test cases:
@@ -535,7 +585,7 @@ Code:
 {state["code"]}
 
 Execution Plan (for context):
-{state["plan"]}
+{state["plan"]}{workspace_info}
 
 Generate complete, production-ready pytest test cases with:
 - Unit tests for all functions and methods
@@ -545,27 +595,26 @@ Generate complete, production-ready pytest test cases with:
 - Clear test names and docstrings
 - Proper fixtures and mocking setup
 - Parametrized tests for multiple scenarios
-- At least 80% code coverage target"""
+- At least 80% code coverage target
 
-    messages.append(HumanMessage(content=test_prompt))
+After writing the tests, run them with run_pytest to verify they pass."""
 
-    # Invoke the model with system prompt
-    import time
+    initial_messages.append(HumanMessage(content=test_prompt))
 
-    start_time = time.time()
-    response = await model.ainvoke(
-        [
-            ("system", TESTER_SYSTEM_PROMPT),
-            *[(msg.type, msg.content) for msg in messages],
-        ],
-        config,
+    # Execute ReAct loop with tools
+    all_messages, tool_call_records, usage = await execute_react_loop(
+        model=model,
+        messages=initial_messages,
+        state=dict(state),
+        agent_type=AgentType.TESTER,
+        config=config,
     )
-    latency_ms = int((time.time() - start_time) * 1000)
 
-    raw_content = response.content if isinstance(response, BaseMessage) else str(response)
+    # Extract the final response
+    final_response = extract_final_response(all_messages)
 
     # Parse code blocks from response to extract test code
-    parsed = parse_code_blocks(str(raw_content))
+    parsed = parse_code_blocks(final_response)
 
     # Get the primary test code (prefer parsed, fall back to raw)
     if parsed.has_code and parsed.test_blocks:
@@ -573,7 +622,7 @@ Generate complete, production-ready pytest test cases with:
     elif parsed.has_code and parsed.code_blocks:
         test_content = parsed.code_blocks[0].content
     else:
-        test_content = str(raw_content)
+        test_content = final_response
 
     # Analyze the generated tests
     source_code = state.get("code", "")
@@ -586,24 +635,27 @@ Generate complete, production-ready pytest test cases with:
     # Analyze mock strategy
     mock_analysis = analyze_mock_strategy(source_code, test_content)
 
-    # Extract usage metadata from response
-    usage_metadata = getattr(response, "usage_metadata", None) or {}
-    input_tokens = usage_metadata.get("input_tokens", 0)
-    output_tokens = usage_metadata.get("output_tokens", 0)
-    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
+    # Track tool calls
+    tool_counts = count_tool_calls_by_type(tool_call_records)
 
     logger.info(
-        "Tester generated tests",
+        "Tester completed with tools",
         task_id=state.get("task_id"),
         test_length=len(test_content),
         test_count=test_analysis.test_suite.test_count,
         coverage=test_analysis.coverage.coverage_percentage,
         quality_score=test_analysis.quality_score,
         mock_coverage=mock_analysis.mock_coverage,
-        input_tokens=input_tokens,
-        output_tokens=output_tokens,
-        latency_ms=latency_ms,
+        tool_calls_made=len(tool_call_records),
+        tool_counts=tool_counts,
+        input_tokens=usage.get("input_tokens", 0),
+        output_tokens=usage.get("output_tokens", 0),
+        latency_ms=usage.get("latency_ms", 0),
     )
+
+    # Combine existing tool calls with new ones
+    existing_tool_calls = list(state.get("tool_calls", []))
+    existing_tool_calls.extend(tool_call_records)
 
     return {
         "test_results": test_content,
@@ -612,7 +664,8 @@ Generate complete, production-ready pytest test cases with:
             "mock_strategy": mock_analysis.to_dict(),
         },
         "status": "reviewing",
-        "messages": [response],
+        "messages": all_messages[len(initial_messages) :],
+        "tool_calls": existing_tool_calls,
         "iterations": state.get("iterations", 0),
         "metadata": {
             **(state.get("metadata", {})),
@@ -624,7 +677,7 @@ Generate complete, production-ready pytest test cases with:
                 "quality_score": test_analysis.quality_score,
                 "passed": test_analysis.summary.passed,
                 "failed": test_analysis.summary.failed,
-                "recommendations": test_analysis.recommendations[:3],  # Top 3
+                "recommendations": test_analysis.recommendations[:3],
             },
             "mock_summary": {
                 "dependency_count": len(mock_analysis.dependencies),
@@ -633,10 +686,15 @@ Generate complete, production-ready pytest test cases with:
                 "has_proper_mocking": mock_analysis.has_proper_mocking,
             },
             "tester_usage": {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": total_tokens,
-                "latency_ms": latency_ms,
+                "input_tokens": usage.get("input_tokens", 0),
+                "output_tokens": usage.get("output_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
+                "latency_ms": usage.get("latency_ms", 0),
+                "iterations": usage.get("iterations", 0),
+            },
+            "tool_calls_summary": {
+                "total": len(tool_call_records),
+                "by_tool": tool_counts,
             },
         },
     }

@@ -3,16 +3,28 @@
 The coder is responsible for analyzing the plan from the planner and generating
 clean, well-documented, production-ready code. It supports multiple programming
 languages and integrates with the code generation pipeline.
+
+The coder has full access to tools for:
+- Reading and writing files
+- Editing existing code
+- Running linters and type checkers
+- Executing Python code
+- Git operations
 """
 
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 
-from src.agents.infrastructure.models import get_coder_model
+from src.agents.infrastructure.models import get_coder_model, get_coder_model_with_tools
 from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
+from src.agents.nodes.react_executor import (
+    count_tool_calls_by_type,
+    execute_react_loop,
+    extract_final_response,
+)
 from src.agents.processing.formatter import (
     create_multi_file_result,
     format_python_code,
@@ -21,6 +33,7 @@ from src.agents.processing.formatter import (
 from src.agents.processing.parser import parse_code_blocks
 from src.agents.state import WorkflowState
 from src.core.logging import get_logger
+from src.tools.registry import AgentType
 
 logger = get_logger(__name__)
 
@@ -29,7 +42,35 @@ CODER_SYSTEM_PROMPT = """You are an expert Python developer specializing in clea
 
 Your role is to implement code based on the execution plan from the planning phase.
 
-Requirements:
+## Available Tools
+
+You have access to the following tools to help you implement code:
+
+**File Operations:**
+- read_file: Read file contents to understand existing code
+- write_file: Write new files or replace existing ones
+- edit_file: Make targeted edits to existing files
+- list_directory: Explore directory structure
+
+**Code Quality:**
+- run_ruff: Check code for linting issues
+- run_mypy: Check type annotations
+- run_python: Execute Python code to verify it works
+
+**Git Operations:**
+- git_status: Check repository status
+- git_diff: See recent changes
+
+## Process
+
+1. First, use read_file and list_directory to explore the existing codebase
+2. Understand the context and patterns used in the project
+3. Write code using write_file or edit_file
+4. Use run_ruff and run_mypy to verify code quality
+5. Optionally use run_python to test your implementation
+
+## Requirements
+
 1. Write clean, well-documented code following PEP 8 standards
 2. Include comprehensive docstrings for all functions and classes
 3. Add proper type hints to all function parameters and returns
@@ -41,8 +82,12 @@ Requirements:
 9. Optimize for readability and maintainability
 10. If reviewing previous feedback, address all points
 
-Output format: Provide the complete, production-ready code.
-Include comments for complex logic but keep comments concise.
+## Output
+
+After using tools to implement and verify your code, provide a summary of:
+- Files created or modified
+- Key implementation decisions
+- Any issues found and how they were addressed
 
 When reviewing feedback, be thorough in addressing all concerns and improving code quality."""
 
@@ -51,11 +96,14 @@ async def coder_node(
     state: WorkflowState,
     config: RunnableConfig = {},  # noqa: B006
 ) -> dict[str, Any]:
-    """Code generation node - implements code from the plan.
+    """Code generation node - implements code from the plan using tools.
 
     This node takes the execution plan created by the planner and generates
-    production-ready code. It supports multi-file generation, code formatting,
-    linting, and syntax validation.
+    production-ready code using the ReAct pattern. The coder can:
+    - Read existing files to understand context
+    - Write new files or edit existing ones
+    - Run linters and type checkers
+    - Execute code to verify it works
 
     Args:
         state: Current workflow state containing plan and review feedback
@@ -67,28 +115,41 @@ async def coder_node(
             - code_files: Multi-file result with all generated files
             - status: Updated to "testing"
             - messages: Accumulated LLM messages
-            - metadata: Updated with code generation timestamp, formatting, validation
+            - tool_calls: List of tool calls made during execution
+            - metadata: Updated with code generation timestamp, tool usage
             - iterations: Incremented if this is a revision
 
     Raises:
         Exception: If Claude API call fails
     """
     logger.info(
-        "Coder node executing",
+        "Coder node executing with tools",
         task_id=state.get("task_id"),
         has_feedback=bool(state.get("review_feedback")),
+        workspace=state.get("workspace_path"),
     )
 
-    model = get_coder_model()
+    # Get model with tools bound
+    model = get_coder_model_with_tools()
 
-    # Build messages for the coder
-    messages = list(state.get("messages", []))
+    # Build initial messages
+    initial_messages: list[BaseMessage] = [
+        SystemMessage(content=CODER_SYSTEM_PROMPT),
+    ]
+
+    # Add any existing conversation context
+    for msg in state.get("messages", []):
+        initial_messages.append(msg)
 
     # Create the code generation prompt
-    code_prompt = f"""Based on the following execution plan, generate complete, production-ready code:
+    workspace_info = ""
+    if state.get("workspace_path"):
+        workspace_info = f"\n\nWorkspace: {state['workspace_path']}"
+
+    code_prompt = f"""Based on the following execution plan, implement the code:
 
 Plan:
-{state["plan"]}"""
+{state["plan"]}{workspace_info}"""
 
     # If there's review feedback, incorporate it
     if state.get("review_feedback"):
@@ -99,31 +160,22 @@ Previous Review Feedback:
 
 Please address all the feedback above in your revised code."""
 
-    messages.append(HumanMessage(content=code_prompt))
+    initial_messages.append(HumanMessage(content=code_prompt))
 
-    # Invoke the model with system prompt
-    import time
-
-    start_time = time.time()
-    response = await model.ainvoke(
-        [
-            ("system", CODER_SYSTEM_PROMPT),
-            *[(msg.type, msg.content) for msg in messages],
-        ],
-        config,
+    # Execute ReAct loop with tools
+    all_messages, tool_call_records, usage = await execute_react_loop(
+        model=model,
+        messages=initial_messages,
+        state=dict(state),
+        agent_type=AgentType.CODER,
+        config=config,
     )
-    latency_ms = int((time.time() - start_time) * 1000)
 
-    raw_content = response.content if isinstance(response, BaseMessage) else str(response)
+    # Extract the final response
+    final_response = extract_final_response(all_messages)
 
-    # Parse code blocks from response
-    parsed = parse_code_blocks(str(raw_content))
-
-    # Extract usage metadata from response
-    usage_metadata = getattr(response, "usage_metadata", None) or {}
-    input_tokens = usage_metadata.get("input_tokens", 0)
-    output_tokens = usage_metadata.get("output_tokens", 0)
-    total_tokens = usage_metadata.get("total_tokens", input_tokens + output_tokens)
+    # Parse code blocks from the final response
+    parsed = parse_code_blocks(final_response)
 
     # Build multi-file result with formatting
     code_blocks_tuples: list[tuple[str, str, str]] = []
@@ -134,15 +186,14 @@ Please address all the feedback above in your revised code."""
     # Create multi-file result with formatting and validation
     multi_file_result = create_multi_file_result(code_blocks_tuples, format_code=True)
 
-    # Use primary file content, or fall back to raw content
+    # Use primary file content, or fall back to final response
     if multi_file_result.primary_file:
         code_content = multi_file_result.primary_file.content
     elif parsed.has_code and parsed.primary_code:
-        # Format single code block if no multi-file result
         format_result = format_python_code(parsed.primary_code.content)
         code_content = format_result.formatted_code
     else:
-        code_content = str(raw_content)
+        code_content = final_response
 
     # Build structured code info for metadata
     code_blocks_info = [
@@ -171,17 +222,23 @@ Please address all the feedback above in your revised code."""
         ),
     }
 
+    # Count tool calls by type
+    tool_counts = count_tool_calls_by_type(tool_call_records)
+
     logger.info(
-        "Coder generated code",
+        "Coder completed with tools",
         task_id=state.get("task_id"),
         code_length=len(code_content),
         code_blocks=len(parsed.code_blocks),
         file_count=len(multi_file_result.files),
         all_valid=multi_file_result.all_valid,
         is_revision=bool(state.get("review_feedback")),
-        input_tokens=input_tokens,
-        output_tokens=output_tokens,
-        latency_ms=latency_ms,
+        tool_calls_made=len(tool_call_records),
+        tool_counts=tool_counts,
+        iterations=usage.get("iterations", 0),
+        input_tokens=usage.get("input_tokens", 0),
+        output_tokens=usage.get("output_tokens", 0),
+        latency_ms=usage.get("latency_ms", 0),
     )
 
     # Increment iterations if this is a revision
@@ -189,11 +246,16 @@ Please address all the feedback above in your revised code."""
     if state.get("review_feedback"):
         iterations += 1
 
+    # Combine existing tool calls with new ones
+    existing_tool_calls = list(state.get("tool_calls", []))
+    existing_tool_calls.extend(tool_call_records)
+
     return {
         "code": code_content,
         "code_files": multi_file_result.to_dict(),
         "status": "testing",
-        "messages": [response],
+        "messages": all_messages[len(initial_messages) :],  # Only new messages
+        "tool_calls": existing_tool_calls,
         "iterations": iterations,
         "metadata": {
             **(state.get("metadata", {})),
@@ -206,10 +268,15 @@ Please address all the feedback above in your revised code."""
             "multi_file": multi_file_result.to_dict(),
             "formatting": format_summary,
             "coder_usage": {
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "total_tokens": total_tokens,
-                "latency_ms": latency_ms,
+                "input_tokens": usage.get("input_tokens", 0),
+                "output_tokens": usage.get("output_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
+                "latency_ms": usage.get("latency_ms", 0),
+                "iterations": usage.get("iterations", 0),
+            },
+            "tool_calls_summary": {
+                "total": len(tool_call_records),
+                "by_tool": tool_counts,
             },
         },
     }
