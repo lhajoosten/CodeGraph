@@ -1,8 +1,12 @@
 """Pydantic schemas for user-related operations."""
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, EmailStr, Field
+
+if TYPE_CHECKING:
+    pass
 
 
 class UserBase(BaseModel):
@@ -34,6 +38,16 @@ class UserUpdate(BaseModel):
     password: str | None = Field(None, min_length=8)
 
 
+class RoleResponseInline(BaseModel):
+    """Inline role response to avoid circular imports."""
+
+    id: int
+    name: str
+    description: str | None = None
+
+    model_config = {"from_attributes": True}
+
+
 class UserResponse(UserBase):
     """Schema for user responses."""
 
@@ -47,6 +61,7 @@ class UserResponse(UserBase):
     display_name: str | None = None
     avatar_url: str | None = None
     profile_completed: bool
+    role: RoleResponseInline | None = Field(None, description="User's assigned role for RBAC")
     created_at: datetime
     updated_at: datetime
 

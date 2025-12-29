@@ -29,6 +29,18 @@ from src.schemas.metrics import (
     TimeseriesDataPoint,
     UsageMetricsResponse,
 )
+from src.schemas.permission import (
+    PermissionCheckRequest,
+    PermissionCheckResponse,
+    PermissionCreate,
+    PermissionResponse,
+    RoleCreate,
+    RoleResponse,
+    RoleUpdate,
+    RoleWithPermissionsResponse,
+    UserPermissionsResponse,
+    UserRoleAssignment,
+)
 from src.schemas.webhook import (
     AgentEventData,
     TaskEventData,
@@ -50,6 +62,17 @@ __all__ = [
     "AgentExecutionRequest",
     "AgentRunResponse",
     "AgentStreamEvent",
+    # Permission schemas
+    "PermissionCreate",
+    "PermissionResponse",
+    "PermissionCheckRequest",
+    "PermissionCheckResponse",
+    "RoleCreate",
+    "RoleResponse",
+    "RoleUpdate",
+    "RoleWithPermissionsResponse",
+    "UserPermissionsResponse",
+    "UserRoleAssignment",
     # Council schemas
     "CouncilComparisonResponse",
     "CouncilConfigRequest",

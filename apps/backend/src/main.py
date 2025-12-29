@@ -10,7 +10,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from src.agents.infrastructure.tracing import configure_tracing, get_tracing_status
-from src.api import agents, auth, metrics, oauth, tasks, test_email, two_factor, users, webhooks
+from src.api import (
+    admin,
+    agents,
+    auth,
+    metrics,
+    oauth,
+    tasks,
+    test_email,
+    two_factor,
+    users,
+    webhooks,
+)
 from src.core.config import settings
 from src.core.database import close_db
 from src.core.exception_handlers import (
@@ -116,6 +127,8 @@ app.include_router(webhooks.router, prefix="/api/v1", tags=["webhooks"])
 # OAuth is public-facing and should not have API versioning prefix
 app.include_router(oauth.router, tags=["oauth"])
 app.include_router(test_email.router, tags=["testing"])
+# Admin endpoints for role and permission management
+app.include_router(admin.router, prefix="/api/v1")
 
 
 # Global exception handler
