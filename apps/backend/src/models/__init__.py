@@ -13,8 +13,10 @@ from src.models.council_review import (
 from src.models.email_verification_token import EmailVerificationToken
 from src.models.oauth_account import OAuthAccount
 from src.models.password_reset_token import PasswordResetToken
+from src.models.permission import Permission, RolePermission
 from src.models.refresh_token import RefreshToken
 from src.models.repository import Repository
+from src.models.role import Role, RoleType
 from src.models.task import Task, TaskPriority, TaskStatus
 from src.models.usage_metrics import UsageMetrics
 from src.models.user import User
@@ -56,4 +58,9 @@ __all__ = [
     "ReviewVerdict",
     "ConsensusType",
     "LLMMode",
+    # RBAC/ABAC Permission System
+    "Role",
+    "RoleType",
+    "Permission",
+    "RolePermission",
 ]

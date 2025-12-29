@@ -6,16 +6,43 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.security import create_access_token, get_password_hash
+from src.models.permission import Permission as PermissionModel
+from src.models.permission import RolePermission
+from src.models.role import Role, RoleType
 from src.models.task import Task, TaskPriority, TaskStatus
 from src.models.user import User
 
 
 @pytest_asyncio.fixture
-async def auth_token(db_session: AsyncSession) -> str:
-    """Create an authenticated user and return access token."""
+async def developer_role(db_session: AsyncSession) -> Role:
+    """Create a developer role with necessary permissions."""
+    role = Role(name=RoleType.DEVELOPER, description="Developer role")
+    db_session.add(role)
+    await db_session.commit()
+    await db_session.refresh(role)
+
+    # Create task permissions
+    task_perms = ["task:create", "task:read", "task:update", "task:delete", "task:execute"]
+    for code in task_perms:
+        resource, action = code.split(":")
+        perm = PermissionModel(resource=resource, action=action)
+        db_session.add(perm)
+        await db_session.flush()
+        role_perm = RolePermission(role_id=role.id, permission_id=perm.id)
+        db_session.add(role_perm)
+
+    await db_session.commit()
+    await db_session.refresh(role)
+    return role
+
+
+@pytest_asyncio.fixture
+async def auth_token(db_session: AsyncSession, developer_role: Role) -> str:
+    """Create an authenticated user with developer role and return access token."""
     user = User(
         email="taskuser@example.com",
         hashed_password=get_password_hash("pass1234"),
+        role_id=developer_role.id,
     )
     db_session.add(user)
     await db_session.commit()
@@ -24,11 +51,12 @@ async def auth_token(db_session: AsyncSession) -> str:
 
 
 @pytest_asyncio.fixture
-async def user_with_tasks(db_session: AsyncSession) -> tuple[User, str]:
+async def user_with_tasks(db_session: AsyncSession, developer_role: Role) -> tuple[User, str]:
     """Create user with some tasks and return user + token."""
     user = User(
         email="taskcreator@example.com",
         hashed_password=get_password_hash("pass1234"),
+        role_id=developer_role.id,
     )
     db_session.add(user)
     await db_session.commit()
@@ -187,17 +215,25 @@ class TestTaskIntegration:
         )
         assert response.status_code == 204
 
-        # Verify deletion
+        # Verify deletion - returns 403 (permission denied) because:
+        # 1. The task no longer exists, so ownership check fails
+        # 2. We don't reveal whether a resource exists or not (security best practice)
         response = await client.get(
             f"/api/v1/tasks/{task_id}",
             headers={"Authorization": f"Bearer {token}"},
         )
-        assert response.status_code == 404
+        assert response.status_code == 403
 
     async def test_get_nonexistent_task(self, client: AsyncClient, auth_token: str) -> None:
-        """Test getting a non-existent task."""
+        """Test getting a non-existent task returns 403 (not 404).
+
+        We return 403 instead of 404 to avoid revealing whether resources exist
+        to users who don't have access (security best practice).
+        """
         response = await client.get(
             "/api/v1/tasks/99999",
             headers={"Authorization": f"Bearer {auth_token}"},
         )
-        assert response.status_code == 404
+        # Returns 403 because ownership check fails (resource doesn't exist)
+        # This prevents enumeration attacks
+        assert response.status_code == 403

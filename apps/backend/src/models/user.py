@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, TimestampMixin
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from src.models.oauth_account import OAuthAccount
     from src.models.refresh_token import RefreshToken
     from src.models.repository import Repository
+    from src.models.role import Role
     from src.models.task import Task
     from src.models.user_session import UserSession
     from src.models.webhook import Webhook
@@ -38,12 +39,14 @@ class User(Base, TimestampMixin):
         display_name (str | None): Full or preferred name of the user.
         avatar_url (str | None): URL to user's profile picture.
         profile_completed (bool): Flag indicating if user profile is complete.
+        role_id (int | None): Foreign key to the user's role for RBAC.
 
     Relationships:
         tasks (list[Task]): List of tasks created by the user.
         repositories (list[Repository]): List of repositories owned by the user.
         refresh_tokens (list[RefreshToken]): List of refresh tokens issued to the user.
         sessions (list[UserSession]): List of active sessions for the user.
+        role (Role | None): The role assigned to this user for permissions.
     """
 
     __tablename__ = "users"
@@ -75,6 +78,11 @@ class User(Base, TimestampMixin):
     avatar_url: Mapped[str | None] = mapped_column(String(512))
     profile_completed: Mapped[bool] = mapped_column(default=True, nullable=False)
 
+    # Role for RBAC
+    role_id: Mapped[int | None] = mapped_column(
+        ForeignKey("roles.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
     # Relationships
     tasks: Mapped[list["Task"]] = relationship(
         "Task", back_populates="user", cascade="all, delete-orphan"
@@ -97,6 +105,7 @@ class User(Base, TimestampMixin):
     webhooks: Mapped[list["Webhook"]] = relationship(
         "Webhook", back_populates="user", cascade="all, delete-orphan"
     )
+    role: Mapped["Role | None"] = relationship("Role", back_populates="users")
 
     def __repr__(self) -> str:
         """String representation of the user."""

@@ -134,3 +134,37 @@ def assert_messages_accumulated(
             assert hasattr(msg, "content") or isinstance(msg, dict), (
                 f"Invalid message type: {type(msg)}"
             )
+
+
+def assert_workflow_state_valid(state: Any) -> None:
+    """Assert that a workflow state has all required fields.
+
+    Args:
+        state: Workflow state to validate (dict or TypedDict)
+
+    Raises:
+        AssertionError: If state is missing required fields
+    """
+    required_fields = [
+        "task_id",
+        "task_description",
+        "plan",
+        "code",
+        "code_files",
+        "test_results",
+        "test_analysis",
+        "review_feedback",
+        "status",
+        "messages",
+        "metadata",
+        "iterations",
+    ]
+
+    # Handle both dict and TypedDict
+    if hasattr(state, "keys"):
+        state_keys = set(state.keys())
+    else:
+        state_keys = set(dir(state))
+
+    for field in required_fields:
+        assert field in state_keys, f"Missing required field: {field}"
