@@ -1,6 +1,5 @@
 """Tests for the tool registry."""
 
-import pytest
 from langchain_core.tools import tool
 
 from src.tools.registry import (
@@ -9,7 +8,6 @@ from src.tools.registry import (
     ToolCategory,
     ToolRegistry,
     get_registry,
-    get_tools_for_agent,
 )
 
 

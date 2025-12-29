@@ -4,6 +4,7 @@ This module provides all tools available to agents including:
 - File system operations (read, write, edit, delete, search)
 - Git operations (status, commit, branch management)
 - Directory operations (list, create)
+- Database operations (introspection, query execution)
 
 Tools are registered with the ToolRegistry and can be bound to
 agents using the registry's get_tools_for_agent() function.
@@ -17,6 +18,15 @@ from src.tools.base import (
     get_current_context,
     set_current_context,
 )
+
+# Import tools for registration
+from src.tools.database import (
+    execute_query,
+    explain_query,
+    get_table_columns,
+    get_table_relationships,
+    list_tables,
+)
 from src.tools.exceptions import (
     DatabaseToolError,
     ExecutionTimeoutError,
@@ -29,8 +39,6 @@ from src.tools.exceptions import (
     ToolExecutionError,
     WorkspaceNotFoundError,
 )
-
-# Import tools for registration
 from src.tools.filesystem import (
     create_directory,
     delete_file,
@@ -112,6 +120,18 @@ def register_all_tools() -> None:
         ToolCategory.GIT,
     )
 
+    # Register database tools
+    registry.register_many(
+        [
+            list_tables,
+            get_table_columns,
+            get_table_relationships,
+            execute_query,
+            explain_query,
+        ],
+        ToolCategory.DATABASE,
+    )
+
 
 __all__ = [
     # Base classes
@@ -162,4 +182,10 @@ __all__ = [
     "git_branch_list",
     "git_branch_create",
     "git_checkout",
+    # Database tools
+    "list_tables",
+    "get_table_columns",
+    "get_table_relationships",
+    "execute_query",
+    "explain_query",
 ]

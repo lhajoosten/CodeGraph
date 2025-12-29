@@ -133,22 +133,16 @@ class DatabaseToolError(ToolError):
     def __init__(
         self,
         message: str,
-        database_type: str | None = None,
-        query: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize database tool error.
 
         Args:
             message: Error message
-            database_type: Type of database
-            query: The query that failed (sanitized)
+            details: Additional error details (connection, query, etc.)
         """
-        super().__init__(
-            message,
-            {"database_type": database_type, "query": query},
-        )
-        self.database_type = database_type
-        self.query = query
+        super().__init__(message, details or {})
+        self._details = details or {}
 
 
 class ExecutionTimeoutError(ToolError):

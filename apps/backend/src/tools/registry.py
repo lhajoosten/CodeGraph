@@ -42,21 +42,25 @@ AGENT_TOOL_MAPPING: dict[AgentType, list[ToolCategory]] = {
     AgentType.PLANNER: [
         ToolCategory.FILESYSTEM,
         ToolCategory.SEARCH,
+        ToolCategory.DATABASE,  # Read-only database introspection
     ],
     AgentType.CODER: [
         ToolCategory.FILESYSTEM,
         ToolCategory.GIT,
         ToolCategory.SEARCH,
+        ToolCategory.DATABASE,  # Full database access
     ],
     AgentType.TESTER: [
         ToolCategory.FILESYSTEM,
         ToolCategory.EXECUTION,
         ToolCategory.SEARCH,
+        ToolCategory.DATABASE,  # For testing database queries
     ],
     AgentType.REVIEWER: [
         ToolCategory.FILESYSTEM,
         ToolCategory.GIT,
         ToolCategory.SEARCH,
+        ToolCategory.DATABASE,  # Read-only for reviewing
     ],
     AgentType.COUNCIL: [
         ToolCategory.FILESYSTEM,
