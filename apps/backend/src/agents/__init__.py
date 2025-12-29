@@ -21,14 +21,22 @@ Key exports:
 
 from src.agents.graph import (
     CancellationToken,
+    InterruptPoint,
+    StreamEventType,
     WorkflowCancelledError,
+    WorkflowInterruptedError,
     cancel_workflow,
     create_resilient_node,
+    create_supervised_workflow,
     create_workflow,
+    filter_stream_events,
     get_compiled_graph,
     get_compiled_graph_with_checkpointer,
+    get_interrupt_status,
+    get_interruptible_graph,
     invoke_workflow,
     reset_workflow_error_handler,
+    resume_workflow,
     stream_workflow,
 )
 from src.agents.state import CouncilState, JudgeVerdictState, WorkflowState
@@ -36,13 +44,24 @@ from src.agents.state import CouncilState, JudgeVerdictState, WorkflowState
 __all__ = [
     # Workflow management
     "create_workflow",
+    "create_supervised_workflow",
     "get_compiled_graph",
     "get_compiled_graph_with_checkpointer",
     "invoke_workflow",
     "stream_workflow",
+    # Streaming helpers
+    "StreamEventType",
+    "filter_stream_events",
+    # Cancellation
     "cancel_workflow",
     "CancellationToken",
     "WorkflowCancelledError",
+    # Human-in-the-loop interrupts
+    "get_interruptible_graph",
+    "resume_workflow",
+    "get_interrupt_status",
+    "InterruptPoint",
+    "WorkflowInterruptedError",
     # Error recovery
     "create_resilient_node",
     "reset_workflow_error_handler",

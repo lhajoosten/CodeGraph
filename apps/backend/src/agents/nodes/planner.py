@@ -10,7 +10,7 @@ Features:
 - Plan refinement loop on validation failure
 - Streaming support for real-time output
 
-TODO: Add plan versioning and history (Phase 4)
+Plan versioning tracks all plan iterations with full history.
 """
 
 import time
@@ -344,9 +344,21 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
         total_steps=validation.total_steps,
     )
 
+    # Plan versioning - track all plan versions
+    plan_version = 1
+    plan_history: list[dict[str, Any]] = [
+        {
+            "version": 1,
+            "created_at": datetime.utcnow().isoformat(),
+            "plan_content": str(plan_content),
+            "validation": validation.to_dict(),
+            "is_refinement": False,
+            "refinement_reason": None,
+        }
+    ]
+
     # Plan refinement loop
     refinement_attempts = 0
-    refinement_history: list[dict[str, Any]] = []
 
     while needs_refinement(validation) and refinement_attempts < MAX_REFINEMENT_ATTEMPTS:
         refinement_attempts += 1
@@ -360,13 +372,8 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             warning_count=validation.warning_count,
         )
 
-        # Record the previous attempt
-        refinement_history.append({
-            "attempt": refinement_attempts,
-            "plan_length": len(plan_content),
-            "validation": validation.to_dict(),
-            "issues": [issue.to_dict() for issue in validation.issues],
-        })
+        # Track refinement reason before generating new version
+        refinement_reason = _format_validation_issues(validation)
 
         # Refine the plan
         plan_content, refinement_usage, refinement_latency = await _refine_plan(
@@ -386,10 +393,22 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
         # Re-validate
         validation = validate_plan(str(plan_content))
 
+        # Track new version
+        plan_version += 1
+        plan_history.append({
+            "version": plan_version,
+            "created_at": datetime.utcnow().isoformat(),
+            "plan_content": str(plan_content),
+            "validation": validation.to_dict(),
+            "is_refinement": True,
+            "refinement_reason": refinement_reason,
+        })
+
         logger.info(
             "Plan refined",
             task_id=task_id,
             attempt=refinement_attempts,
+            plan_version=plan_version,
             plan_length=len(plan_content),
             refinement_tokens=refinement_usage["total_tokens"],
             is_valid=validation.is_valid,
@@ -414,7 +433,7 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
     if plan_cached:
         logger.debug("Plan cached for future use", task_id=task_id)
 
-    # Build metadata with refinement info
+    # Build metadata with versioning info
     metadata = {
         **(state.get("metadata", {})),
         "plan_generated_at": datetime.utcnow().isoformat(),
@@ -428,15 +447,18 @@ Provide a comprehensive step-by-step plan that will guide implementation, testin
             "total_tokens": total_usage["total_tokens"],
             "latency_ms": total_latency_ms,
         },
+        # Plan versioning
+        "plan_version": plan_version,
+        "plan_history": plan_history,
     }
 
-    # Add refinement history if any refinement occurred
+    # Add refinement summary if any refinement occurred
     if refinement_attempts > 0:
         metadata["plan_refinement"] = {
             "attempts": refinement_attempts,
             "max_attempts": MAX_REFINEMENT_ATTEMPTS,
             "refinement_successful": validation.is_valid,
-            "history": refinement_history,
+            "versions_created": plan_version,
         }
 
     return {

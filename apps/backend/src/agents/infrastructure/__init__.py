@@ -20,11 +20,14 @@ from src.agents.infrastructure.error_handler import ErrorHandler, ErrorType
 from src.agents.infrastructure.models import (
     ChatModel,
     ModelFactory,
+    ModelRateLimiter,
     get_coder_model,
     get_model_for_task,
     get_planner_model,
+    get_rate_limiter,
     get_reviewer_model,
     get_tester_model,
+    reset_rate_limiter,
 )
 from src.agents.infrastructure.streaming import StreamingMetrics, stream_with_metrics
 from src.agents.infrastructure.tracing import configure_tracing, is_tracing_enabled
@@ -39,6 +42,10 @@ __all__ = [
     "get_coder_model",
     "get_tester_model",
     "get_reviewer_model",
+    # Rate limiting
+    "ModelRateLimiter",
+    "get_rate_limiter",
+    "reset_rate_limiter",
     # Error handling
     "ErrorHandler",
     "ErrorType",

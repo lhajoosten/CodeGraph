@@ -14,10 +14,14 @@ Token usage tracking and cost estimation is implemented via:
 - src/services/metrics_service.py (metrics collection)
 - src/services/cost_calculator.py (cost estimation)
 
-TODO: Add rate limiting per model (Phase 4)
+Rate limiting is implemented via ModelRateLimiter to prevent API errors.
 """
 
 import asyncio
+import time
+from collections import defaultdict
+from dataclasses import dataclass, field
+from threading import Lock
 from typing import Literal
 
 from langchain_anthropic import ChatAnthropic
@@ -31,6 +35,289 @@ logger = get_logger(__name__)
 # Type aliases
 ModelTier = Literal["haiku", "sonnet", "opus"]
 ChatModel = ChatAnthropic | ChatOpenAI
+
+
+# =============================================================================
+# Rate Limiting
+# =============================================================================
+
+
+@dataclass
+class RateLimitConfig:
+    """Configuration for rate limiting per model/backend.
+
+    Attributes:
+        requests_per_minute: Maximum requests allowed per minute
+        tokens_per_minute: Maximum tokens allowed per minute (optional)
+        min_request_interval_ms: Minimum time between requests in milliseconds
+    """
+
+    requests_per_minute: int = 60
+    tokens_per_minute: int | None = None
+    min_request_interval_ms: int = 100  # 100ms minimum between requests
+
+
+@dataclass
+class RateLimitState:
+    """Tracks rate limit state for a specific model/backend combination."""
+
+    request_timestamps: list[float] = field(default_factory=list)
+    token_counts: list[tuple[float, int]] = field(default_factory=list)
+    last_request_time: float = 0.0
+
+
+class ModelRateLimiter:
+    """Rate limiter for model API calls.
+
+    Implements a sliding window rate limiter that:
+    - Tracks requests per minute per model tier and backend
+    - Adds delays when approaching rate limits
+    - Provides async-friendly waiting
+
+    Rate limits are configurable per backend:
+    - Local vLLM: Higher limits (local resource only)
+    - Claude API: Conservative limits matching Anthropic's rate limits
+
+    Usage:
+        limiter = ModelRateLimiter()
+        await limiter.acquire("sonnet", "cloud")  # Wait if needed
+        response = await model.ainvoke(...)
+        limiter.record_tokens("sonnet", "cloud", 1500)  # Track token usage
+
+    Thread Safety:
+        This class is thread-safe and can be used from multiple coroutines.
+    """
+
+    # Default rate limit configs per backend
+    DEFAULT_CONFIGS: dict[str, dict[ModelTier, RateLimitConfig]] = {
+        "local": {
+            # Local vLLM is only limited by GPU memory/compute
+            "haiku": RateLimitConfig(requests_per_minute=120, min_request_interval_ms=50),
+            "sonnet": RateLimitConfig(requests_per_minute=60, min_request_interval_ms=100),
+            "opus": RateLimitConfig(requests_per_minute=30, min_request_interval_ms=200),
+        },
+        "cloud": {
+            # Claude API rate limits (conservative to avoid 429 errors)
+            # Actual limits vary by plan, these are safe defaults
+            "haiku": RateLimitConfig(
+                requests_per_minute=50,
+                tokens_per_minute=100000,
+                min_request_interval_ms=200,
+            ),
+            "sonnet": RateLimitConfig(
+                requests_per_minute=40,
+                tokens_per_minute=80000,
+                min_request_interval_ms=300,
+            ),
+            "opus": RateLimitConfig(
+                requests_per_minute=20,
+                tokens_per_minute=40000,
+                min_request_interval_ms=500,
+            ),
+        },
+    }
+
+    def __init__(self) -> None:
+        """Initialize the rate limiter."""
+        self._states: dict[str, RateLimitState] = defaultdict(RateLimitState)
+        self._lock = Lock()
+        self._configs = self.DEFAULT_CONFIGS.copy()
+
+    def _get_key(self, tier: ModelTier, backend: str) -> str:
+        """Generate a unique key for tier/backend combination."""
+        return f"{backend}:{tier}"
+
+    def _get_config(self, tier: ModelTier, backend: str) -> RateLimitConfig:
+        """Get rate limit config for tier/backend."""
+        backend_configs = self._configs.get(backend, self._configs["local"])
+        return backend_configs.get(tier, RateLimitConfig())
+
+    def _cleanup_old_entries(self, state: RateLimitState, window_seconds: float = 60.0) -> None:
+        """Remove entries older than the sliding window."""
+        now = time.time()
+        cutoff = now - window_seconds
+
+        # Clean up request timestamps
+        state.request_timestamps = [ts for ts in state.request_timestamps if ts > cutoff]
+
+        # Clean up token counts
+        state.token_counts = [(ts, tokens) for ts, tokens in state.token_counts if ts > cutoff]
+
+    def _calculate_wait_time(
+        self,
+        state: RateLimitState,
+        config: RateLimitConfig,
+    ) -> float:
+        """Calculate how long to wait before the next request.
+
+        Returns:
+            Wait time in seconds (0.0 if no wait needed)
+        """
+        now = time.time()
+
+        # Check minimum interval since last request
+        time_since_last = (now - state.last_request_time) * 1000  # Convert to ms
+        if time_since_last < config.min_request_interval_ms:
+            interval_wait = (config.min_request_interval_ms - time_since_last) / 1000
+        else:
+            interval_wait = 0.0
+
+        # Check requests per minute
+        self._cleanup_old_entries(state)
+        current_rpm = len(state.request_timestamps)
+
+        if current_rpm >= config.requests_per_minute:
+            # Find when the oldest request will fall outside the window
+            oldest_ts = min(state.request_timestamps)
+            rpm_wait = (oldest_ts + 60.0) - now + 0.1  # Add 100ms buffer
+        else:
+            rpm_wait = 0.0
+
+        # Check tokens per minute if configured
+        tpm_wait = 0.0
+        if config.tokens_per_minute:
+            total_tokens = sum(tokens for _, tokens in state.token_counts)
+            if total_tokens >= config.tokens_per_minute:
+                oldest_ts = min(ts for ts, _ in state.token_counts)
+                tpm_wait = (oldest_ts + 60.0) - now + 0.1
+
+        return max(interval_wait, rpm_wait, tpm_wait)
+
+    async def acquire(self, tier: ModelTier, backend: str = "local") -> None:
+        """Acquire permission to make a request, waiting if necessary.
+
+        This should be called before making a model API call. It will
+        block (asynchronously) if the rate limit would be exceeded.
+
+        Args:
+            tier: The model tier being used
+            backend: The backend ("local" or "cloud")
+        """
+        key = self._get_key(tier, backend)
+        config = self._get_config(tier, backend)
+
+        while True:
+            with self._lock:
+                state = self._states[key]
+                wait_time = self._calculate_wait_time(state, config)
+
+                if wait_time <= 0:
+                    # Record the request
+                    now = time.time()
+                    state.request_timestamps.append(now)
+                    state.last_request_time = now
+                    return
+
+            # Wait outside the lock
+            if wait_time > 0:
+                logger.debug(
+                    "Rate limit delay",
+                    tier=tier,
+                    backend=backend,
+                    wait_seconds=round(wait_time, 2),
+                )
+                await asyncio.sleep(wait_time)
+
+    def record_tokens(self, tier: ModelTier, backend: str, tokens: int) -> None:
+        """Record token usage for TPM tracking.
+
+        Call this after a successful request to track token consumption.
+
+        Args:
+            tier: The model tier used
+            backend: The backend ("local" or "cloud")
+            tokens: Number of tokens used (input + output)
+        """
+        key = self._get_key(tier, backend)
+
+        with self._lock:
+            state = self._states[key]
+            state.token_counts.append((time.time(), tokens))
+
+    def get_status(self, tier: ModelTier, backend: str) -> dict[str, int | float]:
+        """Get current rate limit status for a tier/backend.
+
+        Returns:
+            Dictionary with current usage and limits
+        """
+        key = self._get_key(tier, backend)
+        config = self._get_config(tier, backend)
+
+        with self._lock:
+            state = self._states[key]
+            self._cleanup_old_entries(state)
+
+            current_rpm = len(state.request_timestamps)
+            current_tpm = sum(tokens for _, tokens in state.token_counts)
+
+            return {
+                "current_rpm": current_rpm,
+                "max_rpm": config.requests_per_minute,
+                "current_tpm": current_tpm,
+                "max_tpm": config.tokens_per_minute or 0,
+                "available_requests": max(0, config.requests_per_minute - current_rpm),
+            }
+
+    def reset(self, tier: ModelTier | None = None, backend: str | None = None) -> None:
+        """Reset rate limit state.
+
+        Args:
+            tier: Specific tier to reset (None for all)
+            backend: Specific backend to reset (None for all)
+        """
+        with self._lock:
+            if tier is None and backend is None:
+                self._states.clear()
+            elif tier and backend:
+                key = self._get_key(tier, backend)
+                self._states.pop(key, None)
+            else:
+                # Reset matching entries
+                keys_to_remove = []
+                for key in self._states:
+                    key_backend, key_tier = key.split(":")
+                    if (backend is None or key_backend == backend) and (
+                        tier is None or key_tier == tier
+                    ):
+                        keys_to_remove.append(key)
+                for key in keys_to_remove:
+                    del self._states[key]
+
+        logger.debug("Rate limiter reset", tier=tier, backend=backend)
+
+
+# Global rate limiter instance
+_rate_limiter: ModelRateLimiter | None = None
+_rate_limiter_lock = Lock()
+
+
+def get_rate_limiter() -> ModelRateLimiter:
+    """Get the global rate limiter instance (singleton).
+
+    Returns:
+        The global ModelRateLimiter instance
+    """
+    global _rate_limiter
+
+    if _rate_limiter is None:
+        with _rate_limiter_lock:
+            if _rate_limiter is None:
+                _rate_limiter = ModelRateLimiter()
+                logger.info("Model rate limiter initialized")
+
+    return _rate_limiter
+
+
+def reset_rate_limiter() -> None:
+    """Reset the global rate limiter.
+
+    Useful for testing or when starting a new workflow.
+    """
+    global _rate_limiter
+
+    with _rate_limiter_lock:
+        if _rate_limiter is not None:
+            _rate_limiter.reset()
 
 
 class ModelConfig:

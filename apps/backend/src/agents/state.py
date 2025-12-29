@@ -58,6 +58,26 @@ class PlanValidationMetadata(TypedDict, total=False):
     issues: list[dict[str, Any]]
 
 
+class PlanVersionMetadata(TypedDict, total=False):
+    """Metadata for a single plan version.
+
+    Attributes:
+        version: Version number (1-based)
+        created_at: ISO timestamp when this version was created
+        plan_content: The plan content for this version
+        validation: Validation result for this version
+        is_refinement: Whether this was a refinement of a previous version
+        refinement_reason: Why refinement was needed (if applicable)
+    """
+
+    version: int
+    created_at: str
+    plan_content: str
+    validation: PlanValidationMetadata
+    is_refinement: bool
+    refinement_reason: str | None
+
+
 class PlannerMetadata(TypedDict, total=False):
     """Metadata produced by the planner node.
 
@@ -70,6 +90,8 @@ class PlannerMetadata(TypedDict, total=False):
         cache_source_task_id: If from cache, the original task ID
         cache_source_timestamp: If from cache, when it was cached
         planner_usage: LLM token usage and latency
+        plan_version: Current plan version number
+        plan_history: History of all plan versions
     """
 
     plan_generated_at: str
@@ -80,6 +102,8 @@ class PlannerMetadata(TypedDict, total=False):
     cache_source_task_id: int | None
     cache_source_timestamp: str | None
     planner_usage: LLMUsageMetadata
+    plan_version: int
+    plan_history: list[PlanVersionMetadata]
 
 
 class CodeBlockMetadata(TypedDict, total=False):
