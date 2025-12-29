@@ -23,8 +23,8 @@ Additional Features:
 - Execution history endpoints for task and user history
 - Council review endpoints for multi-judge review data
 - Timeline endpoints for visualization
-
-TODO: Add rate limiting per user (Phase 4)
+- Graceful workflow cancellation
+- Automatic error recovery with retry logic
 """
 
 import json
@@ -38,6 +38,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.agents import stream_workflow
+from src.agents.cancellation import cancel_workflow
 from src.api.deps import get_current_user
 from src.core.database import get_db
 from src.core.logging import get_logger
@@ -92,7 +93,9 @@ async def execute_task_stream(
             data: {"type": "token", "content": "Step 1: "}\n\n
             data: {"type": "node_end", "node": "planner", "duration": 2.5}\n\n
 
-    TODO: Add error recovery with checkpoints (Phase 4)
+    Note:
+        Error recovery is handled automatically by the workflow layer via
+        resilient node wrappers that provide retry logic with exponential backoff.
     """
     logger.info("Execute task stream requested", task_id=task_id, user_id=current_user.id)
 
@@ -274,11 +277,11 @@ async def cancel_task(
     task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> dict[str, str | int]:
+) -> dict[str, str | int | bool]:
     """Cancel an ongoing task execution.
 
-    Signals the workflow to stop and cleanup resources. If the task has
-    checkpoints, it can be resumed later.
+    Signals the workflow to stop and cleanup resources. The cancellation
+    is graceful - nodes will complete their current operation before stopping.
 
     Args:
         task_id: ID of the task to cancel
@@ -286,20 +289,40 @@ async def cancel_task(
         current_user: Authenticated user
 
     Returns:
-        Confirmation message
+        Confirmation with cancellation status
 
     Raises:
-        HTTPException: If task not found or already completed
-
-    TODO: Implement cancellation with graceful cleanup (Phase 2)
-    TODO: Add checkpoint cleanup on cancellation (Phase 4)
+        HTTPException: If task not found
     """
     logger.info("Cancel task requested", task_id=task_id, user_id=current_user.id)
 
-    # TODO: Implement actual task cancellation
-    # await task_service.cancel_task(task_id, current_user.id)
+    # Verify task exists and belongs to user
+    result = await db.execute(
+        select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+    )
+    task = result.scalar_one_or_none()
 
-    return {"message": "Task cancellation requested", "task_id": task_id}
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Request cancellation via the cancellation token system
+    was_cancelled = cancel_workflow(task_id, reason="User requested cancellation")
+
+    if was_cancelled:
+        logger.info("Task cancellation signal sent", task_id=task_id)
+        return {
+            "message": "Task cancellation requested",
+            "task_id": task_id,
+            "cancelled": True,
+        }
+    else:
+        # No active workflow found - task may have already completed
+        logger.info("No active workflow to cancel", task_id=task_id)
+        return {
+            "message": "No active workflow found for task",
+            "task_id": task_id,
+            "cancelled": False,
+        }
 
 
 @router.get("/tasks/{task_id}/result")
@@ -323,8 +346,6 @@ async def get_task_result(
 
     Raises:
         HTTPException: If task not found or still executing
-
-    TODO: Add result expiration (Phase 4)
     """
     logger.info("Get task result requested", task_id=task_id, user_id=current_user.id)
 
