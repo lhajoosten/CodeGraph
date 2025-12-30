@@ -41,7 +41,7 @@ def set_auth_cookies(
     )
 
     # Refresh token cookie (7 days)
-    # HTTP-only, secure, restricted to refresh endpoint
+    # HTTP-only, secure, restricted to auth endpoints
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
@@ -50,7 +50,7 @@ def set_auth_cookies(
         secure=settings.cookie_secure,
         samesite=samesite,
         domain=settings.cookie_domain if settings.cookie_domain != "localhost" else None,
-        path="/api/v1/auth/refresh",
+        path="/api/v1/auth",
     )
 
     # CSRF token cookie (readable by JavaScript)
@@ -147,7 +147,7 @@ def clear_auth_cookies(response: Response) -> None:
     # Clear refresh token
     response.delete_cookie(
         key="refresh_token",
-        path="/api/v1/auth/refresh",
+        path="/api/v1/auth",
         httponly=True,
         secure=settings.cookie_secure,
         samesite=samesite,
