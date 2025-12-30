@@ -91,7 +91,7 @@ export function SavingsDisplay({ savings, isLoading = false }: SavingsDisplayPro
                   style={{ width: `${(item.value / maxSavings) * 100}%` }}
                 />
               </div>
-              <span className="text-text-tertiary w-12 text-right text-xs">
+              <span className="w-12 text-right text-xs text-text-tertiary">
                 {formatPercentage(item.value, item.total)}
               </span>
             </div>

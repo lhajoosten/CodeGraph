@@ -124,12 +124,12 @@ export const LuminousVariantsShowcase: Story = {
   render: () => (
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-2">
-        <label className="text-text-secondary text-sm font-semibold">Email Address</label>
+        <label className="text-sm font-semibold text-text-secondary">Email Address</label>
         <Input variant="default" type="email" placeholder="you@example.com" autoComplete="email" />
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary text-sm font-semibold">Password</label>
+        <label className="text-sm font-semibold text-text-secondary">Password</label>
         <Input
           variant="default"
           type="password"
@@ -139,7 +139,7 @@ export const LuminousVariantsShowcase: Story = {
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary text-sm font-semibold">Confirm Password</label>
+        <label className="text-sm font-semibold text-text-secondary">Confirm Password</label>
         <Input
           variant="default"
           type="password"
@@ -149,15 +149,15 @@ export const LuminousVariantsShowcase: Story = {
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary text-sm font-semibold">Error State</label>
+        <label className="text-sm font-semibold text-text-secondary">Error State</label>
         <Input variant="error" placeholder="Invalid input" defaultValue="invalid value" />
-        <p className="text-error mt-1 text-xs">This field is required</p>
+        <p className="mt-1 text-xs text-error">This field is required</p>
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary text-sm font-semibold">Success State</label>
+        <label className="text-sm font-semibold text-text-secondary">Success State</label>
         <Input variant="success" placeholder="Verified" defaultValue="valid@example.com" />
-        <p className="text-success mt-1 text-xs">Email verified</p>
+        <p className="mt-1 text-xs text-success">Email verified</p>
       </div>
     </div>
   ),
@@ -170,64 +170,64 @@ export const AllStates: Story = {
   render: () => (
     <div className="w-full max-w-2xl space-y-12">
       <section className="space-y-4">
-        <h3 className="border-border-primary text-text-primary border-b pb-2 text-lg font-semibold">
+        <h3 className="border-b border-border-primary pb-2 text-lg font-semibold text-text-primary">
           Luminous Theme - States
         </h3>
         <div className="space-y-3">
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Default</label>
+            <label className="mb-2 block text-sm text-text-secondary">Default</label>
             <Input variant="default" placeholder="Default state" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Error</label>
+            <label className="mb-2 block text-sm text-text-secondary">Error</label>
             <Input variant="error" placeholder="Error state" defaultValue="invalid" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Success</label>
+            <label className="mb-2 block text-sm text-text-secondary">Success</label>
             <Input variant="success" placeholder="Success state" defaultValue="valid" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Disabled</label>
+            <label className="mb-2 block text-sm text-text-secondary">Disabled</label>
             <Input variant="default" placeholder="Disabled state" disabled />
           </div>
         </div>
       </section>
 
       <section className="space-y-4">
-        <h3 className="border-border-primary text-text-primary border-b pb-2 text-lg font-semibold">
+        <h3 className="border-b border-border-primary pb-2 text-lg font-semibold text-text-primary">
           Size Variants
         </h3>
         <div className="space-y-3">
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Small</label>
+            <label className="mb-2 block text-sm text-text-secondary">Small</label>
             <Input variant="default" inputSize="sm" placeholder="Small input" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Default</label>
+            <label className="mb-2 block text-sm text-text-secondary">Default</label>
             <Input variant="default" inputSize="default" placeholder="Default input" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Large</label>
+            <label className="mb-2 block text-sm text-text-secondary">Large</label>
             <Input variant="default" inputSize="lg" placeholder="Large input" />
           </div>
         </div>
       </section>
 
       <section className="space-y-4">
-        <h3 className="border-border-primary text-text-primary border-b pb-2 text-lg font-semibold">
+        <h3 className="border-b border-border-primary pb-2 text-lg font-semibold text-text-primary">
           Input Types
         </h3>
         <div className="space-y-3">
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Text</label>
+            <label className="mb-2 block text-sm text-text-secondary">Text</label>
             <Input variant="default" type="text" placeholder="Text input" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Email</label>
+            <label className="mb-2 block text-sm text-text-secondary">Email</label>
             <Input variant="default" type="email" placeholder="Email input" autoComplete="email" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Password</label>
+            <label className="mb-2 block text-sm text-text-secondary">Password</label>
             <Input
               variant="default"
               type="password"
@@ -236,11 +236,11 @@ export const AllStates: Story = {
             />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Number</label>
+            <label className="mb-2 block text-sm text-text-secondary">Number</label>
             <Input variant="default" type="number" placeholder="Number input" />
           </div>
           <div>
-            <label className="text-text-secondary mb-2 block text-sm">Search</label>
+            <label className="mb-2 block text-sm text-text-secondary">Search</label>
             <Input variant="default" type="search" placeholder="Search input" />
           </div>
         </div>
@@ -256,28 +256,26 @@ export const FormLayout: Story = {
   render: () => (
     <div className="w-full max-w-md space-y-6">
       <div className="space-y-2">
-        <label className="text-text-secondary block text-sm font-semibold">Email Address</label>
+        <label className="block text-sm font-semibold text-text-secondary">Email Address</label>
         <Input variant="default" type="email" placeholder="you@example.com" autoComplete="email" />
-        <p className="text-text-muted text-xs">We&apos;ll never share your email.</p>
+        <p className="text-xs text-text-muted">We&apos;ll never share your email.</p>
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary block text-sm font-semibold">Password</label>
+        <label className="block text-sm font-semibold text-text-secondary">Password</label>
         <Input
           variant="default"
           type="password"
           placeholder="Enter a strong password"
           autoComplete="new-password"
         />
-        <p className="text-text-muted text-xs">
+        <p className="text-xs text-text-muted">
           At least 8 characters with uppercase, lowercase, and numbers.
         </p>
       </div>
 
       <div className="space-y-2">
-        <label className="text-text-secondary block text-sm font-semibold">
-          Confirm Password
-        </label>
+        <label className="block text-sm font-semibold text-text-secondary">Confirm Password</label>
         <Input
           variant="default"
           type="password"
@@ -287,8 +285,8 @@ export const FormLayout: Story = {
       </div>
 
       <div className="flex items-center gap-2">
-        <input type="checkbox" id="agree" className="border-border-primary rounded" />
-        <label htmlFor="agree" className="text-text-secondary cursor-pointer text-sm">
+        <input type="checkbox" id="agree" className="rounded border-border-primary" />
+        <label htmlFor="agree" className="cursor-pointer text-sm text-text-secondary">
           I agree to the Terms of Service
         </label>
       </div>

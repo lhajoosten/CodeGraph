@@ -52,7 +52,7 @@ export function CostEstimator() {
               onChange={(e) => setDailyTokens(Number(e.target.value))}
               placeholder="5000000"
             />
-            <p className="text-text-tertiary text-xs">Average daily token usage</p>
+            <p className="text-xs text-text-tertiary">Average daily token usage</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="input-ratio">Input Ratio</Label>
@@ -66,7 +66,7 @@ export function CostEstimator() {
               onChange={(e) => setInputRatio(Number(e.target.value))}
               placeholder="0.67"
             />
-            <p className="text-text-tertiary text-xs">Ratio of input tokens (default 2/3)</p>
+            <p className="text-xs text-text-tertiary">Ratio of input tokens (default 2/3)</p>
           </div>
         </div>
 
@@ -75,32 +75,32 @@ export function CostEstimator() {
         </Button>
 
         {estimateMutation.isSuccess && estimateMutation.data && (
-          <div className="bg-bg-elevated border-border mt-4 rounded-lg border p-4">
+          <div className="mt-4 rounded-lg border border-border bg-bg-elevated p-4">
             <div className="space-y-3">
               <div>
-                <div className="text-text-secondary mb-1 text-sm">Monthly Tokens</div>
+                <div className="mb-1 text-sm text-text-secondary">Monthly Tokens</div>
                 <div className="text-2xl font-bold text-brand-cyan">
                   {formatNumber(estimateMutation.data.monthly_tokens)}
                 </div>
               </div>
 
-              <div className="border-border grid grid-cols-2 gap-4 border-t pt-3">
+              <div className="grid grid-cols-2 gap-4 border-t border-border pt-3">
                 <div>
-                  <div className="text-text-tertiary text-xs">Input Tokens</div>
+                  <div className="text-xs text-text-tertiary">Input Tokens</div>
                   <div className="font-semibold">
                     {formatNumber(estimateMutation.data.input_tokens)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-text-tertiary text-xs">Output Tokens</div>
+                  <div className="text-xs text-text-tertiary">Output Tokens</div>
                   <div className="font-semibold">
                     {formatNumber(estimateMutation.data.output_tokens)}
                   </div>
                 </div>
               </div>
 
-              <div className="border-border space-y-2 border-t pt-3">
-                <div className="text-text-secondary mb-2 text-xs font-medium">Cost Breakdown</div>
+              <div className="space-y-2 border-t border-border pt-3">
+                <div className="mb-2 text-xs font-medium text-text-secondary">Cost Breakdown</div>
                 <div className="flex justify-between text-sm">
                   <span>Local (vLLM)</span>
                   <span>{formatCurrency(estimateMutation.data.costs.local_cost)}</span>

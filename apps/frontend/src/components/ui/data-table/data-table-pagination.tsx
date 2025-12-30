@@ -65,7 +65,7 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2">
       {/* Row Selection Info */}
-      <div className="text-text-secondary flex-1 text-sm">
+      <div className="flex-1 text-sm text-text-secondary">
         {showRowSelection && selectedCount > 0 && (
           <span>
             {selectedCount} of {totalCount} row(s) selected.
@@ -78,7 +78,7 @@ export function DataTablePagination<TData>({
         {/* Page Size Selector */}
         {showPageSizeSelector && (
           <div className="flex items-center space-x-2">
-            <p className="text-text-primary text-sm font-medium">Rows per page</p>
+            <p className="text-sm font-medium text-text-primary">Rows per page</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={handlePageSizeChange}
@@ -99,7 +99,7 @@ export function DataTablePagination<TData>({
 
         {/* Page Info */}
         {showPageInfo && (
-          <div className="text-text-primary flex w-24 items-center justify-center text-sm font-medium">
+          <div className="flex w-24 items-center justify-center text-sm font-medium text-text-primary">
             Page {currentPage} of {pageCount}
           </div>
         )}

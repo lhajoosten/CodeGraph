@@ -34,8 +34,8 @@ function RegisterPageFallback() {
     <AuthLayout>
       <AuthCard>
         <div className="space-y-4">
-          <div className="bg-surface-secondary h-8 w-32 animate-pulse rounded"></div>
-          <div className="bg-surface-secondary h-4 w-48 animate-pulse rounded"></div>
+          <div className="h-8 w-32 animate-pulse rounded bg-surface-secondary"></div>
+          <div className="h-4 w-48 animate-pulse rounded bg-surface-secondary"></div>
         </div>
       </AuthCard>
     </AuthLayout>

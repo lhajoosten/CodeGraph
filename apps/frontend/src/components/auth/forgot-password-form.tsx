@@ -70,11 +70,11 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
         </div>
 
-        <p className="text-text-primary text-center font-medium">
+        <p className="text-center font-medium text-text-primary">
           {t('luminous.forgotPassword.successTitle')}
         </p>
 
-        <p className="text-text-secondary text-center text-sm">
+        <p className="text-center text-sm text-text-secondary">
           {t('luminous.forgotPassword.successMessage', {
             email: submittedEmail,
             defaultValue: `We've sent a password reset link to ${submittedEmail}. Please check your email and follow the link to reset your password.`,
@@ -88,7 +88,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         <div className="flex gap-3 pt-4">
           <button
             onClick={handleTryAnother}
-            className="border-border-primary bg-surface text-text-primary flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-surface-secondary"
+            className="flex-1 rounded-lg border border-border-primary bg-surface py-3 font-semibold text-text-primary transition-all hover:bg-surface-secondary"
           >
             {t('luminous.forgotPassword.tryAnotherEmail')}
           </button>
@@ -136,9 +136,9 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         )}
       </button>
 
-      <p className="text-text-secondary text-center text-sm">
+      <p className="text-center text-sm text-text-secondary">
         {t('luminous.forgotPassword.rememberPassword')}{' '}
-        <a href="/login" className="hover:text-brand-teal text-brand-cyan">
+        <a href="/login" className="text-brand-cyan hover:text-brand-teal">
           {t('luminous.forgotPassword.signin')}
         </a>
       </p>

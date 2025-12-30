@@ -98,7 +98,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-text-muted absolute top-[32px] right-3 transition-colors hover:text-text-secondary"
+            className="absolute top-[32px] right-3 text-text-muted transition-colors hover:text-text-secondary"
             tabIndex={-1}
           >
             {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
@@ -110,7 +110,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
-            className="border-border-primary cursor-pointer rounded"
+            className="cursor-pointer rounded border-border-primary"
             disabled={isSubmitting || loginMutation.isPending}
             {...register('rememberMe')}
           />
@@ -118,7 +118,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </label>
         <a
           href="/forgot-password"
-          className="hover:text-brand-teal text-brand-cyan transition-colors"
+          className="text-brand-cyan transition-colors hover:text-brand-teal"
         >
           {t('luminous.signin.forgotPassword')}
         </a>
@@ -139,9 +139,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         )}
       </button>
 
-      <p className="text-text-secondary text-center text-sm">
+      <p className="text-center text-sm text-text-secondary">
         {t('luminous.signin.noAccount')}{' '}
-        <a href="/register" className="hover:text-brand-teal text-brand-cyan">
+        <a href="/register" className="text-brand-cyan hover:text-brand-teal">
           {t('luminous.signin.signup')}
         </a>
       </p>

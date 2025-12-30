@@ -35,7 +35,7 @@ export function DataTableBody<TData, TValue>({
   emptyState,
 }: DataTableBodyProps<TData, TValue>) {
   return (
-    <div className="border-border-primary overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-lg border border-border-primary">
       <TableComponent variant="default">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -65,7 +65,7 @@ export function DataTableBody<TData, TValue>({
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 {emptyState ?? (
-                  <div className="text-text-secondary flex flex-col items-center justify-center space-y-2">
+                  <div className="flex flex-col items-center justify-center space-y-2 text-text-secondary">
                     <MagnifyingGlassIcon className="h-8 w-8 opacity-50" />
                     <p>{emptyMessage}</p>
                   </div>

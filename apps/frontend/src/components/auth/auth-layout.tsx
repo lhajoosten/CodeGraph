@@ -15,7 +15,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="luminous-theme flex min-h-screen w-full items-center justify-center p-4">
       {/* Gradient background */}
-      <div className="from-background via-background-secondary to-background absolute inset-0 bg-gradient-to-br" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background" />
 
       {/* Animated background elements (subtle) */}
       <div className="absolute inset-0 overflow-hidden">
@@ -28,7 +28,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           }}
         />
         <div
-          className="bg-brand-teal absolute h-96 w-96 rounded-full opacity-5"
+          className="absolute h-96 w-96 rounded-full bg-brand-teal opacity-5"
           style={{
             bottom: '-10%',
             left: '-5%',

@@ -14,7 +14,7 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
     <div
       className={cn(
         `
-          bg-background flex min-h-screen flex-col items-center justify-center
+          flex min-h-screen flex-col items-center justify-center bg-background
           px-4 py-12
         `,
         `
@@ -43,7 +43,7 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
         {/* Content */}
         <div
           className={`
-            border-border-primary bg-surface-secondary shadow-card rounded-auth border p-8
+            rounded-auth border border-border-primary bg-surface-secondary p-8 shadow-card
           `}
         >
           {children}
@@ -56,7 +56,7 @@ function AuthLayout({ children, className, showBackLink = false }: AuthLayoutPro
               to="/login"
               search={{ redirect: '/' }}
               className={`
-                text-text-secondary text-sm transition-colors
+                text-sm text-text-secondary transition-colors
                 hover:text-brand-cyan
               `}
             >
@@ -79,8 +79,8 @@ interface AuthTitleProps {
 function AuthTitle({ title, description, className }: AuthTitleProps) {
   return (
     <div className={cn('mb-6 space-y-2 text-center', className)}>
-      <h1 className="text-text-primary text-2xl font-bold">{title}</h1>
-      {description && <p className="text-text-secondary text-sm">{description}</p>}
+      <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
+      {description && <p className="text-sm text-text-secondary">{description}</p>}
     </div>
   );
 }
@@ -93,9 +93,7 @@ interface AuthFooterProps {
 
 function AuthFooter({ children, className }: AuthFooterProps) {
   return (
-    <div className={cn('text-text-secondary mt-6 text-center text-sm', className)}>
-      {children}
-    </div>
+    <div className={cn('mt-6 text-center text-sm text-text-secondary', className)}>{children}</div>
   );
 }
 
@@ -109,10 +107,10 @@ function AuthDivider({ text = 'or', className }: AuthDividerProps) {
   return (
     <div className={cn('relative my-6', className)}>
       <div className="absolute inset-0 flex items-center">
-        <span className="border-border-primary w-full border-t" />
+        <span className="w-full border-t border-border-primary" />
       </div>
       <div className="relative flex justify-center text-xs uppercase">
-        <span className="bg-surface-secondary text-text-muted px-2">{text}</span>
+        <span className="bg-surface-secondary px-2 text-text-muted">{text}</span>
       </div>
     </div>
   );

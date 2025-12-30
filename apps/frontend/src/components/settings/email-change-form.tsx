@@ -53,16 +53,16 @@ export const EmailChangeForm = () => {
   return (
     <div className="space-y-4">
       {/* Current Email Display */}
-      <div className="border-border-primary bg-surface rounded-lg border p-4">
-        <p className="text-text-secondary text-sm">Current email</p>
-        <p className="text-text-primary font-medium">{user?.email}</p>
+      <div className="rounded-lg border border-border-primary bg-surface p-4">
+        <p className="text-sm text-text-secondary">Current email</p>
+        <p className="font-medium text-text-primary">{user?.email}</p>
       </div>
 
       {success ? (
-        <div className="border-success bg-success/10 rounded-lg border p-4">
+        <div className="rounded-lg border border-success bg-success/10 p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="text-success h-5 w-5"
+              className="h-5 w-5 text-success"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -75,8 +75,8 @@ export const EmailChangeForm = () => {
               />
             </svg>
             <div>
-              <p className="text-success font-medium">Verification email sent!</p>
-              <p className="text-text-secondary mt-1 text-sm">
+              <p className="font-medium text-success">Verification email sent!</p>
+              <p className="mt-1 text-sm text-text-secondary">
                 We&apos;ve sent a verification email to <strong>{newEmail}</strong>. Please check
                 your inbox and click the link to confirm your new email address.
               </p>
@@ -85,7 +85,7 @@ export const EmailChangeForm = () => {
           <button
             onClick={() => setSuccess(false)}
             className={`
-              text-success mt-4 text-sm font-medium
+              mt-4 text-sm font-medium text-success
               hover:text-brand-lime
             `}
           >
@@ -97,8 +97,8 @@ export const EmailChangeForm = () => {
           {error && (
             <div
               className={`
-                border-error bg-error/10 text-error rounded-lg border p-3
-                text-sm
+                rounded-lg border border-error bg-error/10 p-3 text-sm
+                text-error
               `}
             >
               {error}
@@ -106,7 +106,7 @@ export const EmailChangeForm = () => {
           )}
 
           <div>
-            <label className="text-text-secondary mb-1 block text-sm font-medium">
+            <label className="mb-1 block text-sm font-medium text-text-secondary">
               New Email Address
             </label>
             <input
@@ -115,7 +115,7 @@ export const EmailChangeForm = () => {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               className={`
-                border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
+                w-full rounded-lg border border-border-primary bg-surface px-4 py-2 text-text-primary
                 focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
@@ -125,7 +125,7 @@ export const EmailChangeForm = () => {
           </div>
 
           <div>
-            <label className="text-text-secondary mb-1 block text-sm font-medium">
+            <label className="mb-1 block text-sm font-medium text-text-secondary">
               Confirm with Password
             </label>
             <input
@@ -134,14 +134,14 @@ export const EmailChangeForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`
-                border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
+                w-full rounded-lg border border-border-primary bg-surface px-4 py-2 text-text-primary
                 focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
               placeholder="Enter your password"
               disabled={changeMutation.isPending}
             />
-            <p className="text-text-muted mt-1 text-xs">
+            <p className="mt-1 text-xs text-text-muted">
               We need your password to confirm this change
             </p>
           </div>

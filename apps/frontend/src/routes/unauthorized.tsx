@@ -17,10 +17,7 @@ function UnauthorizedPage() {
           <h1 style={{ color: 'var(--color-error)' }} className="text-6xl font-bold">
             403
           </h1>
-          <p
-            style={{ color: 'var(--color-text-primary)' }}
-            className="mt-2 text-2xl font-semibold"
-          >
+          <p style={{ color: 'var(--color-text-primary)' }} className="mt-2 text-2xl font-semibold">
             Unauthorized
           </p>
         </div>

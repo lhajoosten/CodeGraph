@@ -40,8 +40,8 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
     <Card
       className={cn(
         `
-          hover:border-primary/50 hover:shadow-card
           transition-all duration-200
+          hover:border-primary/50 hover:shadow-card
         `,
         className
       )}
@@ -56,7 +56,7 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
             to="/webhooks/$id"
             params={{ id: String(webhook.id) }}
             className={`
-              text-text-primary line-clamp-1 text-lg font-semibold
+              line-clamp-1 text-lg font-semibold text-text-primary
               transition-colors
               hover:text-primary
             `}
@@ -65,7 +65,7 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <WebhookStatusBadge status={webhook.status} size="sm" />
-            <span className="text-text-muted text-xs">{eventCount}</span>
+            <span className="text-xs text-text-muted">{eventCount}</span>
           </div>
         </div>
 
@@ -111,17 +111,17 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
       </CardHeader>
 
       <CardContent className="space-y-2 py-2">
-        <p className="text-text-secondary line-clamp-1 font-mono text-sm">
+        <p className="line-clamp-1 font-mono text-sm text-text-secondary">
           {truncate(webhook.url, 60)}
         </p>
-        <div className="text-text-muted flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-4 text-xs text-text-muted">
           <span>Success: {webhook.success_count}</span>
           <span>Failed: {webhook.failure_count}</span>
           {totalDeliveries > 0 && <span>({successRate}%)</span>}
         </div>
       </CardContent>
 
-      <CardFooter className="text-text-secondary pt-2 text-xs">
+      <CardFooter className="pt-2 text-xs text-text-secondary">
         Updated {formatRelativeTime(webhook.updated_at)}
       </CardFooter>
     </Card>

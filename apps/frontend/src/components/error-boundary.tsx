@@ -83,10 +83,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               >
                 Oops! Something went wrong
               </h1>
-              <p
-                style={{ color: 'var(--color-text-secondary)' }}
-                className="text-center text-sm"
-              >
+              <p style={{ color: 'var(--color-text-secondary)' }} className="text-center text-sm">
                 We encountered an unexpected error. Our team has been notified and we&apos;re
                 working on a fix.
               </p>

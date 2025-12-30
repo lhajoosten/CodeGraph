@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 interface OTPInputProps {
@@ -33,27 +33,30 @@ export function OTPInput({
   label = 'Verification Code',
   hint = 'Enter the 6-digit code from your authenticator app',
 }: OTPInputProps) {
-  const [otp, setOtp] = useState<string[]>(
-    value.split('').concat(Array(length - value.length).fill(''))
+  // Derive OTP array directly from value prop (avoids setState in effect)
+  const otp = useMemo(
+    () => value.split('').concat(Array(length - value.length).fill('')),
+    [value, length]
   );
-  const [hasCompleted, setHasCompleted] = useState(false);
+  // Use ref for completion tracking to avoid setState in callbacks/effects
+  const hasCompletedRef = useRef(false);
+  const lastCompletedValueRef = useRef('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    setOtp(value.split('').concat(Array(length - value.length).fill('')));
-    // Reset completion flag when value changes (e.g., when cleared after error)
-    if (value.length < length) {
-      setHasCompleted(false);
-    }
-  }, [value, length]);
 
   const triggerComplete = useCallback(
     (completeValue: string) => {
-      if (autoSubmit && onComplete && !hasCompleted && completeValue.length === length) {
+      // Only trigger if all conditions are met and we haven't completed with this exact value
+      if (
+        autoSubmit &&
+        onComplete &&
+        completeValue.length === length &&
+        lastCompletedValueRef.current !== completeValue
+      ) {
         // Ensure all digits are present (no empty strings)
         const allFilled = completeValue.split('').every((d) => d !== '');
         if (allFilled) {
-          setHasCompleted(true);
+          hasCompletedRef.current = true;
+          lastCompletedValueRef.current = completeValue;
           // Small delay to allow the UI to update before submitting
           setTimeout(() => {
             onComplete(completeValue);
@@ -61,7 +64,7 @@ export function OTPInput({
         }
       }
     },
-    [autoSubmit, onComplete, hasCompleted, length]
+    [autoSubmit, onComplete, length]
   );
 
   const handleChange = (index: number, val: string) => {
@@ -79,7 +82,6 @@ export function OTPInput({
         }
       });
 
-      setOtp(newOtp);
       const newValue = newOtp.join('');
       onChange(newValue);
 
@@ -93,7 +95,6 @@ export function OTPInput({
       // Single digit entry
       const newOtp = [...otp];
       newOtp[index] = digit;
-      setOtp(newOtp);
       const newValue = newOtp.join('');
       onChange(newValue);
 
@@ -115,7 +116,6 @@ export function OTPInput({
         // Clear current field
         const newOtp = [...otp];
         newOtp[index] = '';
-        setOtp(newOtp);
         onChange(newOtp.join(''));
       } else if (index > 0) {
         // Move to previous field and clear it
@@ -136,9 +136,7 @@ export function OTPInput({
   return (
     <div className="space-y-4">
       {label && (
-        <label className="text-text-secondary block text-center text-sm font-medium">
-          {label}
-        </label>
+        <label className="block text-center text-sm font-medium text-text-secondary">{label}</label>
       )}
 
       <div className="flex justify-center gap-3">
@@ -166,21 +164,21 @@ export function OTPInput({
               'placeholder:text-text-muted',
               // Error state
               error
-                ? 'border-error animate-shake shadow-[0_0_12px_rgba(239,68,68,0.4)]'
+                ? 'animate-shake border-error shadow-[0_0_12px_rgba(239,68,68,0.4)]'
                 : // Focus and filled states
                   otp[index]
-                  ? 'border-brand-teal shadow-glow-teal scale-[1.02]'
+                  ? 'scale-[1.02] border-brand-teal shadow-glow-teal'
                   : 'border-border-primary hover:border-brand-teal/50',
               !error &&
-                'focus:border-brand-teal focus:shadow-glow-teal focus:scale-105 focus:outline-none',
+                'focus:scale-105 focus:border-brand-teal focus:shadow-glow-teal focus:outline-none',
               // Disabled state
-              'disabled:hover:border-border-primary disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50'
+              'disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-border-primary'
             )}
           />
         ))}
       </div>
 
-      {hint && <p className="text-text-muted text-center text-xs">{hint}</p>}
+      {hint && <p className="text-center text-xs text-text-muted">{hint}</p>}
     </div>
   );
 }

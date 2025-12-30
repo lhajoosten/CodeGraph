@@ -28,10 +28,10 @@ function LoginPageContent() {
         {/* OAuth Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="border-border-primary w-full border-t"></div>
+            <div className="w-full border-t border-border-primary"></div>
           </div>
           <div className="relative my-4 flex justify-center text-sm">
-            <span className="bg-surface-secondary text-text-secondary px-2">
+            <span className="bg-surface-secondary px-2 text-text-secondary">
               {t('luminous.signin.oauthDivider')}
             </span>
           </div>
@@ -45,13 +45,13 @@ function LoginPageContent() {
         </div>
 
         {/* Footer */}
-        <p className="text-text-secondary mt-4 text-center text-xs">
+        <p className="mt-4 text-center text-xs text-text-secondary">
           By signing in, you agree to our{' '}
           <a
             href="/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-brand-teal text-brand-cyan transition-colors"
+            className="text-brand-cyan transition-colors hover:text-brand-teal"
           >
             Terms of Service
           </a>{' '}
@@ -60,7 +60,7 @@ function LoginPageContent() {
             href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-brand-teal text-brand-cyan transition-colors"
+            className="text-brand-cyan transition-colors hover:text-brand-teal"
           >
             Privacy Policy
           </a>
@@ -75,8 +75,8 @@ function LoginPageFallback() {
     <AuthLayout>
       <AuthCard>
         <div className="space-y-4">
-          <div className="bg-surface-secondary h-8 w-32 animate-pulse rounded"></div>
-          <div className="bg-surface-secondary h-4 w-48 animate-pulse rounded"></div>
+          <div className="h-8 w-32 animate-pulse rounded bg-surface-secondary"></div>
+          <div className="h-4 w-48 animate-pulse rounded bg-surface-secondary"></div>
         </div>
       </AuthCard>
     </AuthLayout>

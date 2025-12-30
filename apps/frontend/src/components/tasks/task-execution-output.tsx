@@ -112,10 +112,10 @@ export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExec
           {isExecuting && (
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-              <span className="text-muted-foreground text-xs">Streaming...</span>
+              <span className="text-xs text-muted-foreground">Streaming...</span>
             </div>
           )}
-          {status === 'error' && <span className="text-danger text-xs">Connection error</span>}
+          {status === 'error' && <span className="text-xs text-danger">Connection error</span>}
         </div>
         <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
           {isExpanded ? (
@@ -132,17 +132,17 @@ export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExec
             ref={outputRef}
             className={cn(
               'max-h-[600px] min-h-[300px] overflow-y-auto',
-              'bg-muted/30 rounded-md border p-4',
+              'rounded-md border bg-muted/30 p-4',
               'font-mono text-sm'
             )}
           >
             {streamingOutput ? (
               <pre className="break-words whitespace-pre-wrap">{streamingOutput}</pre>
             ) : (
-              <div className="text-muted-foreground flex h-[300px] items-center justify-center">
+              <div className="flex h-[300px] items-center justify-center text-muted-foreground">
                 {isExecuting ? (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                     <p>Waiting for output...</p>
                   </div>
                 ) : (
@@ -154,7 +154,7 @@ export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExec
 
           {/* Message count indicator */}
           {messages.length > 0 && (
-            <div className="text-muted-foreground mt-2 text-xs">
+            <div className="mt-2 text-xs text-muted-foreground">
               {messages.length} event{messages.length !== 1 ? 's' : ''} received
             </div>
           )}

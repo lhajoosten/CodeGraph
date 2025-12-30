@@ -133,7 +133,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-text-muted absolute top-[32px] right-3 transition-colors hover:text-text-secondary"
+            className="absolute top-[32px] right-3 text-text-muted transition-colors hover:text-text-secondary"
             tabIndex={-1}
           >
             {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
@@ -167,7 +167,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         <button
           type="button"
           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          className="text-text-muted absolute top-[32px] right-3 transition-colors hover:text-text-secondary"
+          className="absolute top-[32px] right-3 text-text-muted transition-colors hover:text-text-secondary"
           tabIndex={-1}
         >
           {showConfirmPassword ? (
@@ -181,14 +181,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <label className="flex cursor-pointer items-start gap-3">
         <input
           type="checkbox"
-          className="border-border-primary mt-1 cursor-pointer rounded"
+          className="mt-1 cursor-pointer rounded border-border-primary"
           disabled={isSubmitting || registerMutation.isPending}
           {...register('acceptTerms')}
         />
-        <span className="text-text-secondary text-sm">{t('luminous.signup.acceptTerms')}</span>
+        <span className="text-sm text-text-secondary">{t('luminous.signup.acceptTerms')}</span>
       </label>
 
-      {errors.acceptTerms && <p className="text-error text-xs">{errors.acceptTerms.message}</p>}
+      {errors.acceptTerms && <p className="text-xs text-error">{errors.acceptTerms.message}</p>}
 
       <button
         type="submit"
@@ -210,9 +210,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </button>
 
-      <p className="text-text-secondary text-center text-sm">
+      <p className="text-center text-sm text-text-secondary">
         {t('luminous.signup.haveAccount')}{' '}
-        <a href="/login" className="hover:text-brand-teal text-brand-cyan">
+        <a href="/login" className="text-brand-cyan hover:text-brand-teal">
           {t('luminous.signup.signin')}
         </a>
       </p>

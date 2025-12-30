@@ -64,13 +64,13 @@ function FormField<T extends FieldValues>({
         />
 
         {description && !errorMessage && (
-          <p id={`${id}-description`} className="text-text-tertiary text-xs">
+          <p id={`${id}-description`} className="text-xs text-text-tertiary">
             {description}
           </p>
         )}
 
         {errorMessage && (
-          <p id={`${id}-error`} className="text-danger text-xs" role="alert">
+          <p id={`${id}-error`} className="text-xs text-danger" role="alert">
             {errorMessage}
           </p>
         )}
@@ -128,13 +128,13 @@ function FormFieldSimple({
         } as FieldChildProps)}
 
         {description && !errorMessage && (
-          <p id={`${id}-description`} className="text-text-tertiary text-xs">
+          <p id={`${id}-description`} className="text-xs text-text-tertiary">
             {description}
           </p>
         )}
 
         {errorMessage && (
-          <p id={`${id}-error`} className="text-danger text-xs" role="alert">
+          <p id={`${id}-error`} className="text-xs text-danger" role="alert">
             {errorMessage}
           </p>
         )}

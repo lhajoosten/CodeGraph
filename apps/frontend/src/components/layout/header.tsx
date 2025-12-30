@@ -57,8 +57,8 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
     <header
       className={cn(
         `
-          border-border bg-background-2 sticky top-0 z-30 flex h-16 items-center
-          justify-between border-b px-4
+          sticky top-0 z-30 flex h-16 items-center justify-between border-b
+          border-border bg-background-2 px-4
           lg:px-6
         `,
         className
@@ -132,7 +132,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm leading-none font-medium">{userName}</p>
-                <p className="text-text-muted text-xs leading-none">{user?.email}</p>
+                <p className="text-xs leading-none text-text-muted">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

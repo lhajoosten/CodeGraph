@@ -59,7 +59,7 @@ export function WebhookSecretDisplay({ secret, className }: WebhookSecretDisplay
       </div>
       <Button type="button" variant="outline" size="icon" onClick={handleCopy} disabled={copied}>
         {copied ? (
-          <CheckIcon className="text-success h-4 w-4" />
+          <CheckIcon className="h-4 w-4 text-success" />
         ) : (
           <ClipboardDocumentIcon className="h-4 w-4" />
         )}

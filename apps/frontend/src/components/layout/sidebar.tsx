@@ -57,7 +57,7 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
           transition-colors
         `,
         active
-          ? 'text-text-secondary bg-brand-cyan/10'
+          ? 'bg-brand-cyan/10 text-text-secondary'
           : `
             text-text-secondary
             hover:bg-surface hover:text-text-primary
@@ -114,8 +114,8 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       <aside
         className={cn(
           `
-            border-border-primary bg-surface-secondary fixed top-0 left-0 z-40 flex
-            h-screen flex-col border-r transition-all duration-300
+            fixed top-0 left-0 z-40 flex h-screen flex-col
+            border-r border-border-primary bg-surface-secondary transition-all duration-300
           `,
           isOpen ? 'w-64' : 'w-16',
           className
@@ -124,7 +124,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         {/* Logo */}
         <div
           className={`
-            border-border-primary flex h-16 items-center justify-between border-b px-4
+            flex h-16 items-center justify-between border-b border-border-primary px-4
           `}
         >
           {isOpen ? (
@@ -142,8 +142,8 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
             <Link
               to="/"
               className={`
-                bg-primary mx-auto flex h-8 w-8 items-center justify-center
-                rounded-lg
+                mx-auto flex h-8 w-8 items-center justify-center rounded-lg
+                bg-primary
               `}
             >
               <span className="text-lg font-bold text-white">C</span>
@@ -159,7 +159,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         </nav>
 
         {/* Bottom section */}
-        <div className="border-border space-y-1 border-t p-3">
+        <div className="space-y-1 border-t border-border p-3">
           {adminNavItem && (
             <>
               <NavLink item={adminNavItem} isActive={isActive} isOpen={isOpen} />

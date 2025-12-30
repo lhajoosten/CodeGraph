@@ -21,13 +21,13 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
     <div className={cn('mb-6 space-y-4', className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
         <nav aria-label="Breadcrumb">
-          <ol className="text-text-secondary flex items-center gap-2 text-sm">
+          <ol className="flex items-center gap-2 text-sm text-text-secondary">
             <li>
               <Link
                 to="/"
                 className={`
-                  hover:text-text-primary
                   transition-colors
+                  hover:text-text-primary
                 `}
               >
                 <HomeIcon className="h-4 w-4" />
@@ -44,14 +44,14 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
                     <Link
                       to={item.href}
                       className={`
-                        hover:text-text-primary
                         transition-colors
+                        hover:text-text-primary
                       `}
                     >
                       {item.label}
                     </Link>
                   ) : (
-                    <span className="text-text-primary font-medium">{item.label}</span>
+                    <span className="font-medium text-text-primary">{item.label}</span>
                   )}
                 </li>
               </React.Fragment>
@@ -64,7 +64,7 @@ function PageHeader({ title, description, breadcrumbs, actions, className }: Pag
         <div className="space-y-1">
           <h1
             className={`
-              text-text-primary text-2xl font-bold tracking-tight
+              text-2xl font-bold tracking-tight text-text-primary
               sm:text-3xl
             `}
           >

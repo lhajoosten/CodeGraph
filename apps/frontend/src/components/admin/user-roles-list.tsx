@@ -48,14 +48,14 @@ export function UserRolesList({ users, roles, isLoading }: UserRolesListProps) {
             );
           }
 
-          return <span className="text-text-secondary text-sm">{t('users.no_role')}</span>;
+          return <span className="text-sm text-text-secondary">{t('users.no_role')}</span>;
         },
       },
       {
         id: 'permissions',
         header: t('users.columns.permissions'),
         cell: ({ row }) => (
-          <span className="text-text-secondary text-sm">
+          <span className="text-sm text-text-secondary">
             {row.original.permissions?.length || 0} {t('users.permissions_count')}
           </span>
         ),

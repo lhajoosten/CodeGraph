@@ -30,7 +30,7 @@ function AdminDashboard() {
           <Card className="transition-shadow hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <ShieldCheckIcon className="text-primary h-8 w-8" />
+                <ShieldCheckIcon className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="mt-4">{t('dashboard.manage_roles.title')}</CardTitle>
               <CardDescription>{t('dashboard.manage_roles.description')}</CardDescription>
@@ -49,7 +49,7 @@ function AdminDashboard() {
           <Card className="transition-shadow hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <UsersIcon className="text-success h-8 w-8" />
+                <UsersIcon className="h-8 w-8 text-success" />
               </div>
               <CardTitle className="mt-4">{t('dashboard.manage_users.title')}</CardTitle>
               <CardDescription>{t('dashboard.manage_users.description')}</CardDescription>
@@ -68,7 +68,7 @@ function AdminDashboard() {
           <Card className="transition-shadow hover:shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <KeyIcon className="text-warning h-8 w-8" />
+                <KeyIcon className="h-8 w-8 text-warning" />
               </div>
               <CardTitle className="mt-4">{t('dashboard.view_permissions.title')}</CardTitle>
               <CardDescription>{t('dashboard.view_permissions.description')}</CardDescription>
@@ -93,15 +93,15 @@ function AdminDashboard() {
           <CardContent className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('dashboard.system_info.roles_count')}</span>
-              <span className="text-text-primary font-medium">{roles?.length || 0}</span>
+              <span className="font-medium text-text-primary">{roles?.length || 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('dashboard.system_info.users_count')}</span>
-              <span className="text-text-primary font-medium">{users?.length || 0}</span>
+              <span className="font-medium text-text-primary">{users?.length || 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('dashboard.system_info.system_roles')}</span>
-              <span className="text-text-primary font-medium">
+              <span className="font-medium text-text-primary">
                 {roles?.filter((r) => ['admin', 'developer', 'viewer'].includes(r.name)).length ||
                   0}
               </span>

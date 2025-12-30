@@ -19,7 +19,7 @@ const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, Lab
       {...props}
     >
       {children}
-      {required && <span className="text-danger ml-1">*</span>}
+      {required && <span className="ml-1 text-danger">*</span>}
     </LabelPrimitive.Root>
   )
 );

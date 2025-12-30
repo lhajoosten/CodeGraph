@@ -16,16 +16,19 @@ type Story = StoryObj<typeof meta>;
 export const VerticalScroll: Story = {
   render: () => (
     <div className="w-full max-w-md">
-      <h3 className="text-text-primary mb-3 text-sm font-medium">Task List</h3>
-      <ScrollArea className="border-border-primary bg-surface h-64 w-full rounded-lg border">
+      <h3 className="mb-3 text-sm font-medium text-text-primary">Task List</h3>
+      <ScrollArea className="h-64 w-full rounded-lg border border-border-primary bg-surface">
         <div className="p-4">
           <div className="space-y-2">
             {Array.from({ length: 20 }).map((_, i) => (
-              <div key={i} className="hover:bg-surface-secondary flex items-center gap-2 rounded-lg p-2">
+              <div
+                key={i}
+                className="flex items-center gap-2 rounded-lg p-2 hover:bg-surface-secondary"
+              >
                 <input type="checkbox" className="h-4 w-4" />
                 <div className="flex-1">
-                  <p className="text-text-secondary text-sm">Task {i + 1}: Implement feature</p>
-                  <p className="text-text-muted text-xs">Due tomorrow at 5 PM</p>
+                  <p className="text-sm text-text-secondary">Task {i + 1}: Implement feature</p>
+                  <p className="text-xs text-text-muted">Due tomorrow at 5 PM</p>
                 </div>
               </div>
             ))}
@@ -42,10 +45,10 @@ export const VerticalScroll: Story = {
 export const HorizontalScroll: Story = {
   render: () => (
     <div className="w-full max-w-2xl">
-      <h3 className="text-text-primary mb-3 text-sm font-medium">Team Members</h3>
+      <h3 className="mb-3 text-sm font-medium text-text-primary">Team Members</h3>
       <ScrollArea
         orientation="horizontal"
-        className="border-border-primary bg-surface w-full rounded-lg border"
+        className="w-full rounded-lg border border-border-primary bg-surface"
       >
         <div className="flex gap-3 p-4">
           {Array.from({ length: 12 }).map((_, i) => (
@@ -53,7 +56,7 @@ export const HorizontalScroll: Story = {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-cyan/20 text-sm font-bold text-brand-cyan">
                 {String.fromCharCode(65 + i)}
               </div>
-              <p className="text-text-secondary text-xs">User {i + 1}</p>
+              <p className="text-xs text-text-secondary">User {i + 1}</p>
             </div>
           ))}
         </div>
@@ -68,45 +71,44 @@ export const HorizontalScroll: Story = {
 export const BothDirections: Story = {
   render: () => (
     <div className="w-full max-w-2xl">
-      <h3 className="text-text-primary mb-3 text-sm font-medium">Data Grid</h3>
-      <ScrollArea className="border-border-primary bg-surface h-64 w-full rounded-lg border">
+      <h3 className="mb-3 text-sm font-medium text-text-primary">Data Grid</h3>
+      <ScrollArea className="h-64 w-full rounded-lg border border-border-primary bg-surface">
         <div className="inline-block">
           <table className="w-full">
-            <thead className="border-border-primary border-b">
+            <thead className="border-b border-border-primary">
               <tr>
-                <th className="text-text-primary px-4 py-2 text-left text-xs font-semibold">
-                  ID
-                </th>
-                <th className="text-text-primary px-4 py-2 text-left text-xs font-semibold">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-text-primary">ID</th>
+                <th className="px-4 py-2 text-left text-xs font-semibold text-text-primary">
                   Name
                 </th>
-                <th className="text-text-primary px-4 py-2 text-left text-xs font-semibold">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-text-primary">
                   Email
                 </th>
-                <th className="text-text-primary px-4 py-2 text-left text-xs font-semibold">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-text-primary">
                   Status
                 </th>
-                <th className="text-text-primary px-4 py-2 text-left text-xs font-semibold">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-text-primary">
                   Role
                 </th>
               </tr>
             </thead>
             <tbody>
               {Array.from({ length: 20 }).map((_, i) => (
-                <tr key={i} className="border-border-primary/50 border-b hover:bg-surface-secondary/50">
-                  <td className="text-text-secondary px-4 py-2 text-xs">
+                <tr
+                  key={i}
+                  className="border-b border-border-primary/50 hover:bg-surface-secondary/50"
+                >
+                  <td className="px-4 py-2 text-xs text-text-secondary">
                     #{(i + 1).toString().padStart(4, '0')}
                   </td>
-                  <td className="text-text-secondary px-4 py-2 text-xs">User {i + 1}</td>
-                  <td className="text-text-secondary px-4 py-2 text-xs">
-                    user{i + 1}@example.com
-                  </td>
+                  <td className="px-4 py-2 text-xs text-text-secondary">User {i + 1}</td>
+                  <td className="px-4 py-2 text-xs text-text-secondary">user{i + 1}@example.com</td>
                   <td className="px-4 py-2 text-xs">
-                    <span className="bg-success/10 text-success rounded-full px-2 py-1">
+                    <span className="rounded-full bg-success/10 px-2 py-1 text-success">
                       Active
                     </span>
                   </td>
-                  <td className="text-text-secondary px-4 py-2 text-xs">
+                  <td className="px-4 py-2 text-xs text-text-secondary">
                     {i % 3 === 0 ? 'Admin' : i % 2 === 0 ? 'Editor' : 'Viewer'}
                   </td>
                 </tr>
@@ -125,21 +127,23 @@ export const BothDirections: Story = {
 export const WithDetailedContent: Story = {
   render: () => (
     <div className="w-full max-w-md">
-      <h3 className="text-text-primary mb-3 text-sm font-medium">Messages</h3>
-      <ScrollArea className="border-border-primary bg-surface h-80 w-full rounded-lg border p-4">
+      <h3 className="mb-3 text-sm font-medium text-text-primary">Messages</h3>
+      <ScrollArea className="h-80 w-full rounded-lg border border-border-primary bg-surface p-4">
         <div className="space-y-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="space-y-1">
               <div className="flex items-center justify-between">
-                <p className="text-text-primary text-sm font-medium">
+                <p className="text-sm font-medium text-text-primary">
                   {i % 2 === 0 ? 'Alice' : 'Bob'}
                 </p>
-                <p className="text-text-muted text-xs">
+                <p className="text-xs text-text-muted">
                   {new Date(Date.now() - i * 60000).toLocaleTimeString()}
                 </p>
               </div>
-              <div className={`rounded-lg p-2 ${i % 2 === 0 ? 'bg-brand-cyan/10' : 'bg-surface-secondary'}`}>
-                <p className="text-text-secondary text-sm">
+              <div
+                className={`rounded-lg p-2 ${i % 2 === 0 ? 'bg-brand-cyan/10' : 'bg-surface-secondary'}`}
+              >
+                <p className="text-sm text-text-secondary">
                   This is message {i + 1}. It contains some content that demonstrates how messages
                   look in a scrollable area.
                 </p>
@@ -158,14 +162,14 @@ export const WithDetailedContent: Story = {
 export const HideScrollbar: Story = {
   render: () => (
     <div className="w-full max-w-md">
-      <h3 className="text-text-primary mb-3 text-sm font-medium">Hidden Scrollbar Content</h3>
-      <div className="border-border-primary bg-surface rounded-lg border p-4">
+      <h3 className="mb-3 text-sm font-medium text-text-primary">Hidden Scrollbar Content</h3>
+      <div className="rounded-lg border border-border-primary bg-surface p-4">
         <ScrollArea className="h-48 w-full" hideScrollbar>
           <div className="space-y-2 pr-4">
             {Array.from({ length: 15 }).map((_, i) => (
-              <div key={i} className="bg-surface-secondary rounded-lg p-3">
-                <p className="text-text-secondary text-sm">Item {i + 1}</p>
-                <p className="text-text-muted text-xs">
+              <div key={i} className="rounded-lg bg-surface-secondary p-3">
+                <p className="text-sm text-text-secondary">Item {i + 1}</p>
+                <p className="text-xs text-text-muted">
                   The scrollbar is hidden but content is still scrollable
                 </p>
               </div>

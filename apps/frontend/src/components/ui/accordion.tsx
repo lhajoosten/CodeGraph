@@ -78,7 +78,7 @@ export const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      'border-border-primary rounded-lg border transition-all duration-200',
+      'rounded-lg border border-border-primary transition-all duration-200',
       'data-[state=open]:border-brand-cyan/50 data-[state=open]:shadow-[0_0_12px_rgba(34,211,238,0.2)]',
       className
     )}
@@ -141,7 +141,7 @@ export const AccordionContent = React.forwardRef<
     )}
     {...props}
   >
-    <div className={cn('text-text-secondary px-4 py-3', className)}>{props.children}</div>
+    <div className={cn('px-4 py-3 text-text-secondary', className)}>{props.children}</div>
   </AccordionPrimitive.Content>
 ));
 

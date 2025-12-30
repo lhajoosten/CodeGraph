@@ -77,11 +77,11 @@ export const ConnectedAccounts = () => {
       <div className="space-y-4">
         <div
           className={`
-            border-border-primary bg-surface rounded-lg border p-6 text-center
+            rounded-lg border border-border-primary bg-surface p-6 text-center
           `}
         >
           <svg
-            className="text-text-muted mx-auto h-12 w-12"
+            className="mx-auto h-12 w-12 text-text-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -93,8 +93,8 @@ export const ConnectedAccounts = () => {
               d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
             />
           </svg>
-          <h3 className="text-text-primary mt-4 text-lg font-medium">Connected Accounts</h3>
-          <p className="text-text-secondary mt-2 text-sm">
+          <h3 className="mt-4 text-lg font-medium text-text-primary">Connected Accounts</h3>
+          <p className="mt-2 text-sm text-text-secondary">
             OAuth connections are not yet available. This feature is coming soon!
           </p>
         </div>
@@ -134,7 +134,7 @@ export const ConnectedAccounts = () => {
 
   return (
     <div className="space-y-4">
-      <p className="text-text-secondary text-sm">
+      <p className="text-sm text-text-secondary">
         Connect your accounts for easier sign-in and to access additional features.
       </p>
 
@@ -168,13 +168,13 @@ export const ConnectedAccounts = () => {
                   {info.icon}
                 </div>
                 <div>
-                  <p className="text-text-primary font-medium">{info.name}</p>
+                  <p className="font-medium text-text-primary">{info.name}</p>
                   {connected && account ? (
-                    <p className="text-text-secondary text-sm">
+                    <p className="text-sm text-text-secondary">
                       Connected as {account.email || account.name || account.provider_user_id}
                     </p>
                   ) : (
-                    <p className="text-text-secondary text-sm">Not connected</p>
+                    <p className="text-sm text-text-secondary">Not connected</p>
                   )}
                 </div>
               </div>
@@ -184,8 +184,8 @@ export const ConnectedAccounts = () => {
                   onClick={() => handleUnlink(provider)}
                   disabled={unlinkMutation.isPending}
                   className={`
-                    border-error text-error rounded-lg border px-4 py-2
-                    text-sm font-medium transition
+                    rounded-lg border border-error px-4 py-2 text-sm
+                    font-medium text-error transition
                     hover:bg-error/5
                     disabled:cursor-not-allowed disabled:opacity-50
                   `}
@@ -196,8 +196,8 @@ export const ConnectedAccounts = () => {
                 <button
                   onClick={() => handleConnect(provider)}
                   className={`
-                    border-border-primary text-text-secondary rounded-lg border px-4 py-2
-                    text-sm font-medium transition
+                    rounded-lg border border-border-primary px-4 py-2 text-sm
+                    font-medium text-text-secondary transition
                     hover:bg-surface-secondary
                   `}
                 >

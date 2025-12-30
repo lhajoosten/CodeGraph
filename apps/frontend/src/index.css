@@ -11,16 +11,16 @@ body {
 /* Dark mode gets a subtle gradient background for depth */
 .dark body {
   background:
-          radial-gradient(ellipse 80% 50% at 50% -20%, rgba(45, 212, 191, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.04) 0%, transparent 40%),
-          var(--color-background);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(45, 212, 191, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.04) 0%, transparent 40%),
+    var(--color-background);
 }
 
 /* Light mode subtle gradient */
 :root body {
   background:
-          radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
-          var(--color-background);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
+    var(--color-background);
 }
 
 @layer components {
@@ -87,17 +87,28 @@ body {
 
   /* === KEYFRAMES === */
   @keyframes cursor {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
   }
 
   @keyframes checkbox-in {
-    to { stroke-dashoffset: 0; }
+    to {
+      stroke-dashoffset: 0;
+    }
   }
 
   @keyframes checkbox-out {
-    from { stroke-dashoffset: 0; }
-    to { stroke-dashoffset: 100; }
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: 100;
+    }
   }
 
   @keyframes hc-skel-in {
@@ -116,28 +127,54 @@ body {
   }
 
   @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-    20%, 40%, 60%, 80% { transform: translateX(4px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-4px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(4px);
+    }
   }
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
 
   @keyframes pulse-soft {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
   }
 
   @keyframes glow-pulse {
-    0%, 100% {
+    0%,
+    100% {
       box-shadow: 0 0 4px currentColor;
       opacity: 1;
     }
     50% {
-      box-shadow: 0 0 12px currentColor, 0 0 20px currentColor;
+      box-shadow:
+        0 0 12px currentColor,
+        0 0 20px currentColor;
       opacity: 0.85;
     }
   }
@@ -145,7 +182,84 @@ body {
   /* === GRID TEMPLATES === */
   --col-auditor-results: 3fr 1fr 1fr auto;
 
+  /* === BACKGROUND COLORS (default light mode values, overridden in :root/.dark) === */
+  --color-background: #f8fdfb;
+  --color-background-2: #f0faf7;
+  --color-background-elevated: #ffffff;
+  --color-background-secondary: #e8f7f3;
+  --color-background-tertiary: #f3fbf9;
+
+  /* === SURFACE COLORS === */
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f8fcfa;
+  --color-surface-hover: #f0f9f6;
+  --color-surface-active: #e8f5f1;
+
+  /* === TEXT COLORS === */
+  --color-text-primary: #0f2f2b;
+  --color-text-secondary: #1a4a44;
+  --color-text-tertiary: #4a7872;
+  --color-text-muted: #6b9690;
+  --color-text-inverse: #ffffff;
+  --color-text-brand: #0d9488;
+
+  /* === BORDER COLORS === */
+  --color-border-primary: rgba(15, 118, 110, 0.15);
+  --color-border-secondary: rgba(15, 118, 110, 0.1);
+  --color-border-subtle: rgba(15, 118, 110, 0.06);
+  --color-border-hover: rgba(15, 118, 110, 0.25);
+  --color-border-focus: #14b8a6;
+
+  /* === INTERACTIVE COLORS === */
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-primary-active: #115e59;
+  --color-primary-muted: rgba(13, 148, 136, 0.12);
+  --color-primary-subtle: rgba(13, 148, 136, 0.08);
+
+  /* === SEMANTIC COLORS === */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* === SEMANTIC BACKGROUND/TEXT VARIANTS === */
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-success-text: #16a34a;
+  --color-success-100: rgba(34, 197, 94, 0.1);
+  --color-success-800: #166534;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-text: #d97706;
+  --color-warning-100: rgba(245, 158, 11, 0.1);
+  --color-warning-800: #92400e;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #dc2626;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+  --color-info-text: #2563eb;
+  --color-info-100: rgba(59, 130, 246, 0.1);
+  --color-info-800: #1e40af;
+
+  /* === BORDER ALIAS (for border-border utility) === */
+  --color-border: rgba(15, 118, 110, 0.15);
+
+  /* === SIDEBAR COLORS === */
+  --color-sidebar-background: #f0f9f6;
+  --color-sidebar-active: rgba(13, 148, 136, 0.12);
+  --color-sidebar-hover: rgba(13, 148, 136, 0.06);
+  --color-sidebar-border: rgba(15, 118, 110, 0.1);
+
+  /* === COMPONENT COLORS === */
+  --color-input-bg: #ffffff;
+  --color-input-border: rgba(15, 118, 110, 0.15);
+  --color-badge-bg: rgba(13, 148, 136, 0.1);
+  --color-badge-text: #0d9488;
+  --color-divider: rgba(15, 118, 110, 0.08);
+  --color-overlay: rgba(15, 47, 43, 0.4);
+  --color-scrollbar-thumb: rgba(13, 148, 136, 0.25);
+  --color-scrollbar-thumb-hover: rgba(13, 148, 136, 0.4);
+
   /* === BRAND COLORS (Theme-independent) === */
+  --color-brand-teal: #14b8a6;
   --color-brand-teal-50: #f0fdfa;
   --color-brand-teal-100: #ccfbf1;
   --color-brand-teal-200: #99f6e4;
@@ -160,6 +274,36 @@ body {
 
   --color-brand-cyan: #22d3ee;
   --color-brand-lime: #84cc16;
+
+  /* === ADDITIONAL COLOR ALIASES === */
+  --color-muted: #6b9690;
+  --color-muted-foreground: #6b9690;
+  --color-danger: #ef4444;
+  --color-bg-elevated: #ffffff;
+  --color-foreground: #0f2f2b;
+
+  /* === SHADOW TOKENS (default light mode values) === */
+  --shadow-card:
+    0 1px 3px rgba(15, 47, 43, 0.05), 0 1px 2px rgba(15, 47, 43, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-card-hover:
+    0 8px 16px -4px rgba(13, 148, 136, 0.12), 0 4px 8px -2px rgba(15, 47, 43, 0.06);
+  --shadow-glow-teal: 0 0 20px rgba(13, 148, 136, 0.2);
+  --shadow-modal: 0 24px 48px -12px rgba(15, 47, 43, 0.15);
+  --shadow-button: 0 1px 3px rgba(13, 148, 136, 0.2), 0 1px 2px rgba(13, 148, 136, 0.1);
+  --shadow-button-hover: 0 4px 12px rgba(13, 148, 136, 0.25), 0 2px 4px rgba(13, 148, 136, 0.15);
+  --shadow-elevated: 0 4px 12px rgba(15, 47, 43, 0.08), 0 2px 4px rgba(15, 47, 43, 0.04);
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* === SECONDARY COLOR (for interactive elements) === */
+  --color-secondary: #f0f9f6;
+
+  /* === DANGER/DESTRUCTIVE COLOR SCALE === */
+  --color-danger-100: rgba(239, 68, 68, 0.1);
+  --color-danger-800: #991b1b;
+
+  /* === STROKE COLOR === */
+  --color-stroke-secondary: rgba(15, 118, 110, 0.1);
 
   /* === SEMANTIC STATE COLORS (Theme-independent) === */
   --color-success-light: #22c55e;
@@ -227,8 +371,11 @@ body {
   --shadow-xl: 0 20px 25px -5px rgba(15, 47, 43, 0.08), 0 10px 10px -5px rgba(15, 47, 43, 0.03);
 
   /* Specialized shadows */
-  --shadow-card: 0 1px 3px rgba(15, 47, 43, 0.05), 0 1px 2px rgba(15, 47, 43, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --shadow-card-hover: 0 8px 16px -4px rgba(13, 148, 136, 0.12), 0 4px 8px -2px rgba(15, 47, 43, 0.06);
+  --shadow-card:
+    0 1px 3px rgba(15, 47, 43, 0.05), 0 1px 2px rgba(15, 47, 43, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-card-hover:
+    0 8px 16px -4px rgba(13, 148, 136, 0.12), 0 4px 8px -2px rgba(15, 47, 43, 0.06);
   --shadow-elevated: 0 4px 12px rgba(15, 47, 43, 0.08), 0 2px 4px rgba(15, 47, 43, 0.04);
   --shadow-button: 0 1px 3px rgba(13, 148, 136, 0.2), 0 1px 2px rgba(13, 148, 136, 0.1);
   --shadow-button-hover: 0 4px 12px rgba(13, 148, 136, 0.25), 0 2px 4px rgba(13, 148, 136, 0.15);
@@ -317,8 +464,12 @@ body {
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 
   /* Specialized shadows with glow */
-  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(45, 212, 191, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  --shadow-card-hover: 0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(45, 212, 191, 0.15), 0 0 20px -4px rgba(45, 212, 191, 0.1);
+  --shadow-card:
+    0 2px 4px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(45, 212, 191, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-card-hover:
+    0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(45, 212, 191, 0.15),
+    0 0 20px -4px rgba(45, 212, 191, 0.1);
   --shadow-elevated: 0 8px 16px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(45, 212, 191, 0.08);
   --shadow-button: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(45, 212, 191, 0.1);
   --shadow-button-hover: 0 4px 16px rgba(45, 212, 191, 0.25), 0 0 0 1px rgba(45, 212, 191, 0.2);
@@ -386,11 +537,19 @@ body {
   }
 
   .bg-gradient-teal-subtle {
-    background: linear-gradient(135deg, var(--color-primary-subtle) 0%, rgba(34, 211, 238, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-subtle) 0%,
+      rgba(34, 211, 238, 0.05) 100%
+    );
   }
 
   .bg-gradient-surface {
-    background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-secondary) 100%);
+    background: linear-gradient(
+      180deg,
+      var(--color-surface) 0%,
+      var(--color-surface-secondary) 100%
+    );
   }
 
   .bg-gradient-card {
@@ -529,10 +688,10 @@ body {
   /* === Shimmer Loading Effect === */
   .shimmer {
     background: linear-gradient(
-            90deg,
-            var(--color-surface) 0%,
-            var(--color-surface-hover) 50%,
-            var(--color-surface) 100%
+      90deg,
+      var(--color-surface) 0%,
+      var(--color-surface-hover) 50%,
+      var(--color-surface) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;

@@ -17,11 +17,11 @@ export const GlowEffects: StoryObj = {
   render: () => (
     <div className="w-full max-w-3xl space-y-12">
       <div>
-        <h2 className="text-text-primary mb-8 text-xl font-semibold">Glow Effects</h2>
+        <h2 className="mb-8 text-xl font-semibold text-text-primary">Glow Effects</h2>
 
         <div className="space-y-8">
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Cyan Glow - Primary action and active states
             </p>
             <div className="flex items-center justify-center gap-6">
@@ -49,7 +49,7 @@ export const GlowEffects: StoryObj = {
           </div>
 
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Teal Glow - Secondary interaction and success states
             </p>
             <div className="flex items-center justify-center gap-6">
@@ -77,7 +77,7 @@ export const GlowEffects: StoryObj = {
           </div>
 
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Error Glow - Error states and destructive actions
             </p>
             <div className="flex items-center justify-center gap-6">
@@ -116,31 +116,31 @@ export const Shadows: StoryObj = {
   render: () => (
     <div className="w-full max-w-3xl space-y-12">
       <div>
-        <h2 className="text-text-primary mb-8 text-xl font-semibold">Shadows</h2>
+        <h2 className="mb-8 text-xl font-semibold text-text-primary">Shadows</h2>
 
         <div className="space-y-8">
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Glass Shadow - Subtle 1px border for glass effect
             </p>
             <div
-              className="bg-surface-secondary flex h-24 w-48 items-center justify-center rounded-lg"
+              className="flex h-24 w-48 items-center justify-center rounded-lg bg-surface-secondary"
               style={{ boxShadow: 'var(--shadow-glass)' }}
             >
-              <span className="text-text-secondary text-sm">Glass Border</span>
+              <span className="text-sm text-text-secondary">Glass Border</span>
             </div>
-            <p className="text-text-muted mt-2 font-mono text-xs">
+            <p className="mt-2 font-mono text-xs text-text-muted">
               0 0 0 1px rgba(255, 255, 255, 0.1)
             </p>
           </div>
 
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Elevated Shadow - Depth for floating elements
             </p>
             <div className="flex gap-4">
-              <div className="bg-surface-secondary flex h-24 w-48 items-center justify-center rounded-lg shadow-lg">
-                <span className="text-text-secondary text-sm">Elevated Card</span>
+              <div className="flex h-24 w-48 items-center justify-center rounded-lg bg-surface-secondary shadow-lg">
+                <span className="text-sm text-text-secondary">Elevated Card</span>
               </div>
               <div className="space-y-2 text-sm">
                 <p className="text-text-secondary">
@@ -163,9 +163,9 @@ export const Glassmorphism: StoryObj = {
   render: () => (
     <div className="w-full max-w-3xl space-y-12">
       <div>
-        <h2 className="text-text-primary mb-8 text-xl font-semibold">Glassmorphism</h2>
+        <h2 className="mb-8 text-xl font-semibold text-text-primary">Glassmorphism</h2>
 
-        <div className="from-background-secondary via-background to-background-secondary relative h-96 w-full overflow-hidden rounded-lg bg-gradient-to-br">
+        <div className="relative h-96 w-full overflow-hidden rounded-lg bg-gradient-to-br from-background-secondary via-background to-background-secondary">
           {/* Background pattern/content */}
           <div className="absolute inset-0 opacity-30">
             <div className="grid grid-cols-4 gap-4 p-8">
@@ -183,31 +183,31 @@ export const Glassmorphism: StoryObj = {
           <div className="absolute inset-0 flex items-center justify-center p-8">
             <div className="w-full max-w-xs space-y-6">
               <div
-                className="border-border-primary rounded-lg border p-6"
+                className="rounded-lg border border-border-primary p-6"
                 style={{
                   background: 'rgba(30, 41, 59, 0.7)',
                   backdropFilter: 'blur(12px)',
                 }}
               >
-                <h3 className="text-text-primary mb-2 text-lg font-semibold">
+                <h3 className="mb-2 text-lg font-semibold text-text-primary">
                   Glass Card (12px blur)
                 </h3>
-                <p className="text-text-secondary text-sm">
+                <p className="text-sm text-text-secondary">
                   Background image visible through semi-transparent glass layer
                 </p>
               </div>
 
               <div
-                className="border-border-primary rounded-lg border p-6"
+                className="rounded-lg border border-border-primary p-6"
                 style={{
                   background: 'rgba(30, 41, 59, 0.5)',
                   backdropFilter: 'blur(20px)',
                 }}
               >
-                <h3 className="text-text-primary mb-2 text-lg font-semibold">
+                <h3 className="mb-2 text-lg font-semibold text-text-primary">
                   More Prominent Glass (20px blur)
                 </h3>
-                <p className="text-text-secondary text-sm">
+                <p className="text-sm text-text-secondary">
                   Stronger blur creates more visual separation
                 </p>
               </div>
@@ -218,19 +218,19 @@ export const Glassmorphism: StoryObj = {
         <div className="mt-8 space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-text-primary mb-1 font-semibold">Backdrop Blur</p>
+              <p className="mb-1 font-semibold text-text-primary">Backdrop Blur</p>
               <p className="text-text-secondary">Subtle blur creates depth and hierarchy</p>
             </div>
             <div>
-              <p className="text-text-primary mb-1 font-semibold">Transparency</p>
+              <p className="mb-1 font-semibold text-text-primary">Transparency</p>
               <p className="text-text-secondary">Background slightly visible for context</p>
             </div>
             <div>
-              <p className="text-text-primary mb-1 font-semibold">Glass Border</p>
+              <p className="mb-1 font-semibold text-text-primary">Glass Border</p>
               <p className="text-text-secondary">1px white border adds definition</p>
             </div>
             <div>
-              <p className="text-text-primary mb-1 font-semibold">Use Cases</p>
+              <p className="mb-1 font-semibold text-text-primary">Use Cases</p>
               <p className="text-text-secondary">Sidebars, modals, floating menus</p>
             </div>
           </div>
@@ -247,42 +247,40 @@ export const FocusStates: StoryObj = {
   render: () => (
     <div className="w-full max-w-3xl space-y-12">
       <div>
-        <h2 className="text-text-primary mb-8 text-xl font-semibold">Focus States</h2>
+        <h2 className="mb-8 text-xl font-semibold text-text-primary">Focus States</h2>
 
         <div className="space-y-8">
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Input Focus - Cyan border with subtle glow
             </p>
             <input
               type="text"
               placeholder="Click to focus..."
-              className="border-border-primary bg-surface-secondary text-text-primary w-full rounded-lg border px-4 py-3 focus:border-brand-cyan focus:shadow-[0_0_8px_rgba(34,211,238,0.3)] focus:outline-none"
+              className="w-full rounded-lg border border-border-primary bg-surface-secondary px-4 py-3 text-text-primary focus:border-brand-cyan focus:shadow-[0_0_8px_rgba(34,211,238,0.3)] focus:outline-none"
               autoFocus
             />
           </div>
 
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
-              Button Focus - Ring with cyan border
-            </p>
+            <p className="mb-4 text-sm text-text-secondary">Button Focus - Ring with cyan border</p>
             <button className="rounded-lg bg-brand-cyan px-6 py-3 font-semibold text-white focus:ring-2 focus:ring-brand-cyan focus:ring-offset-2 focus:outline-none">
               Focus Me
             </button>
-            <p className="text-text-muted mt-2 text-xs">Press Tab or click to see focus ring</p>
+            <p className="mt-2 text-xs text-text-muted">Press Tab or click to see focus ring</p>
           </div>
 
           <div>
-            <p className="text-text-secondary mb-4 text-sm">
+            <p className="mb-4 text-sm text-text-secondary">
               Link Focus - Underline with color change
             </p>
             <a
               href="#"
-              className="hover:text-brand-teal text-brand-cyan focus:underline focus:outline-none"
+              className="text-brand-cyan hover:text-brand-teal focus:underline focus:outline-none"
             >
               Focused Link Example
             </a>
-            <p className="text-text-muted mt-2 text-xs">Tab to this link to see focus state</p>
+            <p className="mt-2 text-xs text-text-muted">Tab to this link to see focus state</p>
           </div>
         </div>
       </div>
@@ -297,14 +295,14 @@ export const CompleteEffectsSystem: StoryObj = {
   render: () => (
     <div className="w-full max-w-4xl space-y-12">
       <div>
-        <h1 className="text-text-primary mb-2 text-3xl font-bold">Effects & Visual Styling</h1>
+        <h1 className="mb-2 text-3xl font-bold text-text-primary">Effects & Visual Styling</h1>
         <p className="text-text-secondary">
           Glows, shadows, and depth effects for the Luminous Technical Design
         </p>
       </div>
 
       <section className="space-y-6">
-        <h2 className="border-border-primary text-text-primary border-b pb-3 text-xl font-semibold">
+        <h2 className="border-b border-border-primary pb-3 text-xl font-semibold text-text-primary">
           Color Glows
         </h2>
         <div className="grid grid-cols-3 gap-6">
@@ -339,7 +337,7 @@ export const CompleteEffectsSystem: StoryObj = {
       </section>
 
       <section className="space-y-6">
-        <h2 className="border-border-primary text-text-primary border-b pb-3 text-xl font-semibold">
+        <h2 className="border-b border-border-primary pb-3 text-xl font-semibold text-text-primary">
           Border Effects
         </h2>
         <div className="grid grid-cols-2 gap-6">
@@ -350,12 +348,12 @@ export const CompleteEffectsSystem: StoryObj = {
               boxShadow: 'var(--shadow-glass)',
             }}
           >
-            <p className="text-text-primary mb-1 font-semibold">Glass Border</p>
-            <p className="text-text-muted text-xs">10% white opacity edge</p>
+            <p className="mb-1 font-semibold text-text-primary">Glass Border</p>
+            <p className="text-xs text-text-muted">10% white opacity edge</p>
           </div>
           <div className="rounded-lg border-2 border-brand-cyan p-6 text-center">
-            <p className="text-text-primary mb-1 font-semibold">Colored Border</p>
-            <p className="text-text-muted text-xs">Cyan accent border</p>
+            <p className="mb-1 font-semibold text-text-primary">Colored Border</p>
+            <p className="text-xs text-text-muted">Cyan accent border</p>
           </div>
         </div>
       </section>

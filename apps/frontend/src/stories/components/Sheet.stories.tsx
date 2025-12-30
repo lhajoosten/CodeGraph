@@ -40,21 +40,19 @@ function FromRightWrapper() {
         <SheetBody>
           <div className="space-y-4">
             <div>
-              <label className="text-text-secondary mb-2 block text-sm font-medium">Name</label>
+              <label className="mb-2 block text-sm font-medium text-text-secondary">Name</label>
               <input
                 type="text"
                 defaultValue="John Doe"
-                className="border-border-primary bg-surface text-text-primary w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-lg border border-border-primary bg-surface px-3 py-2 text-text-primary"
               />
             </div>
             <div>
-              <label className="text-text-secondary mb-2 block text-sm font-medium">
-                Email
-              </label>
+              <label className="mb-2 block text-sm font-medium text-text-secondary">Email</label>
               <input
                 type="email"
                 defaultValue="john@example.com"
-                className="border-border-primary bg-surface text-text-primary w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-lg border border-border-primary bg-surface px-3 py-2 text-text-primary"
               />
             </div>
           </div>
@@ -93,16 +91,16 @@ function FromLeftWrapper() {
         </SheetHeader>
         <SheetBody>
           <nav className="space-y-2">
-            <button className="text-text-secondary w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition hover:bg-surface-secondary hover:text-text-primary">
+            <button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-secondary hover:text-text-primary">
               Dashboard
             </button>
-            <button className="text-text-secondary w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition hover:bg-surface-secondary hover:text-text-primary">
+            <button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-secondary hover:text-text-primary">
               Tasks
             </button>
-            <button className="text-text-secondary w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition hover:bg-surface-secondary hover:text-text-primary">
+            <button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-secondary hover:text-text-primary">
               Settings
             </button>
-            <button className="text-text-secondary w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition hover:bg-surface-secondary hover:text-text-primary">
+            <button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-text-secondary transition hover:bg-surface-secondary hover:text-text-primary">
               Help
             </button>
           </nav>
@@ -138,13 +136,13 @@ function FromTopWrapper() {
         <SheetBody>
           <div className="space-y-3">
             <div className="flex gap-2">
-              <button className="border-border-primary bg-surface text-text-secondary rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
+              <button className="rounded-lg border border-border-primary bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
                 High Priority
               </button>
-              <button className="border-border-primary bg-surface text-text-secondary rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
+              <button className="rounded-lg border border-border-primary bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
                 In Progress
               </button>
-              <button className="border-border-primary bg-surface text-text-secondary rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
+              <button className="rounded-lg border border-border-primary bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-brand-cyan/10 hover:text-brand-cyan">
                 Today
               </button>
             </div>
@@ -183,13 +181,13 @@ function FromBottomWrapper() {
             <input
               type="email"
               placeholder="Enter email address"
-              className="border-border-primary bg-surface text-text-primary w-full rounded-lg border px-3 py-2 placeholder:text-text-muted"
+              className="w-full rounded-lg border border-border-primary bg-surface px-3 py-2 text-text-primary placeholder:text-text-muted"
             />
             <div className="flex gap-2">
-              <button className="border-border-primary bg-surface text-text-secondary rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-surface-secondary">
+              <button className="rounded-lg border border-border-primary bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-surface-secondary">
                 Can View
               </button>
-              <button className="border-border-primary bg-surface text-text-secondary rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-surface-secondary">
+              <button className="rounded-lg border border-border-primary bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-surface-secondary">
                 Can Edit
               </button>
             </div>
@@ -224,7 +222,7 @@ function NoCloseButtonWrapper() {
           <SheetDescription>You must click outside to dismiss this sheet.</SheetDescription>
         </SheetHeader>
         <SheetBody>
-          <p className="text-text-secondary text-sm">
+          <p className="text-sm text-text-secondary">
             This sheet has no close button. Click on the overlay to close it.
           </p>
         </SheetBody>

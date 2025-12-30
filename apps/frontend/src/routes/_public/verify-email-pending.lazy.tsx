@@ -64,10 +64,7 @@ function VerifyEmailPendingPage() {
 
           {/* Heading */}
           <div className="text-center">
-            <h2
-              style={{ color: 'var(--color-text-primary)' }}
-              className="mb-2 text-2xl font-bold"
-            >
+            <h2 style={{ color: 'var(--color-text-primary)' }} className="mb-2 text-2xl font-bold">
               Email Verification Pending
             </h2>
             <p style={{ color: 'var(--color-text-secondary)' }}>
@@ -147,7 +144,7 @@ function VerifyEmailPendingPage() {
                 borderColor: 'var(--color-border-primary)',
                 color: 'var(--color-text-secondary)',
               }}
-              className="hover:bg-surface-secondary block w-full rounded-lg border px-4 py-3 text-center transition"
+              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-surface-secondary"
             >
               Back to Sign In
             </Link>
@@ -157,7 +154,7 @@ function VerifyEmailPendingPage() {
                 borderColor: 'var(--color-border-primary)',
                 color: 'var(--color-text-secondary)',
               }}
-              className="hover:bg-surface-secondary block w-full rounded-lg border px-4 py-3 text-center transition"
+              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-surface-secondary"
             >
               Create Different Account
             </Link>

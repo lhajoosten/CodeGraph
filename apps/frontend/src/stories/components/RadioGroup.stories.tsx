@@ -17,30 +17,28 @@ function DefaultRadioGroupWrapper() {
 
   return (
     <div className="w-full max-w-md">
-      <label className="text-text-primary mb-3 block text-sm font-medium">
-        Choose an option
-      </label>
+      <label className="mb-3 block text-sm font-medium text-text-primary">Choose an option</label>
       <RadioGroup value={selected} onValueChange={setSelected}>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="option1" id="opt1" />
-          <label htmlFor="opt1" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="opt1" className="cursor-pointer text-sm text-text-secondary">
             Option 1
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="option2" id="opt2" />
-          <label htmlFor="opt2" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="opt2" className="cursor-pointer text-sm text-text-secondary">
             Option 2
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="option3" id="opt3" />
-          <label htmlFor="opt3" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="opt3" className="cursor-pointer text-sm text-text-secondary">
             Option 3
           </label>
         </div>
       </RadioGroup>
-      <p className="text-text-muted mt-3 text-xs">
+      <p className="mt-3 text-xs text-text-muted">
         Selected: <strong className="text-text-secondary">{selected}</strong>
       </p>
     </div>
@@ -60,29 +58,27 @@ function WithDescriptionsRadioGroupWrapper() {
 
   return (
     <div className="w-full max-w-md space-y-3">
-      <label className="text-text-primary block text-sm font-medium">Select your plan</label>
+      <label className="block text-sm font-medium text-text-primary">Select your plan</label>
       <RadioGroup value={selected} onValueChange={setSelected}>
-        <div className="border-border-primary flex items-start gap-3 rounded-lg border p-3">
+        <div className="flex items-start gap-3 rounded-lg border border-border-primary p-3">
           <RadioGroupItem value="basic" id="basic" className="mt-1" />
           <label htmlFor="basic" className="flex-1 cursor-pointer">
-            <p className="text-text-primary font-medium">Starter Plan</p>
-            <p className="text-text-secondary text-xs">Perfect for individuals - $29/month</p>
+            <p className="font-medium text-text-primary">Starter Plan</p>
+            <p className="text-xs text-text-secondary">Perfect for individuals - $29/month</p>
           </label>
         </div>
-        <div className="border-border-primary flex items-start gap-3 rounded-lg border p-3">
+        <div className="flex items-start gap-3 rounded-lg border border-border-primary p-3">
           <RadioGroupItem value="pro" id="pro" className="mt-1" />
           <label htmlFor="pro" className="flex-1 cursor-pointer">
-            <p className="text-text-primary font-medium">Professional Plan</p>
-            <p className="text-text-secondary text-xs">For growing teams - $99/month</p>
+            <p className="font-medium text-text-primary">Professional Plan</p>
+            <p className="text-xs text-text-secondary">For growing teams - $99/month</p>
           </label>
         </div>
-        <div className="border-border-primary flex items-start gap-3 rounded-lg border p-3">
+        <div className="flex items-start gap-3 rounded-lg border border-border-primary p-3">
           <RadioGroupItem value="enterprise" id="enterprise" className="mt-1" />
           <label htmlFor="enterprise" className="flex-1 cursor-pointer">
-            <p className="text-text-primary font-medium">Enterprise Plan</p>
-            <p className="text-text-secondary text-xs">
-              For large organizations - Custom pricing
-            </p>
+            <p className="font-medium text-text-primary">Enterprise Plan</p>
+            <p className="text-xs text-text-secondary">For large organizations - Custom pricing</p>
           </label>
         </div>
       </RadioGroup>
@@ -103,31 +99,29 @@ function VerticalRadioGroupWrapper() {
 
   return (
     <div className="w-full max-w-sm">
-      <label className="text-text-primary mb-3 block text-sm font-medium">
-        Select a runtime
-      </label>
+      <label className="mb-3 block text-sm font-medium text-text-primary">Select a runtime</label>
       <RadioGroup value={selected} onValueChange={setSelected} className="space-y-2">
         <div className="flex items-center gap-2">
           <RadioGroupItem value="node" id="node" />
-          <label htmlFor="node" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="node" className="cursor-pointer text-sm text-text-secondary">
             Node.js 18+
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="python" id="python" />
-          <label htmlFor="python" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="python" className="cursor-pointer text-sm text-text-secondary">
             Python 3.10+
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="go" id="go" />
-          <label htmlFor="go" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="go" className="cursor-pointer text-sm text-text-secondary">
             Go 1.19+
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="rust" id="rust" />
-          <label htmlFor="rust" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="rust" className="cursor-pointer text-sm text-text-secondary">
             Rust 1.70+
           </label>
         </div>
@@ -149,25 +143,25 @@ function WithDisabledRadioGroupWrapper() {
 
   return (
     <div className="w-full max-w-md">
-      <label className="text-text-primary mb-3 block text-sm font-medium">
+      <label className="mb-3 block text-sm font-medium text-text-primary">
         Visibility settings
       </label>
       <RadioGroup value={selected} onValueChange={setSelected}>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="public" id="public" />
-          <label htmlFor="public" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="public" className="cursor-pointer text-sm text-text-secondary">
             Public (Anyone can view)
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="private" id="private" />
-          <label htmlFor="private" className="text-text-secondary cursor-pointer text-sm">
+          <label htmlFor="private" className="cursor-pointer text-sm text-text-secondary">
             Private (Only you can view)
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="team" id="team" disabled />
-          <label htmlFor="team" className="text-text-muted cursor-pointer text-sm">
+          <label htmlFor="team" className="cursor-pointer text-sm text-text-muted">
             Team (Coming soon)
           </label>
         </div>
@@ -189,27 +183,25 @@ function InFormRadioGroupWrapper() {
   const [status, setStatus] = useState('open');
 
   return (
-    <form className="border-border-primary bg-surface w-full max-w-md space-y-6 rounded-lg border p-4">
+    <form className="w-full max-w-md space-y-6 rounded-lg border border-border-primary bg-surface p-4">
       <div>
-        <label className="text-text-primary mb-3 block text-sm font-medium">
-          Priority Level
-        </label>
+        <label className="mb-3 block text-sm font-medium text-text-primary">Priority Level</label>
         <RadioGroup value={priority} onValueChange={setPriority}>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="low" id="low" />
-            <label htmlFor="low" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="low" className="cursor-pointer text-sm text-text-secondary">
               Low
             </label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="medium" id="medium" />
-            <label htmlFor="medium" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="medium" className="cursor-pointer text-sm text-text-secondary">
               Medium
             </label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="high" id="high" />
-            <label htmlFor="high" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="high" className="cursor-pointer text-sm text-text-secondary">
               High
             </label>
           </div>
@@ -217,23 +209,23 @@ function InFormRadioGroupWrapper() {
       </div>
 
       <div>
-        <label className="text-text-primary mb-3 block text-sm font-medium">Status</label>
+        <label className="mb-3 block text-sm font-medium text-text-primary">Status</label>
         <RadioGroup value={status} onValueChange={setStatus}>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="open" id="open" />
-            <label htmlFor="open" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="open" className="cursor-pointer text-sm text-text-secondary">
               Open
             </label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="in-progress" id="in-progress" />
-            <label htmlFor="in-progress" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="in-progress" className="cursor-pointer text-sm text-text-secondary">
               In Progress
             </label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="closed" id="closed" />
-            <label htmlFor="closed" className="text-text-secondary cursor-pointer text-sm">
+            <label htmlFor="closed" className="cursor-pointer text-sm text-text-secondary">
               Closed
             </label>
           </div>
@@ -243,7 +235,7 @@ function InFormRadioGroupWrapper() {
       <div className="flex gap-2 pt-4">
         <button
           type="button"
-          className="border-border-primary text-text-secondary flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-surface-secondary"
+          className="flex-1 rounded-lg border border-border-primary px-4 py-2 text-sm font-medium text-text-secondary transition hover:bg-surface-secondary"
         >
           Cancel
         </button>

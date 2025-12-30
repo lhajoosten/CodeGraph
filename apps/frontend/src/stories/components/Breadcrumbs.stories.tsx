@@ -57,7 +57,7 @@ export const WithArrowSeparator: Story = {
       { label: 'In Progress', href: '/tasks?status=in-progress' },
       { label: 'Implement Auth' },
     ],
-    separator: <span className="text-text-secondary mx-2">→</span>,
+    separator: <span className="mx-2 text-text-secondary">→</span>,
   },
 };
 

@@ -8,8 +8,8 @@ import {
 
 export const alertVariants = cva(
   `
-    [&>svg]:text-foreground [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4
-    relative w-full rounded-lg border p-4
+    relative w-full rounded-lg border
+    p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg]:text-foreground
     [&>svg+div]:translate-y-[-3px]
     [&>svg~*]:pl-7
   `,

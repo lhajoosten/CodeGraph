@@ -74,7 +74,7 @@ export const TwoFactorSettings = () => {
   if (backupCodes.length > 0) {
     return (
       <div className="space-y-4">
-        <div className="bg-surface rounded-lg border border-brand-lime p-4">
+        <div className="rounded-lg border border-brand-lime bg-surface p-4">
           <div className="flex items-start gap-3">
             <svg
               className="h-5 w-5 text-brand-lime"
@@ -91,7 +91,7 @@ export const TwoFactorSettings = () => {
             </svg>
             <div>
               <p className="font-medium text-brand-lime">Save your backup codes!</p>
-              <p className="text-text-secondary mt-1 text-sm">
+              <p className="mt-1 text-sm text-text-secondary">
                 Store these codes in a safe place. You can use them to access your account if you
                 lose your authenticator.
               </p>
@@ -101,14 +101,11 @@ export const TwoFactorSettings = () => {
 
         <div
           className={`
-            bg-surface-secondary grid grid-cols-2 gap-2 rounded-lg p-4 font-mono text-sm
+            grid grid-cols-2 gap-2 rounded-lg bg-surface-secondary p-4 font-mono text-sm
           `}
         >
           {backupCodes.map((code, index) => (
-            <div
-              key={index}
-              className="bg-surface text-text-primary rounded p-2 text-center"
-            >
+            <div key={index} className="rounded bg-surface p-2 text-center text-text-primary">
               {code}
             </div>
           ))}
@@ -119,8 +116,8 @@ export const TwoFactorSettings = () => {
             navigator.clipboard.writeText(backupCodes.join('\n'));
           }}
           className={`
-            border-border-primary text-text-primary w-full rounded-lg border px-4 py-2
-            font-medium transition
+            w-full rounded-lg border border-border-primary px-4 py-2 font-medium
+            text-text-primary transition
             hover:bg-surface
           `}
         >
@@ -146,11 +143,11 @@ export const TwoFactorSettings = () => {
     return (
       <div
         className={`
-          border-border-primary bg-surface rounded-lg border p-6 text-center
+          rounded-lg border border-border-primary bg-surface p-6 text-center
         `}
       >
         <svg
-          className="text-text-muted mx-auto h-12 w-12"
+          className="mx-auto h-12 w-12 text-text-muted"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -162,10 +159,8 @@ export const TwoFactorSettings = () => {
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
           />
         </svg>
-        <h3 className="text-text-primary mt-4 text-lg font-medium">
-          Two-Factor Authentication
-        </h3>
-        <p className="text-text-secondary mt-2 text-sm">
+        <h3 className="mt-4 text-lg font-medium text-text-primary">Two-Factor Authentication</h3>
+        <p className="mt-2 text-sm text-text-secondary">
           Two-factor authentication is not yet available. This feature is coming soon!
         </p>
       </div>
@@ -190,16 +185,16 @@ export const TwoFactorSettings = () => {
   if (showSetup && qrCode) {
     return (
       <div className="space-y-4">
-        <p className="text-text-secondary text-sm">
+        <p className="text-sm text-text-secondary">
           Scan this QR code with your authenticator app (like Google Authenticator or Authy):
         </p>
 
-        <div className="bg-surface flex justify-center rounded-lg p-4">
+        <div className="flex justify-center rounded-lg bg-surface p-4">
           <img src={qrCode} alt="2FA QR Code" className="h-48 w-48" />
         </div>
 
         <div>
-          <label className="text-text-primary mb-1 block text-sm font-medium">
+          <label className="mb-1 block text-sm font-medium text-text-primary">
             Enter verification code
           </label>
           <input
@@ -207,8 +202,8 @@ export const TwoFactorSettings = () => {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
             className={`
-              border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
-              text-center font-mono text-lg tracking-widest
+              w-full rounded-lg border border-border-primary bg-surface px-4 py-2 text-center
+              font-mono text-lg tracking-widest text-text-primary
               focus:border-transparent focus:ring-2 focus:ring-brand-cyan
               focus:outline-none
             `}
@@ -220,8 +215,8 @@ export const TwoFactorSettings = () => {
         {error && (
           <div
             className={`
-              bg-surface border-error text-error rounded-lg border p-3
-              text-sm
+              rounded-lg border border-error bg-surface p-3 text-sm
+              text-error
             `}
           >
             {error}
@@ -236,8 +231,8 @@ export const TwoFactorSettings = () => {
               setVerificationCode('');
             }}
             className={`
-              border-border-primary text-text-primary flex-1 rounded-lg border px-4 py-2
-              font-medium transition
+              flex-1 rounded-lg border border-border-primary px-4 py-2 font-medium
+              text-text-primary transition
               hover:bg-surface
             `}
           >
@@ -264,7 +259,7 @@ export const TwoFactorSettings = () => {
   if (showDisable) {
     return (
       <div className="space-y-4">
-        <p className="text-text-secondary text-sm">
+        <p className="text-sm text-text-secondary">
           Enter your password to disable two-factor authentication:
         </p>
 
@@ -274,7 +269,7 @@ export const TwoFactorSettings = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={`
-            border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
+            w-full rounded-lg border border-border-primary bg-surface px-4 py-2 text-text-primary
             focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
@@ -284,8 +279,8 @@ export const TwoFactorSettings = () => {
         {error && (
           <div
             className={`
-              bg-surface border-error text-error rounded-lg border p-3
-              text-sm
+              rounded-lg border border-error bg-surface p-3 text-sm
+              text-error
             `}
           >
             {error}
@@ -299,8 +294,8 @@ export const TwoFactorSettings = () => {
               setPassword('');
             }}
             className={`
-              border-border-primary text-text-primary flex-1 rounded-lg border px-4 py-2
-              font-medium transition
+              flex-1 rounded-lg border border-border-primary px-4 py-2 font-medium
+              text-text-primary transition
               hover:bg-surface
             `}
           >
@@ -310,7 +305,7 @@ export const TwoFactorSettings = () => {
             onClick={() => disableMutation.mutate({ body: { password } })}
             disabled={!password || disableMutation.isPending}
             className={`
-              bg-error flex-1 rounded-lg px-4 py-2 font-medium text-white
+              flex-1 rounded-lg bg-error px-4 py-2 font-medium text-white
               transition
               hover:shadow-[0_0_16px_rgba(239,68,68,0.5)]
               disabled:cursor-not-allowed disabled:opacity-50
@@ -331,9 +326,9 @@ export const TwoFactorSettings = () => {
           flex items-center justify-between rounded-lg p-4
           ${
             isEnabled
-              ? 'bg-surface border-success border'
+              ? 'border border-success bg-surface'
               : `
-            border-border-primary bg-surface border
+            border border-border-primary bg-surface
           `
           }
         `}
@@ -371,7 +366,7 @@ export const TwoFactorSettings = () => {
             >
               {isEnabled ? 'Enabled' : 'Disabled'}
             </p>
-            <p className="text-text-secondary text-sm">
+            <p className="text-sm text-text-secondary">
               {isEnabled
                 ? 'Your account is protected with 2FA'
                 : 'Add an extra layer of security to your account'}
@@ -385,9 +380,9 @@ export const TwoFactorSettings = () => {
           <button
             onClick={() => setShowDisable(true)}
             className={`
-              hover:bg-surface border-error text-error w-full rounded-lg border px-4
-              py-2 font-medium
-              transition
+              w-full rounded-lg border border-error px-4 py-2 font-medium
+              text-error transition
+              hover:bg-surface
             `}
           >
             Disable Two-Factor Authentication
@@ -398,8 +393,8 @@ export const TwoFactorSettings = () => {
               if (pwd) regenerateMutation.mutate({ body: { password: pwd } });
             }}
             className={`
-              border-border-primary text-text-primary w-full rounded-lg border px-4 py-2
-              font-medium transition
+              w-full rounded-lg border border-border-primary px-4 py-2 font-medium
+              text-text-primary transition
               hover:bg-surface
             `}
           >

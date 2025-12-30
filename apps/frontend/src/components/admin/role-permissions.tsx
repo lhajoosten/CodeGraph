@@ -32,7 +32,7 @@ export function RolePermissions({ role }: RolePermissionsProps) {
   if (categories.length === 0) {
     return (
       <Card className="p-6">
-        <p className="text-text-secondary text-center">{t('roles.no_permissions')}</p>
+        <p className="text-center text-text-secondary">{t('roles.no_permissions')}</p>
       </Card>
     );
   }
@@ -41,7 +41,7 @@ export function RolePermissions({ role }: RolePermissionsProps) {
     <div className="space-y-6">
       {categories.map((category) => (
         <Card key={category} className="p-4">
-          <h3 className="text-text-primary mb-3 text-sm font-semibold capitalize">
+          <h3 className="mb-3 text-sm font-semibold text-text-primary capitalize">
             {category} {t('roles.permissions_category')}
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -50,13 +50,13 @@ export function RolePermissions({ role }: RolePermissionsProps) {
             ))}
           </div>
           {groupedPermissions[category].length === 0 && (
-            <p className="text-text-secondary text-sm">{t('roles.no_permissions_in_category')}</p>
+            <p className="text-sm text-text-secondary">{t('roles.no_permissions_in_category')}</p>
           )}
         </Card>
       ))}
 
-      <div className="bg-info-bg rounded-lg p-4">
-        <p className="text-info-text text-sm">{t('roles.permissions_readonly_note')}</p>
+      <div className="rounded-lg bg-info-bg p-4">
+        <p className="text-sm text-info-text">{t('roles.permissions_readonly_note')}</p>
       </div>
     </div>
   );

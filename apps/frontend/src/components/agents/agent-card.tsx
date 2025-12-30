@@ -59,10 +59,10 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-text-primary font-semibold capitalize">{type} Agent</h3>
+            <h3 className="font-semibold text-text-primary capitalize">{type} Agent</h3>
             <AgentStatusBadge status={status} size="sm" />
           </div>
-          <p className="text-text-secondary text-xs">{agentDescriptions[type]}</p>
+          <p className="text-xs text-text-secondary">{agentDescriptions[type]}</p>
         </div>
 
         {isRunning && <CircularProgress value={progress} size={36} variant="default" showValue />}
@@ -70,7 +70,7 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
 
       {message && (
         <CardContent className="pt-0">
-          <p className="text-text-secondary text-sm">{message}</p>
+          <p className="text-sm text-text-secondary">{message}</p>
         </CardContent>
       )}
     </Card>

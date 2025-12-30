@@ -43,11 +43,11 @@ function ThemeOption({ value, current, onChange, icon, label, description }: The
         {icon}
       </div>
       <div className="flex-1">
-        <div className="text-text-primary font-medium">{label}</div>
-        <div className="text-text-secondary mt-1 text-sm">{description}</div>
+        <div className="font-medium text-text-primary">{label}</div>
+        <div className="mt-1 text-sm text-text-secondary">{description}</div>
       </div>
       {isSelected && (
-        <div className="bg-brand-teal absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full">
+        <div className="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-brand-teal">
           <CheckIcon className="h-3 w-3 text-white" />
         </div>
       )}

@@ -35,7 +35,7 @@ export function WebhookDeliveryDetail({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Status and Event Info */}
-      <div className="border-border-primary bg-surface-secondary space-y-3 rounded-lg border p-4">
+      <div className="space-y-3 rounded-lg border border-border-primary bg-surface-secondary p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">Status</h3>
           <DeliveryStatusBadge status={delivery.status} />
@@ -65,7 +65,7 @@ export function WebhookDeliveryDetail({
       </div>
 
       {/* Timestamps */}
-      <div className="border-border-primary bg-surface-secondary space-y-2 rounded-lg border p-4">
+      <div className="space-y-2 rounded-lg border border-border-primary bg-surface-secondary p-4">
         <h3 className="font-semibold">Timestamps</h3>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
@@ -95,9 +95,9 @@ export function WebhookDeliveryDetail({
 
       {/* Response */}
       {delivery.response_body && (
-        <div className="border-border-primary bg-surface-secondary space-y-2 rounded-lg border p-4">
+        <div className="space-y-2 rounded-lg border border-border-primary bg-surface-secondary p-4">
           <h3 className="font-semibold">Response Body</h3>
-          <pre className="bg-surface max-h-64 overflow-auto rounded p-3 font-mono text-xs">
+          <pre className="max-h-64 overflow-auto rounded bg-surface p-3 font-mono text-xs">
             {delivery.response_body}
           </pre>
         </div>
@@ -105,9 +105,9 @@ export function WebhookDeliveryDetail({
 
       {/* Error */}
       {delivery.error_message && (
-        <div className="border-error bg-error/10 space-y-2 rounded-lg border p-4">
-          <h3 className="text-error font-semibold">Error Message</h3>
-          <p className="text-error text-sm">{delivery.error_message}</p>
+        <div className="space-y-2 rounded-lg border border-error bg-error/10 p-4">
+          <h3 className="font-semibold text-error">Error Message</h3>
+          <p className="text-sm text-error">{delivery.error_message}</p>
         </div>
       )}
     </div>

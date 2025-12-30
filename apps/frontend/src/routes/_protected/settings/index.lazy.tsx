@@ -56,21 +56,21 @@ function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('appearance');
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-border-primary bg-surface border-b">
+      <div className="border-b border-border-primary bg-surface">
         <div className="mx-auto max-w-5xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-text-primary text-2xl font-bold">{t('page.title')}</h1>
-              <p className="text-text-secondary mt-1 text-sm">{t('page.subtitle')}</p>
+              <h1 className="text-2xl font-bold text-text-primary">{t('page.title')}</h1>
+              <p className="mt-1 text-sm text-text-secondary">{t('page.subtitle')}</p>
             </div>
             <Link
               to="/"
               className={cn(
-                'border-border-primary flex items-center gap-2 rounded-lg border',
-                'bg-surface text-text-secondary px-4 py-2 text-sm font-medium',
-                'hover:bg-surface-secondary hover:text-text-primary transition'
+                'flex items-center gap-2 rounded-lg border border-border-primary',
+                'bg-surface px-4 py-2 text-sm font-medium text-text-secondary',
+                'transition hover:bg-surface-secondary hover:text-text-primary'
               )}
             >
               <ArrowLeftIcon className="h-4 w-4" />

@@ -6,8 +6,9 @@
  */
 
 import { useEffect } from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { TaskExecutionControls } from './task-execution-controls';
 import { TaskExecutionOutput } from './task-execution-output';
 import { TaskExecutionTimeline } from './task-execution-timeline';
@@ -15,6 +16,13 @@ import { useExecutionStore } from '@/stores/execution-store.ts';
 import { useFetchTaskHistory } from '@/hooks/api/tasks/queries';
 import { cn } from '@/lib/utils';
 import type { TaskStatus } from '@/openapi/types.gen';
+import {
+  PlayIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CpuChipIcon,
+} from '@heroicons/react/24/outline';
 
 interface TaskExecutionPanelProps {
   taskId: number;
@@ -35,16 +43,23 @@ export function TaskExecutionPanel({ taskId, taskStatus, className }: TaskExecut
     return () => reset();
   }, [taskId, reset]);
 
+  const historyCount = (history as { runs?: unknown[] })?.runs?.length || 0;
+
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Execution Controls */}
-      <Card>
+      {/* Execution Controls Card */}
+      <Card className="border-accent-top shadow-card transition-shadow hover:shadow-card-hover">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Task Execution</h2>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Execute AI agents to work on this task
+              <div className="mb-2 flex items-center gap-2">
+                <div className="bg-gradient-teal flex h-10 w-10 items-center justify-center rounded-lg shadow-button">
+                  <PlayIcon className="h-5 w-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-text-primary">Task Execution</h2>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Execute AI agents to work on this task autonomously
               </p>
             </div>
             <TaskExecutionControls taskId={taskId} taskStatus={taskStatus} />
@@ -53,155 +68,301 @@ export function TaskExecutionPanel({ taskId, taskStatus, className }: TaskExecut
       </Card>
 
       {/* Execution UI Tabs */}
-      <Tabs defaultValue="output" className="w-full">
-        <TabsList className="w-full justify-start">
-          <TabsTrigger value="output" className="flex-1">
-            Output
-            {isExecuting && (
-              <span className="ml-2 h-2 w-2 animate-pulse rounded-full bg-green-500" />
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="timeline" className="flex-1">
-            Timeline
-          </TabsTrigger>
-          <TabsTrigger value="logs" className="flex-1">
-            Logs
-            {logs.length > 0 && (
-              <span className="text-muted-foreground ml-2 text-xs">({logs.length})</span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="history" className="flex-1">
-            History
-            {history && (
-              <span className="text-muted-foreground ml-2 text-xs">
-                ({(history as { runs?: unknown[] }).runs?.length || 0})
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="output" className="mt-4">
-          <TaskExecutionOutput taskId={taskId} isExecuting={isExecuting} />
-        </TabsContent>
-
-        <TabsContent value="timeline" className="mt-4">
-          <TaskExecutionTimeline />
-        </TabsContent>
-
-        <TabsContent value="logs" className="mt-4">
-          <Card>
-            <CardHeader>
-              <h3 className="text-sm font-medium">Execution Logs</h3>
-            </CardHeader>
-            <CardContent>
-              {logs.length === 0 ? (
-                <div className="text-muted-foreground flex h-[200px] items-center justify-center">
-                  <p>No logs yet. Start execution to see logs.</p>
-                </div>
-              ) : (
-                <div className="max-h-[500px] space-y-2 overflow-y-auto">
-                  {logs.map((log) => (
-                    <div
-                      key={log.id}
-                      className={cn(
-                        'flex items-start gap-3 rounded-md border p-3 text-sm',
-                        log.type === 'error' && 'border-danger bg-danger/10',
-                        log.type === 'warning' && 'border-warning bg-warning/10',
-                        log.type === 'success' && 'border-success bg-success/10',
-                        log.type === 'info' && 'border-muted bg-muted/30'
-                      )}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          {log.agent && (
-                            <span className="text-primary text-xs font-medium uppercase">
-                              {log.agent}
-                            </span>
-                          )}
-                          <span className="text-muted-foreground text-xs">
-                            {new Date(log.timestamp).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        <p className="mt-1">{log.message}</p>
-                      </div>
+      <Card className="overflow-hidden shadow-card">
+        <Tabs defaultValue="output" className="w-full">
+          <div className="border-b border-border-primary bg-surface-secondary/50">
+            <TabsList className="h-auto w-full justify-start gap-1 rounded-none border-none bg-transparent p-2">
+              <TabsTrigger
+                value="output"
+                className={cn(
+                  'relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
+                  'data-[state=active]:bg-surface data-[state=active]:text-brand-teal data-[state=active]:shadow-sm',
+                  'hover:bg-surface/50'
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <CpuChipIcon className="h-4 w-4" />
+                  <span>Output</span>
+                  {isExecuting && (
+                    <div className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                <div
+                  className={cn(
+                    'bg-gradient-teal absolute right-0 bottom-0 left-0 h-0.5 opacity-0 transition-opacity',
+                    'data-[state=active]:opacity-100'
+                  )}
+                  data-state={isExecuting ? 'active' : 'inactive'}
+                />
+              </TabsTrigger>
 
-        <TabsContent value="history" className="mt-4">
-          <Card>
-            <CardHeader>
-              <h3 className="text-sm font-medium">Execution History</h3>
-            </CardHeader>
-            <CardContent>
-              {historyLoading ? (
-                <div className="flex h-[200px] items-center justify-center">
-                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+              <TabsTrigger
+                value="timeline"
+                className={cn(
+                  'relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
+                  'data-[state=active]:bg-surface data-[state=active]:text-brand-teal data-[state=active]:shadow-sm',
+                  'hover:bg-surface/50'
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <ClockIcon className="h-4 w-4" />
+                  <span>Timeline</span>
                 </div>
-              ) : !history ||
-                !(history as { runs?: unknown[] }).runs ||
-                (history as { runs?: unknown[] }).runs?.length === 0 ? (
-                <div className="text-muted-foreground flex h-[200px] items-center justify-center">
-                  <p>No execution history yet.</p>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="logs"
+                className={cn(
+                  'relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
+                  'data-[state=active]:bg-surface data-[state=active]:text-brand-teal data-[state=active]:shadow-sm',
+                  'hover:bg-surface/50'
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <DocumentTextIcon className="h-4 w-4" />
+                  <span>Logs</span>
+                  {logs.length > 0 && (
+                    <Badge variant="secondary" size="sm" className="ml-1">
+                      {logs.length}
+                    </Badge>
+                  )}
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  {(
-                    (
-                      history as {
-                        runs: Array<{
-                          id: number;
-                          agent_type: string;
-                          status: string;
-                          tokens_used?: number;
-                          total_latency_ms?: number;
-                          cost_usd?: number;
-                          completed_at?: string;
-                        }>;
-                      }
-                    ).runs || []
-                  ).map((run) => (
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="history"
+                className={cn(
+                  'relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
+                  'data-[state=active]:bg-surface data-[state=active]:text-brand-teal data-[state=active]:shadow-sm',
+                  'hover:bg-surface/50'
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <ChartBarIcon className="h-4 w-4" />
+                  <span>History</span>
+                  {historyCount > 0 && (
+                    <Badge variant="secondary" size="sm" className="ml-1">
+                      {historyCount}
+                    </Badge>
+                  )}
+                </div>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Output Tab */}
+          <TabsContent value="output" className="m-0 p-4">
+            <TaskExecutionOutput taskId={taskId} isExecuting={isExecuting} />
+          </TabsContent>
+
+          {/* Timeline Tab */}
+          <TabsContent value="timeline" className="m-0 p-4">
+            <TaskExecutionTimeline />
+          </TabsContent>
+
+          {/* Logs Tab */}
+          <TabsContent value="logs" className="m-0 p-4">
+            {logs.length === 0 ? (
+              <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-border-secondary bg-surface-secondary/30 p-8">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-subtle">
+                  <DocumentTextIcon className="h-8 w-8 text-brand-teal" />
+                </div>
+                <p className="mb-1 text-sm font-medium text-text-primary">No logs yet</p>
+                <p className="text-sm text-text-muted">
+                  Start execution to see real-time agent logs
+                </p>
+              </div>
+            ) : (
+              <div className="scroll-area max-h-[600px] space-y-3 overflow-y-auto pr-2">
+                {logs.map((log, index) => (
+                  <div
+                    key={log.id}
+                    className={cn(
+                      'hc-skel-item group relative overflow-hidden rounded-lg border p-4 transition-all',
+                      log.type === 'error' && 'border-error/30 bg-error-bg',
+                      log.type === 'warning' && 'border-warning/30 bg-warning-bg',
+                      log.type === 'success' && 'border-success/30 bg-success-bg',
+                      log.type === 'info' && 'border-border bg-surface-secondary/50',
+                      'hover:shadow-md'
+                    )}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {/* Accent line */}
                     <div
-                      key={run.id}
-                      className="hover:bg-muted/50 flex items-center justify-between rounded-md border p-3 transition-colors"
-                    >
+                      className={cn(
+                        'absolute top-0 left-0 h-full w-1',
+                        log.type === 'error' && 'bg-error',
+                        log.type === 'warning' && 'bg-warning',
+                        log.type === 'success' && 'bg-success',
+                        log.type === 'info' && 'bg-brand-teal'
+                      )}
+                    />
+
+                    <div className="ml-3 min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        {log.agent && (
+                          <Badge
+                            variant="default"
+                            size="sm"
+                            className="bg-gradient-teal text-white shadow-button"
+                          >
+                            <CpuChipIcon className="mr-1 h-3 w-3" />
+                            {log.agent}
+                          </Badge>
+                        )}
+                        <span className="flex items-center gap-1.5 text-xs text-text-muted">
+                          <ClockIcon className="h-3 w-3" />
+                          {new Date(log.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className="text-sm leading-relaxed text-text-primary">{log.message}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* History Tab */}
+          <TabsContent value="history" className="m-0 p-4">
+            {historyLoading ? (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <div className="relative">
+                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary-subtle border-t-brand-teal" />
+                  <div className="absolute inset-0 h-12 w-12 animate-ping rounded-full border-4 border-brand-teal opacity-20" />
+                </div>
+              </div>
+            ) : !history || historyCount === 0 ? (
+              <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-border-secondary bg-surface-secondary/30 p-8">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-subtle">
+                  <ChartBarIcon className="h-8 w-8 text-brand-teal" />
+                </div>
+                <p className="mb-1 text-sm font-medium text-text-primary">No execution history</p>
+                <p className="text-sm text-text-muted">Completed executions will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {(
+                  (
+                    history as {
+                      runs: Array<{
+                        id: number;
+                        agent_type: string;
+                        status: string;
+                        tokens_used?: number;
+                        total_latency_ms?: number;
+                        cost_usd?: number;
+                        completed_at?: string;
+                      }>;
+                    }
+                  ).runs || []
+                ).map((run, index) => (
+                  <div
+                    key={run.id}
+                    className={cn(
+                      'hc-skel-item group relative overflow-hidden rounded-lg border border-border bg-surface p-4 transition-all hover:border-brand-teal/30 hover:shadow-card-hover'
+                    )}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {/* Status indicator line */}
+                    <div
+                      className={cn(
+                        'absolute top-0 left-0 h-full w-1 transition-all',
+                        run.status === 'completed' && 'bg-success',
+                        run.status === 'failed' && 'bg-error',
+                        run.status === 'running' && 'bg-brand-teal',
+                        'group-hover:w-1.5'
+                      )}
+                    />
+
+                    <div className="ml-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      {/* Left side - Agent info and status */}
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium capitalize">{run.agent_type}</span>
-                          <span
-                            className={cn(
-                              'rounded-full px-2 py-0.5 text-xs',
-                              run.status === 'completed' && 'bg-success/20 text-success',
-                              run.status === 'failed' && 'bg-danger/20 text-danger',
-                              run.status === 'running' && 'bg-primary/20 text-primary'
-                            )}
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <span className="text-base font-semibold text-text-primary capitalize">
+                            {run.agent_type}
+                          </span>
+                          <Badge
+                            variant={
+                              run.status === 'completed'
+                                ? 'success'
+                                : run.status === 'failed'
+                                  ? 'danger'
+                                  : 'default'
+                            }
+                            size="sm"
+                            dot
                           >
                             {run.status}
-                          </span>
+                          </Badge>
                         </div>
-                        <div className="text-muted-foreground mt-1 flex items-center gap-4 text-xs">
-                          <span>Tokens: {run.tokens_used?.toLocaleString()}</span>
-                          <span>Latency: {run.total_latency_ms}ms</span>
-                          {run.cost_usd && <span>Cost: ${run.cost_usd.toFixed(4)}</span>}
+
+                        {/* Metrics */}
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
+                          <div className="flex items-center gap-1.5">
+                            <svg
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                              />
+                            </svg>
+                            <span className="font-medium">
+                              {run.tokens_used?.toLocaleString() || 0} tokens
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <ClockIcon className="h-3.5 w-3.5" />
+                            <span className="font-medium">{run.total_latency_ms || 0}ms</span>
+                          </div>
+                          {run.cost_usd !== undefined && (
+                            <div className="flex items-center gap-1.5">
+                              <svg
+                                className="h-3.5 w-3.5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span className="font-medium">${run.cost_usd.toFixed(4)}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
+
+                      {/* Right side - Timestamp */}
                       {run.completed_at && (
-                        <span className="text-muted-foreground text-xs">
-                          {new Date(run.completed_at).toLocaleString()}
-                        </span>
+                        <div className="flex items-center gap-2 text-xs text-text-muted">
+                          <CalendarIcon className="h-4 w-4" />
+                          <span>{new Date(run.completed_at).toLocaleString()}</span>
+                        </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 }
+
+// Additional icon import for history tab
+import { CalendarIcon } from '@heroicons/react/24/outline';

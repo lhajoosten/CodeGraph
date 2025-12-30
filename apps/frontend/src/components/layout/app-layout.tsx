@@ -17,7 +17,7 @@ function AppLayout({ children, className }: AppLayoutProps) {
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Sidebar - hidden on mobile, visible on desktop */}
       <div
         className={`

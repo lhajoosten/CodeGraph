@@ -71,17 +71,17 @@ export function AgentBreakdown({ agentMetrics, isLoading = false }: AgentBreakdo
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-border border-b">
-                <th className="text-text-secondary px-4 py-3 text-left text-sm font-medium">
+              <tr className="border-b border-border">
+                <th className="px-4 py-3 text-left text-sm font-medium text-text-secondary">
                   Agent
                 </th>
-                <th className="text-text-secondary px-4 py-3 text-right text-sm font-medium">
+                <th className="px-4 py-3 text-right text-sm font-medium text-text-secondary">
                   Runs
                 </th>
-                <th className="text-text-secondary px-4 py-3 text-right text-sm font-medium">
+                <th className="px-4 py-3 text-right text-sm font-medium text-text-secondary">
                   Tokens
                 </th>
-                <th className="text-text-secondary px-4 py-3 text-right text-sm font-medium">
+                <th className="px-4 py-3 text-right text-sm font-medium text-text-secondary">
                   Avg Latency
                 </th>
               </tr>
@@ -89,7 +89,7 @@ export function AgentBreakdown({ agentMetrics, isLoading = false }: AgentBreakdo
             <tbody>
               {agents.map((agent) => {
                 return (
-                  <tr key={agent.type} className="border-border border-b last:border-0">
+                  <tr key={agent.type} className="border-b border-border last:border-0">
                     <td className="px-4 py-3 font-medium">{agent.label}</td>
                     <td className="px-4 py-3 text-right">{formatNumber(agent.total_runs)}</td>
                     <td className="px-4 py-3 text-right">{formatNumber(agent.total_tokens)}</td>
@@ -102,7 +102,7 @@ export function AgentBreakdown({ agentMetrics, isLoading = false }: AgentBreakdo
         </div>
 
         {agents.length === 0 && (
-          <div className="text-text-tertiary py-8 text-center">
+          <div className="py-8 text-center text-text-tertiary">
             <p>No agent activity yet</p>
           </div>
         )}

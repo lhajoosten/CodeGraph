@@ -14,14 +14,14 @@ const Switch = React.forwardRef<
       `,
       'transition-colors duration-200',
       `
-        focus-visible:ring-offset-background-2 focus-visible:ring-primary
-        focus-visible:ring-2 focus-visible:ring-offset-2
+        focus-visible:ring-2 focus-visible:ring-primary
+        focus-visible:ring-offset-2 focus-visible:ring-offset-background-2
         focus-visible:outline-none
       `,
       'disabled:cursor-not-allowed disabled:opacity-50',
       `
-        data-[state=unchecked]:bg-secondary
         data-[state=checked]:bg-primary
+        data-[state=unchecked]:bg-secondary
       `,
       className
     )}
@@ -31,7 +31,7 @@ const Switch = React.forwardRef<
     <SwitchPrimitive.Thumb
       className={cn(
         `
-          bg-background-2 pointer-events-none block h-5 w-5 rounded-full
+          pointer-events-none block h-5 w-5 rounded-full bg-background-2
           shadow-lg ring-0
         `,
         'transition-transform duration-200',
@@ -64,13 +64,13 @@ const SwitchWithLabel = React.forwardRef<
         <label
           htmlFor={switchId}
           className={`
-            text-text-primary cursor-pointer text-sm leading-none font-medium
+            cursor-pointer text-sm leading-none font-medium text-text-primary
             peer-disabled:cursor-not-allowed peer-disabled:opacity-70
           `}
         >
           {label}
         </label>
-        {description && <p className="text-text-tertiary text-xs">{description}</p>}
+        {description && <p className="text-xs text-text-tertiary">{description}</p>}
       </div>
       <Switch ref={ref} id={switchId} {...props} />
     </div>

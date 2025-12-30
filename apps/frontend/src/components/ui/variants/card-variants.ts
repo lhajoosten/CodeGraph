@@ -4,8 +4,8 @@ export const cardVariants = cva('bg-bg-steel text-text-primary-lum rounded-lg', 
   variants: {
     variant: {
       default: `
-        border-border-steel shadow-glass
-        border
+        border-border-steel border
+        shadow-glass
       `,
       elevated: `
         shadow-[0_10px_30px_rgba(0,0,0,0.4)]
@@ -13,8 +13,8 @@ export const cardVariants = cva('bg-bg-steel text-text-primary-lum rounded-lg', 
       ghost: 'border-0 bg-transparent',
       primary: `
         border-border-steel bg-bg-elevated-lum
-        shadow-glass
         border
+        shadow-glass
       `,
       glass: `
         border-border-steel border

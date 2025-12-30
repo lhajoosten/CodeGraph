@@ -30,7 +30,7 @@ const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-text-tertiary text-xs', className)} {...props} />
+  <p ref={ref} className={cn('text-xs text-text-tertiary', className)} {...props} />
 ));
 FormDescription.displayName = 'FormDescription';
 
@@ -49,15 +49,15 @@ function FormErrorSummary({ errors, className }: FormErrorSummaryProps) {
 
   return (
     <div
-      className={cn('border-danger bg-danger-100 rounded-md border p-4', className)}
+      className={cn('rounded-md border border-danger bg-danger-100 p-4', className)}
       role="alert"
       aria-live="polite"
     >
-      <div className="text-danger mb-2 flex items-center gap-2 font-medium">
+      <div className="mb-2 flex items-center gap-2 font-medium text-danger">
         <ExclamationCircleIcon className="h-4 w-4" />
         <span>Please fix the following errors:</span>
       </div>
-      <ul className="text-danger-800 list-inside list-disc space-y-1 text-sm">
+      <ul className="list-inside list-disc space-y-1 text-sm text-danger-800">
         {errorMessages.map(({ field, message }) => (
           <li key={field}>{message}</li>
         ))}

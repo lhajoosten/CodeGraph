@@ -59,8 +59,8 @@ export function AdminStats({ users = [], roles = [], isLoading }: AdminStatsProp
         {[...Array(4)].map((_, i) => (
           <Card key={i} className="p-6">
             <div className="animate-pulse">
-              <div className="bg-border h-4 w-24 rounded"></div>
-              <div className="bg-border mt-2 h-8 w-16 rounded"></div>
+              <div className="h-4 w-24 rounded bg-border"></div>
+              <div className="mt-2 h-8 w-16 rounded bg-border"></div>
             </div>
           </Card>
         ))}
@@ -74,8 +74,8 @@ export function AdminStats({ users = [], roles = [], isLoading }: AdminStatsProp
         <Card key={stat.label} className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-text-secondary text-sm font-medium">{stat.label}</p>
-              <p className="text-text-primary mt-2 text-3xl font-bold">{stat.value}</p>
+              <p className="text-sm font-medium text-text-secondary">{stat.label}</p>
+              <p className="mt-2 text-3xl font-bold text-text-primary">{stat.value}</p>
             </div>
             <stat.icon className={`h-8 w-8 ${stat.color}`} />
           </div>

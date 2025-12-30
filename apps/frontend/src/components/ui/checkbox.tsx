@@ -79,7 +79,7 @@ const CheckboxWithLabel = React.forwardRef<
         >
           {label}
         </label>
-        {description && <p className="text-text-muted text-xs">{description}</p>}
+        {description && <p className="text-xs text-text-muted">{description}</p>}
       </div>
     </div>
   );

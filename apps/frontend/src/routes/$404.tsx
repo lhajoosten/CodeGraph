@@ -17,10 +17,7 @@ function NotFoundPage() {
           <h1 style={{ color: 'var(--color-brand-cyan)' }} className="text-6xl font-bold">
             404
           </h1>
-          <p
-            style={{ color: 'var(--color-text-primary)' }}
-            className="mt-2 text-2xl font-semibold"
-          >
+          <p style={{ color: 'var(--color-text-primary)' }} className="mt-2 text-2xl font-semibold">
             Page Not Found
           </p>
         </div>

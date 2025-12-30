@@ -63,7 +63,7 @@ export function RoleList({ roles, isLoading }: RoleListProps) {
               <Link
                 to="/admin/roles/$id"
                 params={{ id: String(row.original.id) }}
-                className="hover:text-primary-hover text-primary"
+                className="text-primary hover:text-primary-hover"
               >
                 {t('roles.actions.view')}
               </Link>

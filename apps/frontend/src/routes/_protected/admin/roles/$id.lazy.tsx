@@ -64,9 +64,9 @@ function RoleDetailPage() {
             </Button>
           </Link>
           <div className="mb-6 flex items-center gap-4">
-            <ShieldCheckIcon className="text-primary h-8 w-8" />
+            <ShieldCheckIcon className="h-8 w-8 text-primary" />
             <div className="flex-1">
-              <h1 className="text-text-primary text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
                 <span className="capitalize">{role.name}</span>
                 {isSystemRole && (
                   <Badge variant="default" size="sm" className="ml-3">
@@ -75,7 +75,7 @@ function RoleDetailPage() {
                 )}
               </h1>
               {role.description && (
-                <p className="text-text-secondary mt-1">
+                <p className="mt-1 text-text-secondary">
                   {role.description || t('roles.no_description')}
                 </p>
               )}
@@ -91,15 +91,15 @@ function RoleDetailPage() {
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('roles.columns.name')}</span>
-              <span className="text-text-primary font-medium capitalize">{role.name}</span>
+              <span className="font-medium text-text-primary capitalize">{role.name}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('roles.columns.description')}</span>
-              <span className="text-text-primary font-medium">{role.description || '-'}</span>
+              <span className="font-medium text-text-primary">{role.description || '-'}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">{t('roles.total_permissions')}</span>
-              <span className="text-text-primary font-medium">{role.permissions?.length || 0}</span>
+              <span className="font-medium text-text-primary">{role.permissions?.length || 0}</span>
             </div>
             {isSystemRole && (
               <Alert>
@@ -111,7 +111,7 @@ function RoleDetailPage() {
 
         {/* Permissions */}
         <div className="space-y-4">
-          <h2 className="text-text-primary text-xl font-semibold">
+          <h2 className="text-xl font-semibold text-text-primary">
             {t('roles.permissions_section')}
           </h2>
           <RolePermissions role={role} />

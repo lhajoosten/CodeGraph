@@ -449,7 +449,7 @@ function OAuthCallback() {
                     borderColor: 'var(--color-border-primary)',
                     color: 'var(--color-text-secondary)',
                   }}
-                  className="hover:bg-surface-secondary w-full rounded-lg border py-2 transition"
+                  className="w-full rounded-lg border py-2 transition hover:bg-surface-secondary"
                 >
                   Try Again
                 </button>

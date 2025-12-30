@@ -67,19 +67,19 @@ export function WebhookDeliveryHistory({ webhookId, className }: WebhookDelivery
           <div
             key={delivery.id}
             className={`
-              border-border-primary bg-surface-secondary flex items-center justify-between rounded-lg
-              border p-4 transition-colors
+              flex items-center justify-between rounded-lg border border-border-primary
+              bg-surface-secondary p-4 transition-colors
               hover:bg-surface
             `}
           >
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <DeliveryStatusBadge status={delivery.status} size="sm" />
-                <span className="text-text-primary text-sm font-medium">
+                <span className="text-sm font-medium text-text-primary">
                   {WEBHOOK_EVENT_LABELS[delivery.event_type] || delivery.event_type}
                 </span>
               </div>
-              <div className="text-text-muted flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-4 text-xs text-text-muted">
                 <span>Attempt {delivery.attempt_count}</span>
                 {delivery.response_status && <span>HTTP {delivery.response_status}</span>}
                 <span>{formatRelativeTime(delivery.created_at)}</span>

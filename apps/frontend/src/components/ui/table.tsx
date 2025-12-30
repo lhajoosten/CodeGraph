@@ -19,7 +19,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn('border-border-primary border-b', className)} {...props} />
+  <thead ref={ref} className={cn('border-b border-border-primary', className)} {...props} />
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -38,7 +38,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-border-primary bg-surface-secondary/50 border-t font-medium',
+      'border-t border-border-primary bg-surface-secondary/50 font-medium',
       '[&>tr]:last:border-b-0',
       className
     )}
@@ -52,7 +52,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'border-border-primary border-b transition-colors',
+        'border-b border-border-primary transition-colors',
         'hover:bg-surface/50',
         'data-[state=selected]:bg-surface',
         className
@@ -101,7 +101,7 @@ const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption ref={ref} className={cn('text-text-secondary mt-4 text-sm', className)} {...props} />
+  <caption ref={ref} className={cn('mt-4 text-sm text-text-secondary', className)} {...props} />
 ));
 TableCaption.displayName = 'TableCaption';
 

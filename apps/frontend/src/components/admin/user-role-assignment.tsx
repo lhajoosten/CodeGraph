@@ -71,13 +71,13 @@ export function UserRoleAssignment({
 
         <div className="space-y-4 py-4">
           {user.is_superuser && (
-            <div className="bg-warning-bg rounded-lg p-3">
-              <p className="text-warning-text text-sm">{t('users.superuser_warning')}</p>
+            <div className="rounded-lg bg-warning-bg p-3">
+              <p className="text-sm text-warning-text">{t('users.superuser_warning')}</p>
             </div>
           )}
 
           <div className="space-y-2">
-            <label className="text-text-primary text-sm font-medium">
+            <label className="text-sm font-medium text-text-primary">
               {t('users.current_role')}
             </label>
             <div>
@@ -86,20 +86,20 @@ export function UserRoleAssignment({
                   {user.role.name}
                 </Badge>
               ) : (
-                <span className="text-text-secondary text-sm">{t('users.no_role')}</span>
+                <span className="text-sm text-text-secondary">{t('users.no_role')}</span>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="role-select" className="text-text-primary text-sm font-medium">
+            <label htmlFor="role-select" className="text-sm font-medium text-text-primary">
               {t('users.select_role')}
             </label>
             <select
               id="role-select"
               value={selectedRoleId || ''}
               onChange={(e) => setSelectedRoleId(e.target.value ? Number(e.target.value) : null)}
-              className="border-border bg-background-2 text-text-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-primary focus:ring-2 focus:outline-none"
+              className="w-full rounded-md border border-border bg-background-2 px-3 py-2 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none"
               disabled={user.is_superuser}
             >
               <option value="">{t('users.no_role')}</option>

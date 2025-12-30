@@ -22,13 +22,13 @@ export const inputVariants = cva(
         `,
         error: `
           border-error
-          focus-visible:ring-error
           focus-visible:shadow-[0_0_8px_rgba(239,68,68,0.3)]
+          focus-visible:ring-error
         `,
         success: `
           border-success
-          focus-visible:ring-success
           focus-visible:shadow-[0_0_8px_rgba(34,197,94,0.3)]
+          focus-visible:ring-success
         `,
       },
       inputSize: {
