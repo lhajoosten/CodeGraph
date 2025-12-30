@@ -110,7 +110,7 @@ function EmailVerificationPage() {
               <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
             </div>
             <AuthHeader title="Email Verified!" subtitle={message} />
-            <p className="mt-4 text-center text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum mt-4 text-center text-sm">
               Redirecting to {isAuthenticated ? 'dashboard' : 'login'}...
             </p>
           </>
@@ -119,7 +119,7 @@ function EmailVerificationPage() {
         {status === 'error' && (
           <>
             <div className="mb-4 flex justify-center">
-              <ExclamationCircleIcon className="h-12 w-12 text-error" />
+              <ExclamationCircleIcon className="text-error h-12 w-12" />
             </div>
             <AuthHeader title="Verification Failed" subtitle={message} />
             <button

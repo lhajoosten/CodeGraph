@@ -79,13 +79,13 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
   if (error && !qrData) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-4">
-        <ExclamationCircleIcon className="h-12 w-12 text-error" />
-        <p className="text-center text-text-secondary-lum">
+        <ExclamationCircleIcon className="text-error h-12 w-12" />
+        <p className="text-text-secondary-lum text-center">
           Failed to load 2FA setup. Please try again.
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="rounded-lg bg-brand-cyan px-4 py-2 font-semibold text-white hover:bg-brand-teal"
+          className="hover:bg-brand-teal rounded-lg bg-brand-cyan px-4 py-2 font-semibold text-white"
         >
           Retry
         </button>
@@ -130,10 +130,10 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
       {step === 'qr' && qrData && (
         <div className="space-y-4">
           <div className="text-center">
-            <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">
+            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.scanQR')}
             </h3>
-            <p className="text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum text-sm">
               {t('luminous.twoFactor.setup.scanQRMessage')}
             </p>
           </div>
@@ -143,11 +143,11 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium text-text-secondary-lum">
+            <p className="text-text-secondary-lum text-sm font-medium">
               {t('luminous.twoFactor.setup.manualEntryKey')}
             </p>
-            <div className="rounded-lg bg-bg-steel p-3">
-              <code className="font-mono text-sm break-all text-text-primary-lum">
+            <div className="bg-bg-steel rounded-lg p-3">
+              <code className="text-text-primary-lum font-mono text-sm break-all">
                 {qrData.secret}
               </code>
             </div>
@@ -168,15 +168,24 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
       {step === 'verify' && (
         <div className="space-y-4">
           <div className="text-center">
-            <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">
+            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.verifyCode')}
             </h3>
-            <p className="text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum text-sm">
               {t('luminous.twoFactor.setup.verifyCodeMessage')}
             </p>
           </div>
 
-          <OTPInput length={6} value={otp} onChange={setOtp} disabled={isVerifying} />
+          <OTPInput
+            length={6}
+            value={otp}
+            onChange={setOtp}
+            onComplete={verifyOTP}
+            autoSubmit
+            disabled={isVerifying}
+            label={t('luminous.twoFactor.setup.codeLabel')}
+            hint={t('luminous.twoFactor.setup.codeHint')}
+          />
 
           <div className="flex gap-3">
             <button
@@ -185,14 +194,14 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
                 setOtp('');
               }}
               disabled={isVerifying}
-              className="flex-1 rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t('luminous.twoFactor.setup.backToQR')}
             </button>
             <button
               onClick={verifyOTP}
               disabled={otp.length !== 6 || isVerifying}
-              className="flex-1 rounded-lg bg-brand-cyan py-3 font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-brand-teal shadow-glow-teal flex-1 rounded-lg py-3 font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(45,212,191,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isVerifying
                 ? t('luminous.twoFactor.verify.submit')
@@ -206,37 +215,37 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
       {step === 'backup' && (
         <div className="space-y-4">
           <div className="text-center">
-            <CheckCircleIcon className="mx-auto mb-4 h-12 w-12 text-success" />
-            <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">
+            <CheckCircleIcon className="text-success mx-auto mb-4 h-12 w-12" />
+            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.saveBackup')}
             </h3>
-            <p className="text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum text-sm">
               {t('luminous.twoFactor.setup.backupMessage')}
             </p>
           </div>
 
-          <div className="rounded-lg border border-warning/30 bg-warning/10 p-3">
-            <p className="flex items-center gap-2 text-xs text-warning">
+          <div className="border-warning/30 bg-warning/10 rounded-lg border p-3">
+            <p className="text-warning flex items-center gap-2 text-xs">
               <ExclamationCircleIcon className="h-4 w-4" />
               {t('luminous.twoFactor.setup.keepCodesSafe')}
             </p>
           </div>
 
-          <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border border-border-steel bg-bg-steel p-3">
+          <div className="border-border-steel bg-bg-steel max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
             {backupCodes.map((code, index) => (
               <div
                 key={index}
-                className="group flex items-center justify-between rounded border border-border-steel bg-bg-elevated-lum p-2 font-mono text-sm text-text-primary-lum transition-colors hover:bg-brand-cyan/10"
+                className="group border-border-steel bg-bg-elevated-lum text-text-primary-lum flex items-center justify-between rounded border p-2 font-mono text-sm transition-colors hover:bg-brand-cyan/10"
               >
                 <span>{code}</span>
                 <button
                   type="button"
                   onClick={() => copyCode(code)}
-                  className="ml-2 text-brand-cyan opacity-0 transition-opacity group-hover:opacity-100 hover:text-brand-teal"
+                  className="hover:text-brand-teal ml-2 text-brand-cyan opacity-0 transition-opacity group-hover:opacity-100"
                   title="Copy code"
                 >
                   {copied === code ? (
-                    <CheckCircleIcon className="h-4 w-4 text-success" />
+                    <CheckCircleIcon className="text-success h-4 w-4" />
                   ) : (
                     <ClipboardIcon className="h-4 w-4" />
                   )}
@@ -247,7 +256,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
 
           <button
             onClick={downloadCodes}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel"
+            className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex w-full items-center justify-center gap-2 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel"
           >
             <ArrowDownTrayIcon className="h-[18px] w-[18px]" />
             {t('luminous.twoFactor.setup.downloadCodes')}
@@ -258,9 +267,9 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
               type="checkbox"
               checked={codesConfirmed}
               onChange={(e) => setCodesConfirmed(e.target.checked)}
-              className="cursor-pointer rounded border-border-steel"
+              className="border-border-steel cursor-pointer rounded"
             />
-            <span className="text-sm text-text-secondary-lum">
+            <span className="text-text-secondary-lum text-sm">
               {t('luminous.twoFactor.setup.confirmSaved')}
             </span>
           </label>
@@ -268,7 +277,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
           <button
             onClick={handleComplete}
             disabled={!codesConfirmed}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-success py-3 font-semibold text-white transition-all hover:bg-success/90 active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-success flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold text-white transition-all hover:bg-success/90 active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <CheckCircleIcon className="h-[18px] w-[18px]" />
             {t('luminous.twoFactor.setup.completeSetup')}

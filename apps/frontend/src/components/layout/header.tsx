@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import {
   Bars3Icon,
@@ -23,6 +22,7 @@ import {
 import { UserAvatar } from '@/components/ui/avatar';
 import { useCurrentUser, useLogout } from '@/hooks';
 import { APP_NAME } from '@/lib/constants';
+import { useThemeStore } from '@/stores/theme-store';
 
 interface HeaderProps {
   showMenuButton?: boolean;
@@ -34,13 +34,10 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const { resolvedTheme, setTheme } = useThemeStore();
 
   const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle('dark', newIsDark);
-    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
   const handleLogout = () => {
@@ -60,8 +57,8 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
     <header
       className={cn(
         `
-          sticky top-0 z-30 flex h-16 items-center justify-between border-b
-          border-border bg-background-2 px-4
+          border-border bg-background-2 sticky top-0 z-30 flex h-16 items-center
+          justify-between border-b px-4
           lg:px-6
         `,
         className
@@ -101,8 +98,14 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
         {/* Theme toggle */}
         <IconButton
           variant="ghost"
-          icon={isDark ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          icon={
+            resolvedTheme === 'dark' ? (
+              <SunIcon className="h-5 w-5" />
+            ) : (
+              <MoonIcon className="h-5 w-5" />
+            )
+          }
+          aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           onClick={toggleTheme}
         />
 
@@ -129,7 +132,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm leading-none font-medium">{userName}</p>
-                <p className="text-xs leading-none text-text-muted-lum">{user?.email}</p>
+                <p className="text-text-muted-lum text-xs leading-none">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

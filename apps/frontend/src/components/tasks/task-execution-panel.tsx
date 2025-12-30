@@ -114,7 +114,7 @@ export function TaskExecutionPanel({ taskId, taskStatus, className }: TaskExecut
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           {log.agent && (
-                            <span className="text-xs font-medium text-primary uppercase">
+                            <span className="text-primary text-xs font-medium uppercase">
                               {log.agent}
                             </span>
                           )}
@@ -140,7 +140,7 @@ export function TaskExecutionPanel({ taskId, taskStatus, className }: TaskExecut
             <CardContent>
               {historyLoading ? (
                 <div className="flex h-[200px] items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                 </div>
               ) : !history ||
                 !(history as { runs?: unknown[] }).runs ||

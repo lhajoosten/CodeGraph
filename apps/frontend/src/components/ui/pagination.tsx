@@ -106,21 +106,21 @@ export function Pagination({
         {/* Left: Info and items per page */}
         <div className="flex flex-wrap items-center gap-4">
           {totalItems && (
-            <div className="text-sm text-text-secondary-lum">
-              Total: <span className="font-medium text-text-primary-lum">{totalItems}</span> items
+            <div className="text-text-secondary-lum text-sm">
+              Total: <span className="text-text-primary-lum font-medium">{totalItems}</span> items
             </div>
           )}
 
           {showItemsPerPageSelector && (
             <div className="flex items-center gap-2">
-              <label htmlFor="items-per-page" className="text-sm text-text-secondary-lum">
+              <label htmlFor="items-per-page" className="text-text-secondary-lum text-sm">
                 Per page:
               </label>
               <select
                 id="items-per-page"
                 value={localItemsPerPage}
                 onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="rounded-lg border border-border-steel bg-bg-elevated-lum px-2 py-1 text-sm text-text-primary-lum focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/20 focus:outline-none"
+                className="border-border-steel bg-bg-elevated-lum text-text-primary-lum rounded-lg border px-2 py-1 text-sm focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/20 focus:outline-none"
               >
                 {itemsPerPageOptions.map((option) => (
                   <option key={option} value={option}>
@@ -133,9 +133,9 @@ export function Pagination({
         </div>
 
         {/* Right: Current page info */}
-        <div className="text-sm text-text-secondary-lum">
-          Page <span className="font-medium text-text-primary-lum">{currentPage}</span> of{' '}
-          <span className="font-medium text-text-primary-lum">{totalPages}</span>
+        <div className="text-text-secondary-lum text-sm">
+          Page <span className="text-text-primary-lum font-medium">{currentPage}</span> of{' '}
+          <span className="text-text-primary-lum font-medium">{totalPages}</span>
         </div>
       </div>
 
@@ -173,7 +173,7 @@ export function Pagination({
           if (page === 'ellipsis-start' || page === 'ellipsis-end') {
             return (
               <div key={`${page}-${index}`} className="flex h-8 w-8 items-center justify-center">
-                <EllipsisHorizontalIcon className="h-4 w-4 text-text-secondary-lum" />
+                <EllipsisHorizontalIcon className="text-text-secondary-lum h-4 w-4" />
               </div>
             );
           }
@@ -187,7 +187,7 @@ export function Pagination({
                 'h-8 w-8 rounded-lg transition-all duration-200',
                 isCurrentPage
                   ? 'bg-brand-cyan font-semibold text-white shadow-[0_0_8px_rgba(34,211,238,0.4)]'
-                  : 'border border-border-steel bg-transparent text-text-primary-lum hover:border-brand-cyan/50 hover:bg-bg-elevated-lum'
+                  : 'border-border-steel text-text-primary-lum border bg-transparent hover:bg-bg-elevated-lum hover:border-brand-cyan/50'
               )}
             >
               {page}

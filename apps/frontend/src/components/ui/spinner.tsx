@@ -25,7 +25,7 @@ function Loading({ text, fullScreen, className, ...props }: LoadingProps) {
   const content = (
     <div className={cn('flex flex-col items-center justify-center gap-3', className)}>
       <Spinner {...props} />
-      {text && <p className="text-sm text-text-secondary">{text}</p>}
+      {text && <p className="text-text-secondary text-sm">{text}</p>}
     </div>
   );
 
@@ -33,7 +33,7 @@ function Loading({ text, fullScreen, className, ...props }: LoadingProps) {
     return (
       <div
         className={`
-          fixed inset-0 z-50 flex items-center justify-center bg-background/80
+          bg-background/80 fixed inset-0 z-50 flex items-center justify-center
           backdrop-blur-sm
         `}
       >

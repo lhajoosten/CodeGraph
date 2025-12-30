@@ -89,7 +89,7 @@ function MetricsDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Metrics & Analytics</h1>
-        <p className="mt-2 text-text-secondary">Monitor AI agent usage, costs, and performance</p>
+        <p className="text-text-secondary mt-2">Monitor AI agent usage, costs, and performance</p>
       </div>
 
       {/* Summary Cards */}

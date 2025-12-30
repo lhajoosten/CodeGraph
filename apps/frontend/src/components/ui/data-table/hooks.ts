@@ -104,11 +104,11 @@ export function useDataTableOptions<TData, TValue>(
       onRowSelectionChange: handlers.setRowSelection,
       onGlobalFilterChange: handlers.setGlobalFilter,
       state: {
-        sorting: enableSorting ? state.sorting : undefined,
-        columnFilters: enableColumnFilters ? state.columnFilters : undefined,
-        columnVisibility: enableColumnVisibility ? state.columnVisibility : undefined,
-        rowSelection: enableRowSelection ? state.rowSelection : undefined,
-        globalFilter: searchable ? state.globalFilter : undefined,
+        sorting: enableSorting ? state.sorting : [],
+        columnFilters: enableColumnFilters ? state.columnFilters : [],
+        columnVisibility: enableColumnVisibility ? state.columnVisibility : {},
+        rowSelection: state.rowSelection ?? {},
+        globalFilter: searchable ? state.globalFilter : '',
       },
       enableRowSelection,
       initialState: {

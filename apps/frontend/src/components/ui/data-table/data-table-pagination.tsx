@@ -54,15 +54,18 @@ export function DataTablePagination<TData>({
     table.setPageIndex(table.getPageCount() - 1);
   }, [table]);
 
-  const selectedCount = table.getFilteredSelectedRowModel().rows.length;
-  const totalCount = table.getFilteredRowModel().rows.length;
-  const currentPage = table.getState().pagination.pageIndex + 1;
-  const pageCount = table.getPageCount();
+  // Safely get selected row count - only if row selection is enabled
+  const selectedCount = showRowSelection
+    ? (table.getFilteredSelectedRowModel?.()?.rows?.length ?? 0)
+    : 0;
+  const totalCount = table.getFilteredRowModel?.()?.rows?.length ?? 0;
+  const currentPage = (table.getState?.()?.pagination?.pageIndex ?? 0) + 1;
+  const pageCount = table.getPageCount?.() ?? 1;
 
   return (
     <div className="flex items-center justify-between px-2">
       {/* Row Selection Info */}
-      <div className="flex-1 text-sm text-text-secondary">
+      <div className="text-text-secondary flex-1 text-sm">
         {showRowSelection && selectedCount > 0 && (
           <span>
             {selectedCount} of {totalCount} row(s) selected.
@@ -75,7 +78,7 @@ export function DataTablePagination<TData>({
         {/* Page Size Selector */}
         {showPageSizeSelector && (
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium text-text-primary-lum">Rows per page</p>
+            <p className="text-text-primary-lum text-sm font-medium">Rows per page</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={handlePageSizeChange}
@@ -96,7 +99,7 @@ export function DataTablePagination<TData>({
 
         {/* Page Info */}
         {showPageInfo && (
-          <div className="flex w-24 items-center justify-center text-sm font-medium text-text-primary-lum">
+          <div className="text-text-primary-lum flex w-24 items-center justify-center text-sm font-medium">
             Page {currentPage} of {pageCount}
           </div>
         )}

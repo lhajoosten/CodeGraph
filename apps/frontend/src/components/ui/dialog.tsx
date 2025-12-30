@@ -49,7 +49,7 @@ const DialogContent = React.forwardRef<
           fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg
           translate-x-[-50%] translate-y-[-50%]
         `,
-        'gap-4 rounded-lg border border-border bg-background-2 p-6 shadow-modal',
+        'border-border bg-background-2 shadow-modal gap-4 rounded-lg border p-6',
         'duration-200',
         `
           data-[state=open]:animate-in
@@ -79,13 +79,13 @@ const DialogContent = React.forwardRef<
       {showCloseButton && (
         <DialogPrimitive.Close
           className={`
-            absolute top-4 right-4 rounded-sm opacity-70
-            ring-offset-background-2 transition-opacity
-            hover:opacity-100
-            focus:ring-2 focus:ring-primary focus:ring-offset-2
-            focus:outline-none
-            disabled:pointer-events-none
+            ring-offset-background-2 absolute top-4 right-4 rounded-sm
+            opacity-70 transition-opacity
             data-[state=open]:bg-secondary
+            focus:ring-primary focus:ring-2 focus:ring-offset-2
+            focus:outline-none
+            hover:opacity-100
+            disabled:pointer-events-none
           `}
         >
           <XMarkIcon className="h-4 w-4" />
@@ -133,7 +133,7 @@ const DialogTitle = React.forwardRef<
     ref={ref}
     className={cn(
       `
-      text-lg leading-none font-semibold tracking-tight text-text-primary
+      text-text-primary text-lg leading-none font-semibold tracking-tight
     `,
       className
     )}
@@ -148,7 +148,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-text-secondary', className)}
+    className={cn('text-text-secondary text-sm', className)}
     {...props}
   />
 ));

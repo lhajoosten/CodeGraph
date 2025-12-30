@@ -30,21 +30,21 @@ export const buttonVariants = cva(
           active:opacity-90
         `,
         outline: `
-          border border-border-steel bg-transparent text-text-primary-lum
+          border-border-steel text-text-primary-lum border bg-transparent
           hover:bg-bg-elevated-lum
           active:bg-bg-steel
         `,
         secondary: `
-          border border-border-steel
-          bg-bg-elevated-lum text-text-primary-lum
-          shadow-glass
+          border-border-steel bg-bg-elevated-lum
+          text-text-primary-lum shadow-glass
+          border
           transition-all
           hover:bg-bg-steel
           active:opacity-90
         `,
         ghost: `
-          border border-brand-teal
-          bg-transparent text-brand-teal
+          border-brand-teal text-brand-teal
+          border bg-transparent
           transition-shadow
           hover:shadow-[0_0_12px_rgba(45,212,191,0.4)]
           active:opacity-80

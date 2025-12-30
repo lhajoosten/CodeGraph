@@ -34,7 +34,7 @@ export const LayoutShowcase: LayoutStory = {
     <AuthLayout>
       <AuthCard>
         <AuthHeader title="Sign In" subtitle="Welcome back to CodeGraph" />
-        <p className="text-center text-sm text-text-secondary-lum">
+        <p className="text-text-secondary-lum text-center text-sm">
           Auth page with gradient background and centered content
         </p>
       </AuthCard>
@@ -75,7 +75,7 @@ export const CardDefault = (() => {
       <div className="luminous-theme flex min-h-screen items-center justify-center">
         <AuthCard>
           <AuthHeader title="Sign In" subtitle="Enter your credentials" />
-          <p className="text-sm text-text-secondary-lum">
+          <p className="text-text-secondary-lum text-sm">
             Glass card with backdrop blur effect and proper spacing
           </p>
         </AuthCard>
@@ -111,7 +111,7 @@ export const HeaderDefault = (() => {
       subtitle: 'Welcome back to CodeGraph',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <AuthHeader {...args} />
       </div>
     ),
@@ -146,7 +146,7 @@ export const InputDefault = (() => {
       icon: EnvelopeIcon,
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <AuthInput {...args} />
       </div>
     ),
@@ -168,7 +168,7 @@ export const InputWithError = (() => {
       defaultValue: 'invalid@',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <AuthInput {...args} />
       </div>
     ),
@@ -190,7 +190,7 @@ export const InputWithHelper = (() => {
       type: 'password',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <AuthInput {...args} />
       </div>
     ),
@@ -229,7 +229,7 @@ export const OTPInputDefault = (() => {
         const [otp, setOtp] = useState('');
 
         return (
-          <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+          <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
             <OTPInput length={6} value={otp} onChange={setOtp} />
           </div>
         );
@@ -267,7 +267,7 @@ export const StrengthWeak = (() => {
       showLabel: true,
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <PasswordStrengthIndicator {...args} />
       </div>
     ),
@@ -286,7 +286,7 @@ export const StrengthMedium = (() => {
       showLabel: true,
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <PasswordStrengthIndicator {...args} />
       </div>
     ),
@@ -305,7 +305,7 @@ export const StrengthStrong = (() => {
       showLabel: true,
     },
     render: (args) => (
-      <div className="luminous-theme min-w-96 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-96 rounded-lg p-8">
         <PasswordStrengthIndicator {...args} />
       </div>
     ),
@@ -338,7 +338,7 @@ export const OAuthGitHub = (() => {
       provider: 'github',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-64 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-64 rounded-lg p-8">
         <OAuthButton {...args} />
       </div>
     ),
@@ -356,7 +356,7 @@ export const OAuthGoogle = (() => {
       provider: 'google',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-64 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-64 rounded-lg p-8">
         <OAuthButton {...args} />
       </div>
     ),
@@ -374,7 +374,7 @@ export const OAuthMicrosoft = (() => {
       provider: 'microsoft',
     },
     render: (args) => (
-      <div className="luminous-theme min-w-64 rounded-lg bg-bg-primary-lum p-8">
+      <div className="luminous-theme bg-bg-primary-lum min-w-64 rounded-lg p-8">
         <OAuthButton {...args} />
       </div>
     ),
@@ -443,10 +443,10 @@ export const LoginFormExample = (() => {
 
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex cursor-pointer items-center gap-2">
-                    <input type="checkbox" className="rounded border-border-steel" />
+                    <input type="checkbox" className="border-border-steel rounded" />
                     <span className="text-text-secondary-lum">Remember me</span>
                   </label>
-                  <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                  <a href="#" className="hover:text-brand-teal text-brand-cyan">
                     Forgot password?
                   </a>
                 </div>
@@ -461,10 +461,10 @@ export const LoginFormExample = (() => {
 
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border-steel" />
+                  <div className="border-border-steel w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-bg-steel px-3 text-text-muted-lum">Or continue with</span>
+                  <span className="bg-bg-steel text-text-muted-lum px-3">Or continue with</span>
                 </div>
               </div>
 
@@ -474,9 +474,9 @@ export const LoginFormExample = (() => {
                 <OAuthButton provider="microsoft" />
               </div>
 
-              <p className="mt-6 text-center text-sm text-text-secondary-lum">
+              <p className="text-text-secondary-lum mt-6 text-center text-sm">
                 Don&apos;t have an account?{' '}
-                <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                <a href="#" className="hover:text-brand-teal text-brand-cyan">
                   Sign up
                 </a>
               </p>
@@ -589,10 +589,10 @@ export const RegisterFormExample = (() => {
                 />
 
                 <label className="flex cursor-pointer items-center gap-2">
-                  <input type="checkbox" className="rounded border-border-steel" />
-                  <span className="text-sm text-text-secondary-lum">
+                  <input type="checkbox" className="border-border-steel rounded" />
+                  <span className="text-text-secondary-lum text-sm">
                     I agree to the{' '}
-                    <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                    <a href="#" className="hover:text-brand-teal text-brand-cyan">
                       Terms of Service
                     </a>
                   </span>
@@ -606,9 +606,9 @@ export const RegisterFormExample = (() => {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-sm text-text-secondary-lum">
+              <p className="text-text-secondary-lum mt-6 text-center text-sm">
                 Already have an account?{' '}
-                <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                <a href="#" className="hover:text-brand-teal text-brand-cyan">
                   Sign in
                 </a>
               </p>

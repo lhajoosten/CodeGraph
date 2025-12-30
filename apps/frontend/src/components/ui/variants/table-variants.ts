@@ -1,11 +1,11 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const tableVariants = cva('w-full caption-bottom text-sm text-text-primary-lum', {
+export const tableVariants = cva('text-text-primary-lum w-full caption-bottom text-sm', {
   variants: {
     variant: {
       default: `
-          border-collapse
           bg-bg-steel
+          border-collapse
         `,
       glass: `
           border-collapse
@@ -13,8 +13,8 @@ export const tableVariants = cva('w-full caption-bottom text-sm text-text-primar
           backdrop-blur-md
         `,
       elevated: `
-          border-collapse
           bg-bg-steel
+          border-collapse
           shadow-[0_10px_30px_rgba(0,0,0,0.4)]
         `,
     },

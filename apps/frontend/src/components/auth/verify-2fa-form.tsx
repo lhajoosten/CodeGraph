@@ -48,14 +48,19 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
   const [otp, setOtp] = useState('');
   const backupCodeValue = useWatch({ control, name: 'backupCode' });
 
-  const handleVerifyOTP = () => {
-    if (otp.length !== 6) return;
+  const handleVerifyOTP = (code?: string) => {
+    const codeToVerify = code || otp;
+    if (codeToVerify.length !== 6) return;
 
     verify2FAMutation.mutate(
-      { body: { code: otp } },
+      { body: { code: codeToVerify } },
       {
         onSuccess: () => {
           onSuccess?.();
+        },
+        onError: () => {
+          // Clear the OTP input on error so user can try again
+          setOtp('');
         },
       }
     );
@@ -75,16 +80,16 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="mb-2 text-lg font-semibold text-text-primary-lum">
+        <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
           {t('luminous.twoFactor.verify.title')}
         </h3>
-        <p className="text-sm text-text-secondary-lum">{t('luminous.twoFactor.verify.subtitle')}</p>
+        <p className="text-text-secondary-lum text-sm">{t('luminous.twoFactor.verify.subtitle')}</p>
       </div>
 
       {/* Error Message */}
       {verify2FAMutation.error && (
-        <div className="rounded-lg border border-error/30 bg-error/10 p-3">
-          <p className="flex items-center gap-2 text-sm text-error">
+        <div className="border-error/30 bg-error/10 rounded-lg border p-3">
+          <p className="text-error flex items-center gap-2 text-sm">
             <ExclamationCircleIcon className="h-4 w-4" />
             {verify2FAMutation.error instanceof Error
               ? verify2FAMutation.error.message
@@ -99,14 +104,25 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
           <OTPInput
             length={6}
             value={otp}
-            onChange={setOtp}
+            onChange={(val) => {
+              setOtp(val);
+              // Reset error state when user starts typing again
+              if (verify2FAMutation.isError) {
+                verify2FAMutation.reset();
+              }
+            }}
+            onComplete={handleVerifyOTP}
+            autoSubmit
             disabled={verify2FAMutation.isPending}
+            error={verify2FAMutation.isError}
+            label={t('luminous.twoFactor.verify.codeLabel')}
+            hint={t('luminous.twoFactor.verify.codeHint')}
           />
 
           <button
-            onClick={handleVerifyOTP}
+            onClick={() => handleVerifyOTP()}
             disabled={otp.length !== 6 || verify2FAMutation.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-cyan py-3 font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-brand-teal shadow-glow-teal flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(45,212,191,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {verify2FAMutation.isPending ? (
               <>
@@ -157,12 +173,12 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
       )}
 
       {/* Toggle between OTP and Backup Code */}
-      <div className="border-t border-border-steel pt-2">
+      <div className="border-border-steel border-t pt-2">
         <button
           type="button"
           onClick={() => setUseBackupCode(!useBackupCode)}
           disabled={verify2FAMutation.isPending}
-          className="w-full py-2 text-sm font-medium text-brand-cyan transition-colors hover:text-brand-teal disabled:cursor-not-allowed disabled:opacity-50"
+          className="hover:text-brand-teal w-full py-2 text-sm font-medium text-brand-cyan transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
           {useBackupCode
             ? t('luminous.twoFactor.verify.useAuthenticator')
@@ -175,14 +191,14 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
         <button
           onClick={onCancel}
           disabled={verify2FAMutation.isPending}
-          className="w-full rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t('luminous.twoFactor.verify.cancel')}
         </button>
       )}
 
       {/* Helper Text */}
-      <p className="text-center text-xs text-text-muted-lum">
+      <p className="text-text-muted-lum text-center text-xs">
         {t('luminous.twoFactor.verify.support')}
       </p>
     </div>

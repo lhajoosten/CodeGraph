@@ -19,8 +19,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {leftIcon && (
             <div
               className={`
-                pointer-events-none absolute left-3 flex items-center
-                text-text-tertiary
+                text-text-tertiary pointer-events-none absolute left-3 flex
+                items-center
               `}
             >
               {leftIcon}
@@ -40,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {rightIcon && (
             <div
               className={`
-              absolute right-3 flex items-center text-text-tertiary
+              text-text-tertiary absolute right-3 flex items-center
             `}
             >
               {rightIcon}

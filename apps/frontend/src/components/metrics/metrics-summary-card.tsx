@@ -39,12 +39,12 @@ export function MetricsSummaryCard({
   return (
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-text-secondary">{title}</CardTitle>
+        <CardTitle className="text-text-secondary text-sm font-medium">{title}</CardTitle>
         {icon && <div className="text-text-tertiary">{icon}</div>}
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        {subtitle && <p className="mt-1 text-xs text-text-tertiary">{subtitle}</p>}
+        {subtitle && <p className="text-text-tertiary mt-1 text-xs">{subtitle}</p>}
       </CardContent>
     </Card>
   );

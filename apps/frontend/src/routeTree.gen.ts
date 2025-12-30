@@ -25,10 +25,14 @@ import { Route as ProtectedWebhooksIndexRouteImport } from './routes/_protected/
 import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
 import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
 import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index'
+import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ProtectedWebhooksNewRouteImport } from './routes/_protected/webhooks/new'
 import { Route as ProtectedWebhooksIdRouteImport } from './routes/_protected/webhooks/$id'
 import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
+import { Route as ProtectedAdminUsersIndexRouteImport } from './routes/_protected/admin/users/index'
+import { Route as ProtectedAdminRolesIndexRouteImport } from './routes/_protected/admin/roles/index'
 import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider'
+import { Route as ProtectedAdminRolesIdRouteImport } from './routes/_protected/admin/roles/$id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -135,6 +139,13 @@ const ProtectedMetricsIndexRoute = ProtectedMetricsIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_protected/metrics/index.lazy').then((d) => d.Route),
 )
+const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
+  id: '/_protected/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/admin/index.lazy').then((d) => d.Route),
+)
 const ProtectedWebhooksNewRoute = ProtectedWebhooksNewRouteImport.update({
   id: '/_protected/webhooks/new',
   path: '/webhooks/new',
@@ -156,6 +167,22 @@ const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route),
 )
+const ProtectedAdminUsersIndexRoute =
+  ProtectedAdminUsersIndexRouteImport.update({
+    id: '/_protected/admin/users/',
+    path: '/admin/users/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_protected/admin/users/index.lazy').then((d) => d.Route),
+  )
+const ProtectedAdminRolesIndexRoute =
+  ProtectedAdminRolesIndexRouteImport.update({
+    id: '/_protected/admin/roles/',
+    path: '/admin/roles/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_protected/admin/roles/index.lazy').then((d) => d.Route),
+  )
 const PublicOauthCallbackProviderRoute =
   PublicOauthCallbackProviderRouteImport.update({
     id: '/_public/oauth/callback/$provider',
@@ -166,6 +193,13 @@ const PublicOauthCallbackProviderRoute =
       (d) => d.Route,
     ),
   )
+const ProtectedAdminRolesIdRoute = ProtectedAdminRolesIdRouteImport.update({
+  id: '/_protected/admin/roles/$id',
+  path: '/admin/roles/$id',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/admin/roles/$id.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/$404': typeof R404Route
@@ -183,11 +217,15 @@ export interface FileRoutesByFullPath {
   '/tasks/$id': typeof ProtectedTasksIdRoute
   '/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/admin': typeof ProtectedAdminIndexRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
   '/webhooks': typeof ProtectedWebhooksIndexRoute
+  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/admin/roles': typeof ProtectedAdminRolesIndexRoute
+  '/admin/users': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/$404': typeof R404Route
@@ -205,11 +243,15 @@ export interface FileRoutesByTo {
   '/tasks/$id': typeof ProtectedTasksIdRoute
   '/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/admin': typeof ProtectedAdminIndexRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
   '/webhooks': typeof ProtectedWebhooksIndexRoute
+  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/admin/roles': typeof ProtectedAdminRolesIndexRoute
+  '/admin/users': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,11 +270,15 @@ export interface FileRoutesById {
   '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
   '/_protected/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/_protected/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/_protected/admin/': typeof ProtectedAdminIndexRoute
   '/_protected/metrics/': typeof ProtectedMetricsIndexRoute
   '/_protected/settings/': typeof ProtectedSettingsIndexRoute
   '/_protected/tasks/': typeof ProtectedTasksIndexRoute
   '/_protected/webhooks/': typeof ProtectedWebhooksIndexRoute
+  '/_protected/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
   '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/_protected/admin/roles/': typeof ProtectedAdminRolesIndexRoute
+  '/_protected/admin/users/': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -252,11 +298,15 @@ export interface FileRouteTypes {
     | '/tasks/$id'
     | '/webhooks/$id'
     | '/webhooks/new'
+    | '/admin'
     | '/metrics'
     | '/settings'
     | '/tasks'
     | '/webhooks'
+    | '/admin/roles/$id'
     | '/oauth/callback/$provider'
+    | '/admin/roles'
+    | '/admin/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/$404'
@@ -274,11 +324,15 @@ export interface FileRouteTypes {
     | '/tasks/$id'
     | '/webhooks/$id'
     | '/webhooks/new'
+    | '/admin'
     | '/metrics'
     | '/settings'
     | '/tasks'
     | '/webhooks'
+    | '/admin/roles/$id'
     | '/oauth/callback/$provider'
+    | '/admin/roles'
+    | '/admin/users'
   id:
     | '__root__'
     | '/$404'
@@ -296,11 +350,15 @@ export interface FileRouteTypes {
     | '/_protected/tasks/$id'
     | '/_protected/webhooks/$id'
     | '/_protected/webhooks/new'
+    | '/_protected/admin/'
     | '/_protected/metrics/'
     | '/_protected/settings/'
     | '/_protected/tasks/'
     | '/_protected/webhooks/'
+    | '/_protected/admin/roles/$id'
     | '/_public/oauth/callback/$provider'
+    | '/_protected/admin/roles/'
+    | '/_protected/admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -319,11 +377,15 @@ export interface RootRouteChildren {
   ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute
   ProtectedWebhooksIdRoute: typeof ProtectedWebhooksIdRoute
   ProtectedWebhooksNewRoute: typeof ProtectedWebhooksNewRoute
+  ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
   ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute
   ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
   ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
   ProtectedWebhooksIndexRoute: typeof ProtectedWebhooksIndexRoute
+  ProtectedAdminRolesIdRoute: typeof ProtectedAdminRolesIdRoute
   PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute
+  ProtectedAdminRolesIndexRoute: typeof ProtectedAdminRolesIndexRoute
+  ProtectedAdminUsersIndexRoute: typeof ProtectedAdminUsersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -440,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedMetricsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/admin/': {
+      id: '/_protected/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof ProtectedAdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/webhooks/new': {
       id: '/_protected/webhooks/new'
       path: '/webhooks/new'
@@ -461,11 +530,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedTasksIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/admin/users/': {
+      id: '/_protected/admin/users/'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof ProtectedAdminUsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/admin/roles/': {
+      id: '/_protected/admin/roles/'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof ProtectedAdminRolesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/oauth/callback/$provider': {
       id: '/_public/oauth/callback/$provider'
       path: '/oauth/callback/$provider'
       fullPath: '/oauth/callback/$provider'
       preLoaderRoute: typeof PublicOauthCallbackProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/admin/roles/$id': {
+      id: '/_protected/admin/roles/$id'
+      path: '/admin/roles/$id'
+      fullPath: '/admin/roles/$id'
+      preLoaderRoute: typeof ProtectedAdminRolesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -487,11 +577,15 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedTasksIdRoute: ProtectedTasksIdRoute,
   ProtectedWebhooksIdRoute: ProtectedWebhooksIdRoute,
   ProtectedWebhooksNewRoute: ProtectedWebhooksNewRoute,
+  ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
   ProtectedMetricsIndexRoute: ProtectedMetricsIndexRoute,
   ProtectedSettingsIndexRoute: ProtectedSettingsIndexRoute,
   ProtectedTasksIndexRoute: ProtectedTasksIndexRoute,
   ProtectedWebhooksIndexRoute: ProtectedWebhooksIndexRoute,
+  ProtectedAdminRolesIdRoute: ProtectedAdminRolesIdRoute,
   PublicOauthCallbackProviderRoute: PublicOauthCallbackProviderRoute,
+  ProtectedAdminRolesIndexRoute: ProtectedAdminRolesIndexRoute,
+  ProtectedAdminUsersIndexRoute: ProtectedAdminUsersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -46,7 +46,7 @@ function RouteComponent() {
   if (isLoading) {
     return (
       <div className="flex h-[400px] items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="border-primary h-12 w-12 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -54,7 +54,7 @@ function RouteComponent() {
   if (error || !task) {
     return (
       <div className="flex h-[400px] flex-col items-center justify-center gap-4">
-        <p className="text-lg text-danger">Failed to load task</p>
+        <p className="text-danger text-lg">Failed to load task</p>
         <Button asChild variant="secondary">
           <Link to="/tasks">Back to tasks</Link>
         </Button>

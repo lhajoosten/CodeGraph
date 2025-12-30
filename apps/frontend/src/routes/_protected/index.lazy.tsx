@@ -46,8 +46,8 @@ function DashboardPage() {
           `}
         >
           <div>
-            <h1 className="text-3xl font-bold text-text-primary">Welcome back, {userName}!</h1>
-            <p className="mt-1 text-text-secondary">
+            <h1 className="text-text-primary text-3xl font-bold">Welcome back, {userName}!</h1>
+            <p className="text-text-secondary mt-1">
               Here&apos;s what&apos;s happening with your AI-powered development tasks.
             </p>
           </div>
@@ -73,12 +73,12 @@ function DashboardPage() {
               flex flex-row items-center justify-between pb-2
             `}
             >
-              <CardTitle className="text-sm font-medium text-text-secondary">Total Tasks</CardTitle>
-              <Squares2X2Icon className="h-4 w-4 text-text-tertiary" />
+              <CardTitle className="text-text-secondary text-sm font-medium">Total Tasks</CardTitle>
+              <Squares2X2Icon className="text-text-tertiary h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-text-primary">{stats.total}</div>
-              <p className="text-xs text-text-tertiary">All tasks in the system</p>
+              <div className="text-text-primary text-2xl font-bold">{stats.total}</div>
+              <p className="text-text-tertiary text-xs">All tasks in the system</p>
             </CardContent>
           </Card>
 
@@ -88,12 +88,12 @@ function DashboardPage() {
               flex flex-row items-center justify-between pb-2
             `}
             >
-              <CardTitle className="text-sm font-medium text-text-secondary">Pending</CardTitle>
+              <CardTitle className="text-text-secondary text-sm font-medium">Pending</CardTitle>
               <ClockIcon className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-text-primary">{stats.pending}</div>
-              <p className="text-xs text-text-tertiary">Waiting to be processed</p>
+              <div className="text-text-primary text-2xl font-bold">{stats.pending}</div>
+              <p className="text-text-tertiary text-xs">Waiting to be processed</p>
             </CardContent>
           </Card>
 
@@ -103,12 +103,12 @@ function DashboardPage() {
               flex flex-row items-center justify-between pb-2
             `}
             >
-              <CardTitle className="text-sm font-medium text-text-secondary">In Progress</CardTitle>
+              <CardTitle className="text-text-secondary text-sm font-medium">In Progress</CardTitle>
               <ExclamationCircleIcon className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-text-primary">{stats.inProgress}</div>
-              <p className="text-xs text-text-tertiary">Being worked on by agents</p>
+              <div className="text-text-primary text-2xl font-bold">{stats.inProgress}</div>
+              <p className="text-text-tertiary text-xs">Being worked on by agents</p>
             </CardContent>
           </Card>
 
@@ -118,12 +118,12 @@ function DashboardPage() {
               flex flex-row items-center justify-between pb-2
             `}
             >
-              <CardTitle className="text-sm font-medium text-text-secondary">Completed</CardTitle>
+              <CardTitle className="text-text-secondary text-sm font-medium">Completed</CardTitle>
               <CheckCircleIcon className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-text-primary">{stats.completed}</div>
-              <p className="text-xs text-text-tertiary">Successfully finished</p>
+              <div className="text-text-primary text-2xl font-bold">{stats.completed}</div>
+              <p className="text-text-tertiary text-xs">Successfully finished</p>
             </CardContent>
           </Card>
         </div>
@@ -143,11 +143,11 @@ function DashboardPage() {
             `}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-text-primary">Recent Tasks</h2>
+              <h2 className="text-text-primary text-xl font-semibold">Recent Tasks</h2>
               <Link
                 to="/tasks"
                 className={`
-                  flex items-center gap-1 text-sm text-primary
+                  text-primary flex items-center gap-1 text-sm
                   hover:underline
                 `}
               >
@@ -180,9 +180,9 @@ function DashboardPage() {
                     flex flex-col items-center justify-center py-12 text-center
                   `}
                 >
-                  <Squares2X2Icon className="mb-4 h-12 w-12 text-text-tertiary" />
-                  <h3 className="mb-2 text-lg font-medium text-text-primary">No tasks yet</h3>
-                  <p className="mb-4 text-text-secondary">
+                  <Squares2X2Icon className="text-text-tertiary mb-4 h-12 w-12" />
+                  <h3 className="text-text-primary mb-2 text-lg font-medium">No tasks yet</h3>
+                  <p className="text-text-secondary mb-4">
                     Create your first task and let our AI agents help you code.
                   </p>
                   <Link to="/tasks">
@@ -253,7 +253,7 @@ function DashboardPage() {
               <CardContent className="space-y-3">
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -261,11 +261,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Planning Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -273,11 +273,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Coding Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -285,11 +285,11 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Testing Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
                 <div
                   className={`
-                    flex items-center justify-between rounded-lg bg-secondary
+                    bg-secondary flex items-center justify-between rounded-lg
                     p-3
                   `}
                 >
@@ -297,7 +297,7 @@ function DashboardPage() {
                     <div className="h-2 w-2 rounded-full bg-green-500" />
                     <span className="text-sm font-medium">Review Agent</span>
                   </div>
-                  <span className="text-xs text-text-tertiary">Ready</span>
+                  <span className="text-text-tertiary text-xs">Ready</span>
                 </div>
               </CardContent>
             </Card>
@@ -308,7 +308,7 @@ function DashboardPage() {
                 <CardTitle className="text-primary">Getting Started</CardTitle>
                 <CardDescription>New to CodeGraph?</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm text-text-secondary">
+              <CardContent className="text-text-secondary space-y-2 text-sm">
                 <p>
                   CodeGraph uses AI agents to help you code faster. Here&apos;s how to get started:
                 </p>

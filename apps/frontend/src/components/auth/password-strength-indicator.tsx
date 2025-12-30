@@ -75,7 +75,7 @@ export function PasswordStrengthIndicator({
 
   return (
     <div className="space-y-2">
-      <div className="h-1.5 overflow-hidden rounded-full bg-bg-steel">
+      <div className="bg-bg-steel h-1.5 overflow-hidden rounded-full">
         <div
           className={`h-full transition-all duration-300 ${colorClass}`}
           style={{ width: `${strengthPercentage}%` }}
@@ -83,7 +83,7 @@ export function PasswordStrengthIndicator({
       </div>
 
       {showLabel && password && (
-        <p className="text-xs font-medium text-text-secondary-lum">
+        <p className="text-text-secondary-lum text-xs font-medium">
           Password strength:{' '}
           <span
             className={
@@ -100,7 +100,7 @@ export function PasswordStrengthIndicator({
       )}
 
       {password && strength !== 'strong' && (
-        <ul className="mt-2 space-y-1 text-xs text-text-secondary-lum">
+        <ul className="text-text-secondary-lum mt-2 space-y-1 text-xs">
           <li className="flex items-center gap-2">
             <span className={password.length >= 8 ? 'text-success' : 'text-text-muted-lum'}>✓</span>
             At least 8 characters

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const progressVariants = cva(
   `
-  relative w-full overflow-hidden rounded-full bg-bg-elevated-lum
+  bg-bg-elevated-lum relative w-full overflow-hidden rounded-full
 `,
   {
     variants: {

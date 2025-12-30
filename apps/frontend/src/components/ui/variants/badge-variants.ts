@@ -6,13 +6,13 @@ export const badgeVariants = cva(
     variants: {
       variant: {
         default: 'border-transparent bg-brand-cyan text-white',
-        secondary: 'border-transparent bg-bg-elevated-lum text-text-secondary-lum',
-        success: 'border-transparent bg-success text-white',
-        danger: 'border-transparent bg-error text-white',
-        warning: 'border-transparent bg-warning text-white',
-        info: 'border-transparent bg-brand-teal text-white',
-        outline: 'border-border-steel bg-transparent text-text-primary-lum',
-        ghost: 'border-transparent bg-transparent text-text-secondary-lum',
+        secondary: 'bg-bg-elevated-lum text-text-secondary-lum border-transparent',
+        success: 'bg-success border-transparent text-white',
+        danger: 'bg-error border-transparent text-white',
+        warning: 'bg-warning border-transparent text-white',
+        info: 'bg-brand-teal border-transparent text-white',
+        outline: 'border-border-steel text-text-primary-lum bg-transparent',
+        ghost: 'text-text-secondary-lum border-transparent bg-transparent',
       },
       size: {
         default: 'px-2.5 py-0.5 text-xs',

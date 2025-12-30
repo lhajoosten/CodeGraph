@@ -1,0 +1,99 @@
+# Admin Panel Translations (German)
+
+dashboard:
+  title: 'Admin Dashboard'
+  description: 'Rollen, Berechtigungen und Benutzerzugriff plattformübergreifend verwalten'
+
+  stats:
+    total_users: 'Benutzer Gesamt'
+    total_roles: 'Rollen Gesamt'
+    superusers: 'Superbenutzer'
+    unique_permissions: 'Einzigartige Berechtigungen'
+
+  manage_roles:
+    title: 'Rollen Verwalten'
+    description: 'Systemrollen und ihre Berechtigungen anzeigen und konfigurieren'
+    action: 'Rollen Anzeigen'
+
+  manage_users:
+    title: 'Benutzer Verwalten'
+    description: 'Rollen zuweisen und Benutzerzugriff verwalten'
+    action: 'Benutzer Anzeigen'
+
+  view_permissions:
+    title: 'Berechtigungen Anzeigen'
+    description: 'Alle verfügbaren Systemberechtigungen nach Kategorie durchsuchen'
+    action: 'Berechtigungen Anzeigen'
+
+  system_info:
+    title: 'System Information'
+    description: 'Aktuelle RBAC-Systemstatistiken'
+    roles_count: 'Rollen Gesamt'
+    users_count: 'Benutzer Gesamt'
+    system_roles: 'System Rollen'
+
+roles:
+  page_title: 'Rollen Verwaltung'
+  page_description: 'Systemrollen und ihre Berechtigungen anzeigen und verwalten'
+  detail_page_title: 'Rollen Details'
+  detail_page_description: 'Rolleninformationen und zugewiesene Berechtigungen anzeigen'
+
+  columns:
+    name: 'Name'
+    description: 'Beschreibung'
+    permissions: 'Berechtigungen'
+    actions: 'Aktionen'
+
+  actions:
+    view: 'Details Anzeigen'
+    edit: 'Bearbeiten'
+    delete: 'Löschen'
+
+  system_role: 'System Rolle'
+  no_description: 'Keine Beschreibung angegeben'
+  permissions_count: 'berechtigungen'
+  total_permissions: 'Berechtigungen Gesamt'
+  permissions_category: 'Berechtigungen'
+  permissions_section: 'Berechtigungen'
+  role_information: 'Rollen Information'
+
+  search_placeholder: 'Rollen suchen...'
+  empty_message: 'Keine Rollen gefunden'
+  no_permissions: 'Diese Rolle hat keine zugewiesenen Berechtigungen'
+  no_permissions_in_category: 'Keine Berechtigungen in dieser Kategorie'
+  permissions_readonly_note: 'Die Berechtigungsverwaltung wird in einem zukünftigen Update verfügbar sein, wenn die Backend-API dies unterstützt.'
+  system_role_info: 'Dies ist eine Systemrolle und kann nicht gelöscht oder geändert werden'
+  error_loading_role: 'Rollendetails konnten nicht geladen werden. Bitte versuchen Sie es erneut.'
+
+users:
+  page_title: 'Benutzer Verwaltung'
+  page_description: 'Benutzerrollenzuweisungen und Berechtigungen verwalten'
+
+  columns:
+    user_id: 'Benutzer ID'
+    role: 'Rolle'
+    permissions: 'Berechtigungen'
+    actions: 'Aktionen'
+
+  actions:
+    manage_roles: 'Rollen Verwalten'
+
+  superuser: 'Superbenutzer'
+  no_role: 'Keine Rolle'
+  permissions_count: 'berechtigungen'
+
+  assign_role_title: 'Rolle Zuweisen'
+  assign_role_description: 'Wählen Sie eine Rolle aus, die diesem Benutzer zugewiesen werden soll'
+  current_role: 'Aktuelle Rolle'
+  select_role: 'Rolle Auswählen'
+  superuser_warning: 'Dieser Benutzer ist ein Superbenutzer und seine Rolle kann nicht geändert werden'
+
+  empty_message: 'Keine Benutzer gefunden'
+
+common:
+  loading: 'Laden...'
+  saving: 'Speichern...'
+  save: 'Speichern'
+  cancel: 'Abbrechen'
+  back_to_list: 'Zurück zur Liste'
+  error_loading_data: 'Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.'

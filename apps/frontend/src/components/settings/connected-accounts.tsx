@@ -77,11 +77,11 @@ export const ConnectedAccounts = () => {
       <div className="space-y-4">
         <div
           className={`
-            rounded-lg border border-border-steel bg-bg-elevated-lum p-6 text-center
+            border-border-steel bg-bg-elevated-lum rounded-lg border p-6 text-center
           `}
         >
           <svg
-            className="mx-auto h-12 w-12 text-text-muted-lum"
+            className="text-text-muted-lum mx-auto h-12 w-12"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -93,8 +93,8 @@ export const ConnectedAccounts = () => {
               d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-text-primary-lum">Connected Accounts</h3>
-          <p className="mt-2 text-sm text-text-secondary-lum">
+          <h3 className="text-text-primary-lum mt-4 text-lg font-medium">Connected Accounts</h3>
+          <p className="text-text-secondary-lum mt-2 text-sm">
             OAuth connections are not yet available. This feature is coming soon!
           </p>
         </div>
@@ -134,7 +134,7 @@ export const ConnectedAccounts = () => {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-text-secondary-lum">
+      <p className="text-text-secondary-lum text-sm">
         Connect your accounts for easier sign-in and to access additional features.
       </p>
 
@@ -168,13 +168,13 @@ export const ConnectedAccounts = () => {
                   {info.icon}
                 </div>
                 <div>
-                  <p className="font-medium text-text-primary-lum">{info.name}</p>
+                  <p className="text-text-primary-lum font-medium">{info.name}</p>
                   {connected && account ? (
-                    <p className="text-sm text-text-secondary-lum">
+                    <p className="text-text-secondary-lum text-sm">
                       Connected as {account.email || account.name || account.provider_user_id}
                     </p>
                   ) : (
-                    <p className="text-sm text-text-secondary-lum">Not connected</p>
+                    <p className="text-text-secondary-lum text-sm">Not connected</p>
                   )}
                 </div>
               </div>
@@ -184,8 +184,8 @@ export const ConnectedAccounts = () => {
                   onClick={() => handleUnlink(provider)}
                   disabled={unlinkMutation.isPending}
                   className={`
-                    rounded-lg border border-error px-4 py-2 text-sm
-                    font-medium text-error transition
+                    border-error text-error rounded-lg border px-4 py-2
+                    text-sm font-medium transition
                     hover:bg-error/5
                     disabled:cursor-not-allowed disabled:opacity-50
                   `}
@@ -196,8 +196,8 @@ export const ConnectedAccounts = () => {
                 <button
                   onClick={() => handleConnect(provider)}
                   className={`
-                    rounded-lg border border-border-steel px-4 py-2 text-sm
-                    font-medium text-text-secondary-lum transition
+                    border-border-steel text-text-secondary-lum rounded-lg border px-4 py-2
+                    text-sm font-medium transition
                     hover:bg-bg-steel
                   `}
                 >

@@ -174,7 +174,7 @@ export function WebhookForm({
           placeholder="My Webhook"
           className={errors.name ? 'border-error' : ''}
         />
-        {errors.name && <p className="text-sm text-error">{errors.name}</p>}
+        {errors.name && <p className="text-error text-sm">{errors.name}</p>}
       </div>
 
       {/* URL */}
@@ -190,8 +190,8 @@ export function WebhookForm({
           placeholder="https://api.example.com/webhooks"
           className={errors.url ? 'border-error' : ''}
         />
-        {errors.url && <p className="text-sm text-error">{errors.url}</p>}
-        <p className="text-xs text-text-muted-lum">Must be a valid HTTP or HTTPS URL</p>
+        {errors.url && <p className="text-error text-sm">{errors.url}</p>}
+        <p className="text-text-muted-lum text-xs">Must be a valid HTTP or HTTPS URL</p>
       </div>
 
       {/* Status (only for edit mode) */}
@@ -221,7 +221,7 @@ export function WebhookForm({
           onChange={setEvents}
           error={!!errors.events}
         />
-        {errors.events && <p className="text-sm text-error">{errors.events}</p>}
+        {errors.events && <p className="text-error text-sm">{errors.events}</p>}
       </div>
 
       {/* Custom Headers */}
@@ -252,7 +252,7 @@ export function WebhookForm({
             Add Header
           </Button>
         </div>
-        {errors.headers && <p className="text-sm text-error">{errors.headers}</p>}
+        {errors.headers && <p className="text-error text-sm">{errors.headers}</p>}
       </div>
 
       {/* Advanced Settings */}
@@ -268,7 +268,7 @@ export function WebhookForm({
             onChange={(e) => setRetryCount(e.target.value)}
             className={errors.retryCount ? 'border-error' : ''}
           />
-          {errors.retryCount && <p className="text-sm text-error">{errors.retryCount}</p>}
+          {errors.retryCount && <p className="text-error text-sm">{errors.retryCount}</p>}
         </div>
 
         <div className="space-y-2">
@@ -282,7 +282,7 @@ export function WebhookForm({
             onChange={(e) => setTimeoutSeconds(e.target.value)}
             className={errors.timeoutSeconds ? 'border-error' : ''}
           />
-          {errors.timeoutSeconds && <p className="text-sm text-error">{errors.timeoutSeconds}</p>}
+          {errors.timeoutSeconds && <p className="text-error text-sm">{errors.timeoutSeconds}</p>}
         </div>
       </div>
 

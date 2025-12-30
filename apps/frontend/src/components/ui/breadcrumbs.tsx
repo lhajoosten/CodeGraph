@@ -30,7 +30,7 @@ interface BreadcrumbsProps {
  */
 export function Breadcrumbs({
   items,
-  separator = <ChevronRightIcon className="h-4 w-4 text-text-secondary-lum" />,
+  separator = <ChevronRightIcon className="text-text-secondary-lum h-4 w-4" />,
   maxItems = 5,
   collapsedLabel: _collapsedLabel = 'More',
   className,
@@ -84,7 +84,7 @@ export function Breadcrumbs({
               {hasCollapsed && index === 1 && (
                 <button
                   onClick={handleCollapsedClick}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-steel text-text-secondary-lum transition-all hover:bg-bg-elevated-lum hover:text-brand-cyan"
+                  className="border-border-steel text-text-secondary-lum flex h-8 w-8 items-center justify-center rounded-lg border transition-all hover:bg-bg-elevated-lum hover:text-brand-cyan"
                   title={`Show ${items.length - 2} more items`}
                   aria-label="Show more breadcrumb items"
                 >
@@ -93,7 +93,7 @@ export function Breadcrumbs({
               )}
 
               {isLast ? (
-                <span className="inline-flex items-center text-sm font-medium text-text-primary-lum">
+                <span className="text-text-primary-lum inline-flex items-center text-sm font-medium">
                   {item.label}
                 </span>
               ) : (
@@ -103,7 +103,7 @@ export function Breadcrumbs({
                   className={cn(
                     'inline-flex items-center rounded-lg px-3 py-1 text-sm font-medium transition-all',
                     item.disabled
-                      ? 'cursor-not-allowed text-text-muted-lum'
+                      ? 'text-text-muted-lum cursor-not-allowed'
                       : 'text-text-secondary-lum hover:bg-bg-elevated-lum hover:text-brand-cyan'
                   )}
                   aria-current={isLast ? 'page' : undefined}

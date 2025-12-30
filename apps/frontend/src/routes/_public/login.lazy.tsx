@@ -28,10 +28,10 @@ function LoginPageContent() {
         {/* OAuth Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border-steel"></div>
+            <div className="border-border-steel w-full border-t"></div>
           </div>
           <div className="relative my-4 flex justify-center text-sm">
-            <span className="bg-bg-steel px-2 text-text-secondary-lum">
+            <span className="bg-bg-steel text-text-secondary-lum px-2">
               {t('luminous.signin.oauthDivider')}
             </span>
           </div>
@@ -45,13 +45,13 @@ function LoginPageContent() {
         </div>
 
         {/* Footer */}
-        <p className="mt-4 text-center text-xs text-text-secondary-lum">
+        <p className="text-text-secondary-lum mt-4 text-center text-xs">
           By signing in, you agree to our{' '}
           <a
             href="/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-cyan transition-colors hover:text-brand-teal"
+            className="hover:text-brand-teal text-brand-cyan transition-colors"
           >
             Terms of Service
           </a>{' '}
@@ -60,7 +60,7 @@ function LoginPageContent() {
             href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-cyan transition-colors hover:text-brand-teal"
+            className="hover:text-brand-teal text-brand-cyan transition-colors"
           >
             Privacy Policy
           </a>
@@ -75,8 +75,8 @@ function LoginPageFallback() {
     <AuthLayout>
       <AuthCard>
         <div className="space-y-4">
-          <div className="h-8 w-32 animate-pulse rounded bg-bg-steel"></div>
-          <div className="h-4 w-48 animate-pulse rounded bg-bg-steel"></div>
+          <div className="bg-bg-steel h-8 w-32 animate-pulse rounded"></div>
+          <div className="bg-bg-steel h-4 w-48 animate-pulse rounded"></div>
         </div>
       </AuthCard>
     </AuthLayout>

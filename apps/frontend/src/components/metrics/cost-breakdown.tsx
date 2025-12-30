@@ -84,7 +84,7 @@ export function CostBreakdown({ costs, isLoading = false }: CostBreakdownProps) 
             <span className={`font-semibold ${item.color}`}>{formatCurrency(item.value)}</span>
           </div>
         ))}
-        <div className="border-t border-border pt-4">
+        <div className="border-border border-t pt-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold">Total Cost</span>
             <span className="text-lg font-bold">{formatCurrency(totalCost)}</span>

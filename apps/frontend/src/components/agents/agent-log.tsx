@@ -96,7 +96,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               <div className="flex items-center gap-2">
                 <span
                   className={`
-                  text-sm font-medium text-text-primary-lum capitalize
+                  text-text-primary-lum text-sm font-medium capitalize
                 `}
                 >
                   {update.agent} Agent
@@ -110,10 +110,10 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                   )}
                 />
               </div>
-              <p className="text-sm text-text-secondary-lum">{update.message}</p>
+              <p className="text-text-secondary-lum text-sm">{update.message}</p>
             </div>
 
-            <span className="shrink-0 text-xs text-text-secondary-lum">
+            <span className="text-text-secondary-lum shrink-0 text-xs">
               {formatTime(update.timestamp)}
             </span>
           </div>

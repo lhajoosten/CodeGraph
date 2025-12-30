@@ -1,23 +1,23 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const cardVariants = cva('rounded-lg bg-bg-steel text-text-primary-lum', {
+export const cardVariants = cva('bg-bg-steel text-text-primary-lum rounded-lg', {
   variants: {
     variant: {
       default: `
-        border border-border-steel
-        shadow-glass
+        border-border-steel shadow-glass
+        border
       `,
       elevated: `
         shadow-[0_10px_30px_rgba(0,0,0,0.4)]
       `,
       ghost: 'border-0 bg-transparent',
       primary: `
-        border border-border-steel
-        bg-bg-elevated-lum
+        border-border-steel bg-bg-elevated-lum
         shadow-glass
+        border
       `,
       glass: `
-        border border-border-steel
+        border-border-steel border
         bg-[rgba(30,41,59,0.7)]
         backdrop-blur-md
       `,

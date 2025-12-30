@@ -50,13 +50,13 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
     const isCurrent = currentAgent === type;
 
     if (status === 'completed') {
-      return <CheckCircleIcon className="h-6 w-6 text-success" />;
+      return <CheckCircleIcon className="text-success h-6 w-6" />;
     }
     if (status === 'failed') {
-      return <ExclamationCircleIcon className="h-6 w-6 text-danger" />;
+      return <ExclamationCircleIcon className="text-danger h-6 w-6" />;
     }
     if (status === 'running' || isCurrent) {
-      return <PlayCircleIcon className="h-6 w-6 animate-pulse text-primary" />;
+      return <PlayCircleIcon className="text-primary h-6 w-6 animate-pulse" />;
     }
     return <ClockIcon className="text-muted-foreground h-6 w-6" />;
   };
@@ -104,7 +104,7 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
                   className={cn(
                     'flex items-start gap-3 rounded-lg border p-3 transition-all',
                     getStatusColor(agent.type),
-                    isCurrent && 'ring-2 ring-primary ring-offset-2'
+                    isCurrent && 'ring-primary ring-2 ring-offset-2'
                   )}
                 >
                   <div className="shrink-0">{getStatusIcon(agent.type)}</div>
@@ -112,17 +112,17 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
                     <div className="flex items-center gap-2">
                       <h4 className="text-sm font-medium">{agent.label}</h4>
                       {status === 'running' && (
-                        <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
+                        <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-xs">
                           Running
                         </span>
                       )}
                       {status === 'completed' && (
-                        <span className="rounded-full bg-success/20 px-2 py-0.5 text-xs text-success">
+                        <span className="bg-success/20 text-success rounded-full px-2 py-0.5 text-xs">
                           Completed
                         </span>
                       )}
                       {status === 'failed' && (
-                        <span className="rounded-full bg-danger/20 px-2 py-0.5 text-xs text-danger">
+                        <span className="bg-danger/20 text-danger rounded-full px-2 py-0.5 text-xs">
                           Failed
                         </span>
                       )}

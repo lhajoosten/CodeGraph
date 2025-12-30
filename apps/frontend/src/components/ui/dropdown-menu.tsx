@@ -51,8 +51,8 @@ const DropdownMenuSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       `
-        z-50 min-w-[8rem] overflow-hidden rounded-md border border-border
-        bg-background-2 p-1 text-text-primary shadow-modal
+        border-border bg-background-2 text-text-primary shadow-modal z-50 min-w-[8rem]
+        overflow-hidden rounded-md border p-1
       `,
       `
         data-[state=open]:animate-in
@@ -91,8 +91,8 @@ const DropdownMenuContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         `
-          z-50 min-w-[8rem] overflow-hidden rounded-md border border-border
-          bg-background-2 p-1 text-text-primary shadow-modal
+          border-border bg-background-2 text-text-primary shadow-modal z-50 min-w-[8rem]
+          overflow-hidden rounded-md border p-1
         `,
         `
           data-[state=open]:animate-in
@@ -223,7 +223,7 @@ const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'px-2 py-1.5 text-sm font-semibold text-text-primary',
+      'text-text-primary px-2 py-1.5 text-sm font-semibold',
       inset && 'pl-8',
       className
     )}
@@ -238,7 +238,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-border', className)}
+    className={cn('bg-border -mx-1 my-1 h-px', className)}
     {...props}
   />
 ));
@@ -247,7 +247,7 @@ DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={cn('ml-auto text-xs tracking-widest text-text-tertiary', className)}
+      className={cn('text-text-tertiary ml-auto text-xs tracking-widest', className)}
       {...props}
     />
   );

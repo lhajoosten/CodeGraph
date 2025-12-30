@@ -147,7 +147,7 @@ function VerifyEmailPendingPage() {
                 borderColor: 'var(--color-border-steel)',
                 color: 'var(--color-text-secondary-lum)',
               }}
-              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-bg-steel"
+              className="hover:bg-bg-steel block w-full rounded-lg border px-4 py-3 text-center transition"
             >
               Back to Sign In
             </Link>
@@ -157,7 +157,7 @@ function VerifyEmailPendingPage() {
                 borderColor: 'var(--color-border-steel)',
                 color: 'var(--color-text-secondary-lum)',
               }}
-              className="block w-full rounded-lg border px-4 py-3 text-center transition hover:bg-bg-steel"
+              className="hover:bg-bg-steel block w-full rounded-lg border px-4 py-3 text-center transition"
             >
               Create Different Account
             </Link>
