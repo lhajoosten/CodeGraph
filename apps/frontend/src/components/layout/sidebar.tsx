@@ -7,6 +7,7 @@ import {
   Cog6ToothIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BellAlertIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ const mainNavItems: NavItem[] = [
   { href: '/tasks', label: 'Tasks', icon: CheckIcon },
   { href: '/agents', label: 'Agents', icon: RocketLaunchIcon },
   { href: '/metrics', label: 'Metrics', icon: ChartBarIcon },
+  { href: '/webhooks', label: 'Webhooks', icon: BellAlertIcon },
 ];
 
 const bottomNavItems: NavItem[] = [{ href: '/settings', label: 'Settings', icon: Cog6ToothIcon }];

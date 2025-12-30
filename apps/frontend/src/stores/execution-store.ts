@@ -61,7 +61,10 @@ interface ExecutionState {
   addEvent: (event: AgentStreamEvent) => void;
   setError: (error: string | null) => void;
   setIteration: (iteration: number) => void;
-  updateAgentProgress: (agent: AgentType, status: 'pending' | 'running' | 'completed' | 'failed') => void;
+  updateAgentProgress: (
+    agent: AgentType,
+    status: 'pending' | 'running' | 'completed' | 'failed'
+  ) => void;
   reset: () => void;
 }
 

@@ -56,9 +56,7 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
       return <ExclamationCircleIcon className="h-6 w-6 text-danger" />;
     }
     if (status === 'running' || isCurrent) {
-      return (
-        <PlayCircleIcon className="h-6 w-6 animate-pulse text-primary" />
-      );
+      return <PlayCircleIcon className="h-6 w-6 animate-pulse text-primary" />;
     }
     return <ClockIcon className="text-muted-foreground h-6 w-6" />;
   };
@@ -95,8 +93,8 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
                       status === 'completed'
                         ? 'bg-success'
                         : status === 'failed'
-                        ? 'bg-danger'
-                        : 'bg-muted'
+                          ? 'bg-danger'
+                          : 'bg-muted'
                     )}
                   />
                 )}
@@ -129,9 +127,7 @@ export function TaskExecutionTimeline({ className }: TaskExecutionTimelineProps)
                         </span>
                       )}
                     </div>
-                    <p className="text-muted-foreground mt-0.5 text-xs">
-                      {agent.description}
-                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">{agent.description}</p>
                   </div>
                 </div>
               </div>

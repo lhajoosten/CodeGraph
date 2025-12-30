@@ -21,11 +21,7 @@ interface TaskExecutionOutputProps {
   className?: string;
 }
 
-export function TaskExecutionOutput({
-  taskId,
-  isExecuting,
-  className,
-}: TaskExecutionOutputProps) {
+export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExecutionOutputProps) {
   const {
     streamingOutput,
     appendStreamOutput,
@@ -119,15 +115,9 @@ export function TaskExecutionOutput({
               <span className="text-muted-foreground text-xs">Streaming...</span>
             </div>
           )}
-          {status === 'error' && (
-            <span className="text-xs text-danger">Connection error</span>
-          )}
+          {status === 'error' && <span className="text-xs text-danger">Connection error</span>}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
           {isExpanded ? (
             <ChevronUpIcon className="h-4 w-4" />
           ) : (
@@ -147,9 +137,7 @@ export function TaskExecutionOutput({
             )}
           >
             {streamingOutput ? (
-              <pre className="break-words whitespace-pre-wrap">
-                {streamingOutput}
-              </pre>
+              <pre className="break-words whitespace-pre-wrap">{streamingOutput}</pre>
             ) : (
               <div className="text-muted-foreground flex h-[300px] items-center justify-center">
                 {isExecuting ? (

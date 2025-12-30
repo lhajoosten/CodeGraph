@@ -19,10 +19,7 @@ export interface UseFetchTaskTimelineOptions {
   enabled?: boolean;
 }
 
-export const useFetchTaskTimeline = (
-  taskId: number,
-  options?: UseFetchTaskTimelineOptions
-) => {
+export const useFetchTaskTimeline = (taskId: number, options?: UseFetchTaskTimelineOptions) => {
   const queryOptions = getExecutionTimelineApiV1TasksTaskIdTimelineGetOptions({
     path: { task_id: taskId },
   });

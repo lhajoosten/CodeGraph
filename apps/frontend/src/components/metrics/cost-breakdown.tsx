@@ -37,8 +37,7 @@ export function CostBreakdown({ costs, isLoading = false }: CostBreakdownProps) 
     );
   }
 
-  const totalCost =
-    costs.local_cost + costs.claude_haiku + costs.claude_sonnet + costs.claude_opus;
+  const totalCost = costs.local_cost + costs.claude_haiku + costs.claude_sonnet + costs.claude_opus;
 
   const costItems = [
     {

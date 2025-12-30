@@ -99,8 +99,7 @@ function RouteComponent() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Task</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete this task? This action cannot be
-                    undone.
+                    Are you sure you want to delete this task? This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -158,16 +157,12 @@ function RouteComponent() {
 
               <div>
                 <p className="text-muted-foreground text-xs">Created</p>
-                <p className="mt-0.5 text-sm font-medium">
-                  {formatDateTime(task.created_at)}
-                </p>
+                <p className="mt-0.5 text-sm font-medium">{formatDateTime(task.created_at)}</p>
               </div>
 
               <div>
                 <p className="text-muted-foreground text-xs">Last Updated</p>
-                <p className="mt-0.5 text-sm font-medium">
-                  {formatDateTime(task.updated_at)}
-                </p>
+                <p className="mt-0.5 text-sm font-medium">{formatDateTime(task.updated_at)}</p>
               </div>
             </CardContent>
           </Card>

@@ -22,11 +22,7 @@ interface TaskExecutionPanelProps {
   className?: string;
 }
 
-export function TaskExecutionPanel({
-  taskId,
-  taskStatus,
-  className,
-}: TaskExecutionPanelProps) {
+export function TaskExecutionPanel({ taskId, taskStatus, className }: TaskExecutionPanelProps) {
   const { isExecuting, reset, logs } = useExecutionStore();
 
   // Fetch execution history
@@ -71,9 +67,7 @@ export function TaskExecutionPanel({
           <TabsTrigger value="logs" className="flex-1">
             Logs
             {logs.length > 0 && (
-              <span className="text-muted-foreground ml-2 text-xs">
-                ({logs.length})
-              </span>
+              <span className="text-muted-foreground ml-2 text-xs">({logs.length})</span>
             )}
           </TabsTrigger>
           <TabsTrigger value="history" className="flex-1">
@@ -148,35 +142,40 @@ export function TaskExecutionPanel({
                 <div className="flex h-[200px] items-center justify-center">
                   <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                 </div>
-              ) : !history || !(history as { runs?: unknown[] }).runs || (history as { runs?: unknown[] }).runs?.length === 0 ? (
+              ) : !history ||
+                !(history as { runs?: unknown[] }).runs ||
+                (history as { runs?: unknown[] }).runs?.length === 0 ? (
                 <div className="text-muted-foreground flex h-[200px] items-center justify-center">
                   <p>No execution history yet.</p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {((history as { runs: Array<{
-                    id: number;
-                    agent_type: string;
-                    status: string;
-                    tokens_used?: number;
-                    total_latency_ms?: number;
-                    cost_usd?: number;
-                    completed_at?: string;
-                  }> }).runs || []).map((run) => (
+                  {(
+                    (
+                      history as {
+                        runs: Array<{
+                          id: number;
+                          agent_type: string;
+                          status: string;
+                          tokens_used?: number;
+                          total_latency_ms?: number;
+                          cost_usd?: number;
+                          completed_at?: string;
+                        }>;
+                      }
+                    ).runs || []
+                  ).map((run) => (
                     <div
                       key={run.id}
                       className="hover:bg-muted/50 flex items-center justify-between rounded-md border p-3 transition-colors"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium capitalize">
-                            {run.agent_type}
-                          </span>
+                          <span className="text-sm font-medium capitalize">{run.agent_type}</span>
                           <span
                             className={cn(
                               'rounded-full px-2 py-0.5 text-xs',
-                              run.status === 'completed' &&
-                                'bg-success/20 text-success',
+                              run.status === 'completed' && 'bg-success/20 text-success',
                               run.status === 'failed' && 'bg-danger/20 text-danger',
                               run.status === 'running' && 'bg-primary/20 text-primary'
                             )}
@@ -187,9 +186,7 @@ export function TaskExecutionPanel({
                         <div className="text-muted-foreground mt-1 flex items-center gap-4 text-xs">
                           <span>Tokens: {run.tokens_used?.toLocaleString()}</span>
                           <span>Latency: {run.total_latency_ms}ms</span>
-                          {run.cost_usd && (
-                            <span>Cost: ${run.cost_usd.toFixed(4)}</span>
-                          )}
+                          {run.cost_usd && <span>Cost: ${run.cost_usd.toFixed(4)}</span>}
                         </div>
                       </div>
                       {run.completed_at && (

@@ -50,7 +50,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               backgroundColor: 'var(--color-bg-secondary-lum)',
               borderColor: 'var(--color-border-steel)',
             }}
-            className="w-full max-w-md space-y-6 rounded-lg border p-8 shadow-xl"
+            className="w-full max-w-3xl space-y-12 rounded-lg border p-12 shadow-xl"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-center">

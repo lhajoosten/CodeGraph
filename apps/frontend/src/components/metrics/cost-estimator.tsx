@@ -70,11 +70,7 @@ export function CostEstimator() {
           </div>
         </div>
 
-        <Button
-          onClick={handleEstimate}
-          disabled={estimateMutation.isPending}
-          className="w-full"
-        >
+        <Button onClick={handleEstimate} disabled={estimateMutation.isPending} className="w-full">
           {estimateMutation.isPending ? 'Calculating...' : 'Calculate Estimate'}
         </Button>
 
@@ -91,11 +87,15 @@ export function CostEstimator() {
               <div className="grid grid-cols-2 gap-4 border-t border-border pt-3">
                 <div>
                   <div className="text-xs text-text-tertiary">Input Tokens</div>
-                  <div className="font-semibold">{formatNumber(estimateMutation.data.input_tokens)}</div>
+                  <div className="font-semibold">
+                    {formatNumber(estimateMutation.data.input_tokens)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-xs text-text-tertiary">Output Tokens</div>
-                  <div className="font-semibold">{formatNumber(estimateMutation.data.output_tokens)}</div>
+                  <div className="font-semibold">
+                    {formatNumber(estimateMutation.data.output_tokens)}
+                  </div>
                 </div>
               </div>
 
