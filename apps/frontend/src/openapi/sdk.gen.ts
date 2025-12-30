@@ -3,6 +3,12 @@
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
 import type {
+  AssignUserRoleApiV1AdminUsersUserIdRolePostData,
+  AssignUserRoleApiV1AdminUsersUserIdRolePostErrors,
+  AssignUserRoleApiV1AdminUsersUserIdRolePostResponses,
+  CancelTaskApiV1TasksTaskIdCancelPostData,
+  CancelTaskApiV1TasksTaskIdCancelPostErrors,
+  CancelTaskApiV1TasksTaskIdCancelPostResponses,
   ChangeEmailApiV1AuthChangeEmailPostData,
   ChangeEmailApiV1AuthChangeEmailPostErrors,
   ChangeEmailApiV1AuthChangeEmailPostResponses,
@@ -12,40 +18,121 @@ import type {
   CreateTaskApiV1TasksPostData,
   CreateTaskApiV1TasksPostErrors,
   CreateTaskApiV1TasksPostResponses,
+  CreateWebhookApiV1WebhooksPostData,
+  CreateWebhookApiV1WebhooksPostErrors,
+  CreateWebhookApiV1WebhooksPostResponses,
   DeleteTaskApiV1TasksTaskIdDeleteData,
   DeleteTaskApiV1TasksTaskIdDeleteErrors,
   DeleteTaskApiV1TasksTaskIdDeleteResponses,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteData,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteErrors,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteResponses,
   DisableTwoFactorApiV1TwoFactorDisablePostData,
   DisableTwoFactorApiV1TwoFactorDisablePostErrors,
   DisableTwoFactorApiV1TwoFactorDisablePostResponses,
   EnableTwoFactorApiV1TwoFactorEnablePostData,
   EnableTwoFactorApiV1TwoFactorEnablePostErrors,
   EnableTwoFactorApiV1TwoFactorEnablePostResponses,
+  EstimateMonthlyCostApiV1MetricsEstimatePostData,
+  EstimateMonthlyCostApiV1MetricsEstimatePostErrors,
+  EstimateMonthlyCostApiV1MetricsEstimatePostResponses,
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostData,
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostErrors,
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostResponses,
   ForgotPasswordApiV1AuthForgotPasswordPostData,
   ForgotPasswordApiV1AuthForgotPasswordPostErrors,
   ForgotPasswordApiV1AuthForgotPasswordPostResponses,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetData,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetErrors,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponses,
   GetConnectedAccountsOauthAccountsGetData,
   GetConnectedAccountsOauthAccountsGetErrors,
   GetConnectedAccountsOauthAccountsGetResponses,
+  GetCouncilMetricsApiV1CouncilMetricsGetData,
+  GetCouncilMetricsApiV1CouncilMetricsGetErrors,
+  GetCouncilMetricsApiV1CouncilMetricsGetResponses,
   GetCurrentUserInfoApiV1AuthMeGetData,
   GetCurrentUserInfoApiV1AuthMeGetErrors,
   GetCurrentUserInfoApiV1AuthMeGetResponses,
   GetCurrentUserInfoApiV1UsersMeGetData,
   GetCurrentUserInfoApiV1UsersMeGetErrors,
   GetCurrentUserInfoApiV1UsersMeGetResponses,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetData,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetErrors,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponses,
+  GetGlobalMetricsApiV1MetricsGlobalGetData,
+  GetGlobalMetricsApiV1MetricsGlobalGetErrors,
+  GetGlobalMetricsApiV1MetricsGlobalGetResponses,
+  GetMetricsHistoryApiV1MetricsHistoryGetData,
+  GetMetricsHistoryApiV1MetricsHistoryGetErrors,
+  GetMetricsHistoryApiV1MetricsHistoryGetResponses,
+  GetMetricsSummaryApiV1MetricsSummaryGetData,
+  GetMetricsSummaryApiV1MetricsSummaryGetErrors,
+  GetMetricsSummaryApiV1MetricsSummaryGetResponses,
   GetOauthProvidersOauthProvidersGetData,
   GetOauthProvidersOauthProvidersGetResponses,
+  GetPricingInfoApiV1MetricsPricingGetData,
+  GetPricingInfoApiV1MetricsPricingGetErrors,
+  GetPricingInfoApiV1MetricsPricingGetResponses,
+  GetRoleApiV1AdminRolesRoleIdGetData,
+  GetRoleApiV1AdminRolesRoleIdGetErrors,
+  GetRoleApiV1AdminRolesRoleIdGetResponses,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetErrors,
   GetTaskApiV1TasksTaskIdGetResponses,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetErrors,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponses,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetData,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetErrors,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetResponses,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetData,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetErrors,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetResponses,
+  GetTaskResultApiV1TasksTaskIdResultGetData,
+  GetTaskResultApiV1TasksTaskIdResultGetErrors,
+  GetTaskResultApiV1TasksTaskIdResultGetResponses,
+  GetTaskStatusApiV1TasksTaskIdStatusGetData,
+  GetTaskStatusApiV1TasksTaskIdStatusGetErrors,
+  GetTaskStatusApiV1TasksTaskIdStatusGetResponses,
   GetTwoFactorStatusApiV1TwoFactorStatusGetData,
   GetTwoFactorStatusApiV1TwoFactorStatusGetErrors,
   GetTwoFactorStatusApiV1TwoFactorStatusGetResponses,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetData,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetErrors,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetResponses,
+  GetUserExecutionHistoryApiV1HistoryGetData,
+  GetUserExecutionHistoryApiV1HistoryGetErrors,
+  GetUserExecutionHistoryApiV1HistoryGetResponses,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetErrors,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponses,
+  GetWebhookApiV1WebhooksWebhookIdGetData,
+  GetWebhookApiV1WebhooksWebhookIdGetErrors,
+  GetWebhookApiV1WebhooksWebhookIdGetResponses,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetErrors,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponses,
   HealthCheckHealthGetData,
   HealthCheckHealthGetResponses,
+  ListPermissionsApiV1AdminPermissionsGetData,
+  ListPermissionsApiV1AdminPermissionsGetErrors,
+  ListPermissionsApiV1AdminPermissionsGetResponses,
+  ListRolesApiV1AdminRolesGetData,
+  ListRolesApiV1AdminRolesGetErrors,
+  ListRolesApiV1AdminRolesGetResponses,
   ListTasksApiV1TasksGetData,
   ListTasksApiV1TasksGetErrors,
   ListTasksApiV1TasksGetResponses,
+  ListUsersWithRolesApiV1AdminUsersGetData,
+  ListUsersWithRolesApiV1AdminUsersGetErrors,
+  ListUsersWithRolesApiV1AdminUsersGetResponses,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetErrors,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponses,
+  ListWebhooksApiV1WebhooksGetData,
+  ListWebhooksApiV1WebhooksGetErrors,
+  ListWebhooksApiV1WebhooksGetResponses,
   LoginUserApiV1AuthLoginPostData,
   LoginUserApiV1AuthLoginPostErrors,
   LoginUserApiV1AuthLoginPostResponses,
@@ -67,9 +154,15 @@ import type {
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData,
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostErrors,
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostErrors,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponses,
   RegisterUserApiV1AuthRegisterPostData,
   RegisterUserApiV1AuthRegisterPostErrors,
   RegisterUserApiV1AuthRegisterPostResponses,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteErrors,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponses,
   ResendVerificationApiV1AuthResendVerificationPostData,
   ResendVerificationApiV1AuthResendVerificationPostErrors,
   ResendVerificationApiV1AuthResendVerificationPostResponses,
@@ -82,6 +175,9 @@ import type {
   SetupTwoFactorApiV1TwoFactorSetupPostData,
   SetupTwoFactorApiV1TwoFactorSetupPostErrors,
   SetupTwoFactorApiV1TwoFactorSetupPostResponses,
+  TestWebhookApiV1WebhooksWebhookIdTestPostData,
+  TestWebhookApiV1WebhooksWebhookIdTestPostErrors,
+  TestWebhookApiV1WebhooksWebhookIdTestPostResponses,
   UnlinkOauthAccountOauthProviderUnlinkDeleteData,
   UnlinkOauthAccountOauthProviderUnlinkDeleteErrors,
   UnlinkOauthAccountOauthProviderUnlinkDeleteResponses,
@@ -91,6 +187,9 @@ import type {
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchErrors,
   UpdateTaskApiV1TasksTaskIdPatchResponses,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchData,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchErrors,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchResponses,
   VerifyEmailApiV1AuthVerifyEmailPostData,
   VerifyEmailApiV1AuthVerifyEmailPostErrors,
   VerifyEmailApiV1AuthVerifyEmailPostResponses,
@@ -584,11 +683,16 @@ export const getCurrentUserInfoApiV1UsersMeGet = <ThrowOnError extends boolean =
 /**
  * List Tasks
  *
- * List tasks for the current user with pagination.
+ * List tasks with pagination.
+ *
+ * Requires: task:read permission
+ *
+ * - Admins and superusers see all tasks
+ * - Other users see only their own tasks
  *
  * Args:
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user with task:read permission
  * page: Page number (starts at 1)
  * page_size: Number of items per page
  *
@@ -613,10 +717,12 @@ export const listTasksApiV1TasksGet = <ThrowOnError extends boolean = false>(
  *
  * Create a new coding task.
  *
+ * Requires: task:create permission
+ *
  * Args:
  * task_data: Task creation data
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user with task:create permission
  *
  * Returns:
  * Created task instance
@@ -643,13 +749,15 @@ export const createTaskApiV1TasksPost = <ThrowOnError extends boolean = false>(
  *
  * Delete a task.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const deleteTaskApiV1TasksTaskIdDelete = <ThrowOnError extends boolean = false>(
   options: Options<DeleteTaskApiV1TasksTaskIdDeleteData, ThrowOnError>
@@ -665,16 +773,18 @@ export const deleteTaskApiV1TasksTaskIdDelete = <ThrowOnError extends boolean = 
  *
  * Get a specific task by ID.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Returns:
  * Task instance
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const getTaskApiV1TasksTaskIdGet = <ThrowOnError extends boolean = false>(
   options: Options<GetTaskApiV1TasksTaskIdGetData, ThrowOnError>
@@ -694,17 +804,19 @@ export const getTaskApiV1TasksTaskIdGet = <ThrowOnError extends boolean = false>
  *
  * Update a task.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * task_data: Task update data
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Returns:
  * Updated task instance
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const updateTaskApiV1TasksTaskIdPatch = <ThrowOnError extends boolean = false>(
   options: Options<UpdateTaskApiV1TasksTaskIdPatchData, ThrowOnError>
@@ -721,6 +833,540 @@ export const updateTaskApiV1TasksTaskIdPatch = <ThrowOnError extends boolean = f
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Execute Task Stream
+ *
+ * Execute a coding task with real-time streaming output.
+ *
+ * Streams the complete execution of the multi-agent workflow, including
+ * real-time updates from planning, coding, testing, and review stages.
+ * Uses Server-Sent Events (SSE) for efficient streaming to the client.
+ *
+ * Args:
+ * task_id: ID of the task to execute
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * StreamingResponse with SSE formatted events
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ *
+ * Query Parameters:
+ * thread_id: Optional thread ID for resuming previous execution
+ *
+ * Example:
+ * GET /api/v1/agents/tasks/123/execute
+ *
+ * Returns streaming events like:
+ * data: {"type": "node_start", "node": "planner"}
+ *
+ *
+ * data: {"type": "token", "content": "Step 1: "}
+ *
+ *
+ * data: {"type": "node_end", "node": "planner", "duration": 2.5}
+ *
+ *
+ *
+ * Note:
+ * Error recovery is handled automatically by the workflow layer via
+ * resilient node wrappers that provide retry logic with exponential backoff.
+ */
+export const executeTaskStreamApiV1TasksTaskIdExecutePost = <ThrowOnError extends boolean = false>(
+  options: Options<ExecuteTaskStreamApiV1TasksTaskIdExecutePostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ExecuteTaskStreamApiV1TasksTaskIdExecutePostResponses,
+    ExecuteTaskStreamApiV1TasksTaskIdExecutePostErrors,
+    ThrowOnError
+  >({ url: '/api/v1/tasks/{task_id}/execute', ...options });
+
+/**
+ * Get Task Status
+ *
+ * Get current status of a task execution.
+ *
+ * Returns the latest execution state including current node, progress,
+ * and any errors encountered.
+ *
+ * Args:
+ * task_id: ID of the task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Task status object with current state and progress
+ *
+ * Raises:
+ * HTTPException: If task not found
+ */
+export const getTaskStatusApiV1TasksTaskIdStatusGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTaskStatusApiV1TasksTaskIdStatusGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetTaskStatusApiV1TasksTaskIdStatusGetResponses,
+    GetTaskStatusApiV1TasksTaskIdStatusGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/status',
+    ...options,
+  });
+
+/**
+ * Cancel Task
+ *
+ * Cancel an ongoing task execution.
+ *
+ * Signals the workflow to stop and cleanup resources. The cancellation
+ * is graceful - nodes will complete their current operation before stopping.
+ *
+ * Args:
+ * task_id: ID of the task to cancel
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Confirmation with cancellation status
+ *
+ * Raises:
+ * HTTPException: If task not found
+ */
+export const cancelTaskApiV1TasksTaskIdCancelPost = <ThrowOnError extends boolean = false>(
+  options: Options<CancelTaskApiV1TasksTaskIdCancelPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    CancelTaskApiV1TasksTaskIdCancelPostResponses,
+    CancelTaskApiV1TasksTaskIdCancelPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/cancel',
+    ...options,
+  });
+
+/**
+ * Get Task Result
+ *
+ * Get final result of completed task execution.
+ *
+ * Returns the complete output from all workflow stages including plan,
+ * generated code, test results, and review feedback.
+ *
+ * Args:
+ * task_id: ID of the completed task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Complete task execution result
+ *
+ * Raises:
+ * HTTPException: If task not found or still executing
+ */
+export const getTaskResultApiV1TasksTaskIdResultGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTaskResultApiV1TasksTaskIdResultGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetTaskResultApiV1TasksTaskIdResultGetResponses,
+    GetTaskResultApiV1TasksTaskIdResultGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/result',
+    ...options,
+  });
+
+/**
+ * Get Task History
+ *
+ * Get complete execution history for a task.
+ *
+ * Returns a comprehensive view of all agent runs, including timing,
+ * tokens, costs, and optionally council review data.
+ *
+ * Args:
+ * task_id: ID of the task
+ * include_council: Whether to include council review details (default True)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Complete task execution history with all agent runs and metrics
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getTaskHistoryApiV1TasksTaskIdHistoryGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTaskHistoryApiV1TasksTaskIdHistoryGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetTaskHistoryApiV1TasksTaskIdHistoryGetResponses,
+    GetTaskHistoryApiV1TasksTaskIdHistoryGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/history',
+    ...options,
+  });
+
+/**
+ * Get User Execution History
+ *
+ * Get paginated execution history for the current user.
+ *
+ * Returns a list of all tasks with their execution summary,
+ * supporting filtering by status and date range.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * status: Optional filter by task status
+ * date_from: Optional start date filter
+ * date_to: Optional end date filter
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of task execution summaries
+ */
+export const getUserExecutionHistoryApiV1HistoryGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetUserExecutionHistoryApiV1HistoryGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetUserExecutionHistoryApiV1HistoryGetResponses,
+    GetUserExecutionHistoryApiV1HistoryGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/history',
+    ...options,
+  });
+
+/**
+ * Get Execution Timeline
+ *
+ * Get detailed execution timeline for visualization.
+ *
+ * Returns a chronological list of all events during task execution,
+ * suitable for timeline visualization in the frontend.
+ *
+ * Args:
+ * task_id: ID of the task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * List of timeline events with timestamps and event data
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getExecutionTimelineApiV1TasksTaskIdTimelineGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetExecutionTimelineApiV1TasksTaskIdTimelineGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponses,
+    GetExecutionTimelineApiV1TasksTaskIdTimelineGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/timeline',
+    ...options,
+  });
+
+/**
+ * Get Task Council Reviews
+ *
+ * Get council review history for a specific task.
+ *
+ * Returns paginated list of all council reviews for the task,
+ * including verdict, consensus type, and judge count.
+ *
+ * Args:
+ * task_id: ID of the task
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponses,
+    GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/tasks/{task_id}/council-reviews',
+    ...options,
+  });
+
+/**
+ * Get User Council Reviews
+ *
+ * Get all council reviews for the current user's tasks.
+ *
+ * Returns paginated list of all council reviews across all user's tasks,
+ * useful for analytics and history views.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ */
+export const getUserCouncilReviewsApiV1CouncilReviewsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetUserCouncilReviewsApiV1CouncilReviewsGetResponses,
+    GetUserCouncilReviewsApiV1CouncilReviewsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/council-reviews',
+    ...options,
+  });
+
+/**
+ * Get Council Metrics
+ *
+ * Get aggregate metrics for council reviews.
+ *
+ * Returns comprehensive metrics including verdict distribution,
+ * consensus breakdown, and per-judge performance statistics.
+ *
+ * Args:
+ * date_from: Optional start date filter
+ * date_to: Optional end date filter
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Aggregate council review metrics
+ */
+export const getCouncilMetricsApiV1CouncilMetricsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetCouncilMetricsApiV1CouncilMetricsGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetCouncilMetricsApiV1CouncilMetricsGetResponses,
+    GetCouncilMetricsApiV1CouncilMetricsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/council-metrics',
+    ...options,
+  });
+
+/**
+ * Get Metrics Summary
+ *
+ * Get high-level metrics summary for dashboard display.
+ *
+ * Returns aggregated token usage, cost calculations, and per-agent breakdown
+ * for the specified time period.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * MetricsSummaryResponse with tokens, costs, and breakdowns
+ */
+export const getMetricsSummaryApiV1MetricsSummaryGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMetricsSummaryApiV1MetricsSummaryGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetMetricsSummaryApiV1MetricsSummaryGetResponses,
+    GetMetricsSummaryApiV1MetricsSummaryGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/summary',
+    ...options,
+  });
+
+/**
+ * Get Task Metrics
+ *
+ * Get metrics for a specific task.
+ *
+ * Returns detailed token usage and cost breakdown for a single task,
+ * including per-agent metrics.
+ *
+ * Args:
+ * task_id: ID of the task
+ *
+ * Returns:
+ * TaskMetricsResponse with task-specific metrics
+ */
+export const getTaskMetricsApiV1MetricsTasksTaskIdGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTaskMetricsApiV1MetricsTasksTaskIdGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetTaskMetricsApiV1MetricsTasksTaskIdGetResponses,
+    GetTaskMetricsApiV1MetricsTasksTaskIdGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/tasks/{task_id}',
+    ...options,
+  });
+
+/**
+ * Get Metrics History
+ *
+ * Get time-series metrics data for charting.
+ *
+ * Returns bucketed metrics data suitable for time-series charts,
+ * with configurable period and interval.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d)
+ * interval: Bucket interval (1h, 6h, 1d)
+ *
+ * Returns:
+ * MetricsTimeseriesResponse with data points
+ */
+export const getMetricsHistoryApiV1MetricsHistoryGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMetricsHistoryApiV1MetricsHistoryGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetMetricsHistoryApiV1MetricsHistoryGetResponses,
+    GetMetricsHistoryApiV1MetricsHistoryGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/history',
+    ...options,
+  });
+
+/**
+ * Get Agent Metrics
+ *
+ * Get metrics for a specific agent type.
+ *
+ * Returns detailed metrics for a single agent type (planner, coder,
+ * tester, or reviewer).
+ *
+ * Args:
+ * agent_type: Type of agent (PLANNER, CODER, TESTER, REVIEWER)
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * AgentMetricsResponse with agent-specific metrics
+ */
+export const getAgentMetricsApiV1MetricsAgentAgentTypeGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetAgentMetricsApiV1MetricsAgentAgentTypeGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponses,
+    GetAgentMetricsApiV1MetricsAgentAgentTypeGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/agent/{agent_type}',
+    ...options,
+  });
+
+/**
+ * Get Pricing Info
+ *
+ * Get current LLM pricing information.
+ *
+ * Returns the pricing per 1M tokens for each supported model,
+ * useful for displaying cost context to users.
+ *
+ * Returns:
+ * PricingInfoResponse with model pricing
+ */
+export const getPricingInfoApiV1MetricsPricingGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetPricingInfoApiV1MetricsPricingGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetPricingInfoApiV1MetricsPricingGetResponses,
+    GetPricingInfoApiV1MetricsPricingGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/pricing',
+    ...options,
+  });
+
+/**
+ * Estimate Monthly Cost
+ *
+ * Estimate monthly costs based on daily token usage.
+ *
+ * Calculates what the monthly cost would be if using cloud LLMs
+ * instead of local vLLM, based on projected daily usage.
+ *
+ * Args:
+ * request: Daily token estimate and input ratio
+ *
+ * Returns:
+ * MonthlyEstimateResponse with cost projections
+ */
+export const estimateMonthlyCostApiV1MetricsEstimatePost = <ThrowOnError extends boolean = false>(
+  options: Options<EstimateMonthlyCostApiV1MetricsEstimatePostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    EstimateMonthlyCostApiV1MetricsEstimatePostResponses,
+    EstimateMonthlyCostApiV1MetricsEstimatePostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/estimate',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get Global Metrics
+ *
+ * Get global metrics across all tasks and users.
+ *
+ * Returns aggregated metrics for the entire system (admin view).
+ * Note: Currently returns user-scoped metrics for security.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * PeriodMetricsResponse with global metrics
+ */
+export const getGlobalMetricsApiV1MetricsGlobalGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetGlobalMetricsApiV1MetricsGlobalGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetGlobalMetricsApiV1MetricsGlobalGetResponses,
+    GetGlobalMetricsApiV1MetricsGlobalGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/metrics/global',
+    ...options,
   });
 
 /**
@@ -912,6 +1558,290 @@ export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost = <
   });
 
 /**
+ * List Webhooks
+ *
+ * List webhooks for the current user.
+ *
+ * Args:
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of webhooks
+ */
+export const listWebhooksApiV1WebhooksGet = <ThrowOnError extends boolean = false>(
+  options?: Options<ListWebhooksApiV1WebhooksGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    ListWebhooksApiV1WebhooksGetResponses,
+    ListWebhooksApiV1WebhooksGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks',
+    ...options,
+  });
+
+/**
+ * Create Webhook
+ *
+ * Create a new webhook.
+ *
+ * The response includes the generated secret which should be stored securely.
+ * The secret is only shown once on creation and cannot be retrieved later.
+ *
+ * Args:
+ * webhook_data: Webhook creation data
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Created webhook with secret
+ */
+export const createWebhookApiV1WebhooksPost = <ThrowOnError extends boolean = false>(
+  options: Options<CreateWebhookApiV1WebhooksPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    CreateWebhookApiV1WebhooksPostResponses,
+    CreateWebhookApiV1WebhooksPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Delete Webhook
+ *
+ * Delete a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const deleteWebhookApiV1WebhooksWebhookIdDelete = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteWebhookApiV1WebhooksWebhookIdDeleteData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    DeleteWebhookApiV1WebhooksWebhookIdDeleteResponses,
+    DeleteWebhookApiV1WebhooksWebhookIdDeleteErrors,
+    ThrowOnError
+  >({ url: '/api/v1/webhooks/{webhook_id}', ...options });
+
+/**
+ * Get Webhook
+ *
+ * Get a specific webhook by ID.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Webhook details
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const getWebhookApiV1WebhooksWebhookIdGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetWebhookApiV1WebhooksWebhookIdGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetWebhookApiV1WebhooksWebhookIdGetResponses,
+    GetWebhookApiV1WebhooksWebhookIdGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}',
+    ...options,
+  });
+
+/**
+ * Update Webhook
+ *
+ * Update a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * webhook_data: Update data
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Updated webhook
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const updateWebhookApiV1WebhooksWebhookIdPatch = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateWebhookApiV1WebhooksWebhookIdPatchData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    UpdateWebhookApiV1WebhooksWebhookIdPatchResponses,
+    UpdateWebhookApiV1WebhooksWebhookIdPatchErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Regenerate Webhook Secret
+ *
+ * Regenerate the secret for a webhook.
+ *
+ * The old secret will be invalidated immediately.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Webhook with new secret
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const regenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData,
+    ThrowOnError
+  >
+) =>
+  (options.client ?? client).post<
+    RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponses,
+    RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}/regenerate-secret',
+    ...options,
+  });
+
+/**
+ * Test Webhook
+ *
+ * Send a test event to a webhook.
+ *
+ * This sends a test payload to verify the webhook endpoint is working.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * test_data: Test configuration
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Test result with response details
+ */
+export const testWebhookApiV1WebhooksWebhookIdTestPost = <ThrowOnError extends boolean = false>(
+  options: Options<TestWebhookApiV1WebhooksWebhookIdTestPostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    TestWebhookApiV1WebhooksWebhookIdTestPostResponses,
+    TestWebhookApiV1WebhooksWebhookIdTestPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}/test',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * List Webhook Deliveries
+ *
+ * List delivery history for a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * delivery_status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of deliveries
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponses,
+    ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}/deliveries',
+    ...options,
+  });
+
+/**
+ * Get Webhook Delivery
+ *
+ * Get a specific delivery by ID.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * delivery_id: Delivery ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Delivery details
+ *
+ * Raises:
+ * HTTPException: If webhook or delivery not found
+ */
+export const getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData,
+    ThrowOnError
+  >
+) =>
+  (options.client ?? client).get<
+    GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponses,
+    GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/webhooks/{webhook_id}/deliveries/{delivery_id}',
+    ...options,
+  });
+
+/**
  * Get Oauth Providers
  *
  * Get available OAuth providers and their configuration status.
@@ -1098,5 +2028,190 @@ export const sendTestEmailApiV1TestSendTestEmailPost = <ThrowOnError extends boo
   >({
     responseType: 'json',
     url: '/api/v1/test/send-test-email',
+    ...options,
+  });
+
+/**
+ * List Roles
+ *
+ * List all roles with their permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of all roles with permissions
+ */
+export const listRolesApiV1AdminRolesGet = <ThrowOnError extends boolean = false>(
+  options?: Options<ListRolesApiV1AdminRolesGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    ListRolesApiV1AdminRolesGetResponses,
+    ListRolesApiV1AdminRolesGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/roles',
+    ...options,
+  });
+
+/**
+ * Get Role
+ *
+ * Get a specific role with its permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * role_id: Role ID
+ *
+ * Returns:
+ * Role with permissions
+ *
+ * Raises:
+ * HTTPException: If role not found
+ */
+export const getRoleApiV1AdminRolesRoleIdGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetRoleApiV1AdminRolesRoleIdGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetRoleApiV1AdminRolesRoleIdGetResponses,
+    GetRoleApiV1AdminRolesRoleIdGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/roles/{role_id}',
+    ...options,
+  });
+
+/**
+ * List Permissions
+ *
+ * List all available permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of all permissions
+ */
+export const listPermissionsApiV1AdminPermissionsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<ListPermissionsApiV1AdminPermissionsGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    ListPermissionsApiV1AdminPermissionsGetResponses,
+    ListPermissionsApiV1AdminPermissionsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/permissions',
+    ...options,
+  });
+
+/**
+ * Remove User Role
+ *
+ * Remove a role from a user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID to remove role from
+ *
+ * Raises:
+ * HTTPException: If user not found
+ */
+export const removeUserRoleApiV1AdminUsersUserIdRoleDelete = <ThrowOnError extends boolean = false>(
+  options: Options<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponses,
+    RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteErrors,
+    ThrowOnError
+  >({ url: '/api/v1/admin/users/{user_id}/role', ...options });
+
+/**
+ * Assign User Role
+ *
+ * Assign a role to a user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID to assign role to
+ * assignment: Role assignment data containing role_id
+ *
+ * Returns:
+ * Updated user permissions
+ *
+ * Raises:
+ * HTTPException: If user or role not found
+ */
+export const assignUserRoleApiV1AdminUsersUserIdRolePost = <ThrowOnError extends boolean = false>(
+  options: Options<AssignUserRoleApiV1AdminUsersUserIdRolePostData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    AssignUserRoleApiV1AdminUsersUserIdRolePostResponses,
+    AssignUserRoleApiV1AdminUsersUserIdRolePostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/users/{user_id}/role',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get User Permissions
+ *
+ * Get all permissions for a specific user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID
+ *
+ * Returns:
+ * User permissions including role and superuser status
+ *
+ * Raises:
+ * HTTPException: If user not found
+ */
+export const getUserPermissionsApiV1AdminUsersUserIdPermissionsGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponses,
+    GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/users/{user_id}/permissions',
+    ...options,
+  });
+
+/**
+ * List Users With Roles
+ *
+ * List all users with their roles and permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of users with their permissions
+ */
+export const listUsersWithRolesApiV1AdminUsersGet = <ThrowOnError extends boolean = false>(
+  options?: Options<ListUsersWithRolesApiV1AdminUsersGetData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    ListUsersWithRolesApiV1AdminUsersGetResponses,
+    ListUsersWithRolesApiV1AdminUsersGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/v1/admin/users',
     ...options,
   });

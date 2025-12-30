@@ -5,6 +5,61 @@ export type ClientOptions = {
 };
 
 /**
+ * AgentMetricsResponse
+ *
+ * Metrics summary for a specific agent type.
+ */
+export type AgentMetricsResponse = {
+  /**
+   * Agent Type
+   */
+  agent_type: string;
+  /**
+   * Total Runs
+   */
+  total_runs: number;
+  /**
+   * Total Tokens
+   */
+  total_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Avg Tokens Per Run
+   */
+  avg_tokens_per_run: number;
+  /**
+   * Avg Latency Ms
+   */
+  avg_latency_ms: number;
+};
+
+/**
+ * AgentType
+ *
+ * Enum representing the type of agent.
+ */
+export const AgentType = {
+  PLANNER: 'planner',
+  CODER: 'coder',
+  TESTER: 'tester',
+  REVIEWER: 'reviewer',
+} as const;
+
+/**
+ * AgentType
+ *
+ * Enum representing the type of agent.
+ */
+export type AgentType = (typeof AgentType)[keyof typeof AgentType];
+
+/**
  * ChangeEmailRequest
  *
  * Request to change email for authenticated user.
@@ -47,6 +102,209 @@ export type ConnectedAccountsResponse = {
    */
   accounts: Array<OAuthAccountResponse>;
 };
+
+/**
+ * CostBreakdownResponse
+ *
+ * Cost breakdown across different LLM providers.
+ */
+export type CostBreakdownResponse = {
+  /**
+   * Local Cost
+   *
+   * Local vLLM cost (always 0)
+   */
+  local_cost: number;
+  /**
+   * Claude Haiku
+   *
+   * Claude Haiku equivalent cost
+   */
+  claude_haiku: number;
+  /**
+   * Claude Sonnet
+   *
+   * Claude Sonnet equivalent cost
+   */
+  claude_sonnet: number;
+  /**
+   * Claude Opus
+   *
+   * Claude Opus equivalent cost
+   */
+  claude_opus: number;
+  /**
+   * O4 Mini
+   *
+   * o4-mini cost (Haiku tier)
+   */
+  o4_mini: number;
+  /**
+   * Gpt52
+   *
+   * GPT-5.2 cost (Sonnet tier)
+   */
+  gpt52: number;
+  /**
+   * O3
+   *
+   * o3 cost (Opus tier)
+   */
+  o3: number;
+};
+
+/**
+ * CouncilMetricsResponse
+ *
+ * Aggregate metrics for council reviews.
+ */
+export type CouncilMetricsResponse = {
+  /**
+   * Total Reviews
+   */
+  total_reviews: number;
+  /**
+   * Approved Count
+   */
+  approved_count: number;
+  /**
+   * Revised Count
+   */
+  revised_count: number;
+  /**
+   * Rejected Count
+   */
+  rejected_count: number;
+  /**
+   * Average Confidence
+   */
+  average_confidence: number;
+  /**
+   * Average Deliberation Ms
+   */
+  average_deliberation_ms: number;
+  /**
+   * Total Cost Usd
+   */
+  total_cost_usd: number;
+  /**
+   * Consensus Breakdown
+   */
+  consensus_breakdown: {
+    [key: string]: number;
+  };
+  /**
+   * Judge Performance
+   */
+  judge_performance: {
+    [key: string]: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+/**
+ * CouncilReviewListResponse
+ *
+ * Paginated list of council reviews.
+ */
+export type CouncilReviewListResponse = {
+  /**
+   * Items
+   */
+  items: Array<CouncilReviewSummary>;
+  /**
+   * Total
+   */
+  total: number;
+  /**
+   * Page
+   */
+  page: number;
+  /**
+   * Page Size
+   */
+  page_size: number;
+  /**
+   * Has More
+   */
+  has_more: boolean;
+};
+
+/**
+ * CouncilReviewSummary
+ *
+ * Summary of a council review for list views.
+ */
+export type CouncilReviewSummary = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Task Id
+   */
+  task_id: number;
+  /**
+   * Final Verdict
+   */
+  final_verdict: 'APPROVE' | 'REVISE' | 'REJECT';
+  /**
+   * Consensus Type
+   */
+  consensus_type: 'unanimous' | 'majority' | 'tie_broken' | 'dissent';
+  /**
+   * Confidence Score
+   */
+  confidence_score: number;
+  /**
+   * Judge Count
+   */
+  judge_count: number;
+  /**
+   * Total Issues
+   */
+  total_issues: number;
+  /**
+   * Critical Issues
+   */
+  critical_issues: number;
+  /**
+   * Deliberation Time Ms
+   */
+  deliberation_time_ms: number;
+  /**
+   * Total Cost Usd
+   */
+  total_cost_usd: number;
+  /**
+   * Llm Mode
+   */
+  llm_mode: 'local' | 'cloud';
+  /**
+   * Reviewed At
+   */
+  reviewed_at: string;
+};
+
+/**
+ * DeliveryStatus
+ *
+ * Status of a webhook delivery attempt.
+ */
+export const DeliveryStatus = {
+  PENDING: 'pending',
+  SUCCESS: 'success',
+  FAILED: 'failed',
+  RETRYING: 'retrying',
+} as const;
+
+/**
+ * DeliveryStatus
+ *
+ * Status of a webhook delivery attempt.
+ */
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus];
 
 /**
  * ForgotPasswordRequest
@@ -96,6 +354,109 @@ export type LoginResponse = {
 };
 
 /**
+ * MetricsSummaryResponse
+ *
+ * High-level summary for dashboard display.
+ */
+export type MetricsSummaryResponse = {
+  /**
+   * Total Tokens
+   */
+  total_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Total Runs
+   */
+  total_runs: number;
+  /**
+   * Total Latency Ms
+   */
+  total_latency_ms: number;
+  costs: CostBreakdownResponse;
+  savings: SavingsResponse;
+  /**
+   * By Agent
+   */
+  by_agent: {
+    [key: string]: AgentMetricsResponse;
+  };
+  /**
+   * Models Used
+   */
+  models_used: {
+    [key: string]: number;
+  };
+};
+
+/**
+ * MetricsTimeseriesResponse
+ *
+ * Time-series data for charting.
+ */
+export type MetricsTimeseriesResponse = {
+  /**
+   * Period
+   */
+  period: string;
+  /**
+   * Interval
+   */
+  interval: string;
+  /**
+   * Data
+   */
+  data: Array<TimeseriesDataPoint>;
+};
+
+/**
+ * MonthlyEstimateRequest
+ *
+ * Request for monthly cost estimate.
+ */
+export type MonthlyEstimateRequest = {
+  /**
+   * Daily Tokens
+   *
+   * Average daily token usage
+   */
+  daily_tokens: number;
+  /**
+   * Input Ratio
+   *
+   * Ratio of input tokens (default 2/3)
+   */
+  input_ratio?: number;
+};
+
+/**
+ * MonthlyEstimateResponse
+ *
+ * Monthly cost estimate response.
+ */
+export type MonthlyEstimateResponse = {
+  /**
+   * Monthly Tokens
+   */
+  monthly_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  costs: CostBreakdownResponse;
+};
+
+/**
  * OAuthAccountResponse
  *
  * Response for a linked OAuth account.
@@ -125,6 +486,156 @@ export type OAuthAccountResponse = {
    * Connected At
    */
   connected_at: string;
+};
+
+/**
+ * PeriodMetricsResponse
+ *
+ * Aggregated metrics for a time period.
+ */
+export type PeriodMetricsResponse = {
+  /**
+   * Period
+   *
+   * Time period (24h, 7d, 30d, all)
+   */
+  period: string;
+  /**
+   * Start Date
+   */
+  start_date: string;
+  /**
+   * End Date
+   */
+  end_date: string;
+  /**
+   * Total Tokens
+   */
+  total_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Total Runs
+   */
+  total_runs: number;
+  /**
+   * Total Latency Ms
+   */
+  total_latency_ms: number;
+  /**
+   * By Agent
+   */
+  by_agent: {
+    [key: string]: AgentMetricsResponse;
+  };
+  /**
+   * Models Used
+   *
+   * Token count by model name
+   */
+  models_used: {
+    [key: string]: number;
+  };
+  costs: CostBreakdownResponse;
+  savings: SavingsResponse;
+};
+
+/**
+ * PermissionResponse
+ *
+ * Schema for permission responses.
+ */
+export type PermissionResponse = {
+  /**
+   * Resource
+   *
+   * Resource type (task, repository, etc.)
+   */
+  resource: string;
+  /**
+   * Action
+   *
+   * Action type (create, read, update, delete)
+   */
+  action: string;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Description
+   */
+  description?: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * PricingInfoResponse
+ *
+ * Current LLM pricing information.
+ */
+export type PricingInfoResponse = {
+  /**
+   * Claude Haiku
+   *
+   * Haiku pricing per 1M tokens
+   */
+  claude_haiku: {
+    [key: string]: number;
+  };
+  /**
+   * Claude Sonnet
+   *
+   * Sonnet pricing per 1M tokens
+   */
+  claude_sonnet: {
+    [key: string]: number;
+  };
+  /**
+   * Claude Opus
+   *
+   * Opus pricing per 1M tokens
+   */
+  claude_opus: {
+    [key: string]: number;
+  };
+  /**
+   * O4 Mini
+   *
+   * o4-mini pricing per 1M tokens
+   */
+  o4_mini: {
+    [key: string]: number;
+  };
+  /**
+   * Gpt52
+   *
+   * GPT-5.2 pricing per 1M tokens
+   */
+  gpt52: {
+    [key: string]: number;
+  };
+  /**
+   * O3
+   *
+   * o3 pricing per 1M tokens
+   */
+  o3: {
+    [key: string]: number;
+  };
 };
 
 /**
@@ -200,6 +711,146 @@ export type ResetPasswordRequest = {
 };
 
 /**
+ * RoleResponse
+ *
+ * Schema for role responses.
+ */
+export type RoleResponse = {
+  /**
+   * Role type (admin, developer, viewer)
+   */
+  name: RoleType;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Description
+   */
+  description?: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * RoleResponseInline
+ *
+ * Inline role response to avoid circular imports.
+ */
+export type RoleResponseInline = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Description
+   */
+  description?: string | null;
+};
+
+/**
+ * RoleType
+ *
+ * Enum representing the type of role in the system.
+ *
+ * Roles are ordered by privilege level:
+ * - ADMIN: Full system access
+ * - DEVELOPER: Can create, modify, and execute workflows
+ * - VIEWER: Read-only access to shared resources
+ */
+export const RoleType = {
+  ADMIN: 'admin',
+  DEVELOPER: 'developer',
+  VIEWER: 'viewer',
+} as const;
+
+/**
+ * RoleType
+ *
+ * Enum representing the type of role in the system.
+ *
+ * Roles are ordered by privilege level:
+ * - ADMIN: Full system access
+ * - DEVELOPER: Can create, modify, and execute workflows
+ * - VIEWER: Read-only access to shared resources
+ */
+export type RoleType = (typeof RoleType)[keyof typeof RoleType];
+
+/**
+ * RoleWithPermissionsResponse
+ *
+ * Schema for role responses with permissions included.
+ */
+export type RoleWithPermissionsResponse = {
+  /**
+   * Role type (admin, developer, viewer)
+   */
+  name: RoleType;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Description
+   */
+  description?: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+  /**
+   * Permissions
+   */
+  permissions?: Array<PermissionResponse>;
+};
+
+/**
+ * SavingsResponse
+ *
+ * Cost savings compared to cloud LLMs.
+ */
+export type SavingsResponse = {
+  /**
+   * Vs Claude Haiku
+   */
+  vs_claude_haiku: number;
+  /**
+   * Vs Claude Sonnet
+   */
+  vs_claude_sonnet: number;
+  /**
+   * Vs Claude Opus
+   */
+  vs_claude_opus: number;
+  /**
+   * Vs O4 Mini
+   */
+  vs_o4_mini: number;
+  /**
+   * Vs Gpt52
+   */
+  vs_gpt52: number;
+  /**
+   * Vs O3
+   */
+  vs_o3: number;
+};
+
+/**
  * TaskCreate
  *
  * Schema for creating a new task.
@@ -242,6 +893,46 @@ export type TaskListResponse = {
    * Page Size
    */
   page_size: number;
+};
+
+/**
+ * TaskMetricsResponse
+ *
+ * Aggregated metrics for a single task.
+ */
+export type TaskMetricsResponse = {
+  /**
+   * Task Id
+   */
+  task_id: number;
+  /**
+   * Total Tokens
+   */
+  total_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Total Runs
+   */
+  total_runs: number;
+  /**
+   * Total Latency Ms
+   */
+  total_latency_ms: number;
+  /**
+   * By Agent
+   */
+  by_agent: {
+    [key: string]: AgentMetricsResponse;
+  };
+  costs: CostBreakdownResponse;
+  savings: SavingsResponse;
 };
 
 /**
@@ -344,6 +1035,34 @@ export type TaskUpdate = {
    * Repository Id
    */
   repository_id?: number | null;
+};
+
+/**
+ * TimeseriesDataPoint
+ *
+ * Single data point for time-series charts.
+ */
+export type TimeseriesDataPoint = {
+  /**
+   * Timestamp
+   */
+  timestamp: string;
+  /**
+   * Total Tokens
+   */
+  total_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Runs
+   */
+  runs: number;
 };
 
 /**
@@ -525,6 +1244,29 @@ export type UserLogin = {
 };
 
 /**
+ * UserPermissionsResponse
+ *
+ * Schema for user permissions response.
+ */
+export type UserPermissionsResponse = {
+  /**
+   * User Id
+   */
+  user_id: number;
+  role?: RoleResponse | null;
+  /**
+   * Is Superuser
+   */
+  is_superuser: boolean;
+  /**
+   * Permissions
+   *
+   * List of permission codes the user has (e.g., 'task:create')
+   */
+  permissions?: Array<string>;
+};
+
+/**
  * UserResponse
  *
  * Schema for user responses.
@@ -575,6 +1317,10 @@ export type UserResponse = {
    */
   profile_completed: boolean;
   /**
+   * User's assigned role for RBAC
+   */
+  role?: RoleResponseInline | null;
+  /**
    * Created At
    */
   created_at: string;
@@ -582,6 +1328,20 @@ export type UserResponse = {
    * Updated At
    */
   updated_at: string;
+};
+
+/**
+ * UserRoleAssignment
+ *
+ * Schema for assigning a role to a user.
+ */
+export type UserRoleAssignment = {
+  /**
+   * Role Id
+   *
+   * Role ID to assign
+   */
+  role_id: number;
 };
 
 /**
@@ -628,6 +1388,398 @@ export type VerifyEmailResponse = {
    * Requires 2Fa Setup
    */
   requires_2fa_setup?: boolean;
+};
+
+/**
+ * WebhookCreate
+ *
+ * Schema for creating a new webhook.
+ */
+export type WebhookCreate = {
+  /**
+   * Name
+   *
+   * Human-readable webhook name
+   */
+  name: string;
+  /**
+   * Url
+   *
+   * Target URL for webhook delivery
+   */
+  url: string;
+  /**
+   * Events
+   *
+   * List of events to subscribe to (use '*' for all events)
+   */
+  events: Array<string>;
+  /**
+   * Headers
+   *
+   * Custom headers to include in webhook requests
+   */
+  headers?: {
+    [key: string]: string;
+  } | null;
+  /**
+   * Retry Count
+   *
+   * Maximum retry attempts
+   */
+  retry_count?: number;
+  /**
+   * Timeout Seconds
+   *
+   * Request timeout in seconds
+   */
+  timeout_seconds?: number;
+};
+
+/**
+ * WebhookDeliveryListResponse
+ *
+ * Schema for paginated delivery list responses.
+ */
+export type WebhookDeliveryListResponse = {
+  /**
+   * Items
+   */
+  items: Array<WebhookDeliveryResponse>;
+  /**
+   * Total
+   */
+  total: number;
+  /**
+   * Page
+   */
+  page: number;
+  /**
+   * Page Size
+   */
+  page_size: number;
+};
+
+/**
+ * WebhookDeliveryResponse
+ *
+ * Schema for webhook delivery responses.
+ */
+export type WebhookDeliveryResponse = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Webhook Id
+   */
+  webhook_id: number;
+  /**
+   * Event Type
+   */
+  event_type: string;
+  /**
+   * Event Id
+   */
+  event_id: string;
+  status: DeliveryStatus;
+  /**
+   * Attempt Count
+   */
+  attempt_count: number;
+  /**
+   * Response Status
+   */
+  response_status: number | null;
+  /**
+   * Response Body
+   */
+  response_body: string | null;
+  /**
+   * Error Message
+   */
+  error_message: string | null;
+  /**
+   * Delivered At
+   */
+  delivered_at: string | null;
+  /**
+   * Next Retry At
+   */
+  next_retry_at: string | null;
+  /**
+   * Duration Ms
+   */
+  duration_ms: number | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+};
+
+/**
+ * WebhookListResponse
+ *
+ * Schema for paginated webhook list responses.
+ */
+export type WebhookListResponse = {
+  /**
+   * Items
+   */
+  items: Array<WebhookResponse>;
+  /**
+   * Total
+   */
+  total: number;
+  /**
+   * Page
+   */
+  page: number;
+  /**
+   * Page Size
+   */
+  page_size: number;
+};
+
+/**
+ * WebhookResponse
+ *
+ * Schema for webhook responses.
+ */
+export type WebhookResponse = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Events
+   */
+  events: Array<string>;
+  status: WebhookStatus;
+  /**
+   * Headers
+   */
+  headers: {
+    [key: string]: string;
+  } | null;
+  /**
+   * Retry Count
+   */
+  retry_count: number;
+  /**
+   * Timeout Seconds
+   */
+  timeout_seconds: number;
+  /**
+   * Success Count
+   */
+  success_count: number;
+  /**
+   * Failure Count
+   */
+  failure_count: number;
+  /**
+   * Last Triggered At
+   */
+  last_triggered_at: string | null;
+  /**
+   * Last Success At
+   */
+  last_success_at: string | null;
+  /**
+   * Last Failure At
+   */
+  last_failure_at: string | null;
+  /**
+   * User Id
+   */
+  user_id: number;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * WebhookStatus
+ *
+ * Status of a webhook configuration.
+ */
+export const WebhookStatus = {
+  ACTIVE: 'active',
+  PAUSED: 'paused',
+  DISABLED: 'disabled',
+} as const;
+
+/**
+ * WebhookStatus
+ *
+ * Status of a webhook configuration.
+ */
+export type WebhookStatus = (typeof WebhookStatus)[keyof typeof WebhookStatus];
+
+/**
+ * WebhookTestRequest
+ *
+ * Schema for testing a webhook.
+ */
+export type WebhookTestRequest = {
+  /**
+   * Event Type
+   *
+   * Event type to simulate for the test
+   */
+  event_type?: string;
+};
+
+/**
+ * WebhookTestResponse
+ *
+ * Schema for webhook test results.
+ */
+export type WebhookTestResponse = {
+  /**
+   * Success
+   */
+  success: boolean;
+  /**
+   * Status Code
+   */
+  status_code: number | null;
+  /**
+   * Response Body
+   */
+  response_body: string | null;
+  /**
+   * Error Message
+   */
+  error_message: string | null;
+  /**
+   * Duration Ms
+   */
+  duration_ms: number;
+};
+
+/**
+ * WebhookUpdate
+ *
+ * Schema for updating a webhook.
+ */
+export type WebhookUpdate = {
+  /**
+   * Name
+   */
+  name?: string | null;
+  /**
+   * Url
+   */
+  url?: string | null;
+  /**
+   * Events
+   */
+  events?: Array<string> | null;
+  status?: WebhookStatus | null;
+  /**
+   * Headers
+   */
+  headers?: {
+    [key: string]: string;
+  } | null;
+  /**
+   * Retry Count
+   */
+  retry_count?: number | null;
+  /**
+   * Timeout Seconds
+   */
+  timeout_seconds?: number | null;
+};
+
+/**
+ * WebhookWithSecretResponse
+ *
+ * Schema for webhook response including the secret (only on create).
+ */
+export type WebhookWithSecretResponse = {
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Events
+   */
+  events: Array<string>;
+  status: WebhookStatus;
+  /**
+   * Headers
+   */
+  headers: {
+    [key: string]: string;
+  } | null;
+  /**
+   * Retry Count
+   */
+  retry_count: number;
+  /**
+   * Timeout Seconds
+   */
+  timeout_seconds: number;
+  /**
+   * Success Count
+   */
+  success_count: number;
+  /**
+   * Failure Count
+   */
+  failure_count: number;
+  /**
+   * Last Triggered At
+   */
+  last_triggered_at: string | null;
+  /**
+   * Last Success At
+   */
+  last_success_at: string | null;
+  /**
+   * Last Failure At
+   */
+  last_failure_at: string | null;
+  /**
+   * User Id
+   */
+  user_id: number;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+  /**
+   * Secret
+   */
+  secret: string;
 };
 
 export type HealthCheckHealthGetData = {
@@ -1130,9 +2282,22 @@ export type DeleteTaskApiV1TasksTaskIdDeleteData = {
     /**
      * Task Id
      */
-    task_id: number;
+    task_id: number | null;
   };
-  query?: never;
+  query?: {
+    /**
+     * Repository Id
+     */
+    repository_id?: number | null;
+    /**
+     * Webhook Id
+     */
+    webhook_id?: number | null;
+    /**
+     * Resource Id
+     */
+    resource_id?: number | null;
+  };
   url: '/api/v1/tasks/{task_id}';
 };
 
@@ -1162,9 +2327,22 @@ export type GetTaskApiV1TasksTaskIdGetData = {
     /**
      * Task Id
      */
-    task_id: number;
+    task_id: number | null;
   };
-  query?: never;
+  query?: {
+    /**
+     * Repository Id
+     */
+    repository_id?: number | null;
+    /**
+     * Webhook Id
+     */
+    webhook_id?: number | null;
+    /**
+     * Resource Id
+     */
+    resource_id?: number | null;
+  };
   url: '/api/v1/tasks/{task_id}';
 };
 
@@ -1194,9 +2372,22 @@ export type UpdateTaskApiV1TasksTaskIdPatchData = {
     /**
      * Task Id
      */
-    task_id: number;
+    task_id: number | null;
   };
-  query?: never;
+  query?: {
+    /**
+     * Repository Id
+     */
+    repository_id?: number | null;
+    /**
+     * Webhook Id
+     */
+    webhook_id?: number | null;
+    /**
+     * Resource Id
+     */
+    resource_id?: number | null;
+  };
   url: '/api/v1/tasks/{task_id}';
 };
 
@@ -1219,6 +2410,627 @@ export type UpdateTaskApiV1TasksTaskIdPatchResponses = {
 
 export type UpdateTaskApiV1TasksTaskIdPatchResponse =
   UpdateTaskApiV1TasksTaskIdPatchResponses[keyof UpdateTaskApiV1TasksTaskIdPatchResponses];
+
+export type ExecuteTaskStreamApiV1TasksTaskIdExecutePostData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/tasks/{task_id}/execute';
+};
+
+export type ExecuteTaskStreamApiV1TasksTaskIdExecutePostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ExecuteTaskStreamApiV1TasksTaskIdExecutePostError =
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostErrors[keyof ExecuteTaskStreamApiV1TasksTaskIdExecutePostErrors];
+
+export type ExecuteTaskStreamApiV1TasksTaskIdExecutePostResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type GetTaskStatusApiV1TasksTaskIdStatusGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/tasks/{task_id}/status';
+};
+
+export type GetTaskStatusApiV1TasksTaskIdStatusGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTaskStatusApiV1TasksTaskIdStatusGetError =
+  GetTaskStatusApiV1TasksTaskIdStatusGetErrors[keyof GetTaskStatusApiV1TasksTaskIdStatusGetErrors];
+
+export type GetTaskStatusApiV1TasksTaskIdStatusGetResponses = {
+  /**
+   * Response Get Task Status Api V1 Tasks  Task Id  Status Get
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
+};
+
+export type GetTaskStatusApiV1TasksTaskIdStatusGetResponse =
+  GetTaskStatusApiV1TasksTaskIdStatusGetResponses[keyof GetTaskStatusApiV1TasksTaskIdStatusGetResponses];
+
+export type CancelTaskApiV1TasksTaskIdCancelPostData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/tasks/{task_id}/cancel';
+};
+
+export type CancelTaskApiV1TasksTaskIdCancelPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type CancelTaskApiV1TasksTaskIdCancelPostError =
+  CancelTaskApiV1TasksTaskIdCancelPostErrors[keyof CancelTaskApiV1TasksTaskIdCancelPostErrors];
+
+export type CancelTaskApiV1TasksTaskIdCancelPostResponses = {
+  /**
+   * Response Cancel Task Api V1 Tasks  Task Id  Cancel Post
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: string | number | boolean;
+  };
+};
+
+export type CancelTaskApiV1TasksTaskIdCancelPostResponse =
+  CancelTaskApiV1TasksTaskIdCancelPostResponses[keyof CancelTaskApiV1TasksTaskIdCancelPostResponses];
+
+export type GetTaskResultApiV1TasksTaskIdResultGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/tasks/{task_id}/result';
+};
+
+export type GetTaskResultApiV1TasksTaskIdResultGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTaskResultApiV1TasksTaskIdResultGetError =
+  GetTaskResultApiV1TasksTaskIdResultGetErrors[keyof GetTaskResultApiV1TasksTaskIdResultGetErrors];
+
+export type GetTaskResultApiV1TasksTaskIdResultGetResponses = {
+  /**
+   * Response Get Task Result Api V1 Tasks  Task Id  Result Get
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
+};
+
+export type GetTaskResultApiV1TasksTaskIdResultGetResponse =
+  GetTaskResultApiV1TasksTaskIdResultGetResponses[keyof GetTaskResultApiV1TasksTaskIdResultGetResponses];
+
+export type GetTaskHistoryApiV1TasksTaskIdHistoryGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: {
+    /**
+     * Include Council
+     */
+    include_council?: boolean;
+  };
+  url: '/api/v1/tasks/{task_id}/history';
+};
+
+export type GetTaskHistoryApiV1TasksTaskIdHistoryGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTaskHistoryApiV1TasksTaskIdHistoryGetError =
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetErrors[keyof GetTaskHistoryApiV1TasksTaskIdHistoryGetErrors];
+
+export type GetTaskHistoryApiV1TasksTaskIdHistoryGetResponses = {
+  /**
+   * Response Get Task History Api V1 Tasks  Task Id  History Get
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
+};
+
+export type GetTaskHistoryApiV1TasksTaskIdHistoryGetResponse =
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetResponses[keyof GetTaskHistoryApiV1TasksTaskIdHistoryGetResponses];
+
+export type GetUserExecutionHistoryApiV1HistoryGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Page
+     *
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page Size
+     *
+     * Items per page
+     */
+    page_size?: number;
+    /**
+     * Status
+     *
+     * Filter by task status
+     */
+    status?: string | null;
+    /**
+     * Date From
+     *
+     * Start date filter
+     */
+    date_from?: string | null;
+    /**
+     * Date To
+     *
+     * End date filter
+     */
+    date_to?: string | null;
+  };
+  url: '/api/v1/history';
+};
+
+export type GetUserExecutionHistoryApiV1HistoryGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetUserExecutionHistoryApiV1HistoryGetError =
+  GetUserExecutionHistoryApiV1HistoryGetErrors[keyof GetUserExecutionHistoryApiV1HistoryGetErrors];
+
+export type GetUserExecutionHistoryApiV1HistoryGetResponses = {
+  /**
+   * Response Get User Execution History Api V1 History Get
+   *
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
+};
+
+export type GetUserExecutionHistoryApiV1HistoryGetResponse =
+  GetUserExecutionHistoryApiV1HistoryGetResponses[keyof GetUserExecutionHistoryApiV1HistoryGetResponses];
+
+export type GetExecutionTimelineApiV1TasksTaskIdTimelineGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/tasks/{task_id}/timeline';
+};
+
+export type GetExecutionTimelineApiV1TasksTaskIdTimelineGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetExecutionTimelineApiV1TasksTaskIdTimelineGetError =
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetErrors[keyof GetExecutionTimelineApiV1TasksTaskIdTimelineGetErrors];
+
+export type GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponses = {
+  /**
+   * Response Get Execution Timeline Api V1 Tasks  Task Id  Timeline Get
+   *
+   * Successful Response
+   */
+  200: Array<{
+    [key: string]: unknown;
+  }>;
+};
+
+export type GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponse =
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponses[keyof GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponses];
+
+export type GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: {
+    /**
+     * Page
+     *
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page Size
+     *
+     * Items per page
+     */
+    page_size?: number;
+  };
+  url: '/api/v1/tasks/{task_id}/council-reviews';
+};
+
+export type GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetError =
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetErrors[keyof GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetErrors];
+
+export type GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: CouncilReviewListResponse;
+};
+
+export type GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse =
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponses[keyof GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponses];
+
+export type GetUserCouncilReviewsApiV1CouncilReviewsGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Page
+     *
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page Size
+     *
+     * Items per page
+     */
+    page_size?: number;
+  };
+  url: '/api/v1/council-reviews';
+};
+
+export type GetUserCouncilReviewsApiV1CouncilReviewsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetUserCouncilReviewsApiV1CouncilReviewsGetError =
+  GetUserCouncilReviewsApiV1CouncilReviewsGetErrors[keyof GetUserCouncilReviewsApiV1CouncilReviewsGetErrors];
+
+export type GetUserCouncilReviewsApiV1CouncilReviewsGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: CouncilReviewListResponse;
+};
+
+export type GetUserCouncilReviewsApiV1CouncilReviewsGetResponse =
+  GetUserCouncilReviewsApiV1CouncilReviewsGetResponses[keyof GetUserCouncilReviewsApiV1CouncilReviewsGetResponses];
+
+export type GetCouncilMetricsApiV1CouncilMetricsGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Date From
+     *
+     * Start date filter
+     */
+    date_from?: string | null;
+    /**
+     * Date To
+     *
+     * End date filter
+     */
+    date_to?: string | null;
+  };
+  url: '/api/v1/council-metrics';
+};
+
+export type GetCouncilMetricsApiV1CouncilMetricsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetCouncilMetricsApiV1CouncilMetricsGetError =
+  GetCouncilMetricsApiV1CouncilMetricsGetErrors[keyof GetCouncilMetricsApiV1CouncilMetricsGetErrors];
+
+export type GetCouncilMetricsApiV1CouncilMetricsGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: CouncilMetricsResponse;
+};
+
+export type GetCouncilMetricsApiV1CouncilMetricsGetResponse =
+  GetCouncilMetricsApiV1CouncilMetricsGetResponses[keyof GetCouncilMetricsApiV1CouncilMetricsGetResponses];
+
+export type GetMetricsSummaryApiV1MetricsSummaryGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Period
+     */
+    period?: string;
+  };
+  url: '/api/v1/metrics/summary';
+};
+
+export type GetMetricsSummaryApiV1MetricsSummaryGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetMetricsSummaryApiV1MetricsSummaryGetError =
+  GetMetricsSummaryApiV1MetricsSummaryGetErrors[keyof GetMetricsSummaryApiV1MetricsSummaryGetErrors];
+
+export type GetMetricsSummaryApiV1MetricsSummaryGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: MetricsSummaryResponse;
+};
+
+export type GetMetricsSummaryApiV1MetricsSummaryGetResponse =
+  GetMetricsSummaryApiV1MetricsSummaryGetResponses[keyof GetMetricsSummaryApiV1MetricsSummaryGetResponses];
+
+export type GetTaskMetricsApiV1MetricsTasksTaskIdGetData = {
+  body?: never;
+  path: {
+    /**
+     * Task Id
+     */
+    task_id: number;
+  };
+  query?: never;
+  url: '/api/v1/metrics/tasks/{task_id}';
+};
+
+export type GetTaskMetricsApiV1MetricsTasksTaskIdGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetTaskMetricsApiV1MetricsTasksTaskIdGetError =
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetErrors[keyof GetTaskMetricsApiV1MetricsTasksTaskIdGetErrors];
+
+export type GetTaskMetricsApiV1MetricsTasksTaskIdGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: TaskMetricsResponse;
+};
+
+export type GetTaskMetricsApiV1MetricsTasksTaskIdGetResponse =
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetResponses[keyof GetTaskMetricsApiV1MetricsTasksTaskIdGetResponses];
+
+export type GetMetricsHistoryApiV1MetricsHistoryGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Period
+     */
+    period?: string;
+    /**
+     * Interval
+     */
+    interval?: string;
+  };
+  url: '/api/v1/metrics/history';
+};
+
+export type GetMetricsHistoryApiV1MetricsHistoryGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetMetricsHistoryApiV1MetricsHistoryGetError =
+  GetMetricsHistoryApiV1MetricsHistoryGetErrors[keyof GetMetricsHistoryApiV1MetricsHistoryGetErrors];
+
+export type GetMetricsHistoryApiV1MetricsHistoryGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: MetricsTimeseriesResponse;
+};
+
+export type GetMetricsHistoryApiV1MetricsHistoryGetResponse =
+  GetMetricsHistoryApiV1MetricsHistoryGetResponses[keyof GetMetricsHistoryApiV1MetricsHistoryGetResponses];
+
+export type GetAgentMetricsApiV1MetricsAgentAgentTypeGetData = {
+  body?: never;
+  path: {
+    agent_type: AgentType;
+  };
+  query?: {
+    /**
+     * Period
+     */
+    period?: string;
+  };
+  url: '/api/v1/metrics/agent/{agent_type}';
+};
+
+export type GetAgentMetricsApiV1MetricsAgentAgentTypeGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetAgentMetricsApiV1MetricsAgentAgentTypeGetError =
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetErrors[keyof GetAgentMetricsApiV1MetricsAgentAgentTypeGetErrors];
+
+export type GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: AgentMetricsResponse;
+};
+
+export type GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponse =
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponses[keyof GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponses];
+
+export type GetPricingInfoApiV1MetricsPricingGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/metrics/pricing';
+};
+
+export type GetPricingInfoApiV1MetricsPricingGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetPricingInfoApiV1MetricsPricingGetError =
+  GetPricingInfoApiV1MetricsPricingGetErrors[keyof GetPricingInfoApiV1MetricsPricingGetErrors];
+
+export type GetPricingInfoApiV1MetricsPricingGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: PricingInfoResponse;
+};
+
+export type GetPricingInfoApiV1MetricsPricingGetResponse =
+  GetPricingInfoApiV1MetricsPricingGetResponses[keyof GetPricingInfoApiV1MetricsPricingGetResponses];
+
+export type EstimateMonthlyCostApiV1MetricsEstimatePostData = {
+  body: MonthlyEstimateRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/metrics/estimate';
+};
+
+export type EstimateMonthlyCostApiV1MetricsEstimatePostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type EstimateMonthlyCostApiV1MetricsEstimatePostError =
+  EstimateMonthlyCostApiV1MetricsEstimatePostErrors[keyof EstimateMonthlyCostApiV1MetricsEstimatePostErrors];
+
+export type EstimateMonthlyCostApiV1MetricsEstimatePostResponses = {
+  /**
+   * Successful Response
+   */
+  200: MonthlyEstimateResponse;
+};
+
+export type EstimateMonthlyCostApiV1MetricsEstimatePostResponse =
+  EstimateMonthlyCostApiV1MetricsEstimatePostResponses[keyof EstimateMonthlyCostApiV1MetricsEstimatePostResponses];
+
+export type GetGlobalMetricsApiV1MetricsGlobalGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Period
+     */
+    period?: string;
+  };
+  url: '/api/v1/metrics/global';
+};
+
+export type GetGlobalMetricsApiV1MetricsGlobalGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetGlobalMetricsApiV1MetricsGlobalGetError =
+  GetGlobalMetricsApiV1MetricsGlobalGetErrors[keyof GetGlobalMetricsApiV1MetricsGlobalGetErrors];
+
+export type GetGlobalMetricsApiV1MetricsGlobalGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: PeriodMetricsResponse;
+};
+
+export type GetGlobalMetricsApiV1MetricsGlobalGetResponse =
+  GetGlobalMetricsApiV1MetricsGlobalGetResponses[keyof GetGlobalMetricsApiV1MetricsGlobalGetResponses];
 
 export type GetTwoFactorStatusApiV1TwoFactorStatusGetData = {
   body?: never;
@@ -1385,6 +3197,326 @@ export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse
 
 export type RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses[keyof RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponses];
+
+export type ListWebhooksApiV1WebhooksGetData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Page
+     *
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page Size
+     *
+     * Items per page
+     */
+    page_size?: number;
+    /**
+     * Status
+     *
+     * Filter by status
+     */
+    status?: WebhookStatus | null;
+  };
+  url: '/api/v1/webhooks';
+};
+
+export type ListWebhooksApiV1WebhooksGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListWebhooksApiV1WebhooksGetError =
+  ListWebhooksApiV1WebhooksGetErrors[keyof ListWebhooksApiV1WebhooksGetErrors];
+
+export type ListWebhooksApiV1WebhooksGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookListResponse;
+};
+
+export type ListWebhooksApiV1WebhooksGetResponse =
+  ListWebhooksApiV1WebhooksGetResponses[keyof ListWebhooksApiV1WebhooksGetResponses];
+
+export type CreateWebhookApiV1WebhooksPostData = {
+  body: WebhookCreate;
+  path?: never;
+  query?: never;
+  url: '/api/v1/webhooks';
+};
+
+export type CreateWebhookApiV1WebhooksPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type CreateWebhookApiV1WebhooksPostError =
+  CreateWebhookApiV1WebhooksPostErrors[keyof CreateWebhookApiV1WebhooksPostErrors];
+
+export type CreateWebhookApiV1WebhooksPostResponses = {
+  /**
+   * Successful Response
+   */
+  201: WebhookWithSecretResponse;
+};
+
+export type CreateWebhookApiV1WebhooksPostResponse =
+  CreateWebhookApiV1WebhooksPostResponses[keyof CreateWebhookApiV1WebhooksPostResponses];
+
+export type DeleteWebhookApiV1WebhooksWebhookIdDeleteData = {
+  body?: never;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}';
+};
+
+export type DeleteWebhookApiV1WebhooksWebhookIdDeleteErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type DeleteWebhookApiV1WebhooksWebhookIdDeleteError =
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteErrors[keyof DeleteWebhookApiV1WebhooksWebhookIdDeleteErrors];
+
+export type DeleteWebhookApiV1WebhooksWebhookIdDeleteResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type DeleteWebhookApiV1WebhooksWebhookIdDeleteResponse =
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteResponses[keyof DeleteWebhookApiV1WebhooksWebhookIdDeleteResponses];
+
+export type GetWebhookApiV1WebhooksWebhookIdGetData = {
+  body?: never;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}';
+};
+
+export type GetWebhookApiV1WebhooksWebhookIdGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetWebhookApiV1WebhooksWebhookIdGetError =
+  GetWebhookApiV1WebhooksWebhookIdGetErrors[keyof GetWebhookApiV1WebhooksWebhookIdGetErrors];
+
+export type GetWebhookApiV1WebhooksWebhookIdGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookResponse;
+};
+
+export type GetWebhookApiV1WebhooksWebhookIdGetResponse =
+  GetWebhookApiV1WebhooksWebhookIdGetResponses[keyof GetWebhookApiV1WebhooksWebhookIdGetResponses];
+
+export type UpdateWebhookApiV1WebhooksWebhookIdPatchData = {
+  body: WebhookUpdate;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}';
+};
+
+export type UpdateWebhookApiV1WebhooksWebhookIdPatchErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type UpdateWebhookApiV1WebhooksWebhookIdPatchError =
+  UpdateWebhookApiV1WebhooksWebhookIdPatchErrors[keyof UpdateWebhookApiV1WebhooksWebhookIdPatchErrors];
+
+export type UpdateWebhookApiV1WebhooksWebhookIdPatchResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookResponse;
+};
+
+export type UpdateWebhookApiV1WebhooksWebhookIdPatchResponse =
+  UpdateWebhookApiV1WebhooksWebhookIdPatchResponses[keyof UpdateWebhookApiV1WebhooksWebhookIdPatchResponses];
+
+export type RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData = {
+  body?: never;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}/regenerate-secret';
+};
+
+export type RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostError =
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostErrors[keyof RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostErrors];
+
+export type RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookWithSecretResponse;
+};
+
+export type RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponse =
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponses[keyof RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponses];
+
+export type TestWebhookApiV1WebhooksWebhookIdTestPostData = {
+  body: WebhookTestRequest;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}/test';
+};
+
+export type TestWebhookApiV1WebhooksWebhookIdTestPostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type TestWebhookApiV1WebhooksWebhookIdTestPostError =
+  TestWebhookApiV1WebhooksWebhookIdTestPostErrors[keyof TestWebhookApiV1WebhooksWebhookIdTestPostErrors];
+
+export type TestWebhookApiV1WebhooksWebhookIdTestPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookTestResponse;
+};
+
+export type TestWebhookApiV1WebhooksWebhookIdTestPostResponse =
+  TestWebhookApiV1WebhooksWebhookIdTestPostResponses[keyof TestWebhookApiV1WebhooksWebhookIdTestPostResponses];
+
+export type ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData = {
+  body?: never;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+  };
+  query?: {
+    /**
+     * Page
+     *
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page Size
+     *
+     * Items per page
+     */
+    page_size?: number;
+    /**
+     * Delivery Status
+     *
+     * Filter by status
+     */
+    delivery_status?: DeliveryStatus | null;
+  };
+  url: '/api/v1/webhooks/{webhook_id}/deliveries';
+};
+
+export type ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetError =
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetErrors[keyof ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetErrors];
+
+export type ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookDeliveryListResponse;
+};
+
+export type ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse =
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponses[keyof ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponses];
+
+export type GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData = {
+  body?: never;
+  path: {
+    /**
+     * Webhook Id
+     */
+    webhook_id: number;
+    /**
+     * Delivery Id
+     */
+    delivery_id: number;
+  };
+  query?: never;
+  url: '/api/v1/webhooks/{webhook_id}/deliveries/{delivery_id}';
+};
+
+export type GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetError =
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetErrors[keyof GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetErrors];
+
+export type GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: WebhookDeliveryResponse;
+};
+
+export type GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponse =
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponses[keyof GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponses];
 
 export type GetOauthProvidersOauthProvidersGetData = {
   body?: never;
@@ -1611,3 +3743,218 @@ export type SendTestEmailApiV1TestSendTestEmailPostResponses = {
 
 export type SendTestEmailApiV1TestSendTestEmailPostResponse =
   SendTestEmailApiV1TestSendTestEmailPostResponses[keyof SendTestEmailApiV1TestSendTestEmailPostResponses];
+
+export type ListRolesApiV1AdminRolesGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/admin/roles';
+};
+
+export type ListRolesApiV1AdminRolesGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListRolesApiV1AdminRolesGetError =
+  ListRolesApiV1AdminRolesGetErrors[keyof ListRolesApiV1AdminRolesGetErrors];
+
+export type ListRolesApiV1AdminRolesGetResponses = {
+  /**
+   * Response List Roles Api V1 Admin Roles Get
+   *
+   * Successful Response
+   */
+  200: Array<RoleWithPermissionsResponse>;
+};
+
+export type ListRolesApiV1AdminRolesGetResponse =
+  ListRolesApiV1AdminRolesGetResponses[keyof ListRolesApiV1AdminRolesGetResponses];
+
+export type GetRoleApiV1AdminRolesRoleIdGetData = {
+  body?: never;
+  path: {
+    /**
+     * Role Id
+     */
+    role_id: number;
+  };
+  query?: never;
+  url: '/api/v1/admin/roles/{role_id}';
+};
+
+export type GetRoleApiV1AdminRolesRoleIdGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetRoleApiV1AdminRolesRoleIdGetError =
+  GetRoleApiV1AdminRolesRoleIdGetErrors[keyof GetRoleApiV1AdminRolesRoleIdGetErrors];
+
+export type GetRoleApiV1AdminRolesRoleIdGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: RoleWithPermissionsResponse;
+};
+
+export type GetRoleApiV1AdminRolesRoleIdGetResponse =
+  GetRoleApiV1AdminRolesRoleIdGetResponses[keyof GetRoleApiV1AdminRolesRoleIdGetResponses];
+
+export type ListPermissionsApiV1AdminPermissionsGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/admin/permissions';
+};
+
+export type ListPermissionsApiV1AdminPermissionsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListPermissionsApiV1AdminPermissionsGetError =
+  ListPermissionsApiV1AdminPermissionsGetErrors[keyof ListPermissionsApiV1AdminPermissionsGetErrors];
+
+export type ListPermissionsApiV1AdminPermissionsGetResponses = {
+  /**
+   * Response List Permissions Api V1 Admin Permissions Get
+   *
+   * Successful Response
+   */
+  200: Array<PermissionResponse>;
+};
+
+export type ListPermissionsApiV1AdminPermissionsGetResponse =
+  ListPermissionsApiV1AdminPermissionsGetResponses[keyof ListPermissionsApiV1AdminPermissionsGetResponses];
+
+export type RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData = {
+  body?: never;
+  path: {
+    /**
+     * User Id
+     */
+    user_id: number;
+  };
+  query?: never;
+  url: '/api/v1/admin/users/{user_id}/role';
+};
+
+export type RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteError =
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteErrors[keyof RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteErrors];
+
+export type RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponse =
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponses[keyof RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponses];
+
+export type AssignUserRoleApiV1AdminUsersUserIdRolePostData = {
+  body: UserRoleAssignment;
+  path: {
+    /**
+     * User Id
+     */
+    user_id: number;
+  };
+  query?: never;
+  url: '/api/v1/admin/users/{user_id}/role';
+};
+
+export type AssignUserRoleApiV1AdminUsersUserIdRolePostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type AssignUserRoleApiV1AdminUsersUserIdRolePostError =
+  AssignUserRoleApiV1AdminUsersUserIdRolePostErrors[keyof AssignUserRoleApiV1AdminUsersUserIdRolePostErrors];
+
+export type AssignUserRoleApiV1AdminUsersUserIdRolePostResponses = {
+  /**
+   * Successful Response
+   */
+  200: UserPermissionsResponse;
+};
+
+export type AssignUserRoleApiV1AdminUsersUserIdRolePostResponse =
+  AssignUserRoleApiV1AdminUsersUserIdRolePostResponses[keyof AssignUserRoleApiV1AdminUsersUserIdRolePostResponses];
+
+export type GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData = {
+  body?: never;
+  path: {
+    /**
+     * User Id
+     */
+    user_id: number;
+  };
+  query?: never;
+  url: '/api/v1/admin/users/{user_id}/permissions';
+};
+
+export type GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetError =
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetErrors[keyof GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetErrors];
+
+export type GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: UserPermissionsResponse;
+};
+
+export type GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponse =
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponses[keyof GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponses];
+
+export type ListUsersWithRolesApiV1AdminUsersGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/admin/users';
+};
+
+export type ListUsersWithRolesApiV1AdminUsersGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListUsersWithRolesApiV1AdminUsersGetError =
+  ListUsersWithRolesApiV1AdminUsersGetErrors[keyof ListUsersWithRolesApiV1AdminUsersGetErrors];
+
+export type ListUsersWithRolesApiV1AdminUsersGetResponses = {
+  /**
+   * Response List Users With Roles Api V1 Admin Users Get
+   *
+   * Successful Response
+   */
+  200: Array<UserPermissionsResponse>;
+};
+
+export type ListUsersWithRolesApiV1AdminUsersGetResponse =
+  ListUsersWithRolesApiV1AdminUsersGetResponses[keyof ListUsersWithRolesApiV1AdminUsersGetResponses];

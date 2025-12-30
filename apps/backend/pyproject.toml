@@ -35,6 +35,7 @@ qrcode = {extras = ["pil"], version = "^8.2"}
 authlib = "^1.6.6"
 langgraph-checkpoint-postgres = "^3.0.2"
 aiofiles = "^25.1.0"
+psycopg = {extras = ["binary"], version = "^3.3.2"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.2"

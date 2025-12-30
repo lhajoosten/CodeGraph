@@ -50,3 +50,59 @@ priority:
   medium: 'Medium'
   high: 'High'
   urgent: 'Urgent'
+
+execution:
+  title: 'Execution'
+  execute: 'Execute'
+  cancel: 'Cancel'
+  executing: 'Executing...'
+  notStarted: 'Not started'
+  inProgress: 'In progress'
+  completed: 'Completed'
+  failed: 'Failed'
+  cancelled: 'Cancelled'
+
+  confirmCancel: 'Are you sure you want to cancel this execution?'
+  confirmCancelDescription: 'The current workflow will be stopped immediately.'
+
+  agents:
+    planner: 'Planner'
+    coder: 'Coder'
+    tester: 'Tester'
+    reviewer: 'Reviewer'
+
+  stages:
+    planning: 'Planning'
+    coding: 'Coding'
+    testing: 'Testing'
+    reviewing: 'Reviewing'
+
+  output:
+    title: 'Output'
+    streaming: 'Streaming output...'
+    noOutput: 'No output yet'
+    showMore: 'Show more'
+    showLess: 'Show less'
+
+  timeline:
+    title: 'Timeline'
+    noEvents: 'No events yet'
+    startedAt: 'Started at'
+    completedAt: 'Completed at'
+    duration: 'Duration'
+
+  history:
+    title: 'Execution History'
+    noHistory: 'No execution history yet'
+    viewDetails: 'View details'
+    iteration: 'Iteration'
+    tokens: 'Tokens'
+    cost: 'Cost'
+
+  status:
+    pending: 'Pending'
+    running: 'Running'
+    completed: 'Completed'
+    failed: 'Failed'
+    timeout: 'Timeout'
+    cancelled: 'Cancelled'

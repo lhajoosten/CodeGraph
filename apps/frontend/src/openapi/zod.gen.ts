@@ -3,6 +3,28 @@
 import { z } from 'zod';
 
 /**
+ * AgentMetricsResponse
+ *
+ * Metrics summary for a specific agent type.
+ */
+export const zAgentMetricsResponse = z.object({
+  agent_type: z.string(),
+  total_runs: z.int().gte(0),
+  total_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  avg_tokens_per_run: z.number().gte(0),
+  avg_latency_ms: z.number().gte(0),
+});
+
+/**
+ * AgentType
+ *
+ * Enum representing the type of agent.
+ */
+export const zAgentType = z.enum(['planner', 'coder', 'tester', 'reviewer']);
+
+/**
  * ChangeEmailRequest
  *
  * Request to change email for authenticated user.
@@ -23,12 +45,106 @@ export const zChangePasswordRequest = z.object({
 });
 
 /**
+ * CostBreakdownResponse
+ *
+ * Cost breakdown across different LLM providers.
+ */
+export const zCostBreakdownResponse = z.object({
+  local_cost: z.number().gte(0),
+  claude_haiku: z.number().gte(0),
+  claude_sonnet: z.number().gte(0),
+  claude_opus: z.number().gte(0),
+  o4_mini: z.number().gte(0),
+  gpt52: z.number().gte(0),
+  o3: z.number().gte(0),
+});
+
+/**
+ * CouncilMetricsResponse
+ *
+ * Aggregate metrics for council reviews.
+ */
+export const zCouncilMetricsResponse = z.object({
+  total_reviews: z.int(),
+  approved_count: z.int(),
+  revised_count: z.int(),
+  rejected_count: z.int(),
+  average_confidence: z.number(),
+  average_deliberation_ms: z.int(),
+  total_cost_usd: z.number(),
+  consensus_breakdown: z.record(z.string(), z.int()),
+  judge_performance: z.record(z.string(), z.record(z.string(), z.unknown())),
+});
+
+/**
+ * CouncilReviewSummary
+ *
+ * Summary of a council review for list views.
+ */
+export const zCouncilReviewSummary = z.object({
+  id: z.int(),
+  task_id: z.int(),
+  final_verdict: z.enum(['APPROVE', 'REVISE', 'REJECT']),
+  consensus_type: z.enum(['unanimous', 'majority', 'tie_broken', 'dissent']),
+  confidence_score: z.number(),
+  judge_count: z.int(),
+  total_issues: z.int(),
+  critical_issues: z.int(),
+  deliberation_time_ms: z.int(),
+  total_cost_usd: z.number(),
+  llm_mode: z.enum(['local', 'cloud']),
+  reviewed_at: z.iso.datetime(),
+});
+
+/**
+ * CouncilReviewListResponse
+ *
+ * Paginated list of council reviews.
+ */
+export const zCouncilReviewListResponse = z.object({
+  items: z.array(zCouncilReviewSummary),
+  total: z.int(),
+  page: z.int(),
+  page_size: z.int(),
+  has_more: z.boolean(),
+});
+
+/**
+ * DeliveryStatus
+ *
+ * Status of a webhook delivery attempt.
+ */
+export const zDeliveryStatus = z.enum(['pending', 'success', 'failed', 'retrying']);
+
+/**
  * ForgotPasswordRequest
  *
  * Request to initiate password reset.
  */
 export const zForgotPasswordRequest = z.object({
   email: z.email(),
+});
+
+/**
+ * MonthlyEstimateRequest
+ *
+ * Request for monthly cost estimate.
+ */
+export const zMonthlyEstimateRequest = z.object({
+  daily_tokens: z.int().gte(0),
+  input_ratio: z.optional(z.number().gte(0).lte(1)).default(0.67),
+});
+
+/**
+ * MonthlyEstimateResponse
+ *
+ * Monthly cost estimate response.
+ */
+export const zMonthlyEstimateResponse = z.object({
+  monthly_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  costs: zCostBreakdownResponse,
 });
 
 /**
@@ -52,6 +168,34 @@ export const zOAuthAccountResponse = z.object({
  */
 export const zConnectedAccountsResponse = z.object({
   accounts: z.array(zOAuthAccountResponse),
+});
+
+/**
+ * PermissionResponse
+ *
+ * Schema for permission responses.
+ */
+export const zPermissionResponse = z.object({
+  resource: z.string(),
+  action: z.string(),
+  id: z.int(),
+  description: z.optional(z.union([z.string(), z.null()])),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
+});
+
+/**
+ * PricingInfoResponse
+ *
+ * Current LLM pricing information.
+ */
+export const zPricingInfoResponse = z.object({
+  claude_haiku: z.record(z.string(), z.number()),
+  claude_sonnet: z.record(z.string(), z.number()),
+  claude_opus: z.record(z.string(), z.number()),
+  o4_mini: z.record(z.string(), z.number()),
+  gpt52: z.record(z.string(), z.number()),
+  o3: z.record(z.string(), z.number()),
 });
 
 /**
@@ -92,6 +236,124 @@ export const zRegenerateBackupCodesResponse = z.object({
 export const zResetPasswordRequest = z.object({
   token: z.string(),
   password: z.string(),
+});
+
+/**
+ * RoleResponseInline
+ *
+ * Inline role response to avoid circular imports.
+ */
+export const zRoleResponseInline = z.object({
+  id: z.int(),
+  name: z.string(),
+  description: z.optional(z.union([z.string(), z.null()])),
+});
+
+/**
+ * RoleType
+ *
+ * Enum representing the type of role in the system.
+ *
+ * Roles are ordered by privilege level:
+ * - ADMIN: Full system access
+ * - DEVELOPER: Can create, modify, and execute workflows
+ * - VIEWER: Read-only access to shared resources
+ */
+export const zRoleType = z.enum(['admin', 'developer', 'viewer']);
+
+/**
+ * RoleResponse
+ *
+ * Schema for role responses.
+ */
+export const zRoleResponse = z.object({
+  name: zRoleType,
+  id: z.int(),
+  description: z.optional(z.union([z.string(), z.null()])),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
+});
+
+/**
+ * RoleWithPermissionsResponse
+ *
+ * Schema for role responses with permissions included.
+ */
+export const zRoleWithPermissionsResponse = z.object({
+  name: zRoleType,
+  id: z.int(),
+  description: z.optional(z.union([z.string(), z.null()])),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
+  permissions: z.optional(z.array(zPermissionResponse)),
+});
+
+/**
+ * SavingsResponse
+ *
+ * Cost savings compared to cloud LLMs.
+ */
+export const zSavingsResponse = z.object({
+  vs_claude_haiku: z.number().gte(0),
+  vs_claude_sonnet: z.number().gte(0),
+  vs_claude_opus: z.number().gte(0),
+  vs_o4_mini: z.number().gte(0),
+  vs_gpt52: z.number().gte(0),
+  vs_o3: z.number().gte(0),
+});
+
+/**
+ * MetricsSummaryResponse
+ *
+ * High-level summary for dashboard display.
+ */
+export const zMetricsSummaryResponse = z.object({
+  total_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  total_runs: z.int().gte(0),
+  total_latency_ms: z.int().gte(0),
+  costs: zCostBreakdownResponse,
+  savings: zSavingsResponse,
+  by_agent: z.record(z.string(), zAgentMetricsResponse),
+  models_used: z.record(z.string(), z.int()),
+});
+
+/**
+ * PeriodMetricsResponse
+ *
+ * Aggregated metrics for a time period.
+ */
+export const zPeriodMetricsResponse = z.object({
+  period: z.string(),
+  start_date: z.iso.datetime(),
+  end_date: z.iso.datetime(),
+  total_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  total_runs: z.int().gte(0),
+  total_latency_ms: z.int().gte(0),
+  by_agent: z.record(z.string(), zAgentMetricsResponse),
+  models_used: z.record(z.string(), z.int()),
+  costs: zCostBreakdownResponse,
+  savings: zSavingsResponse,
+});
+
+/**
+ * TaskMetricsResponse
+ *
+ * Aggregated metrics for a single task.
+ */
+export const zTaskMetricsResponse = z.object({
+  task_id: z.int(),
+  total_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  total_runs: z.int().gte(0),
+  total_latency_ms: z.int().gte(0),
+  by_agent: z.record(z.string(), zAgentMetricsResponse),
+  costs: zCostBreakdownResponse,
+  savings: zSavingsResponse,
 });
 
 /**
@@ -169,6 +431,30 @@ export const zTaskUpdate = z.object({
   status: z.optional(z.union([zTaskStatus, z.null()])),
   priority: z.optional(z.union([zTaskPriority, z.null()])),
   repository_id: z.optional(z.union([z.int(), z.null()])),
+});
+
+/**
+ * TimeseriesDataPoint
+ *
+ * Single data point for time-series charts.
+ */
+export const zTimeseriesDataPoint = z.object({
+  timestamp: z.iso.datetime(),
+  total_tokens: z.int().gte(0),
+  input_tokens: z.int().gte(0),
+  output_tokens: z.int().gte(0),
+  runs: z.int().gte(0),
+});
+
+/**
+ * MetricsTimeseriesResponse
+ *
+ * Time-series data for charting.
+ */
+export const zMetricsTimeseriesResponse = z.object({
+  period: z.string(),
+  interval: z.string(),
+  data: z.array(zTimeseriesDataPoint),
 });
 
 /**
@@ -281,6 +567,18 @@ export const zUserLogin = z.object({
 });
 
 /**
+ * UserPermissionsResponse
+ *
+ * Schema for user permissions response.
+ */
+export const zUserPermissionsResponse = z.object({
+  user_id: z.int(),
+  role: z.optional(z.union([zRoleResponse, z.null()])),
+  is_superuser: z.boolean(),
+  permissions: z.optional(z.array(z.string())),
+});
+
+/**
  * UserResponse
  *
  * Schema for user responses.
@@ -297,6 +595,7 @@ export const zUserResponse = z.object({
   display_name: z.optional(z.union([z.string(), z.null()])),
   avatar_url: z.optional(z.union([z.string(), z.null()])),
   profile_completed: z.boolean(),
+  role: z.optional(z.union([zRoleResponseInline, z.null()])),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
 });
@@ -312,6 +611,15 @@ export const zLoginResponse = z.object({
   email_verified: z.boolean(),
   requires_two_factor: z.optional(z.boolean()).default(false),
   two_factor_enabled: z.optional(z.boolean()).default(false),
+});
+
+/**
+ * UserRoleAssignment
+ *
+ * Schema for assigning a role to a user.
+ */
+export const zUserRoleAssignment = z.object({
+  role_id: z.int(),
 });
 
 /**
@@ -347,6 +655,158 @@ export const zVerifyEmailRequest = z.object({
 export const zVerifyEmailResponse = z.object({
   message: z.string(),
   requires_2fa_setup: z.optional(z.boolean()).default(false),
+});
+
+/**
+ * WebhookCreate
+ *
+ * Schema for creating a new webhook.
+ */
+export const zWebhookCreate = z.object({
+  name: z.string().min(1).max(255),
+  url: z.url().min(1).max(2083),
+  events: z.array(z.string()).min(1),
+  headers: z.optional(z.union([z.record(z.string(), z.string()), z.null()])),
+  retry_count: z.optional(z.int().gte(0).lte(10)).default(3),
+  timeout_seconds: z.optional(z.int().gte(5).lte(120)).default(30),
+});
+
+/**
+ * WebhookDeliveryResponse
+ *
+ * Schema for webhook delivery responses.
+ */
+export const zWebhookDeliveryResponse = z.object({
+  id: z.int(),
+  webhook_id: z.int(),
+  event_type: z.string(),
+  event_id: z.string(),
+  status: zDeliveryStatus,
+  attempt_count: z.int(),
+  response_status: z.union([z.int(), z.null()]),
+  response_body: z.union([z.string(), z.null()]),
+  error_message: z.union([z.string(), z.null()]),
+  delivered_at: z.union([z.iso.datetime(), z.null()]),
+  next_retry_at: z.union([z.iso.datetime(), z.null()]),
+  duration_ms: z.union([z.int(), z.null()]),
+  created_at: z.iso.datetime(),
+});
+
+/**
+ * WebhookDeliveryListResponse
+ *
+ * Schema for paginated delivery list responses.
+ */
+export const zWebhookDeliveryListResponse = z.object({
+  items: z.array(zWebhookDeliveryResponse),
+  total: z.int(),
+  page: z.int(),
+  page_size: z.int(),
+});
+
+/**
+ * WebhookStatus
+ *
+ * Status of a webhook configuration.
+ */
+export const zWebhookStatus = z.enum(['active', 'paused', 'disabled']);
+
+/**
+ * WebhookResponse
+ *
+ * Schema for webhook responses.
+ */
+export const zWebhookResponse = z.object({
+  id: z.int(),
+  name: z.string(),
+  url: z.string(),
+  events: z.array(z.string()),
+  status: zWebhookStatus,
+  headers: z.union([z.record(z.string(), z.string()), z.null()]),
+  retry_count: z.int(),
+  timeout_seconds: z.int(),
+  success_count: z.int(),
+  failure_count: z.int(),
+  last_triggered_at: z.union([z.iso.datetime(), z.null()]),
+  last_success_at: z.union([z.iso.datetime(), z.null()]),
+  last_failure_at: z.union([z.iso.datetime(), z.null()]),
+  user_id: z.int(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
+});
+
+/**
+ * WebhookListResponse
+ *
+ * Schema for paginated webhook list responses.
+ */
+export const zWebhookListResponse = z.object({
+  items: z.array(zWebhookResponse),
+  total: z.int(),
+  page: z.int(),
+  page_size: z.int(),
+});
+
+/**
+ * WebhookTestRequest
+ *
+ * Schema for testing a webhook.
+ */
+export const zWebhookTestRequest = z.object({
+  event_type: z.optional(z.string()).default('task.completed'),
+});
+
+/**
+ * WebhookTestResponse
+ *
+ * Schema for webhook test results.
+ */
+export const zWebhookTestResponse = z.object({
+  success: z.boolean(),
+  status_code: z.union([z.int(), z.null()]),
+  response_body: z.union([z.string(), z.null()]),
+  error_message: z.union([z.string(), z.null()]),
+  duration_ms: z.int(),
+});
+
+/**
+ * WebhookUpdate
+ *
+ * Schema for updating a webhook.
+ */
+export const zWebhookUpdate = z.object({
+  name: z.optional(z.union([z.string().min(1).max(255), z.null()])),
+  url: z.optional(z.union([z.url().min(1).max(2083), z.null()])),
+  events: z.optional(z.union([z.array(z.string()).min(1), z.null()])),
+  status: z.optional(z.union([zWebhookStatus, z.null()])),
+  headers: z.optional(z.union([z.record(z.string(), z.string()), z.null()])),
+  retry_count: z.optional(z.union([z.int().gte(0).lte(10), z.null()])),
+  timeout_seconds: z.optional(z.union([z.int().gte(5).lte(120), z.null()])),
+});
+
+/**
+ * WebhookWithSecretResponse
+ *
+ * Schema for webhook response including the secret (only on create).
+ */
+export const zWebhookWithSecretResponse = z.object({
+  id: z.int(),
+  name: z.string(),
+  url: z.string(),
+  events: z.array(z.string()),
+  status: zWebhookStatus,
+  headers: z.union([z.record(z.string(), z.string()), z.null()]),
+  retry_count: z.int(),
+  timeout_seconds: z.int(),
+  success_count: z.int(),
+  failure_count: z.int(),
+  last_triggered_at: z.union([z.iso.datetime(), z.null()]),
+  last_success_at: z.union([z.iso.datetime(), z.null()]),
+  last_failure_at: z.union([z.iso.datetime(), z.null()]),
+  user_id: z.int(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
+  secret: z.string(),
 });
 
 export const zHealthCheckHealthGetData = z.object({
@@ -563,9 +1023,15 @@ export const zCreateTaskApiV1TasksPostResponse = zTaskResponse;
 export const zDeleteTaskApiV1TasksTaskIdDeleteData = z.object({
   body: z.optional(z.never()),
   path: z.object({
-    task_id: z.int(),
+    task_id: z.union([z.int(), z.null()]),
   }),
-  query: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      repository_id: z.optional(z.union([z.int(), z.null()])),
+      webhook_id: z.optional(z.union([z.int(), z.null()])),
+      resource_id: z.optional(z.union([z.int(), z.null()])),
+    })
+  ),
 });
 
 /**
@@ -576,9 +1042,15 @@ export const zDeleteTaskApiV1TasksTaskIdDeleteResponse = z.void();
 export const zGetTaskApiV1TasksTaskIdGetData = z.object({
   body: z.optional(z.never()),
   path: z.object({
-    task_id: z.int(),
+    task_id: z.union([z.int(), z.null()]),
   }),
-  query: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      repository_id: z.optional(z.union([z.int(), z.null()])),
+      webhook_id: z.optional(z.union([z.int(), z.null()])),
+      resource_id: z.optional(z.union([z.int(), z.null()])),
+    })
+  ),
 });
 
 /**
@@ -589,6 +1061,204 @@ export const zGetTaskApiV1TasksTaskIdGetResponse = zTaskResponse;
 export const zUpdateTaskApiV1TasksTaskIdPatchData = z.object({
   body: zTaskUpdate,
   path: z.object({
+    task_id: z.union([z.int(), z.null()]),
+  }),
+  query: z.optional(
+    z.object({
+      repository_id: z.optional(z.union([z.int(), z.null()])),
+      webhook_id: z.optional(z.union([z.int(), z.null()])),
+      resource_id: z.optional(z.union([z.int(), z.null()])),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zUpdateTaskApiV1TasksTaskIdPatchResponse = zTaskResponse;
+
+export const zExecuteTaskStreamApiV1TasksTaskIdExecutePostData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+export const zGetTaskStatusApiV1TasksTaskIdStatusGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Get Task Status Api V1 Tasks  Task Id  Status Get
+ *
+ * Successful Response
+ */
+export const zGetTaskStatusApiV1TasksTaskIdStatusGetResponse = z.record(z.string(), z.unknown());
+
+export const zCancelTaskApiV1TasksTaskIdCancelPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Cancel Task Api V1 Tasks  Task Id  Cancel Post
+ *
+ * Successful Response
+ */
+export const zCancelTaskApiV1TasksTaskIdCancelPostResponse = z.record(
+  z.string(),
+  z.union([z.string(), z.int(), z.boolean()])
+);
+
+export const zGetTaskResultApiV1TasksTaskIdResultGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Get Task Result Api V1 Tasks  Task Id  Result Get
+ *
+ * Successful Response
+ */
+export const zGetTaskResultApiV1TasksTaskIdResultGetResponse = z.record(z.string(), z.unknown());
+
+export const zGetTaskHistoryApiV1TasksTaskIdHistoryGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(
+    z.object({
+      include_council: z.optional(z.boolean()).default(true),
+    })
+  ),
+});
+
+/**
+ * Response Get Task History Api V1 Tasks  Task Id  History Get
+ *
+ * Successful Response
+ */
+export const zGetTaskHistoryApiV1TasksTaskIdHistoryGetResponse = z.record(z.string(), z.unknown());
+
+export const zGetUserExecutionHistoryApiV1HistoryGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      page: z.optional(z.int().gte(1)).default(1),
+      page_size: z.optional(z.int().gte(1).lte(100)).default(20),
+      status: z.optional(z.union([z.string(), z.null()])),
+      date_from: z.optional(z.union([z.iso.datetime(), z.null()])),
+      date_to: z.optional(z.union([z.iso.datetime(), z.null()])),
+    })
+  ),
+});
+
+/**
+ * Response Get User Execution History Api V1 History Get
+ *
+ * Successful Response
+ */
+export const zGetUserExecutionHistoryApiV1HistoryGetResponse = z.record(z.string(), z.unknown());
+
+export const zGetExecutionTimelineApiV1TasksTaskIdTimelineGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response Get Execution Timeline Api V1 Tasks  Task Id  Timeline Get
+ *
+ * Successful Response
+ */
+export const zGetExecutionTimelineApiV1TasksTaskIdTimelineGetResponse = z.array(
+  z.record(z.string(), z.unknown())
+);
+
+export const zGetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    task_id: z.int(),
+  }),
+  query: z.optional(
+    z.object({
+      page: z.optional(z.int().gte(1)).default(1),
+      page_size: z.optional(z.int().gte(1).lte(100)).default(20),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse =
+  zCouncilReviewListResponse;
+
+export const zGetUserCouncilReviewsApiV1CouncilReviewsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      page: z.optional(z.int().gte(1)).default(1),
+      page_size: z.optional(z.int().gte(1).lte(100)).default(20),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetUserCouncilReviewsApiV1CouncilReviewsGetResponse = zCouncilReviewListResponse;
+
+export const zGetCouncilMetricsApiV1CouncilMetricsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      date_from: z.optional(z.union([z.iso.datetime(), z.null()])),
+      date_to: z.optional(z.union([z.iso.datetime(), z.null()])),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetCouncilMetricsApiV1CouncilMetricsGetResponse = zCouncilMetricsResponse;
+
+export const zGetMetricsSummaryApiV1MetricsSummaryGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      period: z.optional(z.string().regex(/^(24h|7d|30d|all)$/)).default('30d'),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetMetricsSummaryApiV1MetricsSummaryGetResponse = zMetricsSummaryResponse;
+
+export const zGetTaskMetricsApiV1MetricsTasksTaskIdGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
     task_id: z.int(),
   }),
   query: z.optional(z.never()),
@@ -597,7 +1267,77 @@ export const zUpdateTaskApiV1TasksTaskIdPatchData = z.object({
 /**
  * Successful Response
  */
-export const zUpdateTaskApiV1TasksTaskIdPatchResponse = zTaskResponse;
+export const zGetTaskMetricsApiV1MetricsTasksTaskIdGetResponse = zTaskMetricsResponse;
+
+export const zGetMetricsHistoryApiV1MetricsHistoryGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      period: z.optional(z.string().regex(/^(24h|7d|30d)$/)).default('7d'),
+      interval: z.optional(z.string().regex(/^(1h|6h|1d)$/)).default('1h'),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetMetricsHistoryApiV1MetricsHistoryGetResponse = zMetricsTimeseriesResponse;
+
+export const zGetAgentMetricsApiV1MetricsAgentAgentTypeGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    agent_type: zAgentType,
+  }),
+  query: z.optional(
+    z.object({
+      period: z.optional(z.string().regex(/^(24h|7d|30d|all)$/)).default('30d'),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetAgentMetricsApiV1MetricsAgentAgentTypeGetResponse = zAgentMetricsResponse;
+
+export const zGetPricingInfoApiV1MetricsPricingGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetPricingInfoApiV1MetricsPricingGetResponse = zPricingInfoResponse;
+
+export const zEstimateMonthlyCostApiV1MetricsEstimatePostData = z.object({
+  body: zMonthlyEstimateRequest,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zEstimateMonthlyCostApiV1MetricsEstimatePostResponse = zMonthlyEstimateResponse;
+
+export const zGetGlobalMetricsApiV1MetricsGlobalGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      period: z.optional(z.string().regex(/^(24h|7d|30d|all)$/)).default('30d'),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetGlobalMetricsApiV1MetricsGlobalGetResponse = zPeriodMetricsResponse;
 
 export const zGetTwoFactorStatusApiV1TwoFactorStatusGetData = z.object({
   body: z.optional(z.never()),
@@ -667,6 +1407,135 @@ export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData =
  */
 export const zRegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse =
   zRegenerateBackupCodesResponse;
+
+export const zListWebhooksApiV1WebhooksGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(
+    z.object({
+      page: z.optional(z.int().gte(1)).default(1),
+      page_size: z.optional(z.int().gte(1).lte(100)).default(20),
+      status: z.optional(z.union([zWebhookStatus, z.null()])),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zListWebhooksApiV1WebhooksGetResponse = zWebhookListResponse;
+
+export const zCreateWebhookApiV1WebhooksPostData = z.object({
+  body: zWebhookCreate,
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zCreateWebhookApiV1WebhooksPostResponse = zWebhookWithSecretResponse;
+
+export const zDeleteWebhookApiV1WebhooksWebhookIdDeleteData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zDeleteWebhookApiV1WebhooksWebhookIdDeleteResponse = z.void();
+
+export const zGetWebhookApiV1WebhooksWebhookIdGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetWebhookApiV1WebhooksWebhookIdGetResponse = zWebhookResponse;
+
+export const zUpdateWebhookApiV1WebhooksWebhookIdPatchData = z.object({
+  body: zWebhookUpdate,
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zUpdateWebhookApiV1WebhooksWebhookIdPatchResponse = zWebhookResponse;
+
+export const zRegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zRegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponse =
+  zWebhookWithSecretResponse;
+
+export const zTestWebhookApiV1WebhooksWebhookIdTestPostData = z.object({
+  body: zWebhookTestRequest,
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zTestWebhookApiV1WebhooksWebhookIdTestPostResponse = zWebhookTestResponse;
+
+export const zListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    webhook_id: z.int(),
+  }),
+  query: z.optional(
+    z.object({
+      page: z.optional(z.int().gte(1)).default(1),
+      page_size: z.optional(z.int().gte(1).lte(100)).default(20),
+      delivery_status: z.optional(z.union([zDeliveryStatus, z.null()])),
+    })
+  ),
+});
+
+/**
+ * Successful Response
+ */
+export const zListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse =
+  zWebhookDeliveryListResponse;
+
+export const zGetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    webhook_id: z.int(),
+    delivery_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponse =
+  zWebhookDeliveryResponse;
 
 export const zGetOauthProvidersOauthProvidersGetData = z.object({
   body: z.optional(z.never()),
@@ -759,3 +1628,95 @@ export const zSendTestEmailApiV1TestSendTestEmailPostData = z.object({
  * Successful Response
  */
 export const zSendTestEmailApiV1TestSendTestEmailPostResponse = z.record(z.string(), z.string());
+
+export const zListRolesApiV1AdminRolesGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response List Roles Api V1 Admin Roles Get
+ *
+ * Successful Response
+ */
+export const zListRolesApiV1AdminRolesGetResponse = z.array(zRoleWithPermissionsResponse);
+
+export const zGetRoleApiV1AdminRolesRoleIdGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    role_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetRoleApiV1AdminRolesRoleIdGetResponse = zRoleWithPermissionsResponse;
+
+export const zListPermissionsApiV1AdminPermissionsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response List Permissions Api V1 Admin Permissions Get
+ *
+ * Successful Response
+ */
+export const zListPermissionsApiV1AdminPermissionsGetResponse = z.array(zPermissionResponse);
+
+export const zRemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    user_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zRemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponse = z.void();
+
+export const zAssignUserRoleApiV1AdminUsersUserIdRolePostData = z.object({
+  body: zUserRoleAssignment,
+  path: z.object({
+    user_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zAssignUserRoleApiV1AdminUsersUserIdRolePostResponse = zUserPermissionsResponse;
+
+export const zGetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.object({
+    user_id: z.int(),
+  }),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Successful Response
+ */
+export const zGetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponse =
+  zUserPermissionsResponse;
+
+export const zListUsersWithRolesApiV1AdminUsersGetData = z.object({
+  body: z.optional(z.never()),
+  path: z.optional(z.never()),
+  query: z.optional(z.never()),
+});
+
+/**
+ * Response List Users With Roles Api V1 Admin Users Get
+ *
+ * Successful Response
+ */
+export const zListUsersWithRolesApiV1AdminUsersGetResponse = z.array(zUserPermissionsResponse);

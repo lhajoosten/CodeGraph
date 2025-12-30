@@ -11,21 +11,50 @@ import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen';
 import {
+  assignUserRoleApiV1AdminUsersUserIdRolePost,
+  cancelTaskApiV1TasksTaskIdCancelPost,
   changeEmailApiV1AuthChangeEmailPost,
   changePasswordApiV1AuthChangePasswordPost,
   createTaskApiV1TasksPost,
+  createWebhookApiV1WebhooksPost,
   deleteTaskApiV1TasksTaskIdDelete,
+  deleteWebhookApiV1WebhooksWebhookIdDelete,
   disableTwoFactorApiV1TwoFactorDisablePost,
   enableTwoFactorApiV1TwoFactorEnablePost,
+  estimateMonthlyCostApiV1MetricsEstimatePost,
+  executeTaskStreamApiV1TasksTaskIdExecutePost,
   forgotPasswordApiV1AuthForgotPasswordPost,
+  getAgentMetricsApiV1MetricsAgentAgentTypeGet,
   getConnectedAccountsOauthAccountsGet,
+  getCouncilMetricsApiV1CouncilMetricsGet,
   getCurrentUserInfoApiV1AuthMeGet,
   getCurrentUserInfoApiV1UsersMeGet,
+  getExecutionTimelineApiV1TasksTaskIdTimelineGet,
+  getGlobalMetricsApiV1MetricsGlobalGet,
+  getMetricsHistoryApiV1MetricsHistoryGet,
+  getMetricsSummaryApiV1MetricsSummaryGet,
   getOauthProvidersOauthProvidersGet,
+  getPricingInfoApiV1MetricsPricingGet,
+  getRoleApiV1AdminRolesRoleIdGet,
   getTaskApiV1TasksTaskIdGet,
+  getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet,
+  getTaskHistoryApiV1TasksTaskIdHistoryGet,
+  getTaskMetricsApiV1MetricsTasksTaskIdGet,
+  getTaskResultApiV1TasksTaskIdResultGet,
+  getTaskStatusApiV1TasksTaskIdStatusGet,
   getTwoFactorStatusApiV1TwoFactorStatusGet,
+  getUserCouncilReviewsApiV1CouncilReviewsGet,
+  getUserExecutionHistoryApiV1HistoryGet,
+  getUserPermissionsApiV1AdminUsersUserIdPermissionsGet,
+  getWebhookApiV1WebhooksWebhookIdGet,
+  getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGet,
   healthCheckHealthGet,
+  listPermissionsApiV1AdminPermissionsGet,
+  listRolesApiV1AdminRolesGet,
   listTasksApiV1TasksGet,
+  listUsersWithRolesApiV1AdminUsersGet,
+  listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet,
+  listWebhooksApiV1WebhooksGet,
   loginUserApiV1AuthLoginPost,
   logoutApiV1AuthLogoutPost,
   oauthAuthorizeLinkOauthProviderAuthorizeLinkGet,
@@ -34,19 +63,29 @@ import {
   type Options,
   refreshApiV1AuthRefreshPost,
   regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPost,
+  regenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPost,
   registerUserApiV1AuthRegisterPost,
+  removeUserRoleApiV1AdminUsersUserIdRoleDelete,
   resendVerificationApiV1AuthResendVerificationPost,
   resetPasswordApiV1AuthResetPasswordPost,
   sendTestEmailApiV1TestSendTestEmailPost,
   setupTwoFactorApiV1TwoFactorSetupPost,
+  testWebhookApiV1WebhooksWebhookIdTestPost,
   unlinkOauthAccountOauthProviderUnlinkDelete,
   updateProfileApiV1AuthProfilePut,
   updateTaskApiV1TasksTaskIdPatch,
+  updateWebhookApiV1WebhooksWebhookIdPatch,
   verifyEmailApiV1AuthVerifyEmailPost,
   verifyTwoFactorApiV1TwoFactorVerifyPost,
   verifyTwoFactorLoginApiV1AuthVerify2FaPost,
 } from '../sdk.gen';
 import type {
+  AssignUserRoleApiV1AdminUsersUserIdRolePostData,
+  AssignUserRoleApiV1AdminUsersUserIdRolePostError,
+  AssignUserRoleApiV1AdminUsersUserIdRolePostResponse,
+  CancelTaskApiV1TasksTaskIdCancelPostData,
+  CancelTaskApiV1TasksTaskIdCancelPostError,
+  CancelTaskApiV1TasksTaskIdCancelPostResponse,
   ChangeEmailApiV1AuthChangeEmailPostData,
   ChangeEmailApiV1AuthChangeEmailPostError,
   ChangeEmailApiV1AuthChangeEmailPostResponse,
@@ -56,40 +95,120 @@ import type {
   CreateTaskApiV1TasksPostData,
   CreateTaskApiV1TasksPostError,
   CreateTaskApiV1TasksPostResponse,
+  CreateWebhookApiV1WebhooksPostData,
+  CreateWebhookApiV1WebhooksPostError,
+  CreateWebhookApiV1WebhooksPostResponse,
   DeleteTaskApiV1TasksTaskIdDeleteData,
   DeleteTaskApiV1TasksTaskIdDeleteError,
   DeleteTaskApiV1TasksTaskIdDeleteResponse,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteData,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteError,
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteResponse,
   DisableTwoFactorApiV1TwoFactorDisablePostData,
   DisableTwoFactorApiV1TwoFactorDisablePostError,
   DisableTwoFactorApiV1TwoFactorDisablePostResponse,
   EnableTwoFactorApiV1TwoFactorEnablePostData,
   EnableTwoFactorApiV1TwoFactorEnablePostError,
   EnableTwoFactorApiV1TwoFactorEnablePostResponse,
+  EstimateMonthlyCostApiV1MetricsEstimatePostData,
+  EstimateMonthlyCostApiV1MetricsEstimatePostError,
+  EstimateMonthlyCostApiV1MetricsEstimatePostResponse,
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostData,
+  ExecuteTaskStreamApiV1TasksTaskIdExecutePostError,
   ForgotPasswordApiV1AuthForgotPasswordPostData,
   ForgotPasswordApiV1AuthForgotPasswordPostError,
   ForgotPasswordApiV1AuthForgotPasswordPostResponse,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetData,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetError,
+  GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponse,
   GetConnectedAccountsOauthAccountsGetData,
   GetConnectedAccountsOauthAccountsGetError,
   GetConnectedAccountsOauthAccountsGetResponse,
+  GetCouncilMetricsApiV1CouncilMetricsGetData,
+  GetCouncilMetricsApiV1CouncilMetricsGetError,
+  GetCouncilMetricsApiV1CouncilMetricsGetResponse,
   GetCurrentUserInfoApiV1AuthMeGetData,
   GetCurrentUserInfoApiV1AuthMeGetError,
   GetCurrentUserInfoApiV1AuthMeGetResponse,
   GetCurrentUserInfoApiV1UsersMeGetData,
   GetCurrentUserInfoApiV1UsersMeGetError,
   GetCurrentUserInfoApiV1UsersMeGetResponse,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetData,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetError,
+  GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponse,
+  GetGlobalMetricsApiV1MetricsGlobalGetData,
+  GetGlobalMetricsApiV1MetricsGlobalGetError,
+  GetGlobalMetricsApiV1MetricsGlobalGetResponse,
+  GetMetricsHistoryApiV1MetricsHistoryGetData,
+  GetMetricsHistoryApiV1MetricsHistoryGetError,
+  GetMetricsHistoryApiV1MetricsHistoryGetResponse,
+  GetMetricsSummaryApiV1MetricsSummaryGetData,
+  GetMetricsSummaryApiV1MetricsSummaryGetError,
+  GetMetricsSummaryApiV1MetricsSummaryGetResponse,
   GetOauthProvidersOauthProvidersGetData,
   GetOauthProvidersOauthProvidersGetResponse,
+  GetPricingInfoApiV1MetricsPricingGetData,
+  GetPricingInfoApiV1MetricsPricingGetError,
+  GetPricingInfoApiV1MetricsPricingGetResponse,
+  GetRoleApiV1AdminRolesRoleIdGetData,
+  GetRoleApiV1AdminRolesRoleIdGetError,
+  GetRoleApiV1AdminRolesRoleIdGetResponse,
   GetTaskApiV1TasksTaskIdGetData,
   GetTaskApiV1TasksTaskIdGetError,
   GetTaskApiV1TasksTaskIdGetResponse,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetError,
+  GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetData,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetError,
+  GetTaskHistoryApiV1TasksTaskIdHistoryGetResponse,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetData,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetError,
+  GetTaskMetricsApiV1MetricsTasksTaskIdGetResponse,
+  GetTaskResultApiV1TasksTaskIdResultGetData,
+  GetTaskResultApiV1TasksTaskIdResultGetError,
+  GetTaskResultApiV1TasksTaskIdResultGetResponse,
+  GetTaskStatusApiV1TasksTaskIdStatusGetData,
+  GetTaskStatusApiV1TasksTaskIdStatusGetError,
+  GetTaskStatusApiV1TasksTaskIdStatusGetResponse,
   GetTwoFactorStatusApiV1TwoFactorStatusGetData,
   GetTwoFactorStatusApiV1TwoFactorStatusGetError,
   GetTwoFactorStatusApiV1TwoFactorStatusGetResponse,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetData,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetError,
+  GetUserCouncilReviewsApiV1CouncilReviewsGetResponse,
+  GetUserExecutionHistoryApiV1HistoryGetData,
+  GetUserExecutionHistoryApiV1HistoryGetError,
+  GetUserExecutionHistoryApiV1HistoryGetResponse,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetError,
+  GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponse,
+  GetWebhookApiV1WebhooksWebhookIdGetData,
+  GetWebhookApiV1WebhooksWebhookIdGetError,
+  GetWebhookApiV1WebhooksWebhookIdGetResponse,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetError,
+  GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponse,
   HealthCheckHealthGetData,
   HealthCheckHealthGetResponse,
+  ListPermissionsApiV1AdminPermissionsGetData,
+  ListPermissionsApiV1AdminPermissionsGetError,
+  ListPermissionsApiV1AdminPermissionsGetResponse,
+  ListRolesApiV1AdminRolesGetData,
+  ListRolesApiV1AdminRolesGetError,
+  ListRolesApiV1AdminRolesGetResponse,
   ListTasksApiV1TasksGetData,
   ListTasksApiV1TasksGetError,
   ListTasksApiV1TasksGetResponse,
+  ListUsersWithRolesApiV1AdminUsersGetData,
+  ListUsersWithRolesApiV1AdminUsersGetError,
+  ListUsersWithRolesApiV1AdminUsersGetResponse,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetError,
+  ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse,
+  ListWebhooksApiV1WebhooksGetData,
+  ListWebhooksApiV1WebhooksGetError,
+  ListWebhooksApiV1WebhooksGetResponse,
   LoginUserApiV1AuthLoginPostData,
   LoginUserApiV1AuthLoginPostError,
   LoginUserApiV1AuthLoginPostResponse,
@@ -108,9 +227,15 @@ import type {
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostData,
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostError,
   RegenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostResponse,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostError,
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponse,
   RegisterUserApiV1AuthRegisterPostData,
   RegisterUserApiV1AuthRegisterPostError,
   RegisterUserApiV1AuthRegisterPostResponse,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteError,
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponse,
   ResendVerificationApiV1AuthResendVerificationPostData,
   ResendVerificationApiV1AuthResendVerificationPostError,
   ResendVerificationApiV1AuthResendVerificationPostResponse,
@@ -123,6 +248,9 @@ import type {
   SetupTwoFactorApiV1TwoFactorSetupPostData,
   SetupTwoFactorApiV1TwoFactorSetupPostError,
   SetupTwoFactorApiV1TwoFactorSetupPostResponse,
+  TestWebhookApiV1WebhooksWebhookIdTestPostData,
+  TestWebhookApiV1WebhooksWebhookIdTestPostError,
+  TestWebhookApiV1WebhooksWebhookIdTestPostResponse,
   UnlinkOauthAccountOauthProviderUnlinkDeleteData,
   UnlinkOauthAccountOauthProviderUnlinkDeleteError,
   UnlinkOauthAccountOauthProviderUnlinkDeleteResponse,
@@ -132,6 +260,9 @@ import type {
   UpdateTaskApiV1TasksTaskIdPatchData,
   UpdateTaskApiV1TasksTaskIdPatchError,
   UpdateTaskApiV1TasksTaskIdPatchResponse,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchData,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchError,
+  UpdateWebhookApiV1WebhooksWebhookIdPatchResponse,
   VerifyEmailApiV1AuthVerifyEmailPostData,
   VerifyEmailApiV1AuthVerifyEmailPostError,
   VerifyEmailApiV1AuthVerifyEmailPostResponse,
@@ -777,11 +908,16 @@ export const listTasksApiV1TasksGetQueryKey = (options?: Options<ListTasksApiV1T
 /**
  * List Tasks
  *
- * List tasks for the current user with pagination.
+ * List tasks with pagination.
+ *
+ * Requires: task:read permission
+ *
+ * - Admins and superusers see all tasks
+ * - Other users see only their own tasks
  *
  * Args:
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user with task:read permission
  * page: Page number (starts at 1)
  * page_size: Number of items per page
  *
@@ -849,11 +985,16 @@ export const listTasksApiV1TasksGetInfiniteQueryKey = (
 /**
  * List Tasks
  *
- * List tasks for the current user with pagination.
+ * List tasks with pagination.
+ *
+ * Requires: task:read permission
+ *
+ * - Admins and superusers see all tasks
+ * - Other users see only their own tasks
  *
  * Args:
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user with task:read permission
  * page: Page number (starts at 1)
  * page_size: Number of items per page
  *
@@ -904,10 +1045,12 @@ export const listTasksApiV1TasksGetInfiniteOptions = (
  *
  * Create a new coding task.
  *
+ * Requires: task:create permission
+ *
  * Args:
  * task_data: Task creation data
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user with task:create permission
  *
  * Returns:
  * Created task instance
@@ -941,13 +1084,15 @@ export const createTaskApiV1TasksPostMutation = (
  *
  * Delete a task.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const deleteTaskApiV1TasksTaskIdDeleteMutation = (
   options?: Partial<Options<DeleteTaskApiV1TasksTaskIdDeleteData>>
@@ -982,16 +1127,18 @@ export const getTaskApiV1TasksTaskIdGetQueryKey = (
  *
  * Get a specific task by ID.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Returns:
  * Task instance
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const getTaskApiV1TasksTaskIdGetOptions = (
   options: Options<GetTaskApiV1TasksTaskIdGetData>
@@ -1019,17 +1166,19 @@ export const getTaskApiV1TasksTaskIdGetOptions = (
  *
  * Update a task.
  *
+ * Requires: Ownership of the task, or admin/superuser access
+ *
  * Args:
  * task_id: Task ID
  * task_data: Task update data
  * db: Database session
- * current_user: Current authenticated user
+ * current_user: Current authenticated user (ownership verified by dependency)
  *
  * Returns:
  * Updated task instance
  *
  * Raises:
- * HTTPException: If task not found or unauthorized
+ * HTTPException: If task not found
  */
 export const updateTaskApiV1TasksTaskIdPatchMutation = (
   options?: Partial<Options<UpdateTaskApiV1TasksTaskIdPatchData>>
@@ -1054,6 +1203,936 @@ export const updateTaskApiV1TasksTaskIdPatchMutation = (
   };
   return mutationOptions;
 };
+
+/**
+ * Execute Task Stream
+ *
+ * Execute a coding task with real-time streaming output.
+ *
+ * Streams the complete execution of the multi-agent workflow, including
+ * real-time updates from planning, coding, testing, and review stages.
+ * Uses Server-Sent Events (SSE) for efficient streaming to the client.
+ *
+ * Args:
+ * task_id: ID of the task to execute
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * StreamingResponse with SSE formatted events
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ *
+ * Query Parameters:
+ * thread_id: Optional thread ID for resuming previous execution
+ *
+ * Example:
+ * GET /api/v1/agents/tasks/123/execute
+ *
+ * Returns streaming events like:
+ * data: {"type": "node_start", "node": "planner"}
+ *
+ *
+ * data: {"type": "token", "content": "Step 1: "}
+ *
+ *
+ * data: {"type": "node_end", "node": "planner", "duration": 2.5}
+ *
+ *
+ *
+ * Note:
+ * Error recovery is handled automatically by the workflow layer via
+ * resilient node wrappers that provide retry logic with exponential backoff.
+ */
+export const executeTaskStreamApiV1TasksTaskIdExecutePostMutation = (
+  options?: Partial<Options<ExecuteTaskStreamApiV1TasksTaskIdExecutePostData>>
+): UseMutationOptions<
+  unknown,
+  AxiosError<ExecuteTaskStreamApiV1TasksTaskIdExecutePostError>,
+  Options<ExecuteTaskStreamApiV1TasksTaskIdExecutePostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    unknown,
+    AxiosError<ExecuteTaskStreamApiV1TasksTaskIdExecutePostError>,
+    Options<ExecuteTaskStreamApiV1TasksTaskIdExecutePostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await executeTaskStreamApiV1TasksTaskIdExecutePost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getTaskStatusApiV1TasksTaskIdStatusGetQueryKey = (
+  options: Options<GetTaskStatusApiV1TasksTaskIdStatusGetData>
+) => createQueryKey('getTaskStatusApiV1TasksTaskIdStatusGet', options);
+
+/**
+ * Get Task Status
+ *
+ * Get current status of a task execution.
+ *
+ * Returns the latest execution state including current node, progress,
+ * and any errors encountered.
+ *
+ * Args:
+ * task_id: ID of the task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Task status object with current state and progress
+ *
+ * Raises:
+ * HTTPException: If task not found
+ */
+export const getTaskStatusApiV1TasksTaskIdStatusGetOptions = (
+  options: Options<GetTaskStatusApiV1TasksTaskIdStatusGetData>
+) =>
+  queryOptions<
+    GetTaskStatusApiV1TasksTaskIdStatusGetResponse,
+    AxiosError<GetTaskStatusApiV1TasksTaskIdStatusGetError>,
+    GetTaskStatusApiV1TasksTaskIdStatusGetResponse,
+    ReturnType<typeof getTaskStatusApiV1TasksTaskIdStatusGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTaskStatusApiV1TasksTaskIdStatusGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTaskStatusApiV1TasksTaskIdStatusGetQueryKey(options),
+  });
+
+/**
+ * Cancel Task
+ *
+ * Cancel an ongoing task execution.
+ *
+ * Signals the workflow to stop and cleanup resources. The cancellation
+ * is graceful - nodes will complete their current operation before stopping.
+ *
+ * Args:
+ * task_id: ID of the task to cancel
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Confirmation with cancellation status
+ *
+ * Raises:
+ * HTTPException: If task not found
+ */
+export const cancelTaskApiV1TasksTaskIdCancelPostMutation = (
+  options?: Partial<Options<CancelTaskApiV1TasksTaskIdCancelPostData>>
+): UseMutationOptions<
+  CancelTaskApiV1TasksTaskIdCancelPostResponse,
+  AxiosError<CancelTaskApiV1TasksTaskIdCancelPostError>,
+  Options<CancelTaskApiV1TasksTaskIdCancelPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CancelTaskApiV1TasksTaskIdCancelPostResponse,
+    AxiosError<CancelTaskApiV1TasksTaskIdCancelPostError>,
+    Options<CancelTaskApiV1TasksTaskIdCancelPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await cancelTaskApiV1TasksTaskIdCancelPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getTaskResultApiV1TasksTaskIdResultGetQueryKey = (
+  options: Options<GetTaskResultApiV1TasksTaskIdResultGetData>
+) => createQueryKey('getTaskResultApiV1TasksTaskIdResultGet', options);
+
+/**
+ * Get Task Result
+ *
+ * Get final result of completed task execution.
+ *
+ * Returns the complete output from all workflow stages including plan,
+ * generated code, test results, and review feedback.
+ *
+ * Args:
+ * task_id: ID of the completed task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Complete task execution result
+ *
+ * Raises:
+ * HTTPException: If task not found or still executing
+ */
+export const getTaskResultApiV1TasksTaskIdResultGetOptions = (
+  options: Options<GetTaskResultApiV1TasksTaskIdResultGetData>
+) =>
+  queryOptions<
+    GetTaskResultApiV1TasksTaskIdResultGetResponse,
+    AxiosError<GetTaskResultApiV1TasksTaskIdResultGetError>,
+    GetTaskResultApiV1TasksTaskIdResultGetResponse,
+    ReturnType<typeof getTaskResultApiV1TasksTaskIdResultGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTaskResultApiV1TasksTaskIdResultGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTaskResultApiV1TasksTaskIdResultGetQueryKey(options),
+  });
+
+export const getTaskHistoryApiV1TasksTaskIdHistoryGetQueryKey = (
+  options: Options<GetTaskHistoryApiV1TasksTaskIdHistoryGetData>
+) => createQueryKey('getTaskHistoryApiV1TasksTaskIdHistoryGet', options);
+
+/**
+ * Get Task History
+ *
+ * Get complete execution history for a task.
+ *
+ * Returns a comprehensive view of all agent runs, including timing,
+ * tokens, costs, and optionally council review data.
+ *
+ * Args:
+ * task_id: ID of the task
+ * include_council: Whether to include council review details (default True)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Complete task execution history with all agent runs and metrics
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getTaskHistoryApiV1TasksTaskIdHistoryGetOptions = (
+  options: Options<GetTaskHistoryApiV1TasksTaskIdHistoryGetData>
+) =>
+  queryOptions<
+    GetTaskHistoryApiV1TasksTaskIdHistoryGetResponse,
+    AxiosError<GetTaskHistoryApiV1TasksTaskIdHistoryGetError>,
+    GetTaskHistoryApiV1TasksTaskIdHistoryGetResponse,
+    ReturnType<typeof getTaskHistoryApiV1TasksTaskIdHistoryGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTaskHistoryApiV1TasksTaskIdHistoryGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTaskHistoryApiV1TasksTaskIdHistoryGetQueryKey(options),
+  });
+
+export const getUserExecutionHistoryApiV1HistoryGetQueryKey = (
+  options?: Options<GetUserExecutionHistoryApiV1HistoryGetData>
+) => createQueryKey('getUserExecutionHistoryApiV1HistoryGet', options);
+
+/**
+ * Get User Execution History
+ *
+ * Get paginated execution history for the current user.
+ *
+ * Returns a list of all tasks with their execution summary,
+ * supporting filtering by status and date range.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * status: Optional filter by task status
+ * date_from: Optional start date filter
+ * date_to: Optional end date filter
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of task execution summaries
+ */
+export const getUserExecutionHistoryApiV1HistoryGetOptions = (
+  options?: Options<GetUserExecutionHistoryApiV1HistoryGetData>
+) =>
+  queryOptions<
+    GetUserExecutionHistoryApiV1HistoryGetResponse,
+    AxiosError<GetUserExecutionHistoryApiV1HistoryGetError>,
+    GetUserExecutionHistoryApiV1HistoryGetResponse,
+    ReturnType<typeof getUserExecutionHistoryApiV1HistoryGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getUserExecutionHistoryApiV1HistoryGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getUserExecutionHistoryApiV1HistoryGetQueryKey(options),
+  });
+
+export const getUserExecutionHistoryApiV1HistoryGetInfiniteQueryKey = (
+  options?: Options<GetUserExecutionHistoryApiV1HistoryGetData>
+): QueryKey<Options<GetUserExecutionHistoryApiV1HistoryGetData>> =>
+  createQueryKey('getUserExecutionHistoryApiV1HistoryGet', options, true);
+
+/**
+ * Get User Execution History
+ *
+ * Get paginated execution history for the current user.
+ *
+ * Returns a list of all tasks with their execution summary,
+ * supporting filtering by status and date range.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * status: Optional filter by task status
+ * date_from: Optional start date filter
+ * date_to: Optional end date filter
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of task execution summaries
+ */
+export const getUserExecutionHistoryApiV1HistoryGetInfiniteOptions = (
+  options?: Options<GetUserExecutionHistoryApiV1HistoryGetData>
+) =>
+  infiniteQueryOptions<
+    GetUserExecutionHistoryApiV1HistoryGetResponse,
+    AxiosError<GetUserExecutionHistoryApiV1HistoryGetError>,
+    InfiniteData<GetUserExecutionHistoryApiV1HistoryGetResponse>,
+    QueryKey<Options<GetUserExecutionHistoryApiV1HistoryGetData>>,
+    | number
+    | Pick<
+        QueryKey<Options<GetUserExecutionHistoryApiV1HistoryGetData>>[0],
+        'body' | 'headers' | 'path' | 'query'
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<GetUserExecutionHistoryApiV1HistoryGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+                query: {
+                  page: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getUserExecutionHistoryApiV1HistoryGet({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: getUserExecutionHistoryApiV1HistoryGetInfiniteQueryKey(options),
+    }
+  );
+
+export const getExecutionTimelineApiV1TasksTaskIdTimelineGetQueryKey = (
+  options: Options<GetExecutionTimelineApiV1TasksTaskIdTimelineGetData>
+) => createQueryKey('getExecutionTimelineApiV1TasksTaskIdTimelineGet', options);
+
+/**
+ * Get Execution Timeline
+ *
+ * Get detailed execution timeline for visualization.
+ *
+ * Returns a chronological list of all events during task execution,
+ * suitable for timeline visualization in the frontend.
+ *
+ * Args:
+ * task_id: ID of the task
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * List of timeline events with timestamps and event data
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getExecutionTimelineApiV1TasksTaskIdTimelineGetOptions = (
+  options: Options<GetExecutionTimelineApiV1TasksTaskIdTimelineGetData>
+) =>
+  queryOptions<
+    GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponse,
+    AxiosError<GetExecutionTimelineApiV1TasksTaskIdTimelineGetError>,
+    GetExecutionTimelineApiV1TasksTaskIdTimelineGetResponse,
+    ReturnType<typeof getExecutionTimelineApiV1TasksTaskIdTimelineGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getExecutionTimelineApiV1TasksTaskIdTimelineGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getExecutionTimelineApiV1TasksTaskIdTimelineGetQueryKey(options),
+  });
+
+export const getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetQueryKey = (
+  options: Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>
+) => createQueryKey('getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet', options);
+
+/**
+ * Get Task Council Reviews
+ *
+ * Get council review history for a specific task.
+ *
+ * Returns paginated list of all council reviews for the task,
+ * including verdict, consensus type, and judge count.
+ *
+ * Args:
+ * task_id: ID of the task
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetOptions = (
+  options: Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>
+) =>
+  queryOptions<
+    GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse,
+    AxiosError<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetError>,
+    GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse,
+    ReturnType<typeof getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetQueryKey(options),
+  });
+
+export const getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetInfiniteQueryKey = (
+  options: Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>
+): QueryKey<Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>> =>
+  createQueryKey('getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet', options, true);
+
+/**
+ * Get Task Council Reviews
+ *
+ * Get council review history for a specific task.
+ *
+ * Returns paginated list of all council reviews for the task,
+ * including verdict, consensus type, and judge count.
+ *
+ * Args:
+ * task_id: ID of the task
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ *
+ * Raises:
+ * HTTPException: If task not found or user lacks permission
+ */
+export const getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetInfiniteOptions = (
+  options: Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>
+) =>
+  infiniteQueryOptions<
+    GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse,
+    AxiosError<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetError>,
+    InfiniteData<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetResponse>,
+    QueryKey<Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>>,
+    | number
+    | Pick<
+        QueryKey<Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>>[0],
+        'body' | 'headers' | 'path' | 'query'
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<GetTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+                query: {
+                  page: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGet({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: getTaskCouncilReviewsApiV1TasksTaskIdCouncilReviewsGetInfiniteQueryKey(options),
+    }
+  );
+
+export const getUserCouncilReviewsApiV1CouncilReviewsGetQueryKey = (
+  options?: Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>
+) => createQueryKey('getUserCouncilReviewsApiV1CouncilReviewsGet', options);
+
+/**
+ * Get User Council Reviews
+ *
+ * Get all council reviews for the current user's tasks.
+ *
+ * Returns paginated list of all council reviews across all user's tasks,
+ * useful for analytics and history views.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ */
+export const getUserCouncilReviewsApiV1CouncilReviewsGetOptions = (
+  options?: Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>
+) =>
+  queryOptions<
+    GetUserCouncilReviewsApiV1CouncilReviewsGetResponse,
+    AxiosError<GetUserCouncilReviewsApiV1CouncilReviewsGetError>,
+    GetUserCouncilReviewsApiV1CouncilReviewsGetResponse,
+    ReturnType<typeof getUserCouncilReviewsApiV1CouncilReviewsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getUserCouncilReviewsApiV1CouncilReviewsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getUserCouncilReviewsApiV1CouncilReviewsGetQueryKey(options),
+  });
+
+export const getUserCouncilReviewsApiV1CouncilReviewsGetInfiniteQueryKey = (
+  options?: Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>
+): QueryKey<Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>> =>
+  createQueryKey('getUserCouncilReviewsApiV1CouncilReviewsGet', options, true);
+
+/**
+ * Get User Council Reviews
+ *
+ * Get all council reviews for the current user's tasks.
+ *
+ * Returns paginated list of all council reviews across all user's tasks,
+ * useful for analytics and history views.
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * page_size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Paginated list of council reviews
+ */
+export const getUserCouncilReviewsApiV1CouncilReviewsGetInfiniteOptions = (
+  options?: Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>
+) =>
+  infiniteQueryOptions<
+    GetUserCouncilReviewsApiV1CouncilReviewsGetResponse,
+    AxiosError<GetUserCouncilReviewsApiV1CouncilReviewsGetError>,
+    InfiniteData<GetUserCouncilReviewsApiV1CouncilReviewsGetResponse>,
+    QueryKey<Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>>,
+    | number
+    | Pick<
+        QueryKey<Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>>[0],
+        'body' | 'headers' | 'path' | 'query'
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<GetUserCouncilReviewsApiV1CouncilReviewsGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+                query: {
+                  page: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getUserCouncilReviewsApiV1CouncilReviewsGet({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: getUserCouncilReviewsApiV1CouncilReviewsGetInfiniteQueryKey(options),
+    }
+  );
+
+export const getCouncilMetricsApiV1CouncilMetricsGetQueryKey = (
+  options?: Options<GetCouncilMetricsApiV1CouncilMetricsGetData>
+) => createQueryKey('getCouncilMetricsApiV1CouncilMetricsGet', options);
+
+/**
+ * Get Council Metrics
+ *
+ * Get aggregate metrics for council reviews.
+ *
+ * Returns comprehensive metrics including verdict distribution,
+ * consensus breakdown, and per-judge performance statistics.
+ *
+ * Args:
+ * date_from: Optional start date filter
+ * date_to: Optional end date filter
+ * db: Database session
+ * current_user: Authenticated user
+ *
+ * Returns:
+ * Aggregate council review metrics
+ */
+export const getCouncilMetricsApiV1CouncilMetricsGetOptions = (
+  options?: Options<GetCouncilMetricsApiV1CouncilMetricsGetData>
+) =>
+  queryOptions<
+    GetCouncilMetricsApiV1CouncilMetricsGetResponse,
+    AxiosError<GetCouncilMetricsApiV1CouncilMetricsGetError>,
+    GetCouncilMetricsApiV1CouncilMetricsGetResponse,
+    ReturnType<typeof getCouncilMetricsApiV1CouncilMetricsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCouncilMetricsApiV1CouncilMetricsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCouncilMetricsApiV1CouncilMetricsGetQueryKey(options),
+  });
+
+export const getMetricsSummaryApiV1MetricsSummaryGetQueryKey = (
+  options?: Options<GetMetricsSummaryApiV1MetricsSummaryGetData>
+) => createQueryKey('getMetricsSummaryApiV1MetricsSummaryGet', options);
+
+/**
+ * Get Metrics Summary
+ *
+ * Get high-level metrics summary for dashboard display.
+ *
+ * Returns aggregated token usage, cost calculations, and per-agent breakdown
+ * for the specified time period.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * MetricsSummaryResponse with tokens, costs, and breakdowns
+ */
+export const getMetricsSummaryApiV1MetricsSummaryGetOptions = (
+  options?: Options<GetMetricsSummaryApiV1MetricsSummaryGetData>
+) =>
+  queryOptions<
+    GetMetricsSummaryApiV1MetricsSummaryGetResponse,
+    AxiosError<GetMetricsSummaryApiV1MetricsSummaryGetError>,
+    GetMetricsSummaryApiV1MetricsSummaryGetResponse,
+    ReturnType<typeof getMetricsSummaryApiV1MetricsSummaryGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getMetricsSummaryApiV1MetricsSummaryGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getMetricsSummaryApiV1MetricsSummaryGetQueryKey(options),
+  });
+
+export const getTaskMetricsApiV1MetricsTasksTaskIdGetQueryKey = (
+  options: Options<GetTaskMetricsApiV1MetricsTasksTaskIdGetData>
+) => createQueryKey('getTaskMetricsApiV1MetricsTasksTaskIdGet', options);
+
+/**
+ * Get Task Metrics
+ *
+ * Get metrics for a specific task.
+ *
+ * Returns detailed token usage and cost breakdown for a single task,
+ * including per-agent metrics.
+ *
+ * Args:
+ * task_id: ID of the task
+ *
+ * Returns:
+ * TaskMetricsResponse with task-specific metrics
+ */
+export const getTaskMetricsApiV1MetricsTasksTaskIdGetOptions = (
+  options: Options<GetTaskMetricsApiV1MetricsTasksTaskIdGetData>
+) =>
+  queryOptions<
+    GetTaskMetricsApiV1MetricsTasksTaskIdGetResponse,
+    AxiosError<GetTaskMetricsApiV1MetricsTasksTaskIdGetError>,
+    GetTaskMetricsApiV1MetricsTasksTaskIdGetResponse,
+    ReturnType<typeof getTaskMetricsApiV1MetricsTasksTaskIdGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getTaskMetricsApiV1MetricsTasksTaskIdGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getTaskMetricsApiV1MetricsTasksTaskIdGetQueryKey(options),
+  });
+
+export const getMetricsHistoryApiV1MetricsHistoryGetQueryKey = (
+  options?: Options<GetMetricsHistoryApiV1MetricsHistoryGetData>
+) => createQueryKey('getMetricsHistoryApiV1MetricsHistoryGet', options);
+
+/**
+ * Get Metrics History
+ *
+ * Get time-series metrics data for charting.
+ *
+ * Returns bucketed metrics data suitable for time-series charts,
+ * with configurable period and interval.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d)
+ * interval: Bucket interval (1h, 6h, 1d)
+ *
+ * Returns:
+ * MetricsTimeseriesResponse with data points
+ */
+export const getMetricsHistoryApiV1MetricsHistoryGetOptions = (
+  options?: Options<GetMetricsHistoryApiV1MetricsHistoryGetData>
+) =>
+  queryOptions<
+    GetMetricsHistoryApiV1MetricsHistoryGetResponse,
+    AxiosError<GetMetricsHistoryApiV1MetricsHistoryGetError>,
+    GetMetricsHistoryApiV1MetricsHistoryGetResponse,
+    ReturnType<typeof getMetricsHistoryApiV1MetricsHistoryGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getMetricsHistoryApiV1MetricsHistoryGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getMetricsHistoryApiV1MetricsHistoryGetQueryKey(options),
+  });
+
+export const getAgentMetricsApiV1MetricsAgentAgentTypeGetQueryKey = (
+  options: Options<GetAgentMetricsApiV1MetricsAgentAgentTypeGetData>
+) => createQueryKey('getAgentMetricsApiV1MetricsAgentAgentTypeGet', options);
+
+/**
+ * Get Agent Metrics
+ *
+ * Get metrics for a specific agent type.
+ *
+ * Returns detailed metrics for a single agent type (planner, coder,
+ * tester, or reviewer).
+ *
+ * Args:
+ * agent_type: Type of agent (PLANNER, CODER, TESTER, REVIEWER)
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * AgentMetricsResponse with agent-specific metrics
+ */
+export const getAgentMetricsApiV1MetricsAgentAgentTypeGetOptions = (
+  options: Options<GetAgentMetricsApiV1MetricsAgentAgentTypeGetData>
+) =>
+  queryOptions<
+    GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponse,
+    AxiosError<GetAgentMetricsApiV1MetricsAgentAgentTypeGetError>,
+    GetAgentMetricsApiV1MetricsAgentAgentTypeGetResponse,
+    ReturnType<typeof getAgentMetricsApiV1MetricsAgentAgentTypeGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getAgentMetricsApiV1MetricsAgentAgentTypeGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getAgentMetricsApiV1MetricsAgentAgentTypeGetQueryKey(options),
+  });
+
+export const getPricingInfoApiV1MetricsPricingGetQueryKey = (
+  options?: Options<GetPricingInfoApiV1MetricsPricingGetData>
+) => createQueryKey('getPricingInfoApiV1MetricsPricingGet', options);
+
+/**
+ * Get Pricing Info
+ *
+ * Get current LLM pricing information.
+ *
+ * Returns the pricing per 1M tokens for each supported model,
+ * useful for displaying cost context to users.
+ *
+ * Returns:
+ * PricingInfoResponse with model pricing
+ */
+export const getPricingInfoApiV1MetricsPricingGetOptions = (
+  options?: Options<GetPricingInfoApiV1MetricsPricingGetData>
+) =>
+  queryOptions<
+    GetPricingInfoApiV1MetricsPricingGetResponse,
+    AxiosError<GetPricingInfoApiV1MetricsPricingGetError>,
+    GetPricingInfoApiV1MetricsPricingGetResponse,
+    ReturnType<typeof getPricingInfoApiV1MetricsPricingGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getPricingInfoApiV1MetricsPricingGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getPricingInfoApiV1MetricsPricingGetQueryKey(options),
+  });
+
+/**
+ * Estimate Monthly Cost
+ *
+ * Estimate monthly costs based on daily token usage.
+ *
+ * Calculates what the monthly cost would be if using cloud LLMs
+ * instead of local vLLM, based on projected daily usage.
+ *
+ * Args:
+ * request: Daily token estimate and input ratio
+ *
+ * Returns:
+ * MonthlyEstimateResponse with cost projections
+ */
+export const estimateMonthlyCostApiV1MetricsEstimatePostMutation = (
+  options?: Partial<Options<EstimateMonthlyCostApiV1MetricsEstimatePostData>>
+): UseMutationOptions<
+  EstimateMonthlyCostApiV1MetricsEstimatePostResponse,
+  AxiosError<EstimateMonthlyCostApiV1MetricsEstimatePostError>,
+  Options<EstimateMonthlyCostApiV1MetricsEstimatePostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    EstimateMonthlyCostApiV1MetricsEstimatePostResponse,
+    AxiosError<EstimateMonthlyCostApiV1MetricsEstimatePostError>,
+    Options<EstimateMonthlyCostApiV1MetricsEstimatePostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await estimateMonthlyCostApiV1MetricsEstimatePost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getGlobalMetricsApiV1MetricsGlobalGetQueryKey = (
+  options?: Options<GetGlobalMetricsApiV1MetricsGlobalGetData>
+) => createQueryKey('getGlobalMetricsApiV1MetricsGlobalGet', options);
+
+/**
+ * Get Global Metrics
+ *
+ * Get global metrics across all tasks and users.
+ *
+ * Returns aggregated metrics for the entire system (admin view).
+ * Note: Currently returns user-scoped metrics for security.
+ *
+ * Args:
+ * period: Time period (24h, 7d, 30d, or all)
+ *
+ * Returns:
+ * PeriodMetricsResponse with global metrics
+ */
+export const getGlobalMetricsApiV1MetricsGlobalGetOptions = (
+  options?: Options<GetGlobalMetricsApiV1MetricsGlobalGetData>
+) =>
+  queryOptions<
+    GetGlobalMetricsApiV1MetricsGlobalGetResponse,
+    AxiosError<GetGlobalMetricsApiV1MetricsGlobalGetError>,
+    GetGlobalMetricsApiV1MetricsGlobalGetResponse,
+    ReturnType<typeof getGlobalMetricsApiV1MetricsGlobalGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getGlobalMetricsApiV1MetricsGlobalGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getGlobalMetricsApiV1MetricsGlobalGetQueryKey(options),
+  });
 
 export const getTwoFactorStatusApiV1TwoFactorStatusGetQueryKey = (
   options?: Options<GetTwoFactorStatusApiV1TwoFactorStatusGetData>
@@ -1291,6 +2370,501 @@ export const regenerateBackupCodesApiV1TwoFactorRegenerateBackupCodesPostMutatio
   };
   return mutationOptions;
 };
+
+export const listWebhooksApiV1WebhooksGetQueryKey = (
+  options?: Options<ListWebhooksApiV1WebhooksGetData>
+) => createQueryKey('listWebhooksApiV1WebhooksGet', options);
+
+/**
+ * List Webhooks
+ *
+ * List webhooks for the current user.
+ *
+ * Args:
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of webhooks
+ */
+export const listWebhooksApiV1WebhooksGetOptions = (
+  options?: Options<ListWebhooksApiV1WebhooksGetData>
+) =>
+  queryOptions<
+    ListWebhooksApiV1WebhooksGetResponse,
+    AxiosError<ListWebhooksApiV1WebhooksGetError>,
+    ListWebhooksApiV1WebhooksGetResponse,
+    ReturnType<typeof listWebhooksApiV1WebhooksGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listWebhooksApiV1WebhooksGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listWebhooksApiV1WebhooksGetQueryKey(options),
+  });
+
+export const listWebhooksApiV1WebhooksGetInfiniteQueryKey = (
+  options?: Options<ListWebhooksApiV1WebhooksGetData>
+): QueryKey<Options<ListWebhooksApiV1WebhooksGetData>> =>
+  createQueryKey('listWebhooksApiV1WebhooksGet', options, true);
+
+/**
+ * List Webhooks
+ *
+ * List webhooks for the current user.
+ *
+ * Args:
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of webhooks
+ */
+export const listWebhooksApiV1WebhooksGetInfiniteOptions = (
+  options?: Options<ListWebhooksApiV1WebhooksGetData>
+) =>
+  infiniteQueryOptions<
+    ListWebhooksApiV1WebhooksGetResponse,
+    AxiosError<ListWebhooksApiV1WebhooksGetError>,
+    InfiniteData<ListWebhooksApiV1WebhooksGetResponse>,
+    QueryKey<Options<ListWebhooksApiV1WebhooksGetData>>,
+    | number
+    | Pick<
+        QueryKey<Options<ListWebhooksApiV1WebhooksGetData>>[0],
+        'body' | 'headers' | 'path' | 'query'
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<ListWebhooksApiV1WebhooksGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+                query: {
+                  page: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await listWebhooksApiV1WebhooksGet({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: listWebhooksApiV1WebhooksGetInfiniteQueryKey(options),
+    }
+  );
+
+/**
+ * Create Webhook
+ *
+ * Create a new webhook.
+ *
+ * The response includes the generated secret which should be stored securely.
+ * The secret is only shown once on creation and cannot be retrieved later.
+ *
+ * Args:
+ * webhook_data: Webhook creation data
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Created webhook with secret
+ */
+export const createWebhookApiV1WebhooksPostMutation = (
+  options?: Partial<Options<CreateWebhookApiV1WebhooksPostData>>
+): UseMutationOptions<
+  CreateWebhookApiV1WebhooksPostResponse,
+  AxiosError<CreateWebhookApiV1WebhooksPostError>,
+  Options<CreateWebhookApiV1WebhooksPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CreateWebhookApiV1WebhooksPostResponse,
+    AxiosError<CreateWebhookApiV1WebhooksPostError>,
+    Options<CreateWebhookApiV1WebhooksPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await createWebhookApiV1WebhooksPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Delete Webhook
+ *
+ * Delete a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const deleteWebhookApiV1WebhooksWebhookIdDeleteMutation = (
+  options?: Partial<Options<DeleteWebhookApiV1WebhooksWebhookIdDeleteData>>
+): UseMutationOptions<
+  DeleteWebhookApiV1WebhooksWebhookIdDeleteResponse,
+  AxiosError<DeleteWebhookApiV1WebhooksWebhookIdDeleteError>,
+  Options<DeleteWebhookApiV1WebhooksWebhookIdDeleteData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteWebhookApiV1WebhooksWebhookIdDeleteResponse,
+    AxiosError<DeleteWebhookApiV1WebhooksWebhookIdDeleteError>,
+    Options<DeleteWebhookApiV1WebhooksWebhookIdDeleteData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await deleteWebhookApiV1WebhooksWebhookIdDelete({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getWebhookApiV1WebhooksWebhookIdGetQueryKey = (
+  options: Options<GetWebhookApiV1WebhooksWebhookIdGetData>
+) => createQueryKey('getWebhookApiV1WebhooksWebhookIdGet', options);
+
+/**
+ * Get Webhook
+ *
+ * Get a specific webhook by ID.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Webhook details
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const getWebhookApiV1WebhooksWebhookIdGetOptions = (
+  options: Options<GetWebhookApiV1WebhooksWebhookIdGetData>
+) =>
+  queryOptions<
+    GetWebhookApiV1WebhooksWebhookIdGetResponse,
+    AxiosError<GetWebhookApiV1WebhooksWebhookIdGetError>,
+    GetWebhookApiV1WebhooksWebhookIdGetResponse,
+    ReturnType<typeof getWebhookApiV1WebhooksWebhookIdGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getWebhookApiV1WebhooksWebhookIdGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getWebhookApiV1WebhooksWebhookIdGetQueryKey(options),
+  });
+
+/**
+ * Update Webhook
+ *
+ * Update a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * webhook_data: Update data
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Updated webhook
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const updateWebhookApiV1WebhooksWebhookIdPatchMutation = (
+  options?: Partial<Options<UpdateWebhookApiV1WebhooksWebhookIdPatchData>>
+): UseMutationOptions<
+  UpdateWebhookApiV1WebhooksWebhookIdPatchResponse,
+  AxiosError<UpdateWebhookApiV1WebhooksWebhookIdPatchError>,
+  Options<UpdateWebhookApiV1WebhooksWebhookIdPatchData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateWebhookApiV1WebhooksWebhookIdPatchResponse,
+    AxiosError<UpdateWebhookApiV1WebhooksWebhookIdPatchError>,
+    Options<UpdateWebhookApiV1WebhooksWebhookIdPatchData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await updateWebhookApiV1WebhooksWebhookIdPatch({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Regenerate Webhook Secret
+ *
+ * Regenerate the secret for a webhook.
+ *
+ * The old secret will be invalidated immediately.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Webhook with new secret
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const regenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostMutation = (
+  options?: Partial<Options<RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData>>
+): UseMutationOptions<
+  RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponse,
+  AxiosError<RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostError>,
+  Options<RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostResponse,
+    AxiosError<RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostError>,
+    Options<RegenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await regenerateWebhookSecretApiV1WebhooksWebhookIdRegenerateSecretPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Test Webhook
+ *
+ * Send a test event to a webhook.
+ *
+ * This sends a test payload to verify the webhook endpoint is working.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * test_data: Test configuration
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Test result with response details
+ */
+export const testWebhookApiV1WebhooksWebhookIdTestPostMutation = (
+  options?: Partial<Options<TestWebhookApiV1WebhooksWebhookIdTestPostData>>
+): UseMutationOptions<
+  TestWebhookApiV1WebhooksWebhookIdTestPostResponse,
+  AxiosError<TestWebhookApiV1WebhooksWebhookIdTestPostError>,
+  Options<TestWebhookApiV1WebhooksWebhookIdTestPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    TestWebhookApiV1WebhooksWebhookIdTestPostResponse,
+    AxiosError<TestWebhookApiV1WebhooksWebhookIdTestPostError>,
+    Options<TestWebhookApiV1WebhooksWebhookIdTestPostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await testWebhookApiV1WebhooksWebhookIdTestPost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetQueryKey = (
+  options: Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>
+) => createQueryKey('listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet', options);
+
+/**
+ * List Webhook Deliveries
+ *
+ * List delivery history for a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * delivery_status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of deliveries
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetOptions = (
+  options: Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>
+) =>
+  queryOptions<
+    ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse,
+    AxiosError<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetError>,
+    ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse,
+    ReturnType<typeof listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetQueryKey(options),
+  });
+
+export const listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetInfiniteQueryKey = (
+  options: Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>
+): QueryKey<Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>> =>
+  createQueryKey('listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet', options, true);
+
+/**
+ * List Webhook Deliveries
+ *
+ * List delivery history for a webhook.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * db: Database session
+ * current_user: Current authenticated user
+ * page: Page number
+ * page_size: Items per page
+ * delivery_status: Optional status filter
+ *
+ * Returns:
+ * Paginated list of deliveries
+ *
+ * Raises:
+ * HTTPException: If webhook not found
+ */
+export const listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetInfiniteOptions = (
+  options: Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>
+) =>
+  infiniteQueryOptions<
+    ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse,
+    AxiosError<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetError>,
+    InfiniteData<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetResponse>,
+    QueryKey<Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>>,
+    | number
+    | Pick<
+        QueryKey<Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>>[0],
+        'body' | 'headers' | 'path' | 'query'
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<ListWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+                query: {
+                  page: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGet({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: listWebhookDeliveriesApiV1WebhooksWebhookIdDeliveriesGetInfiniteQueryKey(options),
+    }
+  );
+
+export const getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetQueryKey = (
+  options: Options<GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData>
+) => createQueryKey('getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGet', options);
+
+/**
+ * Get Webhook Delivery
+ *
+ * Get a specific delivery by ID.
+ *
+ * Args:
+ * webhook_id: Webhook ID
+ * delivery_id: Delivery ID
+ * db: Database session
+ * current_user: Current authenticated user
+ *
+ * Returns:
+ * Delivery details
+ *
+ * Raises:
+ * HTTPException: If webhook or delivery not found
+ */
+export const getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetOptions = (
+  options: Options<GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetData>
+) =>
+  queryOptions<
+    GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponse,
+    AxiosError<GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetError>,
+    GetWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetResponse,
+    ReturnType<typeof getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getWebhookDeliveryApiV1WebhooksWebhookIdDeliveriesDeliveryIdGetQueryKey(options),
+  });
 
 export const getOauthProvidersOauthProvidersGetQueryKey = (
   options?: Options<GetOauthProvidersOauthProvidersGetData>
@@ -1561,3 +3135,268 @@ export const sendTestEmailApiV1TestSendTestEmailPostMutation = (
   };
   return mutationOptions;
 };
+
+export const listRolesApiV1AdminRolesGetQueryKey = (
+  options?: Options<ListRolesApiV1AdminRolesGetData>
+) => createQueryKey('listRolesApiV1AdminRolesGet', options);
+
+/**
+ * List Roles
+ *
+ * List all roles with their permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of all roles with permissions
+ */
+export const listRolesApiV1AdminRolesGetOptions = (
+  options?: Options<ListRolesApiV1AdminRolesGetData>
+) =>
+  queryOptions<
+    ListRolesApiV1AdminRolesGetResponse,
+    AxiosError<ListRolesApiV1AdminRolesGetError>,
+    ListRolesApiV1AdminRolesGetResponse,
+    ReturnType<typeof listRolesApiV1AdminRolesGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listRolesApiV1AdminRolesGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listRolesApiV1AdminRolesGetQueryKey(options),
+  });
+
+export const getRoleApiV1AdminRolesRoleIdGetQueryKey = (
+  options: Options<GetRoleApiV1AdminRolesRoleIdGetData>
+) => createQueryKey('getRoleApiV1AdminRolesRoleIdGet', options);
+
+/**
+ * Get Role
+ *
+ * Get a specific role with its permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * role_id: Role ID
+ *
+ * Returns:
+ * Role with permissions
+ *
+ * Raises:
+ * HTTPException: If role not found
+ */
+export const getRoleApiV1AdminRolesRoleIdGetOptions = (
+  options: Options<GetRoleApiV1AdminRolesRoleIdGetData>
+) =>
+  queryOptions<
+    GetRoleApiV1AdminRolesRoleIdGetResponse,
+    AxiosError<GetRoleApiV1AdminRolesRoleIdGetError>,
+    GetRoleApiV1AdminRolesRoleIdGetResponse,
+    ReturnType<typeof getRoleApiV1AdminRolesRoleIdGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getRoleApiV1AdminRolesRoleIdGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getRoleApiV1AdminRolesRoleIdGetQueryKey(options),
+  });
+
+export const listPermissionsApiV1AdminPermissionsGetQueryKey = (
+  options?: Options<ListPermissionsApiV1AdminPermissionsGetData>
+) => createQueryKey('listPermissionsApiV1AdminPermissionsGet', options);
+
+/**
+ * List Permissions
+ *
+ * List all available permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of all permissions
+ */
+export const listPermissionsApiV1AdminPermissionsGetOptions = (
+  options?: Options<ListPermissionsApiV1AdminPermissionsGetData>
+) =>
+  queryOptions<
+    ListPermissionsApiV1AdminPermissionsGetResponse,
+    AxiosError<ListPermissionsApiV1AdminPermissionsGetError>,
+    ListPermissionsApiV1AdminPermissionsGetResponse,
+    ReturnType<typeof listPermissionsApiV1AdminPermissionsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listPermissionsApiV1AdminPermissionsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listPermissionsApiV1AdminPermissionsGetQueryKey(options),
+  });
+
+/**
+ * Remove User Role
+ *
+ * Remove a role from a user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID to remove role from
+ *
+ * Raises:
+ * HTTPException: If user not found
+ */
+export const removeUserRoleApiV1AdminUsersUserIdRoleDeleteMutation = (
+  options?: Partial<Options<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData>>
+): UseMutationOptions<
+  RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponse,
+  AxiosError<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteError>,
+  Options<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteResponse,
+    AxiosError<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteError>,
+    Options<RemoveUserRoleApiV1AdminUsersUserIdRoleDeleteData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await removeUserRoleApiV1AdminUsersUserIdRoleDelete({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Assign User Role
+ *
+ * Assign a role to a user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID to assign role to
+ * assignment: Role assignment data containing role_id
+ *
+ * Returns:
+ * Updated user permissions
+ *
+ * Raises:
+ * HTTPException: If user or role not found
+ */
+export const assignUserRoleApiV1AdminUsersUserIdRolePostMutation = (
+  options?: Partial<Options<AssignUserRoleApiV1AdminUsersUserIdRolePostData>>
+): UseMutationOptions<
+  AssignUserRoleApiV1AdminUsersUserIdRolePostResponse,
+  AxiosError<AssignUserRoleApiV1AdminUsersUserIdRolePostError>,
+  Options<AssignUserRoleApiV1AdminUsersUserIdRolePostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AssignUserRoleApiV1AdminUsersUserIdRolePostResponse,
+    AxiosError<AssignUserRoleApiV1AdminUsersUserIdRolePostError>,
+    Options<AssignUserRoleApiV1AdminUsersUserIdRolePostData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await assignUserRoleApiV1AdminUsersUserIdRolePost({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getUserPermissionsApiV1AdminUsersUserIdPermissionsGetQueryKey = (
+  options: Options<GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData>
+) => createQueryKey('getUserPermissionsApiV1AdminUsersUserIdPermissionsGet', options);
+
+/**
+ * Get User Permissions
+ *
+ * Get all permissions for a specific user.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Args:
+ * user_id: User ID
+ *
+ * Returns:
+ * User permissions including role and superuser status
+ *
+ * Raises:
+ * HTTPException: If user not found
+ */
+export const getUserPermissionsApiV1AdminUsersUserIdPermissionsGetOptions = (
+  options: Options<GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetData>
+) =>
+  queryOptions<
+    GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponse,
+    AxiosError<GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetError>,
+    GetUserPermissionsApiV1AdminUsersUserIdPermissionsGetResponse,
+    ReturnType<typeof getUserPermissionsApiV1AdminUsersUserIdPermissionsGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getUserPermissionsApiV1AdminUsersUserIdPermissionsGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getUserPermissionsApiV1AdminUsersUserIdPermissionsGetQueryKey(options),
+  });
+
+export const listUsersWithRolesApiV1AdminUsersGetQueryKey = (
+  options?: Options<ListUsersWithRolesApiV1AdminUsersGetData>
+) => createQueryKey('listUsersWithRolesApiV1AdminUsersGet', options);
+
+/**
+ * List Users With Roles
+ *
+ * List all users with their roles and permissions.
+ *
+ * Requires: Admin role or superuser access
+ *
+ * Returns:
+ * List of users with their permissions
+ */
+export const listUsersWithRolesApiV1AdminUsersGetOptions = (
+  options?: Options<ListUsersWithRolesApiV1AdminUsersGetData>
+) =>
+  queryOptions<
+    ListUsersWithRolesApiV1AdminUsersGetResponse,
+    AxiosError<ListUsersWithRolesApiV1AdminUsersGetError>,
+    ListUsersWithRolesApiV1AdminUsersGetResponse,
+    ReturnType<typeof listUsersWithRolesApiV1AdminUsersGetQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listUsersWithRolesApiV1AdminUsersGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listUsersWithRolesApiV1AdminUsersGetQueryKey(options),
+  });
