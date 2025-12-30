@@ -36,8 +36,14 @@ export function TaskExecutionControls({
   const cancelMutation = useCancelTask();
   const { startExecution, stopExecution } = useExecutionStore();
 
-  const canExecute = taskStatus === 'pending' || taskStatus === 'failed' || taskStatus === 'cancelled';
-  const canCancel = isExecuting || (taskStatus !== 'pending' && taskStatus !== 'completed' && taskStatus !== 'failed' && taskStatus !== 'cancelled');
+  const canExecute =
+    taskStatus === 'pending' || taskStatus === 'failed' || taskStatus === 'cancelled';
+  const canCancel =
+    isExecuting ||
+    (taskStatus !== 'pending' &&
+      taskStatus !== 'completed' &&
+      taskStatus !== 'failed' &&
+      taskStatus !== 'cancelled');
 
   const handleExecute = () => {
     startExecution(taskId);
@@ -59,11 +65,7 @@ export function TaskExecutionControls({
     <div className={className}>
       <div className="flex gap-2">
         {canExecute && (
-          <Button
-            onClick={handleExecute}
-            disabled={isExecuting}
-            variant="default"
-          >
+          <Button onClick={handleExecute} disabled={isExecuting} variant="default">
             <PlayIcon className="mr-2 h-4 w-4" />
             {isExecuting ? 'Executing...' : 'Execute'}
           </Button>
@@ -72,10 +74,7 @@ export function TaskExecutionControls({
         {canCancel && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                disabled={cancelMutation.isPending}
-              >
+              <Button variant="destructive" disabled={cancelMutation.isPending}>
                 <StopIcon className="mr-2 h-4 w-4" />
                 Cancel
               </Button>
@@ -84,14 +83,13 @@ export function TaskExecutionControls({
               <AlertDialogHeader>
                 <AlertDialogTitle>Cancel Task Execution</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to cancel this execution? The current workflow will be stopped immediately.
+                  Are you sure you want to cancel this execution? The current workflow will be
+                  stopped immediately.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>No, continue</AlertDialogCancel>
-                <AlertDialogAction onClick={handleCancel}>
-                  Yes, cancel execution
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleCancel}>Yes, cancel execution</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

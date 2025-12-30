@@ -39,7 +39,7 @@ const formatTimestamp = (timestamp: string, interval: string): string => {
 
   return date.toLocaleDateString('en-US', {
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
@@ -74,11 +74,12 @@ export function MetricsChart({ data, isLoading = false, onPeriodChange }: Metric
     );
   }
 
-  const chartData = data?.data.map((point) => ({
-    timestamp: formatTimestamp(point.timestamp, data.interval),
-    tokens: point.total_tokens,
-    runs: point.input_tokens, // Using input_tokens as proxy for runs count
-  })) || [];
+  const chartData =
+    data?.data.map((point) => ({
+      timestamp: formatTimestamp(point.timestamp, data.interval),
+      tokens: point.total_tokens,
+      runs: point.input_tokens, // Using input_tokens as proxy for runs count
+    })) || [];
 
   return (
     <Card>

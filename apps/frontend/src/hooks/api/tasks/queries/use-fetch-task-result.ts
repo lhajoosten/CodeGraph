@@ -19,10 +19,7 @@ export interface UseFetchTaskResultOptions {
   enabled?: boolean;
 }
 
-export const useFetchTaskResult = (
-  taskId: number,
-  options?: UseFetchTaskResultOptions
-) => {
+export const useFetchTaskResult = (taskId: number, options?: UseFetchTaskResultOptions) => {
   const queryOptions = getTaskResultApiV1TasksTaskIdResultGetOptions({
     path: { task_id: taskId },
   });

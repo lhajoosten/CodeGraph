@@ -20,10 +20,7 @@ export interface UseFetchTaskStatusOptions {
   refetchInterval?: number;
 }
 
-export const useFetchTaskStatus = (
-  taskId: number,
-  options?: UseFetchTaskStatusOptions
-) => {
+export const useFetchTaskStatus = (taskId: number, options?: UseFetchTaskStatusOptions) => {
   const queryOptions = getTaskStatusApiV1TasksTaskIdStatusGetOptions({
     path: { task_id: taskId },
   });

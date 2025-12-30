@@ -21,9 +21,12 @@ import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password'
 import { Route as PublicCompleteProfileRouteImport } from './routes/_public/complete-profile'
+import { Route as ProtectedWebhooksIndexRouteImport } from './routes/_protected/webhooks/index'
 import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
 import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
 import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index'
+import { Route as ProtectedWebhooksNewRouteImport } from './routes/_protected/webhooks/new'
+import { Route as ProtectedWebhooksIdRouteImport } from './routes/_protected/webhooks/$id'
 import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
 import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider'
 
@@ -104,6 +107,13 @@ const PublicCompleteProfileRoute = PublicCompleteProfileRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_public/complete-profile.lazy').then((d) => d.Route),
 )
+const ProtectedWebhooksIndexRoute = ProtectedWebhooksIndexRouteImport.update({
+  id: '/_protected/webhooks/',
+  path: '/webhooks/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/index.lazy').then((d) => d.Route),
+)
 const ProtectedTasksIndexRoute = ProtectedTasksIndexRouteImport.update({
   id: '/_protected/tasks/',
   path: '/tasks/',
@@ -124,6 +134,20 @@ const ProtectedMetricsIndexRoute = ProtectedMetricsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/_protected/metrics/index.lazy').then((d) => d.Route),
+)
+const ProtectedWebhooksNewRoute = ProtectedWebhooksNewRouteImport.update({
+  id: '/_protected/webhooks/new',
+  path: '/webhooks/new',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/new.lazy').then((d) => d.Route),
+)
+const ProtectedWebhooksIdRoute = ProtectedWebhooksIdRouteImport.update({
+  id: '/_protected/webhooks/$id',
+  path: '/webhooks/$id',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/$id.lazy').then((d) => d.Route),
 )
 const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
   id: '/_protected/tasks/$id',
@@ -157,9 +181,12 @@ export interface FileRoutesByFullPath {
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
+  '/webhooks': typeof ProtectedWebhooksIndexRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRoutesByTo {
@@ -176,9 +203,12 @@ export interface FileRoutesByTo {
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
+  '/webhooks': typeof ProtectedWebhooksIndexRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRoutesById {
@@ -196,9 +226,12 @@ export interface FileRoutesById {
   '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/_protected/': typeof ProtectedIndexRoute
   '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
+  '/_protected/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/_protected/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/_protected/metrics/': typeof ProtectedMetricsIndexRoute
   '/_protected/settings/': typeof ProtectedSettingsIndexRoute
   '/_protected/tasks/': typeof ProtectedTasksIndexRoute
+  '/_protected/webhooks/': typeof ProtectedWebhooksIndexRoute
   '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
 }
 export interface FileRouteTypes {
@@ -217,9 +250,12 @@ export interface FileRouteTypes {
     | '/verify-email-pending'
     | '/'
     | '/tasks/$id'
+    | '/webhooks/$id'
+    | '/webhooks/new'
     | '/metrics'
     | '/settings'
     | '/tasks'
+    | '/webhooks'
     | '/oauth/callback/$provider'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -236,9 +272,12 @@ export interface FileRouteTypes {
     | '/verify-email-pending'
     | '/'
     | '/tasks/$id'
+    | '/webhooks/$id'
+    | '/webhooks/new'
     | '/metrics'
     | '/settings'
     | '/tasks'
+    | '/webhooks'
     | '/oauth/callback/$provider'
   id:
     | '__root__'
@@ -255,9 +294,12 @@ export interface FileRouteTypes {
     | '/_public/verify-email-pending'
     | '/_protected/'
     | '/_protected/tasks/$id'
+    | '/_protected/webhooks/$id'
+    | '/_protected/webhooks/new'
     | '/_protected/metrics/'
     | '/_protected/settings/'
     | '/_protected/tasks/'
+    | '/_protected/webhooks/'
     | '/_public/oauth/callback/$provider'
   fileRoutesById: FileRoutesById
 }
@@ -275,9 +317,12 @@ export interface RootRouteChildren {
   PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
   ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute
+  ProtectedWebhooksIdRoute: typeof ProtectedWebhooksIdRoute
+  ProtectedWebhooksNewRoute: typeof ProtectedWebhooksNewRoute
   ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute
   ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
   ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
+  ProtectedWebhooksIndexRoute: typeof ProtectedWebhooksIndexRoute
   PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute
 }
 
@@ -367,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicCompleteProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/webhooks/': {
+      id: '/_protected/webhooks/'
+      path: '/webhooks'
+      fullPath: '/webhooks'
+      preLoaderRoute: typeof ProtectedWebhooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/tasks/': {
       id: '/_protected/tasks/'
       path: '/tasks'
@@ -386,6 +438,20 @@ declare module '@tanstack/react-router' {
       path: '/metrics'
       fullPath: '/metrics'
       preLoaderRoute: typeof ProtectedMetricsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/webhooks/new': {
+      id: '/_protected/webhooks/new'
+      path: '/webhooks/new'
+      fullPath: '/webhooks/new'
+      preLoaderRoute: typeof ProtectedWebhooksNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/webhooks/$id': {
+      id: '/_protected/webhooks/$id'
+      path: '/webhooks/$id'
+      fullPath: '/webhooks/$id'
+      preLoaderRoute: typeof ProtectedWebhooksIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/tasks/$id': {
@@ -419,9 +485,12 @@ const rootRouteChildren: RootRouteChildren = {
   PublicVerifyEmailPendingRoute: PublicVerifyEmailPendingRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
   ProtectedTasksIdRoute: ProtectedTasksIdRoute,
+  ProtectedWebhooksIdRoute: ProtectedWebhooksIdRoute,
+  ProtectedWebhooksNewRoute: ProtectedWebhooksNewRoute,
   ProtectedMetricsIndexRoute: ProtectedMetricsIndexRoute,
   ProtectedSettingsIndexRoute: ProtectedSettingsIndexRoute,
   ProtectedTasksIndexRoute: ProtectedTasksIndexRoute,
+  ProtectedWebhooksIndexRoute: ProtectedWebhooksIndexRoute,
   PublicOauthCallbackProviderRoute: PublicOauthCallbackProviderRoute,
 }
 export const routeTree = rootRouteImport

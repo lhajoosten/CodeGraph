@@ -20,10 +20,7 @@ export interface UseFetchTaskHistoryOptions {
   enabled?: boolean;
 }
 
-export const useFetchTaskHistory = (
-  taskId: number,
-  options?: UseFetchTaskHistoryOptions
-) => {
+export const useFetchTaskHistory = (taskId: number, options?: UseFetchTaskHistoryOptions) => {
   const queryOptions = getTaskHistoryApiV1TasksTaskIdHistoryGetOptions({
     path: { task_id: taskId },
     query: {
