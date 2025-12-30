@@ -1,7 +1,8 @@
 import type { RoleWithPermissionsResponse, UserPermissionsResponse } from '@/openapi/types.gen';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useTranslationNamespace } from '@/hooks/useTranslation';
 import { UsersIcon, ShieldCheckIcon, KeyIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { cn } from '@/lib/utils';
 
 interface AdminStatsProps {
   users?: UserPermissionsResponse[];
@@ -31,37 +32,61 @@ export function AdminStats({ users = [], roles = [], isLoading }: AdminStatsProp
       label: t('dashboard.stats.total_users'),
       value: totalUsers,
       icon: UsersIcon,
-      color: 'text-primary',
+      variant: 'teal' as const,
     },
     {
       label: t('dashboard.stats.total_roles'),
       value: totalRoles,
       icon: ShieldCheckIcon,
-      color: 'text-success',
+      variant: 'green' as const,
     },
     {
       label: t('dashboard.stats.superusers'),
       value: superusersCount,
       icon: UserGroupIcon,
-      color: 'text-warning',
+      variant: 'amber' as const,
     },
     {
       label: t('dashboard.stats.unique_permissions'),
       value: totalPermissions,
       icon: KeyIcon,
-      color: 'text-info',
+      variant: 'blue' as const,
     },
   ];
+
+  const variantStyles = {
+    teal: {
+      iconBg: 'bg-gradient-to-br from-brand-teal/20 to-brand-cyan/20 border border-brand-teal/30',
+      iconColor: 'text-brand-teal',
+    },
+    green: {
+      iconBg: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30',
+      iconColor: 'text-green-500',
+    },
+    amber: {
+      iconBg: 'bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/30',
+      iconColor: 'text-amber-500',
+    },
+    blue: {
+      iconBg: 'bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30',
+      iconColor: 'text-blue-500',
+    },
+  };
 
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="p-6">
-            <div className="animate-pulse">
-              <div className="h-4 w-24 rounded bg-border"></div>
-              <div className="mt-2 h-8 w-16 rounded bg-border"></div>
-            </div>
+          <Card key={i} className="border-accent-top overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <div className="h-4 w-20 animate-pulse rounded bg-surface-secondary" />
+                  <div className="h-8 w-14 animate-pulse rounded bg-surface-secondary" />
+                </div>
+                <div className="h-12 w-12 animate-pulse rounded-xl bg-surface-secondary" />
+              </div>
+            </CardContent>
           </Card>
         ))}
       </div>
@@ -70,17 +95,35 @@ export function AdminStats({ users = [], roles = [], isLoading }: AdminStatsProp
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => (
-        <Card key={stat.label} className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-text-secondary">{stat.label}</p>
-              <p className="mt-2 text-3xl font-bold text-text-primary">{stat.value}</p>
-            </div>
-            <stat.icon className={`h-8 w-8 ${stat.color}`} />
-          </div>
-        </Card>
-      ))}
+      {stats.map((stat, index) => {
+        const styles = variantStyles[stat.variant];
+        return (
+          <Card
+            key={stat.label}
+            className={cn(
+              'hc-skel-item border-accent-top overflow-hidden transition-all duration-300 hover:shadow-card-hover'
+            )}
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-text-muted">{stat.label}</p>
+                  <p className="mt-1 text-2xl font-bold text-text-primary">{stat.value}</p>
+                </div>
+                <div
+                  className={cn(
+                    'flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 hover:scale-110',
+                    styles.iconBg
+                  )}
+                >
+                  <stat.icon className={cn('h-6 w-6', styles.iconColor)} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

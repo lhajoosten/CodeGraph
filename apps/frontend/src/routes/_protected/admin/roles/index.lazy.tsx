@@ -1,19 +1,147 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import { AppLayout } from '@/components/layout/app-layout';
-import { PageHeader } from '@/components/layout/page-header';
+import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { RoleList } from '@/components/admin';
 import { useFetchRoles } from '@/hooks/api';
 import { useTranslationNamespace } from '@/hooks/useTranslation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  ShieldCheckIcon,
+  ArrowLeftIcon,
+  KeyIcon,
+  LockClosedIcon,
+} from '@heroicons/react/24/outline';
+import { cn } from '@/lib/utils';
 
 function RolesPage() {
   const { t } = useTranslationNamespace('admin');
   const { data: roles, isLoading, error } = useFetchRoles();
 
+  // Stats
+  const totalRoles = roles?.length || 0;
+  const systemRoles =
+    roles?.filter((r) => ['admin', 'developer', 'viewer'].includes(r.name)).length || 0;
+  const customRoles = totalRoles - systemRoles;
+  const allPermissions = new Set(
+    roles?.flatMap((role) => role.permissions?.map((p) => `${p.resource}:${p.action}`) || []) || []
+  );
+
+  const stats = [
+    {
+      label: 'Total Roles',
+      value: totalRoles,
+      icon: ShieldCheckIcon,
+      variant: 'teal' as const,
+    },
+    {
+      label: 'System Roles',
+      value: systemRoles,
+      icon: LockClosedIcon,
+      variant: 'amber' as const,
+    },
+    {
+      label: 'Total Permissions',
+      value: allPermissions.size,
+      icon: KeyIcon,
+      variant: 'green' as const,
+    },
+  ];
+
+  const variantStyles = {
+    teal: {
+      iconBg: 'bg-gradient-to-br from-brand-teal/20 to-brand-cyan/20 border border-brand-teal/30',
+      iconColor: 'text-brand-teal',
+    },
+    green: {
+      iconBg: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30',
+      iconColor: 'text-green-500',
+    },
+    amber: {
+      iconBg: 'bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/30',
+      iconColor: 'text-amber-500',
+    },
+  };
+
+  const breadcrumbItems = [{ label: 'Admin', onClick: () => {} }, { label: t('roles.page_title') }];
+
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <PageHeader title={t('roles.page_title')} description={t('roles.page_description')} />
+      <div className="space-y-8">
+        {/* Breadcrumbs */}
+        <Breadcrumbs items={breadcrumbItems} />
+
+        {/* Hero Section */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-teal/10 via-brand-cyan/5 to-background p-8 shadow-elevated">
+          {/* Decorative pattern */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+
+          <div className="relative">
+            {/* Back Button */}
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="mb-4 border-brand-teal/20 bg-brand-teal/10 text-brand-teal backdrop-blur hover:bg-brand-teal/20"
+            >
+              <Link to="/admin">
+                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                Back to Admin
+              </Link>
+            </Button>
+
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-teal flex h-14 w-14 items-center justify-center rounded-xl shadow-button">
+                <ShieldCheckIcon className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+                  {t('roles.page_title')}
+                </h1>
+                <p className="text-text-secondary">{t('roles.page_description')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {stats.map((stat, index) => {
+            const styles = variantStyles[stat.variant];
+            return (
+              <Card
+                key={index}
+                className={cn(
+                  'hc-skel-item border-accent-top overflow-hidden transition-all duration-300 hover:shadow-card-hover'
+                )}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-text-muted">{stat.label}</p>
+                      <p className="mt-1 text-2xl font-bold text-text-primary">{stat.value}</p>
+                    </div>
+                    <div
+                      className={cn(
+                        'flex h-12 w-12 items-center justify-center rounded-xl',
+                        styles.iconBg
+                      )}
+                    >
+                      <stat.icon className={cn('h-6 w-6', styles.iconColor)} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
         {error && (
           <Alert variant="danger">
@@ -21,7 +149,23 @@ function RolesPage() {
           </Alert>
         )}
 
-        <RoleList roles={roles || []} isLoading={isLoading} />
+        {/* Role List Section */}
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-1 w-1 rounded-full bg-brand-teal" />
+              <h2 className="text-sm font-semibold tracking-wide text-text-secondary uppercase">
+                Role Management
+              </h2>
+              {totalRoles > 0 && (
+                <span className="ml-2 rounded-full bg-surface-secondary px-2 py-0.5 text-xs text-text-muted">
+                  {totalRoles} roles ({customRoles} custom)
+                </span>
+              )}
+            </div>
+          </div>
+          <RoleList roles={roles || []} isLoading={isLoading} />
+        </div>
       </div>
     </AppLayout>
   );

@@ -263,10 +263,7 @@ function MetricsDashboard() {
               </p>
             </div>
             <div className="p-6">
-              <AgentBreakdown
-                agentMetrics={summary?.by_agent || {}}
-                isLoading={isSummaryLoading}
-              />
+              <AgentBreakdown agentMetrics={summary?.by_agent || {}} isLoading={isSummaryLoading} />
             </div>
           </div>
         </div>
