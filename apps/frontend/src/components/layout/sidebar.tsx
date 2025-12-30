@@ -3,6 +3,7 @@ import {
   Squares2X2Icon,
   CheckIcon,
   RocketLaunchIcon,
+  ChartBarIcon,
   Cog6ToothIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -24,6 +25,7 @@ const mainNavItems: NavItem[] = [
   { href: '/', label: 'Dashboard', icon: Squares2X2Icon },
   { href: '/tasks', label: 'Tasks', icon: CheckIcon },
   { href: '/agents', label: 'Agents', icon: RocketLaunchIcon },
+  { href: '/metrics', label: 'Metrics', icon: ChartBarIcon },
 ];
 
 const bottomNavItems: NavItem[] = [{ href: '/settings', label: 'Settings', icon: Cog6ToothIcon }];

@@ -1,0 +1,103 @@
+# Metrics Dashboard (English)
+
+# Page title and navigation
+title: 'Metrics & Analytics'
+description: 'Monitor AI agent usage, costs, and performance'
+
+# Summary cards
+summary:
+  total_tokens: 'Total Tokens'
+  input_tokens: 'Input Tokens'
+  output_tokens: 'Output Tokens'
+  total_runs: 'Agent Runs'
+  avg_latency: 'Avg Latency'
+  total_cost: 'Total Cost'
+  savings: 'Savings vs Cloud'
+
+# Cost breakdown
+costs:
+  title: 'Cost Breakdown'
+  by_model: 'By Model Tier'
+  local: 'Local (vLLM)'
+  haiku: 'Claude Haiku'
+  sonnet: 'Claude Sonnet'
+  opus: 'Claude Opus'
+  total: 'Total Cost'
+  free: 'Free'
+
+# Savings display
+savings:
+  title: 'Cost Savings'
+  description: 'Compared to cloud-only deployments'
+  vs_haiku: 'vs Claude Haiku'
+  vs_sonnet: 'vs Claude Sonnet'
+  vs_opus: 'vs Claude Opus'
+  percentage: '{percent}% saved'
+
+# Agent breakdown
+agents:
+  title: 'Agent Performance'
+  planner: 'Planner'
+  researcher: 'Researcher'
+  coder: 'Coder'
+  tester: 'Tester'
+  reviewer: 'Reviewer'
+  documenter: 'Documenter'
+  runs: 'Runs'
+  tokens: 'Tokens'
+  avg_latency: 'Avg Latency'
+
+# Time series chart
+chart:
+  title: 'Usage Over Time'
+  tokens_label: 'Tokens'
+  runs_label: 'Agent Runs'
+  period_24h: 'Last 24 Hours'
+  period_7d: 'Last 7 Days'
+  period_30d: 'Last 30 Days'
+  interval_hour: 'Hourly'
+  interval_day: 'Daily'
+
+# Cost estimator
+estimator:
+  title: 'Monthly Cost Estimator'
+  description: 'Estimate your monthly costs based on projected usage'
+  tasks_per_month: 'Tasks per Month'
+  avg_tokens_per_task: 'Avg Tokens per Task'
+  estimate_button: 'Calculate Estimate'
+  estimated_cost: 'Estimated Monthly Cost'
+  based_on: 'Based on {tasks} tasks with {tokens} avg tokens each'
+
+# Pricing
+pricing:
+  title: 'Current Pricing'
+  per_million_tokens: 'per 1M tokens'
+  input: 'Input'
+  output: 'Output'
+
+# Time units
+time:
+  ms: 'ms'
+  seconds: 's'
+  minutes: 'min'
+  hours: 'hrs'
+
+# Loading states
+loading:
+  summary: 'Loading metrics summary...'
+  history: 'Loading usage history...'
+  agents: 'Loading agent metrics...'
+  pricing: 'Loading pricing info...'
+
+# Error states
+error:
+  summary: 'Failed to load metrics summary'
+  history: 'Failed to load usage history'
+  agents: 'Failed to load agent metrics'
+  pricing: 'Failed to load pricing info'
+  retry: 'Try again'
+
+# Empty states
+empty:
+  no_data: 'No metrics data available yet'
+  start_using: 'Start using CodeGraph agents to see metrics here'

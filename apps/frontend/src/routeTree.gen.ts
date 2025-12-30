@@ -23,6 +23,7 @@ import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgo
 import { Route as PublicCompleteProfileRouteImport } from './routes/_public/complete-profile'
 import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
 import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
+import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index'
 import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
 import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider'
 
@@ -117,6 +118,13 @@ const ProtectedSettingsIndexRoute = ProtectedSettingsIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_protected/settings/index.lazy').then((d) => d.Route),
 )
+const ProtectedMetricsIndexRoute = ProtectedMetricsIndexRouteImport.update({
+  id: '/_protected/metrics/',
+  path: '/metrics/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/metrics/index.lazy').then((d) => d.Route),
+)
 const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
   id: '/_protected/tasks/$id',
   path: '/tasks/$id',
@@ -149,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
@@ -167,6 +176,7 @@ export interface FileRoutesByTo {
   '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/': typeof ProtectedIndexRoute
   '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
   '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
@@ -186,6 +196,7 @@ export interface FileRoutesById {
   '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute
   '/_protected/': typeof ProtectedIndexRoute
   '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
+  '/_protected/metrics/': typeof ProtectedMetricsIndexRoute
   '/_protected/settings/': typeof ProtectedSettingsIndexRoute
   '/_protected/tasks/': typeof ProtectedTasksIndexRoute
   '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/verify-email-pending'
     | '/'
     | '/tasks/$id'
+    | '/metrics'
     | '/settings'
     | '/tasks'
     | '/oauth/callback/$provider'
@@ -224,6 +236,7 @@ export interface FileRouteTypes {
     | '/verify-email-pending'
     | '/'
     | '/tasks/$id'
+    | '/metrics'
     | '/settings'
     | '/tasks'
     | '/oauth/callback/$provider'
@@ -242,6 +255,7 @@ export interface FileRouteTypes {
     | '/_public/verify-email-pending'
     | '/_protected/'
     | '/_protected/tasks/$id'
+    | '/_protected/metrics/'
     | '/_protected/settings/'
     | '/_protected/tasks/'
     | '/_public/oauth/callback/$provider'
@@ -261,6 +275,7 @@ export interface RootRouteChildren {
   PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
   ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute
+  ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute
   ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
   ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
   PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute
@@ -366,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedSettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/metrics/': {
+      id: '/_protected/metrics/'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof ProtectedMetricsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/tasks/$id': {
       id: '/_protected/tasks/$id'
       path: '/tasks/$id'
@@ -397,6 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicVerifyEmailPendingRoute: PublicVerifyEmailPendingRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
   ProtectedTasksIdRoute: ProtectedTasksIdRoute,
+  ProtectedMetricsIndexRoute: ProtectedMetricsIndexRoute,
   ProtectedSettingsIndexRoute: ProtectedSettingsIndexRoute,
   ProtectedTasksIndexRoute: ProtectedTasksIndexRoute,
   PublicOauthCallbackProviderRoute: PublicOauthCallbackProviderRoute,
