@@ -1,0 +1,115 @@
+# Admin Panel Translations (English)
+
+# Dashboard
+dashboard:
+  title: 'Admin Dashboard'
+  description: 'Manage roles, permissions, and user access across the platform'
+
+  # Stats
+  stats:
+    total_users: 'Total Users'
+    total_roles: 'Total Roles'
+    superusers: 'Superusers'
+    unique_permissions: 'Unique Permissions'
+
+  # Quick Actions
+  manage_roles:
+    title: 'Manage Roles'
+    description: 'View and configure system roles with their permissions'
+    action: 'View Roles'
+
+  manage_users:
+    title: 'Manage Users'
+    description: 'Assign roles and manage user access levels'
+    action: 'View Users'
+
+  view_permissions:
+    title: 'View Permissions'
+    description: 'Browse all available system permissions by category'
+    action: 'View Permissions'
+
+  # System Info
+  system_info:
+    title: 'System Information'
+    description: 'Current RBAC system statistics'
+    roles_count: 'Total Roles'
+    users_count: 'Total Users'
+    system_roles: 'System Roles'
+
+# Roles Management
+roles:
+  page_title: 'Roles Management'
+  page_description: 'View and manage system roles and their permissions'
+  detail_page_title: 'Role Details'
+  detail_page_description: 'View role information and assigned permissions'
+
+  # Table Columns
+  columns:
+    name: 'Name'
+    description: 'Description'
+    permissions: 'Permissions'
+    actions: 'Actions'
+
+  # Actions
+  actions:
+    view: 'View Details'
+    edit: 'Edit'
+    delete: 'Delete'
+
+  # Labels
+  system_role: 'System Role'
+  no_description: 'No description provided'
+  permissions_count: 'permissions'
+  total_permissions: 'Total Permissions'
+  permissions_category: 'Permissions'
+  permissions_section: 'Permissions'
+  role_information: 'Role Information'
+
+  # Messages
+  search_placeholder: 'Search roles...'
+  empty_message: 'No roles found'
+  no_permissions: 'This role has no permissions assigned'
+  no_permissions_in_category: 'No permissions in this category'
+  permissions_readonly_note: 'Permission management will be available in a future update when the backend API supports it.'
+  system_role_info: 'This is a system role and cannot be deleted or modified'
+  error_loading_role: 'Failed to load role details. Please try again.'
+
+# Users Management
+users:
+  page_title: 'Users Management'
+  page_description: 'Manage user role assignments and permissions'
+
+  # Table Columns
+  columns:
+    user_id: 'User ID'
+    role: 'Role'
+    permissions: 'Permissions'
+    actions: 'Actions'
+
+  # Actions
+  actions:
+    manage_roles: 'Manage Roles'
+
+  # Labels
+  superuser: 'Superuser'
+  no_role: 'No Role'
+  permissions_count: 'permissions'
+
+  # Role Assignment Dialog
+  assign_role_title: 'Assign Role'
+  assign_role_description: 'Select a role to assign to this user'
+  current_role: 'Current Role'
+  select_role: 'Select Role'
+  superuser_warning: 'This user is a superuser and cannot have their role changed'
+
+  # Messages
+  empty_message: 'No users found'
+
+# Common
+common:
+  loading: 'Loading...'
+  saving: 'Saving...'
+  save: 'Save'
+  cancel: 'Cancel'
+  back_to_list: 'Back to List'
+  error_loading_data: 'Failed to load data. Please try again.'

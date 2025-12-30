@@ -115,7 +115,7 @@ export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExec
               <span className="text-muted-foreground text-xs">Streaming...</span>
             </div>
           )}
-          {status === 'error' && <span className="text-xs text-danger">Connection error</span>}
+          {status === 'error' && <span className="text-danger text-xs">Connection error</span>}
         </div>
         <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
           {isExpanded ? (
@@ -142,7 +142,7 @@ export function TaskExecutionOutput({ taskId, isExecuting, className }: TaskExec
               <div className="text-muted-foreground flex h-[300px] items-center justify-center">
                 {isExecuting ? (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                     <p>Waiting for output...</p>
                   </div>
                 ) : (

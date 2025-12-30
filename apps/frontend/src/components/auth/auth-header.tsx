@@ -28,9 +28,9 @@ export function AuthHeader({ title, subtitle, showLogo = true }: AuthHeaderProps
         </div>
       )}
 
-      <h1 className="mb-2 text-3xl font-bold text-text-primary-lum">{title}</h1>
+      <h1 className="text-text-primary-lum mb-2 text-3xl font-bold">{title}</h1>
 
-      {subtitle && <p className="text-sm text-text-secondary-lum">{subtitle}</p>}
+      {subtitle && <p className="text-text-secondary-lum text-sm">{subtitle}</p>}
     </div>
   );
 }

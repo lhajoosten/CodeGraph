@@ -1,139 +1,105 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
+import {
+  PaintBrushIcon,
+  ShieldCheckIcon,
+  UserIcon,
+  LinkIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/24/outline';
+import { useTranslationNamespace } from '@/hooks/useTranslation';
+import { AppearanceSettings } from '@/components/settings/appearance-settings';
 import { PasswordChangeForm } from '@/components/settings/password-change-form';
 import { EmailChangeForm } from '@/components/settings/email-change-form';
 import { TwoFactorSettings } from '@/components/settings/two-factor-settings';
 import { ConnectedAccounts } from '@/components/settings/connected-accounts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export const Route = createLazyFileRoute('/_protected/settings/')({
   component: SettingsPage,
 });
 
-type TabId = 'security' | 'account' | 'connections';
+type TabId = 'appearance' | 'security' | 'account' | 'connections';
 
 interface Tab {
   id: TabId;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
 }
 
 const tabs: Tab[] = [
   {
+    id: 'appearance',
+    labelKey: 'tabs.appearance',
+    icon: <PaintBrushIcon className="h-5 w-5" />,
+  },
+  {
     id: 'security',
-    label: 'Security',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-        />
-      </svg>
-    ),
+    labelKey: 'tabs.security',
+    icon: <ShieldCheckIcon className="h-5 w-5" />,
   },
   {
     id: 'account',
-    label: 'Account',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        />
-      </svg>
-    ),
+    labelKey: 'tabs.account',
+    icon: <UserIcon className="h-5 w-5" />,
   },
   {
     id: 'connections',
-    label: 'Connected Accounts',
-    icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-        />
-      </svg>
-    ),
+    labelKey: 'tabs.connections',
+    icon: <LinkIcon className="h-5 w-5" />,
   },
 ];
 
 function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabId>('security');
+  const { t } = useTranslationNamespace('settings');
+  const [activeTab, setActiveTab] = useState<TabId>('appearance');
 
   return (
-    <div className="min-h-screen bg-bg-primary-lum">
+    <div className="bg-bg-primary-lum min-h-screen">
       {/* Header */}
-      <div className="border-b border-border-steel bg-bg-elevated-lum">
-        <div className="mx-auto max-w-4xl px-4 py-6">
+      <div className="border-border-steel bg-bg-elevated-lum border-b">
+        <div className="mx-auto max-w-5xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-text-primary-lum">Settings</h1>
-              <p className="mt-1 text-sm text-text-secondary-lum">
-                Manage your account settings and preferences
-              </p>
+              <h1 className="text-text-primary-lum text-2xl font-bold">{t('page.title')}</h1>
+              <p className="text-text-secondary-lum mt-1 text-sm">{t('page.subtitle')}</p>
             </div>
             <Link
               to="/"
-              className={`
-                flex items-center gap-2 rounded-lg border border-border-steel bg-bg-elevated-lum px-4 py-2 text-sm
-                font-medium text-text-secondary-lum transition
-                hover:bg-bg-steel
-              `}
+              className={cn(
+                'border-border-steel flex items-center gap-2 rounded-lg border',
+                'bg-bg-elevated-lum text-text-secondary-lum px-4 py-2 text-sm font-medium',
+                'hover:bg-bg-steel hover:text-text-primary-lum transition'
+              )}
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Back to Dashboard
+              <ArrowLeftIcon className="h-4 w-4" />
+              {t('common.cancel')}
             </Link>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div
-          className={`
-            flex flex-col gap-8
-            md:flex-row
-          `}
-        >
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <div className="flex flex-col gap-8 md:flex-row">
           {/* Sidebar Navigation */}
-          <div
-            className={`
-              w-full
-              md:w-64
-            `}
-          >
+          <div className="w-full md:w-56 lg:w-64">
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    flex w-full items-center gap-3 rounded-lg px-4 py-3
-                    text-left text-sm font-medium transition
-                    ${
-                      activeTab === tab.id
-                        ? 'bg-brand-cyan/10 text-brand-cyan'
-                        : `
-                          text-text-secondary-lum
-                          hover:bg-bg-elevated-lum hover:text-text-primary-lum
-                        `
-                    }
-                  `}
+                  className={cn(
+                    'flex w-full items-center gap-3 rounded-lg px-4 py-3',
+                    'text-left text-sm font-medium transition',
+                    activeTab === tab.id
+                      ? 'bg-brand-teal/10 text-brand-teal'
+                      : 'text-text-secondary-lum hover:bg-bg-elevated-lum hover:text-text-primary-lum'
+                  )}
                 >
                   {tab.icon}
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </button>
               ))}
             </nav>
@@ -141,40 +107,52 @@ function SettingsPage() {
 
           {/* Main Content */}
           <div className="flex-1">
+            {activeTab === 'appearance' && <AppearanceSettings />}
+
             {activeTab === 'security' && (
               <div className="space-y-6">
-                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
-                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
-                    Change Password
-                  </h2>
-                  <PasswordChangeForm />
-                </div>
-                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
-                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
-                    Two-Factor Authentication
-                  </h2>
-                  <TwoFactorSettings />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('security.password.title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PasswordChangeForm />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('security.twoFactor.title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TwoFactorSettings />
+                  </CardContent>
+                </Card>
               </div>
             )}
 
             {activeTab === 'account' && (
               <div className="space-y-6">
-                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
-                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">Change Email</h2>
-                  <EmailChangeForm />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('account.email.title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <EmailChangeForm />
+                  </CardContent>
+                </Card>
               </div>
             )}
 
             {activeTab === 'connections' && (
               <div className="space-y-6">
-                <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-6">
-                  <h2 className="mb-4 text-lg font-semibold text-text-primary-lum">
-                    Connected Accounts
-                  </h2>
-                  <ConnectedAccounts />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('connections.title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ConnectedAccounts />
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>

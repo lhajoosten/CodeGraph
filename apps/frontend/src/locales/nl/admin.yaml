@@ -1,0 +1,99 @@
+# Admin Panel Translations (Dutch)
+
+dashboard:
+  title: 'Beheerder Dashboard'
+  description: 'Beheer rollen, rechten en gebruikerstoegang over het platform'
+
+  stats:
+    total_users: 'Totaal Gebruikers'
+    total_roles: 'Totaal Rollen'
+    superusers: 'Supergebruikers'
+    unique_permissions: 'Unieke Rechten'
+
+  manage_roles:
+    title: 'Rollen Beheren'
+    description: 'Bekijk en configureer systeemrollen met hun rechten'
+    action: 'Rollen Bekijken'
+
+  manage_users:
+    title: 'Gebruikers Beheren'
+    description: 'Rollen toewijzen en gebruikerstoegang beheren'
+    action: 'Gebruikers Bekijken'
+
+  view_permissions:
+    title: 'Rechten Bekijken'
+    description: 'Bekijk alle beschikbare systeemrechten per categorie'
+    action: 'Rechten Bekijken'
+
+  system_info:
+    title: 'Systeem Informatie'
+    description: 'Huidige RBAC systeem statistieken'
+    roles_count: 'Totaal Rollen'
+    users_count: 'Totaal Gebruikers'
+    system_roles: 'Systeem Rollen'
+
+roles:
+  page_title: 'Rollen Beheer'
+  page_description: 'Bekijk en beheer systeemrollen en hun rechten'
+  detail_page_title: 'Rol Details'
+  detail_page_description: 'Bekijk rol informatie en toegewezen rechten'
+
+  columns:
+    name: 'Naam'
+    description: 'Beschrijving'
+    permissions: 'Rechten'
+    actions: 'Acties'
+
+  actions:
+    view: 'Details Bekijken'
+    edit: 'Bewerken'
+    delete: 'Verwijderen'
+
+  system_role: 'Systeem Rol'
+  no_description: 'Geen beschrijving opgegeven'
+  permissions_count: 'rechten'
+  total_permissions: 'Totaal Rechten'
+  permissions_category: 'Rechten'
+  permissions_section: 'Rechten'
+  role_information: 'Rol Informatie'
+
+  search_placeholder: 'Zoek rollen...'
+  empty_message: 'Geen rollen gevonden'
+  no_permissions: 'Deze rol heeft geen toegewezen rechten'
+  no_permissions_in_category: 'Geen rechten in deze categorie'
+  permissions_readonly_note: 'Rechten beheer zal beschikbaar zijn in een toekomstige update wanneer de backend API dit ondersteunt.'
+  system_role_info: 'Dit is een systeemrol en kan niet worden verwijderd of gewijzigd'
+  error_loading_role: 'Kon rol details niet laden. Probeer het opnieuw.'
+
+users:
+  page_title: 'Gebruikers Beheer'
+  page_description: 'Beheer gebruiker rol toewijzingen en rechten'
+
+  columns:
+    user_id: 'Gebruiker ID'
+    role: 'Rol'
+    permissions: 'Rechten'
+    actions: 'Acties'
+
+  actions:
+    manage_roles: 'Rollen Beheren'
+
+  superuser: 'Supergebruiker'
+  no_role: 'Geen Rol'
+  permissions_count: 'rechten'
+
+  assign_role_title: 'Rol Toewijzen'
+  assign_role_description: 'Selecteer een rol om toe te wijzen aan deze gebruiker'
+  current_role: 'Huidige Rol'
+  select_role: 'Selecteer Rol'
+  superuser_warning: 'Deze gebruiker is een supergebruiker en hun rol kan niet worden gewijzigd'
+
+  empty_message: 'Geen gebruikers gevonden'
+
+common:
+  loading: 'Laden...'
+  saving: 'Opslaan...'
+  save: 'Opslaan'
+  cancel: 'Annuleren'
+  back_to_list: 'Terug naar Lijst'
+  error_loading_data: 'Kon gegevens niet laden. Probeer het opnieuw.'

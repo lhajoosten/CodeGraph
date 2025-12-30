@@ -60,7 +60,7 @@ function DefaultPaginationWrapper() {
         onPageChange={setPage}
         onItemsPerPageChange={setItemsPerPage}
       />
-      <p className="text-sm text-text-secondary-lum">
+      <p className="text-text-secondary-lum text-sm">
         Current page: {page} | Items per page: {itemsPerPage}
       </p>
     </div>
@@ -94,7 +94,7 @@ function ManyPagesPaginationWrapper() {
         showItemsPerPageSelector={false}
         onPageChange={setPage}
       />
-      <p className="text-sm text-text-secondary-lum">
+      <p className="text-text-secondary-lum text-sm">
         Current page: {page} | Showing pages with ellipsis for large ranges
       </p>
     </div>

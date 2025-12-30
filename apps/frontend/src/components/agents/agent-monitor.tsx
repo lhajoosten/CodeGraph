@@ -72,13 +72,13 @@ export function AgentMonitor({ taskId, enabled = true, className }: AgentMonitor
             {isConnecting ? (
               <Spinner size="sm" />
             ) : isConnected ? (
-              <WifiIcon className="h-5 w-5 text-success" />
+              <WifiIcon className="text-success h-5 w-5" />
             ) : (
-              <ExclamationCircleIcon className="h-5 w-5 text-error" />
+              <ExclamationCircleIcon className="text-error h-5 w-5" />
             )}
             <div>
-              <h3 className="font-semibold text-text-primary-lum">Agent Activity</h3>
-              <p className="text-xs text-text-muted-lum">
+              <h3 className="text-text-primary-lum font-semibold">Agent Activity</h3>
+              <p className="text-text-muted-lum text-xs">
                 {isConnecting
                   ? 'Connecting...'
                   : isConnected
@@ -123,7 +123,7 @@ export function AgentMonitor({ taskId, enabled = true, className }: AgentMonitor
       {logs.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
-            <h3 className="font-semibold text-text-primary-lum">Activity Log</h3>
+            <h3 className="text-text-primary-lum font-semibold">Activity Log</h3>
           </CardHeader>
           <CardContent>
             <AgentLog updates={logs} />

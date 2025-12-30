@@ -133,7 +133,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-[32px] right-3 text-text-muted-lum transition-colors hover:text-text-secondary-lum"
+            className="text-text-muted-lum absolute top-[32px] right-3 transition-colors hover:text-text-secondary-lum"
             tabIndex={-1}
           >
             {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
@@ -167,7 +167,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         <button
           type="button"
           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          className="absolute top-[32px] right-3 text-text-muted-lum transition-colors hover:text-text-secondary-lum"
+          className="text-text-muted-lum absolute top-[32px] right-3 transition-colors hover:text-text-secondary-lum"
           tabIndex={-1}
         >
           {showConfirmPassword ? (
@@ -181,14 +181,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <label className="flex cursor-pointer items-start gap-3">
         <input
           type="checkbox"
-          className="mt-1 cursor-pointer rounded border-border-steel"
+          className="border-border-steel mt-1 cursor-pointer rounded"
           disabled={isSubmitting || registerMutation.isPending}
           {...register('acceptTerms')}
         />
-        <span className="text-sm text-text-secondary-lum">{t('luminous.signup.acceptTerms')}</span>
+        <span className="text-text-secondary-lum text-sm">{t('luminous.signup.acceptTerms')}</span>
       </label>
 
-      {errors.acceptTerms && <p className="text-xs text-error">{errors.acceptTerms.message}</p>}
+      {errors.acceptTerms && <p className="text-error text-xs">{errors.acceptTerms.message}</p>}
 
       <button
         type="submit"
@@ -210,9 +210,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </button>
 
-      <p className="text-center text-sm text-text-secondary-lum">
+      <p className="text-text-secondary-lum text-center text-sm">
         {t('luminous.signup.haveAccount')}{' '}
-        <a href="/login" className="text-brand-cyan hover:text-brand-teal">
+        <a href="/login" className="hover:text-brand-teal text-brand-cyan">
           {t('luminous.signup.signin')}
         </a>
       </p>

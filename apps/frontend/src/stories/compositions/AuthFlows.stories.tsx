@@ -75,10 +75,10 @@ export const LoginFlow: StoryObj = {
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex cursor-pointer items-center gap-2">
-                  <input type="checkbox" className="rounded border-border-steel" />
+                  <input type="checkbox" className="border-border-steel rounded" />
                   <span className="text-text-secondary-lum">Remember me</span>
                 </label>
-                <a href="#" className="text-brand-cyan transition-colors hover:text-brand-teal">
+                <a href="#" className="hover:text-brand-teal text-brand-cyan transition-colors">
                   Forgot password?
                 </a>
               </div>
@@ -93,10 +93,10 @@ export const LoginFlow: StoryObj = {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border-steel" />
+                <div className="border-border-steel w-full border-t" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-bg-steel px-3 text-text-muted-lum">Or continue with</span>
+                <span className="bg-bg-steel text-text-muted-lum px-3">Or continue with</span>
               </div>
             </div>
 
@@ -106,9 +106,9 @@ export const LoginFlow: StoryObj = {
               <OAuthButton provider="microsoft" />
             </div>
 
-            <p className="mt-6 text-center text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum mt-6 text-center text-sm">
               Don&apos;t have an account?{' '}
-              <a href="#" className="text-brand-cyan transition-colors hover:text-brand-teal">
+              <a href="#" className="hover:text-brand-teal text-brand-cyan transition-colors">
                 Sign up
               </a>
             </p>
@@ -221,7 +221,7 @@ export const RegisterFlow: StoryObj = {
               <label className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
-                  className="rounded border-border-steel"
+                  className="border-border-steel rounded"
                   checked={formData.acceptTerms}
                   onChange={(e) =>
                     setFormData({
@@ -230,13 +230,13 @@ export const RegisterFlow: StoryObj = {
                     })
                   }
                 />
-                <span className="text-sm text-text-secondary-lum">
+                <span className="text-text-secondary-lum text-sm">
                   I agree to the{' '}
-                  <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                  <a href="#" className="hover:text-brand-teal text-brand-cyan">
                     Terms of Service
                   </a>{' '}
                   and{' '}
-                  <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                  <a href="#" className="hover:text-brand-teal text-brand-cyan">
                     Privacy Policy
                   </a>
                 </span>
@@ -250,9 +250,9 @@ export const RegisterFlow: StoryObj = {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-text-secondary-lum">
+            <p className="text-text-secondary-lum mt-6 text-center text-sm">
               Already have an account?{' '}
-              <a href="#" className="text-brand-cyan transition-colors hover:text-brand-teal">
+              <a href="#" className="hover:text-brand-teal text-brand-cyan transition-colors">
                 Sign in
               </a>
             </p>
@@ -309,8 +309,8 @@ export const Setup2FAFlow: StoryObj = {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm text-text-secondary-lum">Or enter this key manually:</p>
-                  <div className="rounded-lg bg-bg-steel p-3 font-mono text-sm break-all text-text-primary-lum">
+                  <p className="text-text-secondary-lum text-sm">Or enter this key manually:</p>
+                  <div className="bg-bg-steel text-text-primary-lum rounded-lg p-3 font-mono text-sm break-all">
                     JBSWY3DPEBLW64TMMQQ======
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export const Setup2FAFlow: StoryObj = {
                       setStep('qr');
                       setOtp('');
                     }}
-                    className="flex-1 rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel"
+                    className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel"
                   >
                     Back
                   </button>
@@ -352,8 +352,8 @@ export const Setup2FAFlow: StoryObj = {
 
             {step === 'backup' && (
               <div className="space-y-4">
-                <div className="rounded-lg border border-warning/30 bg-warning/10 p-3">
-                  <p className="text-sm text-warning">
+                <div className="border-warning/30 bg-warning/10 rounded-lg border p-3">
+                  <p className="text-warning text-sm">
                     ⚠️ Save these codes in a safe place. You&apos;ll need them if you lose access to
                     your authenticator app.
                   </p>
@@ -363,14 +363,14 @@ export const Setup2FAFlow: StoryObj = {
                   {backupCodes.map((code, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between rounded-lg bg-bg-steel p-3 font-mono text-sm text-text-primary-lum"
+                      className="bg-bg-steel text-text-primary-lum flex items-center justify-between rounded-lg p-3 font-mono text-sm"
                     >
                       <span>{code}</span>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(code);
                         }}
-                        className="text-xs text-brand-cyan hover:text-brand-teal"
+                        className="hover:text-brand-teal text-xs text-brand-cyan"
                       >
                         Copy
                       </button>
@@ -383,9 +383,9 @@ export const Setup2FAFlow: StoryObj = {
                     type="checkbox"
                     checked={codesConfirmed}
                     onChange={(e) => setCodesConfirmed(e.target.checked)}
-                    className="rounded border-border-steel"
+                    className="border-border-steel rounded"
                   />
-                  <span className="text-sm text-text-secondary-lum">
+                  <span className="text-text-secondary-lum text-sm">
                     I have saved my backup codes in a safe place
                   </span>
                 </label>
@@ -430,7 +430,7 @@ export const Verify2FAFlow: StoryObj = {
 
                   <button
                     onClick={() => setUseBackupCode(true)}
-                    className="w-full text-sm text-text-secondary-lum transition-colors hover:text-brand-cyan"
+                    className="text-text-secondary-lum w-full text-sm transition-colors hover:text-brand-cyan"
                   >
                     Use backup code instead
                   </button>
@@ -446,7 +446,7 @@ export const Verify2FAFlow: StoryObj = {
 
                   <button
                     onClick={() => setUseBackupCode(false)}
-                    className="w-full text-sm text-text-secondary-lum transition-colors hover:text-brand-cyan"
+                    className="text-text-secondary-lum w-full text-sm transition-colors hover:text-brand-cyan"
                   >
                     Use authenticator app instead
                   </button>
@@ -514,9 +514,9 @@ export const ForgotPasswordFlow: StoryObj = {
                   Send Reset Link
                 </button>
 
-                <p className="text-center text-sm text-text-secondary-lum">
+                <p className="text-text-secondary-lum text-center text-sm">
                   Remember your password?{' '}
-                  <a href="#" className="text-brand-cyan hover:text-brand-teal">
+                  <a href="#" className="hover:text-brand-teal text-brand-cyan">
                     Sign in
                   </a>
                 </p>
@@ -527,7 +527,7 @@ export const ForgotPasswordFlow: StoryObj = {
                   <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
                 </div>
 
-                <p className="text-center text-text-secondary-lum">
+                <p className="text-text-secondary-lum text-center">
                   Check your email for the password reset link. If you don&apos;t see it, check your
                   spam folder.
                 </p>
@@ -538,7 +538,7 @@ export const ForgotPasswordFlow: StoryObj = {
                       setSubmitted(false);
                       setEmail('');
                     }}
-                    className="flex-1 rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel"
+                    className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel"
                   >
                     Try Another Email
                   </button>
@@ -631,7 +631,7 @@ export const ResetPasswordFlow: StoryObj = {
                   <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
                 </div>
 
-                <p className="text-center text-text-secondary-lum">
+                <p className="text-text-secondary-lum text-center">
                   Your password has been reset. You can now sign in with your new password.
                 </p>
 

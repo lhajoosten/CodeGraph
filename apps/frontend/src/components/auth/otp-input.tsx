@@ -1,29 +1,68 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 
 interface OTPInputProps {
   length?: number;
   value: string;
   onChange: (value: string) => void;
+  onComplete?: (value: string) => void;
+  autoSubmit?: boolean;
   disabled?: boolean;
+  error?: boolean;
+  label?: string;
+  hint?: string;
 }
 
 /**
  * OTP Input - 6-digit one-time password input
  * - Individual input boxes for each digit
  * - Auto-advance to next field on digit entry
+ * - Auto-submit when all digits are filled (optional)
  * - Paste support (6-digit codes split across fields)
  * - Backspace navigation (focus previous field)
- * - Cyan glow on focus
+ * - Modern styling with smooth animations
  */
-export function OTPInput({ length = 6, value, onChange, disabled = false }: OTPInputProps) {
+export function OTPInput({
+  length = 6,
+  value,
+  onChange,
+  onComplete,
+  autoSubmit = false,
+  disabled = false,
+  error = false,
+  label = 'Verification Code',
+  hint = 'Enter the 6-digit code from your authenticator app',
+}: OTPInputProps) {
   const [otp, setOtp] = useState<string[]>(
     value.split('').concat(Array(length - value.length).fill(''))
   );
+  const [hasCompleted, setHasCompleted] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     setOtp(value.split('').concat(Array(length - value.length).fill('')));
+    // Reset completion flag when value changes (e.g., when cleared after error)
+    if (value.length < length) {
+      setHasCompleted(false);
+    }
   }, [value, length]);
+
+  const triggerComplete = useCallback(
+    (completeValue: string) => {
+      if (autoSubmit && onComplete && !hasCompleted && completeValue.length === length) {
+        // Ensure all digits are present (no empty strings)
+        const allFilled = completeValue.split('').every((d) => d !== '');
+        if (allFilled) {
+          setHasCompleted(true);
+          // Small delay to allow the UI to update before submitting
+          setTimeout(() => {
+            onComplete(completeValue);
+          }, 100);
+        }
+      }
+    },
+    [autoSubmit, onComplete, hasCompleted, length]
+  );
 
   const handleChange = (index: number, val: string) => {
     // Only allow digits
@@ -41,21 +80,31 @@ export function OTPInput({ length = 6, value, onChange, disabled = false }: OTPI
       });
 
       setOtp(newOtp);
-      onChange(newOtp.join(''));
+      const newValue = newOtp.join('');
+      onChange(newValue);
 
-      // Focus last filled field
+      // Focus last filled field or last field
       const nextIndex = Math.min(index + pastedDigits.length, length - 1);
       inputRefs.current[nextIndex]?.focus();
+
+      // Check for completion
+      triggerComplete(newValue);
     } else {
       // Single digit entry
       const newOtp = [...otp];
       newOtp[index] = digit;
       setOtp(newOtp);
-      onChange(newOtp.join(''));
+      const newValue = newOtp.join('');
+      onChange(newValue);
 
       // Auto-advance to next field
       if (digit && index < length - 1) {
         inputRefs.current[index + 1]?.focus();
+      }
+
+      // Check for completion (if this is the last digit)
+      if (digit && index === length - 1) {
+        triggerComplete(newValue);
       }
     }
   };
@@ -79,11 +128,20 @@ export function OTPInput({ length = 6, value, onChange, disabled = false }: OTPI
     }
   };
 
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-text-secondary-lum">Verification Code</label>
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Select the content when focusing
+    e.target.select();
+  };
 
-      <div className="flex justify-center gap-2">
+  return (
+    <div className="space-y-4">
+      {label && (
+        <label className="text-text-secondary-lum block text-center text-sm font-medium">
+          {label}
+        </label>
+      )}
+
+      <div className="flex justify-center gap-3">
         {Array.from({ length }).map((_, index) => (
           <input
             key={index}
@@ -92,31 +150,37 @@ export function OTPInput({ length = 6, value, onChange, disabled = false }: OTPI
             }}
             type="text"
             inputMode="numeric"
+            autoComplete="one-time-code"
             maxLength={1}
             value={otp[index] || ''}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
+            onFocus={handleFocus}
             disabled={disabled}
-            className={`
-              h-12 w-12 rounded-lg border-2 bg-[rgba(15,23,42,0.5)]
-              text-center text-xl font-semibold text-text-primary-lum
-              backdrop-blur-sm transition-all
-              placeholder:text-text-muted-lum
-              ${
-                otp[index]
-                  ? 'border-brand-cyan shadow-[0_0_8px_rgba(34,211,238,0.3)]'
-                  : 'border-border-default-lum'
-              }
-              focus:border-brand-cyan focus:shadow-[0_0_12px_rgba(34,211,238,0.4)] focus:outline-none
-              disabled:cursor-not-allowed disabled:opacity-50
-            `}
+            aria-label={`Digit ${index + 1}`}
+            className={cn(
+              // Base styles
+              'h-14 w-12 rounded-xl border-2 text-center text-2xl font-bold',
+              'bg-bg-elevated-lum/80 text-text-primary-lum backdrop-blur-sm',
+              'transition-all duration-200 ease-out',
+              'placeholder:text-text-muted-lum',
+              // Error state
+              error
+                ? 'border-error animate-shake shadow-[0_0_12px_rgba(239,68,68,0.4)]'
+                : // Focus and filled states
+                  otp[index]
+                  ? 'border-brand-teal shadow-glow-teal scale-[1.02]'
+                  : 'border-border-default-lum hover:border-brand-teal/50',
+              !error &&
+                'focus:border-brand-teal focus:shadow-glow-teal focus:scale-105 focus:outline-none',
+              // Disabled state
+              'disabled:hover:border-border-default-lum disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50'
+            )}
           />
         ))}
       </div>
 
-      <p className="text-center text-xs text-text-muted-lum">
-        Enter the 6-digit code sent to your email
-      </p>
+      {hint && <p className="text-text-muted-lum text-center text-xs">{hint}</p>}
     </div>
   );
 }

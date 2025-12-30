@@ -50,9 +50,9 @@ export const RadioGroupItem = React.forwardRef<
         ref={ref}
         value={value}
         className={cn(
-          'relative h-5 w-5 rounded-full border-2 border-border-steel',
+          'border-border-steel relative h-5 w-5 rounded-full border-2',
           'bg-transparent transition-all duration-200',
-          'focus-visible:ring-2 focus-visible:ring-brand-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary-lum focus-visible:outline-none',
+          'focus-visible:ring-offset-bg-primary-lum focus-visible:ring-2 focus-visible:ring-brand-cyan/50 focus-visible:ring-offset-2 focus-visible:outline-none',
           'hover:border-brand-cyan/50',
           'data-[state=checked]:border-brand-cyan data-[state=checked]:shadow-[0_0_12px_rgba(34,211,238,0.3)]',
           'disabled:cursor-not-allowed disabled:opacity-50',
@@ -68,8 +68,8 @@ export const RadioGroupItem = React.forwardRef<
 
     {(label || description) && (
       <div className="flex-1">
-        {label && <label className="text-sm font-medium text-text-primary-lum">{label}</label>}
-        {description && <p className="text-xs text-text-secondary-lum">{description}</p>}
+        {label && <label className="text-text-primary-lum text-sm font-medium">{label}</label>}
+        {description && <p className="text-text-secondary-lum text-xs">{description}</p>}
       </div>
     )}
 

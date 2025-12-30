@@ -1,0 +1,105 @@
+# Settings page translations (German)
+
+page:
+  title: 'Einstellungen'
+  subtitle: 'Verwalte deine Kontoeinstellungen und Praferenzen'
+
+tabs:
+  appearance: 'Darstellung'
+  security: 'Sicherheit'
+  account: 'Konto'
+  connections: 'Verbundene Konten'
+
+appearance:
+  theme:
+    title: 'Design'
+    description: 'Wahle wie CodeGraph fur dich aussieht'
+    light: 'Hell'
+    lightDescription: 'Helle Teal-getonte Oberflache'
+    dark: 'Dunkel'
+    darkDescription: 'Dunkle leuchtende Oberflache'
+    system: 'System'
+    systemDescription: 'Folge deinen Systemeinstellungen'
+  language:
+    title: 'Sprache'
+    description: 'Wahle deine bevorzugte Sprache'
+
+security:
+  password:
+    title: 'Passwort andern'
+    description: 'Aktualisiere dein Passwort, um dein Konto sicher zu halten'
+    currentPassword: 'Aktuelles Passwort'
+    newPassword: 'Neues Passwort'
+    confirmPassword: 'Neues Passwort bestatigen'
+    submit: 'Passwort aktualisieren'
+    success: 'Passwort erfolgreich aktualisiert'
+    minLength: 'Mindestens 8 Zeichen'
+  twoFactor:
+    title: 'Zwei-Faktor-Authentifizierung'
+    description: 'Fuge deinem Konto eine zusatzliche Sicherheitsebene hinzu'
+    enabled: 'Aktiviert'
+    disabled: 'Deaktiviert'
+    enabledDescription: 'Dein Konto ist mit 2FA geschutzt'
+    disabledDescription: 'Aktiviere 2FA fur bessere Sicherheit'
+    enable: '2FA aktivieren'
+    disable: '2FA deaktivieren'
+    regenerate: 'Backup-Codes neu generieren'
+    verificationCode: 'Bestatigungscode'
+    enterCode: 'Gib den 6-stelligen Code deiner Authenticator-App ein'
+    scanQR: 'Scanne diesen QR-Code mit deiner Authenticator-App'
+    manualEntry: 'Oder gib diesen Code manuell ein'
+    backupCodes:
+      title: 'Speichere deine Backup-Codes'
+      description: 'Bewahre diese Codes an einem sicheren Ort auf. Du kannst sie verwenden, um auf dein Konto zuzugreifen, wenn du deinen Authenticator verlierst.'
+      copy: 'Kopieren'
+      copied: 'Kopiert!'
+      download: 'Herunterladen'
+      saved: 'Ich habe meine Backup-Codes gespeichert'
+    confirmDisable: 'Bist du sicher, dass du die Zwei-Faktor-Authentifizierung deaktivieren mochtest?'
+    confirmPassword: 'Gib dein Passwort zur Bestatigung ein'
+
+account:
+  email:
+    title: 'E-Mail-Adresse'
+    description: 'Andere die mit deinem Konto verknupfte E-Mail-Adresse'
+    currentEmail: 'Aktuelle E-Mail'
+    newEmail: 'Neue E-Mail-Adresse'
+    confirmPassword: 'Mit Passwort bestatigen'
+    passwordHint: 'Gib dein Passwort ein, um diese Anderung zu bestatigen'
+    submit: 'E-Mail aktualisieren'
+    successTitle: 'Bestatigungs-E-Mail gesendet'
+    successDescription: 'Wir haben einen Bestatigungslink an deine neue E-Mail-Adresse gesendet. Bitte prufe deinen Posteingang.'
+    changeAnother: 'Andere E-Mail verwenden'
+
+connections:
+  title: 'Verbundene Konten'
+  description: 'Verbinde deine Konten fur einfachere Anmeldung'
+  connected: 'Verbunden'
+  notConnected: 'Nicht verbunden'
+  connect: 'Verbinden'
+  disconnect: 'Trennen'
+  disconnecting: 'Wird getrennt...'
+  confirmDisconnect: '{provider} trennen?'
+  confirmDisconnectDescription: 'Du kannst dich nicht mehr mit diesem Konto anmelden.'
+  providers:
+    google: 'Google'
+    github: 'GitHub'
+    microsoft: 'Microsoft'
+
+common:
+  save: 'Speichern'
+  cancel: 'Abbrechen'
+  confirm: 'Bestatigen'
+  loading: 'Laden...'
+  success: 'Erfolg'
+  error: 'Fehler'
+
+errors:
+  required: 'Dieses Feld ist erforderlich'
+  invalidEmail: 'Bitte gib eine gultige E-Mail-Adresse ein'
+  passwordTooShort: 'Passwort muss mindestens 8 Zeichen haben'
+  passwordsMismatch: 'Passworter stimmen nicht uberein'
+  samePassword: 'Neues Passwort muss sich vom aktuellen unterscheiden'
+  sameEmail: 'Neue E-Mail muss sich von der aktuellen unterscheiden'
+  invalidCode: 'Ungultiger Bestatigungscode'
+  generic: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.'

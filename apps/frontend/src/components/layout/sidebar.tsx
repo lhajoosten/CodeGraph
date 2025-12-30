@@ -8,12 +8,14 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   BellAlertIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { SimpleTooltip, TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { APP_NAME } from '@/lib/constants';
+import { useFetchCurrentUser } from '@/hooks/api';
 
 interface NavItem {
   href: string;
@@ -55,7 +57,7 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
           transition-colors
         `,
         active
-          ? 'bg-brand-cyan/10 text-text-secondary-lum'
+          ? 'text-text-secondary-lum bg-brand-cyan/10'
           : `
             text-text-secondary-lum
             hover:bg-bg-elevated-lum hover:text-text-primary-lum
@@ -93,6 +95,7 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
 
 function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
   const location = useLocation();
+  const { data: user } = useFetchCurrentUser();
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -101,13 +104,18 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
     return location.pathname.startsWith(href);
   };
 
+  // Only show admin link for superusers
+  const adminNavItem: NavItem | null = user?.is_superuser
+    ? { href: '/admin', label: 'Admin', icon: ShieldCheckIcon }
+    : null;
+
   return (
     <TooltipProvider>
       <aside
         className={cn(
           `
-            fixed top-0 left-0 z-40 flex h-screen flex-col
-            border-r border-border-steel bg-bg-steel transition-all duration-300
+            border-border-steel bg-bg-steel fixed top-0 left-0 z-40 flex
+            h-screen flex-col border-r transition-all duration-300
           `,
           isOpen ? 'w-64' : 'w-16',
           className
@@ -116,7 +124,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         {/* Logo */}
         <div
           className={`
-            flex h-16 items-center justify-between border-b border-border-steel px-4
+            border-border-steel flex h-16 items-center justify-between border-b px-4
           `}
         >
           {isOpen ? (
@@ -134,8 +142,8 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
             <Link
               to="/"
               className={`
-                mx-auto flex h-8 w-8 items-center justify-center rounded-lg
-                bg-primary
+                bg-primary mx-auto flex h-8 w-8 items-center justify-center
+                rounded-lg
               `}
             >
               <span className="text-lg font-bold text-white">C</span>
@@ -151,7 +159,14 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         </nav>
 
         {/* Bottom section */}
-        <div className="space-y-1 border-t border-border p-3">
+        <div className="border-border space-y-1 border-t p-3">
+          {adminNavItem && (
+            <>
+              <NavLink item={adminNavItem} isActive={isActive} isOpen={isOpen} />
+              <Separator className="my-2" />
+            </>
+          )}
+
           {bottomNavItems.map((item) => (
             <NavLink key={item.href} item={item} isActive={isActive} isOpen={isOpen} />
           ))}

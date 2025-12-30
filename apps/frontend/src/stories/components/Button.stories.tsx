@@ -191,27 +191,27 @@ export const LuminousVariantsShowcase: Story = {
   render: () => (
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Primary Action</p>
+        <p className="text-text-secondary-lum font-semibold">Primary Action</p>
         <Button variant="default">Sign In</Button>
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Secondary Action</p>
+        <p className="text-text-secondary-lum font-semibold">Secondary Action</p>
         <Button variant="secondary">Cancel</Button>
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Ghost / Outline</p>
+        <p className="text-text-secondary-lum font-semibold">Ghost / Outline</p>
         <Button variant="ghost">Learn More</Button>
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Destructive</p>
+        <p className="text-text-secondary-lum font-semibold">Destructive</p>
         <Button variant="destructive">Delete</Button>
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">Size Variants</p>
+        <p className="text-text-secondary-lum font-semibold">Size Variants</p>
         <div className="flex flex-wrap gap-2">
           <Button variant="default" size="sm">
             Small
@@ -229,7 +229,7 @@ export const LuminousVariantsShowcase: Story = {
       </div>
 
       <div className="space-y-3">
-        <p className="font-semibold text-text-secondary-lum">States</p>
+        <p className="text-text-secondary-lum font-semibold">States</p>
         <div className="flex flex-wrap gap-2">
           <Button variant="default">Normal</Button>
           <Button variant="default" disabled>
@@ -248,7 +248,7 @@ export const AllVariants: Story = {
   render: () => (
     <div className="w-full max-w-4xl space-y-12">
       <section className="space-y-4">
-        <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
+        <h3 className="border-border-steel text-text-primary-lum border-b pb-2 text-lg font-semibold">
           Luminous Theme Variants
         </h3>
         <div className="grid grid-cols-2 gap-4">
@@ -265,7 +265,7 @@ export const AllVariants: Story = {
       </section>
 
       <section className="space-y-4">
-        <h3 className="border-b border-border-steel pb-2 text-lg font-semibold text-text-primary-lum">
+        <h3 className="border-border-steel text-text-primary-lum border-b pb-2 text-lg font-semibold">
           Size Variants
         </h3>
         <div className="space-y-3">

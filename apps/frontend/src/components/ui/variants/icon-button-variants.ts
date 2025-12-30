@@ -26,7 +26,7 @@ export const iconButtonVariants = cva(
           active:opacity-90
         `,
         outline: `
-          border border-border-steel bg-transparent text-text-primary-lum
+          border-border-steel text-text-primary-lum border bg-transparent
           hover:bg-bg-elevated-lum
           active:bg-bg-steel
         `,

@@ -23,7 +23,7 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
       {/* Overall progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-text-primary-lum">Overall Progress</span>
+          <span className="text-text-primary-lum font-medium">Overall Progress</span>
           <span className="text-text-secondary-lum">{Math.round(totalProgress)}%</span>
         </div>
         <Progress value={totalProgress} size="lg" />
@@ -32,7 +32,7 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
       {/* Step indicators */}
       <div className="relative">
         {/* Connector line */}
-        <div className="absolute top-0 bottom-0 left-4 w-0.5 bg-border" />
+        <div className="bg-border absolute top-0 bottom-0 left-4 w-0.5" />
 
         <div className="space-y-4">
           {steps.map((step, index) => {
@@ -83,7 +83,7 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                       {AGENT_TYPE_LABELS[step.type]}
                     </span>
                     {isRunning && (
-                      <span className="text-xs text-text-secondary-lum">{step.progress}%</span>
+                      <span className="text-text-secondary-lum text-xs">{step.progress}%</span>
                     )}
                   </div>
                   {isRunning && (

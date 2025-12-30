@@ -80,8 +80,8 @@ webhookDetail:
 webhookSecret:
   title: 'Webhook Secret'
   newTitle: 'New Webhook Secret'
-  description: 'Your new webhook secret has been generated. Make sure to save it now - you won\'t be able to see it again!'
-  saveWarning: 'Save this secret key now - you won\'t be able to see it again!'
+  description: 'Your new webhook secret has been generated. Make sure to save it now - you will not be able to see it again!'
+  saveWarning: 'Save this secret key now - you will not be able to see it again!'
   useHint: 'Use this secret to verify webhook signatures.'
   copySuccess: 'Copied to Clipboard'
   copySuccessMessage: 'Webhook secret copied successfully.'

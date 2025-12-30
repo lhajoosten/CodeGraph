@@ -20,12 +20,12 @@ export const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
     return (
       <div className="space-y-2">
         {label && (
-          <label className="block text-sm font-medium text-text-secondary-lum">{label}</label>
+          <label className="text-text-secondary-lum block text-sm font-medium">{label}</label>
         )}
 
         <div className="relative">
           {Icon && (
-            <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-text-muted-lum">
+            <div className="text-text-muted-lum pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
               <Icon className="h-[18px] w-[18px]" />
             </div>
           )}
@@ -38,9 +38,9 @@ export const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
           />
         </div>
 
-        {error && <p className="text-xs font-medium text-error">{error}</p>}
+        {error && <p className="text-error text-xs font-medium">{error}</p>}
 
-        {!error && helperText && <p className="text-xs text-text-muted-lum">{helperText}</p>}
+        {!error && helperText && <p className="text-text-muted-lum text-xs">{helperText}</p>}
       </div>
     );
   }

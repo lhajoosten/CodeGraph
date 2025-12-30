@@ -71,6 +71,15 @@ client.instance.interceptors.response.use(
       const authMethod = error.response.headers['x-auth-method'];
       const errorDetail = error.response.data?.detail;
 
+      // Don't intercept 2FA verification errors - let the component handle them
+      // These endpoints are expected to return 401 for invalid codes
+      if (
+        originalRequest.url?.includes('/auth/verify-2fa') ||
+        originalRequest.url?.includes('/auth/setup-2fa')
+      ) {
+        return Promise.reject(error);
+      }
+
       // Handle OAuth token expiry - redirect to OAuth provider for re-authentication
       if (authMethod === 'oauth' || errorDetail === 'oauth_reauthentication_required') {
         // Store current path for redirect after OAuth re-authentication

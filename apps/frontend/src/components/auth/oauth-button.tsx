@@ -60,7 +60,7 @@ export function OAuthButton({ provider, onClick, href, disabled = false }: OAuth
     return (
       <a
         href={href}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border-steel bg-bg-elevated-lum py-3 font-semibold text-text-primary-lum transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+        className="border-border-steel bg-bg-elevated-lum text-text-primary-lum inline-flex w-full items-center justify-center gap-2 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
       >
         {icon}
         {label}

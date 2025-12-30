@@ -42,12 +42,12 @@ function EmptyState({
         className
       )}
     >
-      <div className="mb-4 rounded-full bg-bg-elevated-lum p-4">
-        <Icon className="h-8 w-8 text-text-secondary-lum" />
+      <div className="bg-bg-elevated-lum mb-4 rounded-full p-4">
+        <Icon className="text-text-secondary-lum h-8 w-8" />
       </div>
-      <h3 className="mb-1 text-lg font-semibold text-text-primary-lum">{title}</h3>
+      <h3 className="text-text-primary-lum mb-1 text-lg font-semibold">{title}</h3>
       {description && (
-        <p className="mb-6 max-w-sm text-sm text-text-secondary-lum">{description}</p>
+        <p className="text-text-secondary-lum mb-6 max-w-sm text-sm">{description}</p>
       )}
       {(action || secondaryAction) && (
         <div className="flex items-center gap-3">

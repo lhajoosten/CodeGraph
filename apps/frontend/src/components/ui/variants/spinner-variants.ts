@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
-export const spinnerVariants = cva('animate-spin text-primary', {
+export const spinnerVariants = cva('text-primary animate-spin', {
   variants: {
     size: {
       default: 'h-6 w-6',

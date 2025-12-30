@@ -116,7 +116,7 @@ export function MetricsChart({ data, isLoading = false, onPeriodChange }: Metric
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
-          <div className="flex h-64 items-center justify-center text-text-tertiary">
+          <div className="text-text-tertiary flex h-64 items-center justify-center">
             <p>No data available for the selected period</p>
           </div>
         ) : (

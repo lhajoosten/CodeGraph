@@ -40,8 +40,8 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
     <Card
       className={cn(
         `
-          transition-all duration-200
           hover:border-primary/50 hover:shadow-card
+          transition-all duration-200
         `,
         className
       )}
@@ -56,7 +56,7 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
             to="/tasks/$id"
             params={{ id: String(task.id) }}
             className={`
-              line-clamp-1 text-lg font-semibold text-text-primary
+              text-text-primary line-clamp-1 text-lg font-semibold
               transition-colors
               hover:text-primary
             `}
@@ -106,13 +106,13 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
 
       {task.description && (
         <CardContent className="py-2">
-          <p className="line-clamp-2 text-sm text-text-secondary">
+          <p className="text-text-secondary line-clamp-2 text-sm">
             {truncate(task.description, 150)}
           </p>
         </CardContent>
       )}
 
-      <CardFooter className="pt-2 text-xs text-text-secondary-lum">
+      <CardFooter className="text-text-secondary-lum pt-2 text-xs">
         Updated {formatRelativeTime(task.updated_at)}
       </CardFooter>
     </Card>

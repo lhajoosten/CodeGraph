@@ -19,12 +19,12 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       `
-        flex h-10 w-full items-center justify-between rounded-md border
-        bg-background-2 px-3 py-2 text-sm
+        bg-background-2 flex h-10 w-full items-center justify-between rounded-md
+        border px-3 py-2 text-sm
       `,
       'ring-offset-background-2 transition-colors',
       'placeholder:text-text-tertiary',
-      'focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
+      'focus:ring-primary focus:ring-2 focus:ring-offset-2 focus:outline-none',
       'disabled:cursor-not-allowed disabled:opacity-50',
       '[&>span]:line-clamp-1',
       error
@@ -82,8 +82,8 @@ const SelectContent = React.forwardRef<
       ref={ref}
       className={cn(
         `
-          relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border
-          border-border bg-background-2 text-text-primary shadow-modal
+          border-border bg-background-2 text-text-primary shadow-modal relative z-50 max-h-96
+          min-w-[8rem] overflow-hidden rounded-md border
         `,
         `
           data-[state=open]:animate-in
@@ -185,7 +185,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-border', className)}
+    className={cn('bg-border -mx-1 my-1 h-px', className)}
     {...props}
   />
 ));

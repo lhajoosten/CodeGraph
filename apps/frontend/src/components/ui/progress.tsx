@@ -28,8 +28,8 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
       {showValue && (
         <span
           className={`
-            absolute top-0 right-0 -translate-y-full pb-1 text-xs
-            text-text-secondary
+            text-text-secondary absolute top-0 right-0 -translate-y-full pb-1
+            text-xs
           `}
         >
           {value}%

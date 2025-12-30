@@ -9,6 +9,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body>
+    <script>
+      // Theme initialization - prevents flash of wrong theme
+      (function() {
+        try {
+          var stored = localStorage.getItem('theme-storage');
+          if (stored) {
+            var parsed = JSON.parse(stored);
+            var theme = parsed.state && parsed.state.theme;
+            if (theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            } else if (theme === 'system') {
+              if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+              }
+            }
+            // 'light' is default, no class needed
+          }
+        } catch (e) {
+          // If error, use light theme (default)
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="src/main.tsx"></script>
   </body>

@@ -1,0 +1,105 @@
+# Settings page translations (Dutch)
+
+page:
+  title: 'Instellingen'
+  subtitle: 'Beheer je accountinstellingen en voorkeuren'
+
+tabs:
+  appearance: 'Weergave'
+  security: 'Beveiliging'
+  account: 'Account'
+  connections: 'Gekoppelde Accounts'
+
+appearance:
+  theme:
+    title: 'Thema'
+    description: 'Kies hoe CodeGraph eruitziet'
+    light: 'Licht'
+    lightDescription: 'Heldere teal-getinte interface'
+    dark: 'Donker'
+    darkDescription: 'Donkere lumineuze interface'
+    system: 'Systeem'
+    systemDescription: 'Volg je systeeminstellingen'
+  language:
+    title: 'Taal'
+    description: 'Selecteer je voorkeurstaal'
+
+security:
+  password:
+    title: 'Wachtwoord Wijzigen'
+    description: 'Werk je wachtwoord bij om je account veilig te houden'
+    currentPassword: 'Huidig Wachtwoord'
+    newPassword: 'Nieuw Wachtwoord'
+    confirmPassword: 'Bevestig Nieuw Wachtwoord'
+    submit: 'Wachtwoord Bijwerken'
+    success: 'Wachtwoord succesvol bijgewerkt'
+    minLength: 'Minimaal 8 tekens'
+  twoFactor:
+    title: 'Tweefactorauthenticatie'
+    description: 'Voeg een extra beveiligingslaag toe aan je account'
+    enabled: 'Ingeschakeld'
+    disabled: 'Uitgeschakeld'
+    enabledDescription: 'Je account is beveiligd met 2FA'
+    disabledDescription: 'Schakel 2FA in voor betere beveiliging'
+    enable: '2FA Inschakelen'
+    disable: '2FA Uitschakelen'
+    regenerate: 'Back-upcodes Opnieuw Genereren'
+    verificationCode: 'Verificatiecode'
+    enterCode: 'Voer de 6-cijferige code van je authenticator-app in'
+    scanQR: 'Scan deze QR-code met je authenticator-app'
+    manualEntry: 'Of voer deze code handmatig in'
+    backupCodes:
+      title: 'Bewaar Je Back-upcodes'
+      description: 'Bewaar deze codes op een veilige plek. Je kunt ze gebruiken om toegang te krijgen tot je account als je je authenticator kwijtraakt.'
+      copy: 'Kopieer'
+      copied: 'Gekopieerd!'
+      download: 'Download'
+      saved: 'Ik heb mijn back-upcodes opgeslagen'
+    confirmDisable: 'Weet je zeker dat je tweefactorauthenticatie wilt uitschakelen?'
+    confirmPassword: 'Voer je wachtwoord in om te bevestigen'
+
+account:
+  email:
+    title: 'E-mailadres'
+    description: 'Wijzig het e-mailadres dat aan je account is gekoppeld'
+    currentEmail: 'Huidige e-mail'
+    newEmail: 'Nieuw E-mailadres'
+    confirmPassword: 'Bevestig met Wachtwoord'
+    passwordHint: 'Voer je wachtwoord in om deze wijziging te bevestigen'
+    submit: 'E-mail Bijwerken'
+    successTitle: 'Verificatie-e-mail verzonden'
+    successDescription: 'We hebben een verificatielink naar je nieuwe e-mailadres gestuurd. Controleer je inbox.'
+    changeAnother: 'Gebruik een ander e-mailadres'
+
+connections:
+  title: 'Gekoppelde Accounts'
+  description: 'Koppel je accounts voor eenvoudiger inloggen'
+  connected: 'Verbonden'
+  notConnected: 'Niet verbonden'
+  connect: 'Verbinden'
+  disconnect: 'Ontkoppelen'
+  disconnecting: 'Ontkoppelen...'
+  confirmDisconnect: '{provider} ontkoppelen?'
+  confirmDisconnectDescription: 'Je kunt niet meer inloggen met dit account.'
+  providers:
+    google: 'Google'
+    github: 'GitHub'
+    microsoft: 'Microsoft'
+
+common:
+  save: 'Opslaan'
+  cancel: 'Annuleren'
+  confirm: 'Bevestigen'
+  loading: 'Laden...'
+  success: 'Gelukt'
+  error: 'Fout'
+
+errors:
+  required: 'Dit veld is verplicht'
+  invalidEmail: 'Voer een geldig e-mailadres in'
+  passwordTooShort: 'Wachtwoord moet minimaal 8 tekens bevatten'
+  passwordsMismatch: 'Wachtwoorden komen niet overeen'
+  samePassword: 'Nieuw wachtwoord moet verschillen van het huidige wachtwoord'
+  sameEmail: 'Nieuw e-mailadres moet verschillen van het huidige e-mailadres'
+  invalidCode: 'Ongeldige verificatiecode'
+  generic: 'Er is iets misgegaan. Probeer het opnieuw.'

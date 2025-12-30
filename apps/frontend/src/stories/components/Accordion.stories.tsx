@@ -69,7 +69,7 @@ export const MultipleSelect: Story = {
       <AccordionItem value="features">
         <AccordionTrigger>Features</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-inside space-y-1 text-sm text-text-secondary-lum">
+          <ul className="text-text-secondary-lum list-inside space-y-1 text-sm">
             <li>• Automated code planning</li>
             <li>• Multi-agent collaboration</li>
             <li>• Real-time monitoring</li>
@@ -81,7 +81,7 @@ export const MultipleSelect: Story = {
       <AccordionItem value="pricing">
         <AccordionTrigger>Pricing Plans</AccordionTrigger>
         <AccordionContent>
-          <div className="space-y-2 text-sm text-text-secondary-lum">
+          <div className="text-text-secondary-lum space-y-2 text-sm">
             <p>
               <strong>Starter:</strong> $29/month - Perfect for individuals
             </p>
@@ -97,7 +97,7 @@ export const MultipleSelect: Story = {
       <AccordionItem value="support">
         <AccordionTrigger>Support & Resources</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-inside space-y-1 text-sm text-text-secondary-lum">
+          <ul className="text-text-secondary-lum list-inside space-y-1 text-sm">
             <li>• 24/7 Email support</li>
             <li>• Documentation & guides</li>
             <li>• Community forum</li>
@@ -122,7 +122,7 @@ export const NoDefault: Story = {
       <AccordionItem value="security">
         <AccordionTrigger>Security Features</AccordionTrigger>
         <AccordionContent>
-          <p className="text-sm text-text-secondary-lum">
+          <p className="text-text-secondary-lum text-sm">
             We implement end-to-end encryption, two-factor authentication, and regular security
             audits to protect your data.
           </p>
@@ -131,7 +131,7 @@ export const NoDefault: Story = {
       <AccordionItem value="performance">
         <AccordionTrigger>Performance Optimization</AccordionTrigger>
         <AccordionContent>
-          <p className="text-sm text-text-secondary-lum">
+          <p className="text-text-secondary-lum text-sm">
             CodeGraph is optimized for speed with distributed processing, caching, and intelligent
             resource allocation.
           </p>
@@ -140,7 +140,7 @@ export const NoDefault: Story = {
       <AccordionItem value="integration">
         <AccordionTrigger>Integrations</AccordionTrigger>
         <AccordionContent>
-          <p className="text-sm text-text-secondary-lum">
+          <p className="text-text-secondary-lum text-sm">
             Connect with GitHub, GitLab, Slack, Jira, and other tools to streamline your workflow.
           </p>
         </AccordionContent>
@@ -168,8 +168,8 @@ export const WithCustomContent: Story = {
                 1
               </div>
               <div>
-                <p className="font-medium text-text-primary-lum">Create a task</p>
-                <p className="text-sm text-text-secondary-lum">Describe what you want built</p>
+                <p className="text-text-primary-lum font-medium">Create a task</p>
+                <p className="text-text-secondary-lum text-sm">Describe what you want built</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -177,8 +177,8 @@ export const WithCustomContent: Story = {
                 2
               </div>
               <div>
-                <p className="font-medium text-text-primary-lum">Review the plan</p>
-                <p className="text-sm text-text-secondary-lum">
+                <p className="text-text-primary-lum font-medium">Review the plan</p>
+                <p className="text-text-secondary-lum text-sm">
                   AI agents propose implementation approach
                 </p>
               </div>
@@ -188,8 +188,8 @@ export const WithCustomContent: Story = {
                 3
               </div>
               <div>
-                <p className="font-medium text-text-primary-lum">Monitor progress</p>
-                <p className="text-sm text-text-secondary-lum">
+                <p className="text-text-primary-lum font-medium">Monitor progress</p>
+                <p className="text-text-secondary-lum text-sm">
                   Watch agents implement, test, and review code
                 </p>
               </div>
@@ -201,21 +201,21 @@ export const WithCustomContent: Story = {
         <AccordionTrigger>Key Benefits</AccordionTrigger>
         <AccordionContent>
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-3">
-              <p className="font-medium text-text-primary-lum">⚡ Faster Development</p>
-              <p className="text-xs text-text-secondary-lum">Cut development time in half</p>
+            <div className="border-border-steel bg-bg-elevated-lum rounded-lg border p-3">
+              <p className="text-text-primary-lum font-medium">⚡ Faster Development</p>
+              <p className="text-text-secondary-lum text-xs">Cut development time in half</p>
             </div>
-            <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-3">
-              <p className="font-medium text-text-primary-lum">✓ Higher Quality</p>
-              <p className="text-xs text-text-secondary-lum">Automated testing & review</p>
+            <div className="border-border-steel bg-bg-elevated-lum rounded-lg border p-3">
+              <p className="text-text-primary-lum font-medium">✓ Higher Quality</p>
+              <p className="text-text-secondary-lum text-xs">Automated testing & review</p>
             </div>
-            <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-3">
-              <p className="font-medium text-text-primary-lum">🎯 Consistent</p>
-              <p className="text-xs text-text-secondary-lum">Reliable, predictable results</p>
+            <div className="border-border-steel bg-bg-elevated-lum rounded-lg border p-3">
+              <p className="text-text-primary-lum font-medium">🎯 Consistent</p>
+              <p className="text-text-secondary-lum text-xs">Reliable, predictable results</p>
             </div>
-            <div className="rounded-lg border border-border-steel bg-bg-elevated-lum p-3">
-              <p className="font-medium text-text-primary-lum">🔄 Flexible</p>
-              <p className="text-xs text-text-secondary-lum">Easy revisions & iterations</p>
+            <div className="border-border-steel bg-bg-elevated-lum rounded-lg border p-3">
+              <p className="text-text-primary-lum font-medium">🔄 Flexible</p>
+              <p className="text-text-secondary-lum text-xs">Easy revisions & iterations</p>
             </div>
           </div>
         </AccordionContent>

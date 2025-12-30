@@ -47,7 +47,12 @@ class Role(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[RoleType] = mapped_column(
-        Enum(RoleType, name="roletype", create_constraint=True),
+        Enum(
+            RoleType,
+            name="roletype",
+            create_constraint=True,
+            values_callable=lambda x: [e.value for e in x],
+        ),
         unique=True,
         nullable=False,
         index=True,

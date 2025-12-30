@@ -1,0 +1,105 @@
+# Settings page translations (English)
+
+page:
+  title: 'Settings'
+  subtitle: 'Manage your account settings and preferences'
+
+tabs:
+  appearance: 'Appearance'
+  security: 'Security'
+  account: 'Account'
+  connections: 'Connected Accounts'
+
+appearance:
+  theme:
+    title: 'Theme'
+    description: 'Choose how CodeGraph looks to you'
+    light: 'Light'
+    lightDescription: 'Clean teal-tinted interface'
+    dark: 'Dark'
+    darkDescription: 'Dark luminous interface'
+    system: 'System'
+    systemDescription: 'Follow your system settings'
+  language:
+    title: 'Language'
+    description: 'Select your preferred language'
+
+security:
+  password:
+    title: 'Change Password'
+    description: 'Update your password to keep your account secure'
+    currentPassword: 'Current Password'
+    newPassword: 'New Password'
+    confirmPassword: 'Confirm New Password'
+    submit: 'Update Password'
+    success: 'Password updated successfully'
+    minLength: 'Minimum 8 characters'
+  twoFactor:
+    title: 'Two-Factor Authentication'
+    description: 'Add an extra layer of security to your account'
+    enabled: 'Enabled'
+    disabled: 'Disabled'
+    enabledDescription: 'Your account is protected with 2FA'
+    disabledDescription: 'Enable 2FA for better security'
+    enable: 'Enable 2FA'
+    disable: 'Disable 2FA'
+    regenerate: 'Regenerate Backup Codes'
+    verificationCode: 'Verification Code'
+    enterCode: 'Enter the 6-digit code from your authenticator app'
+    scanQR: 'Scan this QR code with your authenticator app'
+    manualEntry: 'Or enter this code manually'
+    backupCodes:
+      title: 'Save Your Backup Codes'
+      description: 'Store these codes in a safe place. You can use them to access your account if you lose your authenticator.'
+      copy: 'Copy'
+      copied: 'Copied!'
+      download: 'Download'
+      saved: "I've saved my backup codes"
+    confirmDisable: 'Are you sure you want to disable two-factor authentication?'
+    confirmPassword: 'Enter your password to confirm'
+
+account:
+  email:
+    title: 'Email Address'
+    description: 'Change the email address associated with your account'
+    currentEmail: 'Current email'
+    newEmail: 'New Email Address'
+    confirmPassword: 'Confirm with Password'
+    passwordHint: 'Enter your password to confirm this change'
+    submit: 'Update Email'
+    successTitle: 'Verification email sent'
+    successDescription: "We've sent a verification link to your new email address. Please check your inbox."
+    changeAnother: 'Use a different email'
+
+connections:
+  title: 'Connected Accounts'
+  description: 'Connect your accounts for easier sign-in'
+  connected: 'Connected'
+  notConnected: 'Not connected'
+  connect: 'Connect'
+  disconnect: 'Disconnect'
+  disconnecting: 'Disconnecting...'
+  confirmDisconnect: 'Disconnect {provider}?'
+  confirmDisconnectDescription: 'You will no longer be able to sign in with this account.'
+  providers:
+    google: 'Google'
+    github: 'GitHub'
+    microsoft: 'Microsoft'
+
+common:
+  save: 'Save'
+  cancel: 'Cancel'
+  confirm: 'Confirm'
+  loading: 'Loading...'
+  success: 'Success'
+  error: 'Error'
+
+errors:
+  required: 'This field is required'
+  invalidEmail: 'Please enter a valid email address'
+  passwordTooShort: 'Password must be at least 8 characters'
+  passwordsMismatch: 'Passwords do not match'
+  samePassword: 'New password must be different from current password'
+  sameEmail: 'New email must be different from current email'
+  invalidCode: 'Invalid verification code'
+  generic: 'Something went wrong. Please try again.'

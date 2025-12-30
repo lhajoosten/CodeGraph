@@ -63,6 +63,19 @@ export {
   type UseRegenerateBackupCodesOptions,
 } from './two-factor';
 
+// Admin hooks
+export {
+  useFetchRoles,
+  useFetchRole,
+  useFetchPermissions,
+  useFetchAdminUsers,
+  useAssignUserRole,
+  useRemoveUserRole,
+  adminQueryKeys,
+  type UseAssignUserRoleOptions,
+  type UseRemoveUserRoleOptions,
+} from './admin';
+
 // Backward compatibility aliases
 export { useFetchCurrentUser as useCurrentUser } from './auth';
 export { useFetchTasks as useTasks, useFetchTask as useTask } from './tasks';
