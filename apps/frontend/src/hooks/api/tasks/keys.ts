@@ -11,4 +11,9 @@ export const taskQueryKeys = {
   list: (filters?: UseFetchTasksOptions) => [...taskQueryKeys.lists(), { filters }] as const,
   details: () => [...taskQueryKeys.all, 'detail'] as const,
   detail: (id: number) => [...taskQueryKeys.details(), id] as const,
+  execution: (id: number) => [...taskQueryKeys.detail(id), 'execution'] as const,
+  executionStatus: (id: number) => [...taskQueryKeys.execution(id), 'status'] as const,
+  executionResult: (id: number) => [...taskQueryKeys.execution(id), 'result'] as const,
+  executionHistory: (id: number) => [...taskQueryKeys.execution(id), 'history'] as const,
+  executionTimeline: (id: number) => [...taskQueryKeys.execution(id), 'timeline'] as const,
 };

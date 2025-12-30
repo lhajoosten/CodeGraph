@@ -31,15 +31,16 @@ export const useDeleteTask = () => {
         description: 'Task deleted successfully.',
         color: 'success',
       });
-      const taskId = variables.path.task_id;
       // Invalidate the task list
       queryClient.invalidateQueries({
         queryKey: taskQueryKeys.lists(),
       });
-      // Remove the specific task from cache
-      queryClient.removeQueries({
-        queryKey: taskQueryKeys.detail(taskId),
-      });
+      // Remove the specific task from cache if it exists
+      if (variables.path.task_id !== null) {
+        queryClient.removeQueries({
+          queryKey: taskQueryKeys.detail(variables.path.task_id),
+        });
+      }
     },
     onError: (error) => {
       addToast({
