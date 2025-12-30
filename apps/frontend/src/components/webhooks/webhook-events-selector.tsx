@@ -70,7 +70,7 @@ export function WebhookEventsSelector({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="border-border-steel rounded-lg border p-4">
+      <div className="border-border-primary rounded-lg border p-4">
         <CheckboxWithLabel
           label="All Events"
           description="Subscribe to all current and future events"
@@ -83,7 +83,7 @@ export function WebhookEventsSelector({
       {!allSelected && (
         <div className="space-y-4">
           {/* Task Events */}
-          <div className="border-border-steel rounded-lg border p-4">
+          <div className="border-border-primary rounded-lg border p-4">
             <div className="mb-3">
               <CheckboxWithLabel
                 label="All Task Events"
@@ -110,7 +110,7 @@ export function WebhookEventsSelector({
           </div>
 
           {/* Agent Events */}
-          <div className="border-border-steel rounded-lg border p-4">
+          <div className="border-border-primary rounded-lg border p-4">
             <div className="mb-3">
               <CheckboxWithLabel
                 label="All Agent Events"
@@ -137,7 +137,7 @@ export function WebhookEventsSelector({
           </div>
 
           {/* Workflow Events */}
-          <div className="border-border-steel rounded-lg border p-4">
+          <div className="border-border-primary rounded-lg border p-4">
             <div className="mb-3">
               <CheckboxWithLabel
                 label="All Workflow Events"

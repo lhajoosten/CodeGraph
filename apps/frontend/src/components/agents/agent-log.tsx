@@ -71,7 +71,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                 !isCompleted &&
                 !isFailed &&
                 `
-                border-border-steel bg-bg-elevated-lum/50
+                border-border-primary bg-surface/50
               `
             )}
           >
@@ -85,7 +85,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                   !isCompleted &&
                   !isFailed &&
                   `
-                  bg-bg-elevated-lum text-text-secondary-lum
+                  bg-surface text-text-secondary
                 `
               )}
             >
@@ -96,7 +96,7 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
               <div className="flex items-center gap-2">
                 <span
                   className={`
-                  text-text-primary-lum text-sm font-medium capitalize
+                  text-text-primary text-sm font-medium capitalize
                 `}
                 >
                   {update.agent} Agent
@@ -110,10 +110,10 @@ export function AgentLog({ updates, maxItems = 50, className }: AgentLogProps) {
                   )}
                 />
               </div>
-              <p className="text-text-secondary-lum text-sm">{update.message}</p>
+              <p className="text-text-secondary text-sm">{update.message}</p>
             </div>
 
-            <span className="text-text-secondary-lum shrink-0 text-xs">
+            <span className="text-text-secondary shrink-0 text-xs">
               {formatTime(update.timestamp)}
             </span>
           </div>

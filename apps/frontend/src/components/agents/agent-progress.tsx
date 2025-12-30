@@ -23,8 +23,8 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
       {/* Overall progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-text-primary-lum font-medium">Overall Progress</span>
-          <span className="text-text-secondary-lum">{Math.round(totalProgress)}%</span>
+          <span className="text-text-primary font-medium">Overall Progress</span>
+          <span className="text-text-secondary">{Math.round(totalProgress)}%</span>
         </div>
         <Progress value={totalProgress} size="lg" />
       </div>
@@ -55,7 +55,7 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                     isFailed && 'border-error bg-error/10 text-error',
                     isPending &&
                       `
-                      border-border-steel bg-bg-steel text-text-muted-lum
+                      border-border-primary bg-surface-secondary text-text-muted
                     `
                   )}
                 >
@@ -75,15 +75,15 @@ export function AgentProgress({ steps, className }: AgentProgressProps) {
                       className={cn(
                         'font-medium',
                         isCompleted && 'text-success',
-                        isRunning && 'text-text-primary-lum',
+                        isRunning && 'text-text-primary',
                         isFailed && 'text-error',
-                        isPending && 'text-text-muted-lum'
+                        isPending && 'text-text-muted'
                       )}
                     >
                       {AGENT_TYPE_LABELS[step.type]}
                     </span>
                     {isRunning && (
-                      <span className="text-text-secondary-lum text-xs">{step.progress}%</span>
+                      <span className="text-text-secondary text-xs">{step.progress}%</span>
                     )}
                   </div>
                   {isRunning && (

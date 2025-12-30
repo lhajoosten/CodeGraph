@@ -136,7 +136,7 @@ export function OTPInput({
   return (
     <div className="space-y-4">
       {label && (
-        <label className="text-text-secondary-lum block text-center text-sm font-medium">
+        <label className="text-text-secondary block text-center text-sm font-medium">
           {label}
         </label>
       )}
@@ -161,26 +161,26 @@ export function OTPInput({
             className={cn(
               // Base styles
               'h-14 w-12 rounded-xl border-2 text-center text-2xl font-bold',
-              'bg-bg-elevated-lum/80 text-text-primary-lum backdrop-blur-sm',
+              'bg-surface/80 text-text-primary backdrop-blur-sm',
               'transition-all duration-200 ease-out',
-              'placeholder:text-text-muted-lum',
+              'placeholder:text-text-muted',
               // Error state
               error
                 ? 'border-error animate-shake shadow-[0_0_12px_rgba(239,68,68,0.4)]'
                 : // Focus and filled states
                   otp[index]
                   ? 'border-brand-teal shadow-glow-teal scale-[1.02]'
-                  : 'border-border-default-lum hover:border-brand-teal/50',
+                  : 'border-border-primary hover:border-brand-teal/50',
               !error &&
                 'focus:border-brand-teal focus:shadow-glow-teal focus:scale-105 focus:outline-none',
               // Disabled state
-              'disabled:hover:border-border-default-lum disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50'
+              'disabled:hover:border-border-primary disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50'
             )}
           />
         ))}
       </div>
 
-      {hint && <p className="text-text-muted-lum text-center text-xs">{hint}</p>}
+      {hint && <p className="text-text-muted text-center text-xs">{hint}</p>}
     </div>
   );
 }

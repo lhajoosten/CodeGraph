@@ -31,20 +31,20 @@ function ThemeOption({ value, current, onChange, icon, label, description }: The
         'relative flex w-full items-start gap-4 rounded-lg border-2 p-4 text-left transition-all',
         isSelected
           ? 'border-brand-teal bg-brand-teal/10'
-          : 'border-border-default-lum hover:border-brand-teal/50 hover:bg-bg-tertiary-lum'
+          : 'border-border-primary hover:border-brand-teal/50 hover:bg-background-tertiary'
       )}
     >
       <div
         className={cn(
           'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-          isSelected ? 'bg-brand-teal text-white' : 'bg-bg-steel text-text-secondary-lum'
+          isSelected ? 'bg-brand-teal text-white' : 'bg-surface-secondary text-text-secondary'
         )}
       >
         {icon}
       </div>
       <div className="flex-1">
-        <div className="text-text-primary-lum font-medium">{label}</div>
-        <div className="text-text-secondary-lum mt-1 text-sm">{description}</div>
+        <div className="text-text-primary font-medium">{label}</div>
+        <div className="text-text-secondary mt-1 text-sm">{description}</div>
       </div>
       {isSelected && (
         <div className="bg-brand-teal absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full">

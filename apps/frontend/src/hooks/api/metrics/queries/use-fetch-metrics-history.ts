@@ -15,7 +15,7 @@ import { getMetricsHistoryApiV1MetricsHistoryGetOptions } from '@/openapi/@tanst
 
 export interface UseFetchMetricsHistoryOptions {
   period?: '24h' | '7d' | '30d';
-  interval?: 'hour' | 'day';
+  interval?: '1h' | '6h' | '1d';
 }
 
 export const useFetchMetricsHistory = (options?: UseFetchMetricsHistoryOptions) => {

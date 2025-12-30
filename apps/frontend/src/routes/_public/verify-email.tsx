@@ -110,7 +110,7 @@ function EmailVerificationPage() {
               <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
             </div>
             <AuthHeader title="Email Verified!" subtitle={message} />
-            <p className="text-text-secondary-lum mt-4 text-center text-sm">
+            <p className="text-text-secondary mt-4 text-center text-sm">
               Redirecting to {isAuthenticated ? 'dashboard' : 'login'}...
             </p>
           </>

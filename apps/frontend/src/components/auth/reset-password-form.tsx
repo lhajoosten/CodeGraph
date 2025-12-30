@@ -85,11 +85,11 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
           <ExclamationCircleIcon className="text-error h-12 w-12" />
         </div>
 
-        <p className="text-text-primary-lum text-center font-medium">
+        <p className="text-text-primary text-center font-medium">
           {t('luminous.resetPassword.invalidTokenTitle')}
         </p>
 
-        <p className="text-text-secondary-lum text-center text-sm">
+        <p className="text-text-secondary text-center text-sm">
           {t('luminous.resetPassword.invalidTokenMessage')}
         </p>
 
@@ -110,11 +110,11 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
           <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
         </div>
 
-        <p className="text-text-primary-lum text-center font-medium">
+        <p className="text-text-primary text-center font-medium">
           {t('luminous.resetPassword.successTitle')}
         </p>
 
-        <p className="text-text-secondary-lum text-center text-sm">
+        <p className="text-text-secondary text-center text-sm">
           {t('luminous.resetPassword.successMessage')}
         </p>
 
@@ -187,7 +187,7 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
         )}
       </button>
 
-      <p className="text-text-secondary-lum text-center text-sm">
+      <p className="text-text-secondary text-center text-sm">
         {t('luminous.resetPassword.rememberPassword')}{' '}
         <a href="/login" className="hover:text-brand-teal text-brand-cyan">
           {t('luminous.resetPassword.signin')}

@@ -80,10 +80,10 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
+        <h3 className="text-text-primary mb-2 text-lg font-semibold">
           {t('luminous.twoFactor.verify.title')}
         </h3>
-        <p className="text-text-secondary-lum text-sm">{t('luminous.twoFactor.verify.subtitle')}</p>
+        <p className="text-text-secondary text-sm">{t('luminous.twoFactor.verify.subtitle')}</p>
       </div>
 
       {/* Error Message */}
@@ -173,7 +173,7 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
       )}
 
       {/* Toggle between OTP and Backup Code */}
-      <div className="border-border-steel border-t pt-2">
+      <div className="border-border-primary border-t pt-2">
         <button
           type="button"
           onClick={() => setUseBackupCode(!useBackupCode)}
@@ -191,14 +191,14 @@ export function Verify2FAForm({ onSuccess, onCancel }: Verify2FAFormProps) {
         <button
           onClick={onCancel}
           disabled={verify2FAMutation.isPending}
-          className="border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-border-primary bg-surface text-text-primary w-full rounded-lg border py-3 font-semibold transition-all hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t('luminous.twoFactor.verify.cancel')}
         </button>
       )}
 
       {/* Helper Text */}
-      <p className="text-text-muted-lum text-center text-xs">
+      <p className="text-text-muted text-center text-xs">
         {t('luminous.twoFactor.verify.support')}
       </p>
     </div>

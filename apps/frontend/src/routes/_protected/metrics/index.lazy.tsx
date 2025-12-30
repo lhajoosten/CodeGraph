@@ -36,7 +36,7 @@ function MetricsDashboard() {
   const { data: summary, isLoading: isSummaryLoading } = useFetchMetricsSummary();
   const { data: history, isLoading: isHistoryLoading } = useFetchMetricsHistory({
     period,
-    interval: period === '24h' ? 'hour' : 'day',
+    interval: period === '24h' ? '1h' : '1d',
   });
 
   const avgLatency =

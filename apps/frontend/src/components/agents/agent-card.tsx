@@ -51,7 +51,7 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
             isRunning && 'bg-brand-cyan/10 text-brand-cyan',
             isCompleted && 'bg-success/10 text-success',
             isFailed && 'bg-error/10 text-error',
-            status === 'idle' && 'bg-bg-steel text-text-secondary-lum'
+            status === 'idle' && 'bg-surface-secondary text-text-secondary'
           )}
         >
           <Icon className="h-5 w-5" />
@@ -62,7 +62,7 @@ export function AgentCard({ type, status, progress = 0, message, className }: Ag
             <h3 className="text-text-primary font-semibold capitalize">{type} Agent</h3>
             <AgentStatusBadge status={status} size="sm" />
           </div>
-          <p className="text-text-secondary-lum text-xs">{agentDescriptions[type]}</p>
+          <p className="text-text-secondary text-xs">{agentDescriptions[type]}</p>
         </div>
 
         {isRunning && <CircularProgress value={progress} size={36} variant="default" showValue />}

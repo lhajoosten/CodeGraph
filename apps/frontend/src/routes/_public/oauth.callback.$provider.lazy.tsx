@@ -342,7 +342,7 @@ function OAuthCallback() {
   return (
     <div
       style={{
-        background: `linear-gradient(135deg, var(--color-bg-primary-lum) 0%, var(--color-bg-elevated-lum) 100%)`,
+        background: `linear-gradient(135deg, var(--color-background) 0%, var(--color-background-elevated) 100%)`,
       }}
       className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
     >
@@ -355,8 +355,8 @@ function OAuthCallback() {
 
         <div
           style={{
-            backgroundColor: 'var(--color-bg-secondary-lum)',
-            borderColor: 'var(--color-border-steel)',
+            backgroundColor: 'var(--color-background-secondary)',
+            borderColor: 'var(--color-border-primary)',
           }}
           className="rounded-lg border p-8 shadow-xl"
         >
@@ -371,12 +371,12 @@ function OAuthCallback() {
                 ></div>
               </div>
               <h2
-                style={{ color: 'var(--color-text-primary-lum)' }}
+                style={{ color: 'var(--color-text-primary)' }}
                 className="mb-2 text-center text-2xl font-bold"
               >
                 {isLinkFlow ? 'Linking' : 'Connecting to'} {getProviderName()}
               </h2>
-              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="text-center">
+              <p style={{ color: 'var(--color-text-secondary)' }} className="text-center">
                 Please wait while we{' '}
                 {isLinkFlow ? 'link your account' : 'complete your authentication'}...
               </p>
@@ -398,12 +398,12 @@ function OAuthCallback() {
                 </div>
               </div>
               <h2
-                style={{ color: 'var(--color-text-primary-lum)' }}
+                style={{ color: 'var(--color-text-primary)' }}
                 className="mb-2 text-center text-2xl font-bold"
               >
                 {isLinkFlow ? 'Account Linked Successfully!' : 'Successfully Connected!'}
               </h2>
-              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="text-center">
+              <p style={{ color: 'var(--color-text-secondary)' }} className="text-center">
                 Redirecting you {isLinkFlow ? 'back to settings' : 'to your dashboard'}...
               </p>
             </>
@@ -424,12 +424,12 @@ function OAuthCallback() {
                 </div>
               </div>
               <h2
-                style={{ color: 'var(--color-text-primary-lum)' }}
+                style={{ color: 'var(--color-text-primary)' }}
                 className="mb-2 text-center text-2xl font-bold"
               >
                 Authentication Failed
               </h2>
-              <p style={{ color: 'var(--color-text-secondary-lum)' }} className="mb-6 text-center">
+              <p style={{ color: 'var(--color-text-secondary)' }} className="mb-6 text-center">
                 {errorMessage}
               </p>
               <div className="space-y-3">
@@ -437,7 +437,7 @@ function OAuthCallback() {
                   onClick={() => navigate({ to: '/login', search: { redirect: '/' } })}
                   style={{
                     backgroundColor: 'var(--color-brand-cyan)',
-                    color: 'var(--color-bg-primary-lum)',
+                    color: 'var(--color-background)',
                   }}
                   className="w-full rounded-lg py-2 font-medium transition hover:opacity-90"
                 >
@@ -446,10 +446,10 @@ function OAuthCallback() {
                 <button
                   onClick={() => window.location.reload()}
                   style={{
-                    borderColor: 'var(--color-border-steel)',
-                    color: 'var(--color-text-secondary-lum)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-text-secondary)',
                   }}
-                  className="hover:bg-bg-steel w-full rounded-lg border py-2 transition"
+                  className="hover:bg-surface-secondary w-full rounded-lg border py-2 transition"
                 >
                   Try Again
                 </button>

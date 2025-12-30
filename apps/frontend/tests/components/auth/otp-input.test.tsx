@@ -259,13 +259,13 @@ describe('OTPInput', () => {
   });
 
   describe('Styling', () => {
-    it('should have cyan border and glow when field has value', () => {
+    it('should have teal border and glow when field has value', () => {
       const { container } = render(<OTPInput value="1" onChange={mockOnChange} />);
 
       const inputs = Array.from(container.querySelectorAll('input')) as HTMLInputElement[];
 
-      expect(inputs[0].className).toContain('border-brand-cyan');
-      expect(inputs[0].className).toContain('shadow');
+      expect(inputs[0].className).toContain('border-brand-teal');
+      expect(inputs[0].className).toContain('shadow-glow-teal');
     });
 
     it('should have default border when field is empty', () => {
@@ -273,7 +273,7 @@ describe('OTPInput', () => {
 
       const inputs = Array.from(container.querySelectorAll('input')) as HTMLInputElement[];
 
-      expect(inputs[0].className).toContain('border-border-default-lum');
+      expect(inputs[0].className).toContain('border-border-primary');
     });
   });
 

@@ -25,14 +25,14 @@ function ColorSwatch({
   return (
     <div className="flex flex-col gap-2">
       <div
-        className="border-border-steel shadow-glass h-32 w-32 rounded-lg border"
+        className="border-border-primary shadow-glass h-32 w-32 rounded-lg border"
         style={{ backgroundColor: value }}
         title={value}
       />
       <div>
-        <p className="text-text-primary-lum text-sm font-semibold">{name}</p>
-        <p className="text-text-secondary-lum font-mono text-xs">{value}</p>
-        {description && <p className="text-text-muted-lum mt-1 text-xs">{description}</p>}
+        <p className="text-text-primary text-sm font-semibold">{name}</p>
+        <p className="text-text-secondary font-mono text-xs">{value}</p>
+        {description && <p className="text-text-muted mt-1 text-xs">{description}</p>}
       </div>
     </div>
   );
@@ -45,7 +45,7 @@ export const BrandColors: StoryObj = {
   render: () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-text-primary-lum mb-6 text-lg font-semibold">Brand Colors</h3>
+        <h3 className="text-text-primary mb-6 text-lg font-semibold">Brand Colors</h3>
         <div className="grid grid-cols-3 gap-8">
           <ColorSwatch
             name="Cyan"
@@ -75,7 +75,7 @@ export const BackgroundColors: StoryObj = {
   render: () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-text-primary-lum mb-6 text-lg font-semibold">Background Colors</h3>
+        <h3 className="text-text-primary mb-6 text-lg font-semibold">Background Colors</h3>
         <div className="grid grid-cols-4 gap-8">
           <ColorSwatch
             name="Primary (Deep Midnight)"
@@ -98,19 +98,19 @@ export const TextColors: StoryObj = {
   render: () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-text-primary-lum mb-6 text-lg font-semibold">Text Colors</h3>
+        <h3 className="text-text-primary mb-6 text-lg font-semibold">Text Colors</h3>
         <div className="grid grid-cols-3 gap-8">
           <div className="space-y-2">
             <ColorSwatch name="Primary" value="#E6EAF2" description="Main text, high contrast" />
-            <p className="text-text-primary-lum">This is primary text color</p>
+            <p className="text-text-primary">This is primary text color</p>
           </div>
           <div className="space-y-2">
             <ColorSwatch name="Secondary" value="#A9B0C2" description="Secondary text, labels" />
-            <p className="text-text-secondary-lum">This is secondary text color</p>
+            <p className="text-text-secondary">This is secondary text color</p>
           </div>
           <div className="space-y-2">
             <ColorSwatch name="Muted" value="#6B7280" description="Tertiary text, placeholders" />
-            <p className="text-text-muted-lum">This is muted text color</p>
+            <p className="text-text-muted">This is muted text color</p>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export const StateColors: StoryObj = {
   render: () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-text-primary-lum mb-6 text-lg font-semibold">State Colors</h3>
+        <h3 className="text-text-primary mb-6 text-lg font-semibold">State Colors</h3>
         <div className="grid grid-cols-3 gap-8">
           <div>
             <ColorSwatch
@@ -156,16 +156,16 @@ export const BorderAndEffects: StoryObj = {
   render: () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-text-primary-lum mb-6 text-lg font-semibold">Borders & Effects</h3>
+        <h3 className="text-text-primary mb-6 text-lg font-semibold">Borders & Effects</h3>
         <div className="space-y-6">
           <div>
-            <p className="text-text-secondary-lum mb-3 text-sm">Glass Border (10% white opacity)</p>
-            <div className="border-border-steel shadow-glass flex h-12 w-48 items-center justify-center rounded-lg border">
-              <span className="text-text-muted-lum text-sm">rgba(255,255,255,0.1)</span>
+            <p className="text-text-secondary mb-3 text-sm">Glass Border (10% white opacity)</p>
+            <div className="border-border-primary shadow-glass flex h-12 w-48 items-center justify-center rounded-lg border">
+              <span className="text-text-muted text-sm">rgba(255,255,255,0.1)</span>
             </div>
           </div>
           <div>
-            <p className="text-text-secondary-lum mb-3 text-sm">Cyan Glow Effect</p>
+            <p className="text-text-secondary mb-3 text-sm">Cyan Glow Effect</p>
             <div
               className="flex h-12 w-48 items-center justify-center rounded-lg"
               style={{
@@ -177,7 +177,7 @@ export const BorderAndEffects: StoryObj = {
             </div>
           </div>
           <div>
-            <p className="text-text-secondary-lum mb-3 text-sm">Teal Glow Effect</p>
+            <p className="text-text-secondary mb-3 text-sm">Teal Glow Effect</p>
             <div
               className="flex h-12 w-48 items-center justify-center rounded-lg"
               style={{
@@ -201,13 +201,13 @@ export const CompletePalette: StoryObj = {
   render: () => (
     <div className="w-full max-w-4xl space-y-12">
       <div>
-        <h2 className="text-text-primary-lum mb-8 text-2xl font-bold">
+        <h2 className="text-text-primary mb-8 text-2xl font-bold">
           Luminous Technical Color System
         </h2>
 
         <div className="space-y-8">
           <div>
-            <h3 className="text-text-primary-lum mb-4 text-lg font-semibold">Brand Colors</h3>
+            <h3 className="text-text-primary mb-4 text-lg font-semibold">Brand Colors</h3>
             <div className="grid grid-cols-3 gap-6">
               <ColorSwatch name="Cyan" value="#22d3ee" description="Primary action" />
               <ColorSwatch name="Teal" value="#2dd4bf" description="Secondary" />
@@ -216,7 +216,7 @@ export const CompletePalette: StoryObj = {
           </div>
 
           <div>
-            <h3 className="text-text-primary-lum mb-4 text-lg font-semibold">Backgrounds</h3>
+            <h3 className="text-text-primary mb-4 text-lg font-semibold">Backgrounds</h3>
             <div className="grid grid-cols-4 gap-6">
               <ColorSwatch name="Primary" value="#070B16" description="Deep midnight" />
               <ColorSwatch name="Secondary" value="#0E1424" description="Secondary" />
@@ -226,7 +226,7 @@ export const CompletePalette: StoryObj = {
           </div>
 
           <div>
-            <h3 className="text-text-primary-lum mb-4 text-lg font-semibold">Text</h3>
+            <h3 className="text-text-primary mb-4 text-lg font-semibold">Text</h3>
             <div className="grid grid-cols-3 gap-6">
               <ColorSwatch name="Primary" value="#E6EAF2" description="Main text" />
               <ColorSwatch name="Secondary" value="#A9B0C2" description="Labels" />
@@ -235,7 +235,7 @@ export const CompletePalette: StoryObj = {
           </div>
 
           <div>
-            <h3 className="text-text-primary-lum mb-4 text-lg font-semibold">Semantic States</h3>
+            <h3 className="text-text-primary mb-4 text-lg font-semibold">Semantic States</h3>
             <div className="grid grid-cols-3 gap-6">
               <ColorSwatch name="Success" value="#22C55E" description="Positive" />
               <ColorSwatch name="Warning" value="#F59E0B" description="Caution" />

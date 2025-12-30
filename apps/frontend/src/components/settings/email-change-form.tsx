@@ -53,9 +53,9 @@ export const EmailChangeForm = () => {
   return (
     <div className="space-y-4">
       {/* Current Email Display */}
-      <div className="border-border-steel bg-bg-elevated-lum rounded-lg border p-4">
-        <p className="text-text-secondary-lum text-sm">Current email</p>
-        <p className="text-text-primary-lum font-medium">{user?.email}</p>
+      <div className="border-border-primary bg-surface rounded-lg border p-4">
+        <p className="text-text-secondary text-sm">Current email</p>
+        <p className="text-text-primary font-medium">{user?.email}</p>
       </div>
 
       {success ? (
@@ -76,7 +76,7 @@ export const EmailChangeForm = () => {
             </svg>
             <div>
               <p className="text-success font-medium">Verification email sent!</p>
-              <p className="text-text-secondary-lum mt-1 text-sm">
+              <p className="text-text-secondary mt-1 text-sm">
                 We&apos;ve sent a verification email to <strong>{newEmail}</strong>. Please check
                 your inbox and click the link to confirm your new email address.
               </p>
@@ -106,7 +106,7 @@ export const EmailChangeForm = () => {
           )}
 
           <div>
-            <label className="text-text-secondary-lum mb-1 block text-sm font-medium">
+            <label className="text-text-secondary mb-1 block text-sm font-medium">
               New Email Address
             </label>
             <input
@@ -115,7 +115,7 @@ export const EmailChangeForm = () => {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               className={`
-                border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border px-4 py-2
+                border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
                 focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
@@ -125,7 +125,7 @@ export const EmailChangeForm = () => {
           </div>
 
           <div>
-            <label className="text-text-secondary-lum mb-1 block text-sm font-medium">
+            <label className="text-text-secondary mb-1 block text-sm font-medium">
               Confirm with Password
             </label>
             <input
@@ -134,14 +134,14 @@ export const EmailChangeForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`
-                border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border px-4 py-2
+                border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
                 focus:border-transparent focus:ring-2 focus:ring-brand-cyan
                 focus:outline-none
               `}
               placeholder="Enter your password"
               disabled={changeMutation.isPending}
             />
-            <p className="text-text-muted-lum mt-1 text-xs">
+            <p className="text-text-muted mt-1 text-xs">
               We need your password to confirm this change
             </p>
           </div>

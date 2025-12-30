@@ -92,7 +92,7 @@ function RouteComponent() {
       <AppLayout>
         <div className="flex flex-col items-center justify-center py-12">
           <h2 className="text-2xl font-semibold">Webhook Not Found</h2>
-          <p className="text-text-muted-lum mt-2">
+          <p className="text-text-muted mt-2">
             The webhook you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to
             it.
           </p>
@@ -115,7 +115,7 @@ function RouteComponent() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{webhook.name}</h1>
-            <p className="text-text-muted-lum font-mono text-sm">{webhook.url}</p>
+            <p className="text-text-muted font-mono text-sm">{webhook.url}</p>
           </div>
           <div className="flex gap-2">
             <WebhookTestButton
@@ -142,25 +142,25 @@ function RouteComponent() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-text-muted-lum text-sm">Status</p>
+                <p className="text-text-muted text-sm">Status</p>
                 <WebhookStatusBadge status={webhook.status} className="mt-1" />
               </div>
               <div>
-                <p className="text-text-muted-lum text-sm">Retry Count</p>
+                <p className="text-text-muted text-sm">Retry Count</p>
                 <p className="mt-1 font-medium">{webhook.retry_count}</p>
               </div>
               <div>
-                <p className="text-text-muted-lum text-sm">Timeout</p>
+                <p className="text-text-muted text-sm">Timeout</p>
                 <p className="mt-1 font-medium">{webhook.timeout_seconds}s</p>
               </div>
               <div>
-                <p className="text-text-muted-lum text-sm">Success Rate</p>
+                <p className="text-text-muted text-sm">Success Rate</p>
                 <p className="mt-1 font-medium">{successRate}%</p>
               </div>
             </div>
 
             <div>
-              <p className="text-text-muted-lum text-sm">Subscribed Events</p>
+              <p className="text-text-muted text-sm">Subscribed Events</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {webhook.events.includes('*') ? (
                   <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
@@ -170,7 +170,7 @@ function RouteComponent() {
                   webhook.events.map((event) => (
                     <span
                       key={event}
-                      className="bg-bg-elevated-lum rounded-full px-3 py-1 text-xs font-medium"
+                      className="bg-surface rounded-full px-3 py-1 text-xs font-medium"
                     >
                       {WEBHOOK_EVENT_LABELS[event] || event}
                     </span>
@@ -181,12 +181,12 @@ function RouteComponent() {
 
             {webhook.headers && Object.keys(webhook.headers).length > 0 && (
               <div>
-                <p className="text-text-muted-lum text-sm">Custom Headers</p>
+                <p className="text-text-muted text-sm">Custom Headers</p>
                 <div className="mt-2 space-y-1">
                   {Object.entries(webhook.headers).map(([key, value]) => (
                     <div key={key} className="flex gap-2 text-sm">
                       <span className="font-medium">{key}:</span>
-                      <span className="text-text-muted-lum">{value}</span>
+                      <span className="text-text-muted">{value}</span>
                     </div>
                   ))}
                 </div>
@@ -195,24 +195,24 @@ function RouteComponent() {
 
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-text-muted-lum text-sm">Webhook Secret</p>
+                <p className="text-text-muted text-sm">Webhook Secret</p>
                 <Button variant="ghost" size="sm" onClick={() => setRegenerateDialogOpen(true)}>
                   <KeyIcon className="mr-2 h-4 w-4" />
                   Regenerate Secret
                 </Button>
               </div>
-              <p className="text-text-muted-lum text-xs">
+              <p className="text-text-muted text-xs">
                 Secret is not shown for security. Regenerate if needed.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-text-muted-lum">Created</p>
+                <p className="text-text-muted">Created</p>
                 <p className="font-medium">{formatDateTime(webhook.created_at)}</p>
               </div>
               <div>
-                <p className="text-text-muted-lum">Updated</p>
+                <p className="text-text-muted">Updated</p>
                 <p className="font-medium">{formatDateTime(webhook.updated_at)}</p>
               </div>
             </div>
@@ -275,7 +275,7 @@ function RouteComponent() {
             <DialogTitle>New Webhook Secret</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-text-muted-lum text-sm">
+            <p className="text-text-muted text-sm">
               Your new webhook secret has been generated. Make sure to save it now - you won&apos;t
               be able to see it again!
             </p>

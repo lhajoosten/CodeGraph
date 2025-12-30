@@ -1,9 +1,11 @@
-.PHONY: help install dev test test-e2e clean lint lint-fix format format-check type-check check build api-generate
+.PHONY: help install dev test test-e2e clean lint lint-fix format format-check type-check check build api-generate test-watch test-cov checkout push
 
 # Colors for output
 COLOR_RESET=\033[0m
 COLOR_BOLD=\033[1m
 COLOR_GREEN=\033[32m
+
+COPILOT_MESSAGE=""
 
 # Default target
 help:
@@ -35,6 +37,10 @@ help:
 	@echo "$(COLOR_BOLD)Build & Cleanup:$(COLOR_RESET)"
 	@echo "  make build             - Build for production"
 	@echo "  make clean             - Clean generated files and caches"
+	@echo ""
+	@echo "$(COLOR_BOLD)Git:$(COLOR_RESET)"
+	@echo "  make checkout          - Checkout main branch, fetch & pull latest changes"
+	@echo "  make push              - Add, commit, and push changes to the current branch"
 	@echo ""
 
 # Setup & Installation
@@ -108,3 +114,18 @@ clean:
 	@echo "$(COLOR_GREEN)Cleaning frontend artifacts...$(COLOR_RESET)"
 	@rm -rf node_modules .next dist build coverage .vite 2>/dev/null || true
 	@echo "$(COLOR_GREEN)✓ Frontend artifacts cleaned$(COLOR_RESET)"
+
+# Git
+checkout:
+	@echo "$(COLOR_GREEN)Checking out main branch and pulling latest changes...$(COLOR_RESET)"
+	@git checkout main
+	@git fetch origin
+	@git pull origin main
+	@echo "$(COLOR_GREEN)✓ On main branch with latest changes$(COLOR_RESET)"
+
+push:
+	@echo "$(COLOR_GREEN)Adding, committing, and pushing changes...$(COLOR_RESET)"
+	@git add .
+	@git commit -m $(COPILOT_MESSAGE)"
+	@git push
+	@echo "$(COLOR_GREEN)✓ Changes pushed to remote repository$(COLOR_RESET)"

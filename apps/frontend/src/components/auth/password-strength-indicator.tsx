@@ -75,7 +75,7 @@ export function PasswordStrengthIndicator({
 
   return (
     <div className="space-y-2">
-      <div className="bg-bg-steel h-1.5 overflow-hidden rounded-full">
+      <div className="bg-surface-secondary h-1.5 overflow-hidden rounded-full">
         <div
           className={`h-full transition-all duration-300 ${colorClass}`}
           style={{ width: `${strengthPercentage}%` }}
@@ -83,7 +83,7 @@ export function PasswordStrengthIndicator({
       </div>
 
       {showLabel && password && (
-        <p className="text-text-secondary-lum text-xs font-medium">
+        <p className="text-text-secondary text-xs font-medium">
           Password strength:{' '}
           <span
             className={
@@ -100,9 +100,9 @@ export function PasswordStrengthIndicator({
       )}
 
       {password && strength !== 'strong' && (
-        <ul className="text-text-secondary-lum mt-2 space-y-1 text-xs">
+        <ul className="text-text-secondary mt-2 space-y-1 text-xs">
           <li className="flex items-center gap-2">
-            <span className={password.length >= 8 ? 'text-success' : 'text-text-muted-lum'}>✓</span>
+            <span className={password.length >= 8 ? 'text-success' : 'text-text-muted'}>✓</span>
             At least 8 characters
           </li>
           <li className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function PasswordStrengthIndicator({
               className={
                 /[A-Z]/.test(password) && /[a-z]/.test(password)
                   ? 'text-success'
-                  : 'text-text-muted-lum'
+                  : 'text-text-muted'
               }
             >
               ✓
@@ -118,7 +118,7 @@ export function PasswordStrengthIndicator({
             Mix of uppercase and lowercase
           </li>
           <li className="flex items-center gap-2">
-            <span className={/[0-9]/.test(password) ? 'text-success' : 'text-text-muted-lum'}>
+            <span className={/[0-9]/.test(password) ? 'text-success' : 'text-text-muted'}>
               ✓
             </span>
             At least one number

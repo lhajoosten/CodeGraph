@@ -43,7 +43,8 @@ describe('Verify2FAForm', () => {
 
       renderWithQueryClient(<Verify2FAForm />);
 
-      expect(screen.getByText('Verification Code')).toBeInTheDocument();
+      // Translation mock returns the key itself
+      expect(screen.getByText('luminous.twoFactor.verify.codeLabel')).toBeInTheDocument();
     });
 
     it('should display title and subtitle', () => {
@@ -230,7 +231,8 @@ describe('Verify2FAForm', () => {
       toggleButton = screen.getByText(/luminous.twoFactor.verify.useAuthenticator/i);
       await user.click(toggleButton);
 
-      expect(screen.getByText('Verification Code')).toBeInTheDocument();
+      // Translation mock returns the key itself
+      expect(screen.getByText('luminous.twoFactor.verify.codeLabel')).toBeInTheDocument();
     });
   });
 
@@ -369,7 +371,8 @@ describe('Verify2FAForm', () => {
       renderWithQueryClient(<Verify2FAForm />);
 
       expect(screen.getByText(/luminous.twoFactor.verify.title/i)).toBeInTheDocument();
-      expect(screen.getByText('Verification Code')).toBeInTheDocument();
+      // Translation mock returns the key itself
+      expect(screen.getByText('luminous.twoFactor.verify.codeLabel')).toBeInTheDocument();
     });
 
     it('should have accessible button labels', () => {

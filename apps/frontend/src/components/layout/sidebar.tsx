@@ -57,10 +57,10 @@ function NavLink({ item, isActive, isOpen }: NavLinkProps) {
           transition-colors
         `,
         active
-          ? 'text-text-secondary-lum bg-brand-cyan/10'
+          ? 'text-text-secondary bg-brand-cyan/10'
           : `
-            text-text-secondary-lum
-            hover:bg-bg-elevated-lum hover:text-text-primary-lum
+            text-text-secondary
+            hover:bg-surface hover:text-text-primary
           `
       )}
     >
@@ -114,7 +114,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       <aside
         className={cn(
           `
-            border-border-steel bg-bg-steel fixed top-0 left-0 z-40 flex
+            border-border-primary bg-surface-secondary fixed top-0 left-0 z-40 flex
             h-screen flex-col border-r transition-all duration-300
           `,
           isOpen ? 'w-64' : 'w-16',
@@ -124,7 +124,7 @@ function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         {/* Logo */}
         <div
           className={`
-            border-border-steel flex h-16 items-center justify-between border-b px-4
+            border-border-primary flex h-16 items-center justify-between border-b px-4
           `}
         >
           {isOpen ? (

@@ -13,7 +13,7 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       'peer h-4 w-4 shrink-0 rounded-sm border',
-      'ring-offset-bg-steel transition-colors',
+      'ring-offset-surface-secondary transition-colors',
       `
         focus-visible:ring-2 focus-visible:ring-brand-cyan
         focus-visible:ring-offset-2 focus-visible:outline-none
@@ -29,7 +29,7 @@ const Checkbox = React.forwardRef<
         data-[state=indeterminate]:bg-brand-cyan
         data-[state=indeterminate]:text-white
       `,
-      error ? 'border-error' : 'border-border-steel',
+      error ? 'border-error' : 'border-border-primary',
       className
     )}
     {...props}
@@ -74,12 +74,12 @@ const CheckboxWithLabel = React.forwardRef<
           className={cn(
             'cursor-pointer text-sm leading-none font-medium',
             'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-            error ? 'text-error' : 'text-text-primary-lum'
+            error ? 'text-error' : 'text-text-primary'
           )}
         >
           {label}
         </label>
-        {description && <p className="text-text-muted-lum text-xs">{description}</p>}
+        {description && <p className="text-text-muted text-xs">{description}</p>}
       </div>
     </div>
   );

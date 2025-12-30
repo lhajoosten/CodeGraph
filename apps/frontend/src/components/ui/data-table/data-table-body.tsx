@@ -35,7 +35,7 @@ export function DataTableBody<TData, TValue>({
   emptyState,
 }: DataTableBodyProps<TData, TValue>) {
   return (
-    <div className="border-border-steel overflow-hidden rounded-lg border">
+    <div className="border-border-primary overflow-hidden rounded-lg border">
       <TableComponent variant="default">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

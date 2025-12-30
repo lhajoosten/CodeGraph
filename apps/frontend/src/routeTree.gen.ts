@@ -25,6 +25,7 @@ import { Route as ProtectedWebhooksIndexRouteImport } from './routes/_protected/
 import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
 import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
 import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index'
+import { Route as ProtectedAgentsIndexRouteImport } from './routes/_protected/agents/index'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ProtectedWebhooksNewRouteImport } from './routes/_protected/webhooks/new'
 import { Route as ProtectedWebhooksIdRouteImport } from './routes/_protected/webhooks/$id'
@@ -139,6 +140,13 @@ const ProtectedMetricsIndexRoute = ProtectedMetricsIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_protected/metrics/index.lazy').then((d) => d.Route),
 )
+const ProtectedAgentsIndexRoute = ProtectedAgentsIndexRouteImport.update({
+  id: '/_protected/agents/',
+  path: '/agents/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/_protected/agents/index.lazy').then((d) => d.Route),
+)
 const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
   id: '/_protected/admin/',
   path: '/admin/',
@@ -218,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/admin': typeof ProtectedAdminIndexRoute
+  '/agents': typeof ProtectedAgentsIndexRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
@@ -244,6 +253,7 @@ export interface FileRoutesByTo {
   '/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/admin': typeof ProtectedAdminIndexRoute
+  '/agents': typeof ProtectedAgentsIndexRoute
   '/metrics': typeof ProtectedMetricsIndexRoute
   '/settings': typeof ProtectedSettingsIndexRoute
   '/tasks': typeof ProtectedTasksIndexRoute
@@ -271,6 +281,7 @@ export interface FileRoutesById {
   '/_protected/webhooks/$id': typeof ProtectedWebhooksIdRoute
   '/_protected/webhooks/new': typeof ProtectedWebhooksNewRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
+  '/_protected/agents/': typeof ProtectedAgentsIndexRoute
   '/_protected/metrics/': typeof ProtectedMetricsIndexRoute
   '/_protected/settings/': typeof ProtectedSettingsIndexRoute
   '/_protected/tasks/': typeof ProtectedTasksIndexRoute
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/webhooks/$id'
     | '/webhooks/new'
     | '/admin'
+    | '/agents'
     | '/metrics'
     | '/settings'
     | '/tasks'
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/webhooks/$id'
     | '/webhooks/new'
     | '/admin'
+    | '/agents'
     | '/metrics'
     | '/settings'
     | '/tasks'
@@ -351,6 +364,7 @@ export interface FileRouteTypes {
     | '/_protected/webhooks/$id'
     | '/_protected/webhooks/new'
     | '/_protected/admin/'
+    | '/_protected/agents/'
     | '/_protected/metrics/'
     | '/_protected/settings/'
     | '/_protected/tasks/'
@@ -378,6 +392,7 @@ export interface RootRouteChildren {
   ProtectedWebhooksIdRoute: typeof ProtectedWebhooksIdRoute
   ProtectedWebhooksNewRoute: typeof ProtectedWebhooksNewRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
+  ProtectedAgentsIndexRoute: typeof ProtectedAgentsIndexRoute
   ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute
   ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
   ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
@@ -502,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedMetricsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/agents/': {
+      id: '/_protected/agents/'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof ProtectedAgentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/admin/': {
       id: '/_protected/admin/'
       path: '/admin'
@@ -578,6 +600,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedWebhooksIdRoute: ProtectedWebhooksIdRoute,
   ProtectedWebhooksNewRoute: ProtectedWebhooksNewRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
+  ProtectedAgentsIndexRoute: ProtectedAgentsIndexRoute,
   ProtectedMetricsIndexRoute: ProtectedMetricsIndexRoute,
   ProtectedSettingsIndexRoute: ProtectedSettingsIndexRoute,
   ProtectedTasksIndexRoute: ProtectedTasksIndexRoute,

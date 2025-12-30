@@ -35,28 +35,28 @@ export function WebhookDeliveryDetail({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Status and Event Info */}
-      <div className="border-border-steel bg-bg-steel space-y-3 rounded-lg border p-4">
+      <div className="border-border-primary bg-surface-secondary space-y-3 rounded-lg border p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">Status</h3>
           <DeliveryStatusBadge status={delivery.status} />
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-text-muted-lum">Event Type</p>
+            <p className="text-text-muted">Event Type</p>
             <p className="font-medium">
               {WEBHOOK_EVENT_LABELS[delivery.event_type] || delivery.event_type}
             </p>
           </div>
           <div>
-            <p className="text-text-muted-lum">Event ID</p>
+            <p className="text-text-muted">Event ID</p>
             <p className="font-mono text-xs">{delivery.event_id}</p>
           </div>
           <div>
-            <p className="text-text-muted-lum">Attempt Count</p>
+            <p className="text-text-muted">Attempt Count</p>
             <p className="font-medium">{delivery.attempt_count}</p>
           </div>
           <div>
-            <p className="text-text-muted-lum">Response Status</p>
+            <p className="text-text-muted">Response Status</p>
             <p className="font-medium">
               {delivery.response_status ? `HTTP ${delivery.response_status}` : 'N/A'}
             </p>
@@ -65,28 +65,28 @@ export function WebhookDeliveryDetail({
       </div>
 
       {/* Timestamps */}
-      <div className="border-border-steel bg-bg-steel space-y-2 rounded-lg border p-4">
+      <div className="border-border-primary bg-surface-secondary space-y-2 rounded-lg border p-4">
         <h3 className="font-semibold">Timestamps</h3>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-text-muted-lum">Created</p>
+            <p className="text-text-muted">Created</p>
             <p className="font-medium">{formatDateTime(delivery.created_at)}</p>
           </div>
           {delivery.delivered_at && (
             <div>
-              <p className="text-text-muted-lum">Delivered</p>
+              <p className="text-text-muted">Delivered</p>
               <p className="font-medium">{formatDateTime(delivery.delivered_at)}</p>
             </div>
           )}
           {delivery.next_retry_at && (
             <div>
-              <p className="text-text-muted-lum">Next Retry</p>
+              <p className="text-text-muted">Next Retry</p>
               <p className="font-medium">{formatDateTime(delivery.next_retry_at)}</p>
             </div>
           )}
           {delivery.duration_ms && (
             <div>
-              <p className="text-text-muted-lum">Duration</p>
+              <p className="text-text-muted">Duration</p>
               <p className="font-medium">{delivery.duration_ms}ms</p>
             </div>
           )}
@@ -95,9 +95,9 @@ export function WebhookDeliveryDetail({
 
       {/* Response */}
       {delivery.response_body && (
-        <div className="border-border-steel bg-bg-steel space-y-2 rounded-lg border p-4">
+        <div className="border-border-primary bg-surface-secondary space-y-2 rounded-lg border p-4">
           <h3 className="font-semibold">Response Body</h3>
-          <pre className="bg-bg-elevated-lum max-h-64 overflow-auto rounded p-3 font-mono text-xs">
+          <pre className="bg-surface max-h-64 overflow-auto rounded p-3 font-mono text-xs">
             {delivery.response_body}
           </pre>
         </div>

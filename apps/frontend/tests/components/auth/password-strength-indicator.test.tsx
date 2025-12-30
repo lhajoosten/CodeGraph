@@ -190,7 +190,7 @@ describe('PasswordStrengthIndicator', () => {
       render(<PasswordStrengthIndicator password="Password" />);
 
       const numberRequirement = screen.getByText(/At least one number/i);
-      expect(numberRequirement.querySelector('[class*="text-text-muted-lum"]')).toBeInTheDocument();
+      expect(numberRequirement.querySelector('[class*="text-text-muted"]')).toBeInTheDocument();
     });
 
     it('should show checked items for password with numbers', () => {

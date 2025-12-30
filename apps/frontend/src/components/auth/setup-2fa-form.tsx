@@ -71,7 +71,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-text-secondary-lum">Loading 2FA setup...</p>
+        <p className="text-text-secondary">Loading 2FA setup...</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-4">
         <ExclamationCircleIcon className="text-error h-12 w-12" />
-        <p className="text-text-secondary-lum text-center">
+        <p className="text-text-secondary text-center">
           Failed to load 2FA setup. Please try again.
         </p>
         <button
@@ -109,7 +109,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-all ${
                   isActive || isCompleted
                     ? 'bg-brand-cyan text-white'
-                    : 'bg-bg-steel text-text-muted-lum'
+                    : 'bg-surface-secondary text-text-muted'
                 }`}
               >
                 {isCompleted ? <CheckCircleIcon className="h-5 w-5" /> : index + 1}
@@ -117,7 +117,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
               {index < 2 && (
                 <div
                   className={`h-1 flex-1 rounded-full transition-all ${
-                    isCompleted ? 'bg-brand-cyan' : 'bg-bg-steel'
+                    isCompleted ? 'bg-brand-cyan' : 'bg-surface-secondary'
                   }`}
                 />
               )}
@@ -130,10 +130,10 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
       {step === 'qr' && qrData && (
         <div className="space-y-4">
           <div className="text-center">
-            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
+            <h3 className="text-text-primary mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.scanQR')}
             </h3>
-            <p className="text-text-secondary-lum text-sm">
+            <p className="text-text-secondary text-sm">
               {t('luminous.twoFactor.setup.scanQRMessage')}
             </p>
           </div>
@@ -143,11 +143,11 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-text-secondary-lum text-sm font-medium">
+            <p className="text-text-secondary text-sm font-medium">
               {t('luminous.twoFactor.setup.manualEntryKey')}
             </p>
-            <div className="bg-bg-steel rounded-lg p-3">
-              <code className="text-text-primary-lum font-mono text-sm break-all">
+            <div className="bg-surface-secondary rounded-lg p-3">
+              <code className="text-text-primary font-mono text-sm break-all">
                 {qrData.secret}
               </code>
             </div>
@@ -168,10 +168,10 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
       {step === 'verify' && (
         <div className="space-y-4">
           <div className="text-center">
-            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
+            <h3 className="text-text-primary mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.verifyCode')}
             </h3>
-            <p className="text-text-secondary-lum text-sm">
+            <p className="text-text-secondary text-sm">
               {t('luminous.twoFactor.setup.verifyCodeMessage')}
             </p>
           </div>
@@ -194,7 +194,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
                 setOtp('');
               }}
               disabled={isVerifying}
-              className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-border-primary bg-surface text-text-primary flex-1 rounded-lg border py-3 font-semibold transition-all hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t('luminous.twoFactor.setup.backToQR')}
             </button>
@@ -216,10 +216,10 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
         <div className="space-y-4">
           <div className="text-center">
             <CheckCircleIcon className="text-success mx-auto mb-4 h-12 w-12" />
-            <h3 className="text-text-primary-lum mb-2 text-lg font-semibold">
+            <h3 className="text-text-primary mb-2 text-lg font-semibold">
               {t('luminous.twoFactor.setup.saveBackup')}
             </h3>
-            <p className="text-text-secondary-lum text-sm">
+            <p className="text-text-secondary text-sm">
               {t('luminous.twoFactor.setup.backupMessage')}
             </p>
           </div>
@@ -231,11 +231,11 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
             </p>
           </div>
 
-          <div className="border-border-steel bg-bg-steel max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
+          <div className="border-border-primary bg-surface-secondary max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
             {backupCodes.map((code, index) => (
               <div
                 key={index}
-                className="group border-border-steel bg-bg-elevated-lum text-text-primary-lum flex items-center justify-between rounded border p-2 font-mono text-sm transition-colors hover:bg-brand-cyan/10"
+                className="group border-border-primary bg-surface text-text-primary flex items-center justify-between rounded border p-2 font-mono text-sm transition-colors hover:bg-brand-cyan/10"
               >
                 <span>{code}</span>
                 <button
@@ -256,7 +256,7 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
 
           <button
             onClick={downloadCodes}
-            className="border-border-steel bg-bg-elevated-lum text-text-primary-lum flex w-full items-center justify-center gap-2 rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel"
+            className="border-border-primary bg-surface text-text-primary flex w-full items-center justify-center gap-2 rounded-lg border py-3 font-semibold transition-all hover:bg-surface-secondary"
           >
             <ArrowDownTrayIcon className="h-[18px] w-[18px]" />
             {t('luminous.twoFactor.setup.downloadCodes')}
@@ -267,9 +267,9 @@ export function Setup2FAForm({ onSuccess }: Setup2FAFormProps) {
               type="checkbox"
               checked={codesConfirmed}
               onChange={(e) => setCodesConfirmed(e.target.checked)}
-              className="border-border-steel cursor-pointer rounded"
+              className="border-border-primary cursor-pointer rounded"
             />
-            <span className="text-text-secondary-lum text-sm">
+            <span className="text-text-secondary text-sm">
               {t('luminous.twoFactor.setup.confirmSaved')}
             </span>
           </label>

@@ -104,7 +104,7 @@ export function WebhookTestButton({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-text-muted-lum text-xs">
+              <p className="text-text-muted text-xs">
                 Leave empty to use a random event from your subscribed events
               </p>
             </div>
@@ -141,7 +141,7 @@ export function WebhookTestButton({
                   {testResult.response_body && (
                     <div className="mt-2">
                       <p className="font-medium">Response:</p>
-                      <pre className="bg-bg-elevated-lum mt-1 max-h-32 overflow-auto rounded p-2 text-xs">
+                      <pre className="bg-surface mt-1 max-h-32 overflow-auto rounded p-2 text-xs">
                         {testResult.response_body}
                       </pre>
                     </div>

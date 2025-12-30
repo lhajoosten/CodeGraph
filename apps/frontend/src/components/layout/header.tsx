@@ -132,7 +132,7 @@ function Header({ showMenuButton = false, onMenuClick, className }: HeaderProps)
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm leading-none font-medium">{userName}</p>
-                <p className="text-text-muted-lum text-xs leading-none">{user?.email}</p>
+                <p className="text-text-muted text-xs leading-none">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

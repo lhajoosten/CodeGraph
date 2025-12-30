@@ -41,14 +41,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div
           style={{
-            background: `linear-gradient(135deg, var(--color-bg-primary-lum) 0%, var(--color-bg-elevated-lum) 100%)`,
+            background: `linear-gradient(135deg, var(--color-background) 0%, var(--color-background-elevated) 100%)`,
           }}
           className="flex min-h-screen items-center justify-center px-4 py-12"
         >
           <div
             style={{
-              backgroundColor: 'var(--color-bg-secondary-lum)',
-              borderColor: 'var(--color-border-steel)',
+              backgroundColor: 'var(--color-background-secondary)',
+              borderColor: 'var(--color-border-primary)',
             }}
             className="w-full max-w-3xl space-y-12 rounded-lg border p-12 shadow-xl"
           >
@@ -78,13 +78,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 </div>
               </div>
               <h1
-                style={{ color: 'var(--color-text-primary-lum)' }}
+                style={{ color: 'var(--color-text-primary)' }}
                 className="text-center text-2xl font-bold"
               >
                 Oops! Something went wrong
               </h1>
               <p
-                style={{ color: 'var(--color-text-secondary-lum)' }}
+                style={{ color: 'var(--color-text-secondary)' }}
                 className="text-center text-sm"
               >
                 We encountered an unexpected error. Our team has been notified and we&apos;re
@@ -113,9 +113,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
               <button
                 onClick={() => window.location.reload()}
                 style={{
-                  backgroundColor: 'var(--color-bg-steel)',
-                  borderColor: 'var(--color-border-steel)',
-                  color: 'var(--color-text-secondary-lum)',
+                  backgroundColor: 'var(--color-surface-secondary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-secondary)',
                 }}
                 className="flex-1 rounded-lg border px-4 py-2 text-center text-sm font-medium transition hover:border-cyan-500/50 hover:bg-slate-700"
               >
@@ -123,7 +123,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               </button>
             </div>
 
-            <p style={{ color: 'var(--color-text-muted-lum)' }} className="text-center text-xs">
+            <p style={{ color: 'var(--color-text-muted)' }} className="text-center text-xs">
               If this problem persists, please contact support
             </p>
           </div>

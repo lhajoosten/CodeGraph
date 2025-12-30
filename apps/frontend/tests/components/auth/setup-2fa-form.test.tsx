@@ -178,7 +178,8 @@ describe('Setup2FAForm', () => {
 
       renderWithQueryClient(<Setup2FAForm />);
 
-      expect(screen.getByText('Verification Code')).toBeInTheDocument();
+      // Translation mock returns the key itself
+      expect(screen.getByText('luminous.twoFactor.setup.codeLabel')).toBeInTheDocument();
     });
 
     it('should display back to QR button', () => {

@@ -191,7 +191,7 @@ export function WebhookForm({
           className={errors.url ? 'border-error' : ''}
         />
         {errors.url && <p className="text-error text-sm">{errors.url}</p>}
-        <p className="text-text-muted-lum text-xs">Must be a valid HTTP or HTTPS URL</p>
+        <p className="text-text-muted text-xs">Must be a valid HTTP or HTTPS URL</p>
       </div>
 
       {/* Status (only for edit mode) */}

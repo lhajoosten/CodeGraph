@@ -63,11 +63,11 @@ function CompleteProfileContent() {
               <CheckCircleIcon className="h-12 w-12 text-brand-lime" />
             </div>
 
-            <p className="text-text-primary-lum text-center font-medium">
+            <p className="text-text-primary text-center font-medium">
               {t('luminous.completeProfile.successTitle')}
             </p>
 
-            <p className="text-text-secondary-lum text-center text-sm">
+            <p className="text-text-secondary text-center text-sm">
               {t('luminous.completeProfile.successMessage')}
             </p>
           </div>
@@ -145,7 +145,7 @@ function CompleteProfileContent() {
             type="button"
             onClick={handleSkip}
             disabled={isSubmitting || updateProfileMutation.isPending}
-            className="border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border py-3 font-semibold transition-all hover:bg-bg-steel disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-border-primary bg-surface text-text-primary w-full rounded-lg border py-3 font-semibold transition-all hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('luminous.completeProfile.skip')}
           </button>
@@ -160,8 +160,8 @@ function CompleteProfileFallback() {
     <AuthLayout>
       <AuthCard>
         <div className="space-y-4">
-          <div className="bg-bg-steel h-8 w-32 animate-pulse rounded"></div>
-          <div className="bg-bg-steel h-4 w-48 animate-pulse rounded"></div>
+          <div className="bg-surface-secondary h-8 w-32 animate-pulse rounded"></div>
+          <div className="bg-surface-secondary h-4 w-48 animate-pulse rounded"></div>
         </div>
       </AuthCard>
     </AuthLayout>

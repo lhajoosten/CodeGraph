@@ -56,21 +56,21 @@ function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('appearance');
 
   return (
-    <div className="bg-bg-primary-lum min-h-screen">
+    <div className="bg-background min-h-screen">
       {/* Header */}
-      <div className="border-border-steel bg-bg-elevated-lum border-b">
+      <div className="border-border-primary bg-surface border-b">
         <div className="mx-auto max-w-5xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-text-primary-lum text-2xl font-bold">{t('page.title')}</h1>
-              <p className="text-text-secondary-lum mt-1 text-sm">{t('page.subtitle')}</p>
+              <h1 className="text-text-primary text-2xl font-bold">{t('page.title')}</h1>
+              <p className="text-text-secondary mt-1 text-sm">{t('page.subtitle')}</p>
             </div>
             <Link
               to="/"
               className={cn(
-                'border-border-steel flex items-center gap-2 rounded-lg border',
-                'bg-bg-elevated-lum text-text-secondary-lum px-4 py-2 text-sm font-medium',
-                'hover:bg-bg-steel hover:text-text-primary-lum transition'
+                'border-border-primary flex items-center gap-2 rounded-lg border',
+                'bg-surface text-text-secondary px-4 py-2 text-sm font-medium',
+                'hover:bg-surface-secondary hover:text-text-primary transition'
               )}
             >
               <ArrowLeftIcon className="h-4 w-4" />
@@ -95,7 +95,7 @@ function SettingsPage() {
                     'text-left text-sm font-medium transition',
                     activeTab === tab.id
                       ? 'bg-brand-teal/10 text-brand-teal'
-                      : 'text-text-secondary-lum hover:bg-bg-elevated-lum hover:text-text-primary-lum'
+                      : 'text-text-secondary hover:bg-surface hover:text-text-primary'
                   )}
                 >
                   {tab.icon}

@@ -80,7 +80,7 @@ export const PasswordChangeForm = () => {
       )}
 
       <div>
-        <label className="text-text-secondary-lum mb-1 block text-sm font-medium">
+        <label className="text-text-secondary mb-1 block text-sm font-medium">
           Current Password
         </label>
         <input
@@ -88,7 +88,7 @@ export const PasswordChangeForm = () => {
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           className={`
-            border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border px-4 py-2
+            border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
             focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
@@ -98,7 +98,7 @@ export const PasswordChangeForm = () => {
       </div>
 
       <div>
-        <label className="text-text-secondary-lum mb-1 block text-sm font-medium">
+        <label className="text-text-secondary mb-1 block text-sm font-medium">
           New Password
         </label>
         <input
@@ -106,18 +106,18 @@ export const PasswordChangeForm = () => {
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           className={`
-            border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border px-4 py-2
+            border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
             focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}
           placeholder="Enter new password"
           disabled={changeMutation.isPending}
         />
-        <p className="text-text-muted-lum mt-1 text-xs">Must be at least 8 characters</p>
+        <p className="text-text-muted mt-1 text-xs">Must be at least 8 characters</p>
       </div>
 
       <div>
-        <label className="text-text-secondary-lum mb-1 block text-sm font-medium">
+        <label className="text-text-secondary mb-1 block text-sm font-medium">
           Confirm New Password
         </label>
         <input
@@ -125,7 +125,7 @@ export const PasswordChangeForm = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className={`
-            border-border-steel bg-bg-elevated-lum text-text-primary-lum w-full rounded-lg border px-4 py-2
+            border-border-primary bg-surface text-text-primary w-full rounded-lg border px-4 py-2
             focus:border-transparent focus:ring-2 focus:ring-brand-cyan
             focus:outline-none
           `}

@@ -78,7 +78,7 @@ export const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      'border-border-steel rounded-lg border transition-all duration-200',
+      'border-border-primary rounded-lg border transition-all duration-200',
       'data-[state=open]:border-brand-cyan/50 data-[state=open]:shadow-[0_0_12px_rgba(34,211,238,0.2)]',
       className
     )}
@@ -100,8 +100,8 @@ export const AccordionTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'flex flex-1 items-center justify-between px-4 py-3 font-semibold',
-      'text-text-primary-lum transition-colors',
-      'hover:bg-bg-elevated-lum/50 hover:text-brand-cyan',
+      'text-text-primary transition-colors',
+      'hover:bg-surface/50 hover:text-brand-cyan',
       'data-[state=open]:text-brand-cyan',
       'focus-visible:ring-2 focus-visible:ring-brand-cyan/50 focus-visible:outline-none',
       'disabled:cursor-not-allowed disabled:opacity-50',
@@ -110,13 +110,13 @@ export const AccordionTrigger = React.forwardRef<
     {...props}
   >
     <span className="flex items-center gap-3">
-      {icon && <span className="text-text-secondary-lum">{icon}</span>}
+      {icon && <span className="text-text-secondary">{icon}</span>}
       {children}
     </span>
     <ChevronDownIcon
       className={cn(
         'h-5 w-5 shrink-0 transition-transform duration-300',
-        'text-text-secondary-lum group-hover:text-brand-cyan',
+        'text-text-secondary group-hover:text-brand-cyan',
         'data-[state=open]:rotate-180'
       )}
     />
@@ -141,7 +141,7 @@ export const AccordionContent = React.forwardRef<
     )}
     {...props}
   >
-    <div className={cn('text-text-secondary-lum px-4 py-3', className)}>{props.children}</div>
+    <div className={cn('text-text-secondary px-4 py-3', className)}>{props.children}</div>
   </AccordionPrimitive.Content>
 ));
 

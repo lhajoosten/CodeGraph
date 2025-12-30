@@ -65,7 +65,7 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <WebhookStatusBadge status={webhook.status} size="sm" />
-            <span className="text-text-muted-lum text-xs">{eventCount}</span>
+            <span className="text-text-muted text-xs">{eventCount}</span>
           </div>
         </div>
 
@@ -114,14 +114,14 @@ export function WebhookCard({ webhook, onEdit, onDelete, onTest, className }: We
         <p className="text-text-secondary line-clamp-1 font-mono text-sm">
           {truncate(webhook.url, 60)}
         </p>
-        <div className="text-text-muted-lum flex items-center gap-4 text-xs">
+        <div className="text-text-muted flex items-center gap-4 text-xs">
           <span>Success: {webhook.success_count}</span>
           <span>Failed: {webhook.failure_count}</span>
           {totalDeliveries > 0 && <span>({successRate}%)</span>}
         </div>
       </CardContent>
 
-      <CardFooter className="text-text-secondary-lum pt-2 text-xs">
+      <CardFooter className="text-text-secondary pt-2 text-xs">
         Updated {formatRelativeTime(webhook.updated_at)}
       </CardFooter>
     </Card>

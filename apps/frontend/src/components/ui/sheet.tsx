@@ -106,7 +106,7 @@ export const SheetContent = React.forwardRef<
           {...props}
           className={cn(
             'fixed z-50 flex flex-col',
-            'border-border-steel bg-bg-primary-lum border shadow-[0_10px_40px_rgba(0,0,0,0.3)]',
+            'border-border-primary bg-background border shadow-[0_10px_40px_rgba(0,0,0,0.3)]',
             'transition-all duration-300 ease-in-out',
             sideVariants[side as SheetSide],
             isHorizontal ? 'h-full w-full max-w-sm' : 'h-auto max-h-[90vh]',
@@ -119,7 +119,7 @@ export const SheetContent = React.forwardRef<
                 context.setOpen(false);
                 onClose?.();
               }}
-              className="text-text-secondary-lum absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-bg-elevated-lum hover:text-text-primary-lum"
+              className="text-text-secondary absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-surface hover:text-text-primary"
               aria-label="Close"
             >
               <XMarkIcon className="h-5 w-5" />
@@ -141,7 +141,7 @@ export const SheetHeader = React.forwardRef<HTMLDivElement, SheetHeaderProps>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('border-border-steel flex flex-col gap-2 border-b px-6 py-4', className)}
+      className={cn('border-border-primary flex flex-col gap-2 border-b px-6 py-4', className)}
       {...props}
     />
   )
@@ -155,7 +155,7 @@ export const SheetTitle = React.forwardRef<HTMLHeadingElement, SheetTitleProps>(
   ({ className, ...props }, ref) => (
     <h2
       ref={ref}
-      className={cn('text-text-primary-lum text-lg font-semibold', className)}
+      className={cn('text-text-primary text-lg font-semibold', className)}
       {...props}
     />
   )
@@ -167,7 +167,7 @@ type SheetDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 export const SheetDescription = React.forwardRef<HTMLParagraphElement, SheetDescriptionProps>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn('text-text-secondary-lum text-sm', className)} {...props} />
+    <p ref={ref} className={cn('text-text-secondary text-sm', className)} {...props} />
   )
 );
 
@@ -189,7 +189,7 @@ export const SheetFooter = React.forwardRef<HTMLDivElement, SheetFooterProps>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('border-border-steel flex flex-row gap-3 border-t px-6 py-4', className)}
+      className={cn('border-border-primary flex flex-row gap-3 border-t px-6 py-4', className)}
       {...props}
     />
   )

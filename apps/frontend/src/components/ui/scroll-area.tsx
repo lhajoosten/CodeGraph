@@ -42,7 +42,7 @@ export const ScrollArea = React.forwardRef<
       </>
     )}
 
-    <ScrollAreaPrimitive.Corner className="bg-bg-elevated-lum" />
+    <ScrollAreaPrimitive.Corner className="bg-surface" />
   </ScrollAreaPrimitive.Root>
 ));
 
@@ -74,7 +74,7 @@ const ScrollBar = React.forwardRef<
     <ScrollAreaPrimitive.ScrollAreaThumb
       className={cn(
         'relative flex-1 rounded-full transition-colors duration-200',
-        'bg-border-steel hover:bg-text-secondary-lum',
+        'bg-border-primary hover:bg-text-secondary',
         'data-[state=hidden]:hidden'
       )}
     />
