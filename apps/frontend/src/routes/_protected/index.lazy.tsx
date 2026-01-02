@@ -1,11 +1,13 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import { useCurrentUser, useTasks } from '@/hooks';
+import { useHasMounted } from '@/hooks/common';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TaskCard } from '@/components/tasks/task-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { AnimatedCounter, AnimatedPercentage } from '@/components/ui/animated-counter';
 import {
   PlusIcon,
   Squares2X2Icon,
@@ -26,6 +28,7 @@ import {
 function DashboardPage() {
   const { data: user } = useCurrentUser();
   const { data: tasksResponse, isLoading: tasksLoading } = useTasks({ pageSize: 5 });
+  const hasMounted = useHasMounted();
 
   const tasks = tasksResponse?.items ?? [];
   const totalTasks = tasksResponse?.total ?? 0;
@@ -55,33 +58,68 @@ function DashboardPage() {
   return (
     <AppLayout>
       <div className="space-y-8">
-        {/* Hero Section */}
+        {/* Hero Section - Premium Animated */}
         <div className="bg-gradient-surface relative overflow-hidden rounded-2xl border border-border-primary p-8 shadow-elevated md:p-12">
+          {/* Noise texture overlay */}
           <div className="noise pointer-events-none absolute inset-0" />
+
+          {/* Animated gradient orbs */}
+          <div className="orb orb-teal orb-animated pointer-events-none absolute -top-20 -right-20 h-72 w-72 opacity-20" />
+          <div className="orb orb-cyan animate-drift-reverse pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 opacity-15" />
+          <div
+            className="orb orb-teal orb-animated pointer-events-none absolute top-1/2 right-1/4 h-48 w-48 opacity-10"
+            style={{ animationDelay: '-5s' }}
+          />
+
+          {/* Content */}
           <div className="relative z-10">
-            <div className="mb-6 flex items-center gap-3">
-              <SparklesIcon className="h-8 w-8 text-brand-teal-400" />
-              <Badge variant="secondary" className="bg-primary-subtle text-text-brand">
+            {/* Badge with sparkle */}
+            <div
+              className={`mb-6 flex items-center gap-3 ${hasMounted ? 'animate-slide-up' : 'opacity-0'}`}
+            >
+              <div className="sparkle-container">
+                <SparklesIcon
+                  className="h-8 w-8 animate-float text-brand-teal-400"
+                  style={{ animationDuration: '4s' }}
+                />
+              </div>
+              <Badge
+                variant="secondary"
+                className="glass-subtle bg-primary-subtle/80 text-text-brand backdrop-blur-sm"
+              >
                 AI-Powered Development
               </Badge>
             </div>
-            <h1 className="mb-3 text-4xl font-bold text-text-primary md:text-5xl">
-              {getGreeting()}, {userName}!
+
+            {/* Gradient animated greeting */}
+            <h1
+              className={`mb-3 text-4xl font-bold md:text-5xl ${hasMounted ? 'stagger-1 animate-slide-up' : 'opacity-0'}`}
+            >
+              <span className="text-text-primary">{getGreeting()}, </span>
+              <span className="text-gradient-animated">{userName}</span>
+              <span className="text-text-primary">!</span>
             </h1>
-            <p className="mb-8 max-w-2xl text-lg text-text-secondary">
+
+            <p
+              className={`mb-8 max-w-2xl text-lg text-text-secondary ${hasMounted ? 'stagger-2 animate-slide-up' : 'opacity-0'}`}
+            >
               Your autonomous AI agents are ready to help you code faster and smarter. Track
               progress, create tasks, and let the agents handle the heavy lifting.
             </p>
-            <div className="flex flex-wrap gap-4">
+
+            {/* Buttons with staggered spring animation */}
+            <div
+              className={`flex flex-wrap gap-4 ${hasMounted ? 'stagger-3 animate-slide-up-spring' : 'opacity-0'}`}
+            >
               <Link to="/tasks">
-                <Button size="lg" className="glow-teal-sm gap-2">
+                <Button size="lg" className="hover-glow-intense gap-2 transition-all duration-300">
                   <PlusIcon className="h-5 w-5" />
                   Create New Task
                 </Button>
               </Link>
               {stats.inProgress > 0 && (
                 <Link to="/tasks">
-                  <Button variant="outline" size="lg" className="gap-2">
+                  <Button variant="outline" size="lg" className="hover-glow border-shine gap-2">
                     <BoltIcon className="h-5 w-5" />
                     View Active Tasks
                   </Button>
@@ -89,29 +127,38 @@ function DashboardPage() {
               )}
             </div>
           </div>
-          {/* Decorative gradient orbs */}
-          <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-brand-teal-400 opacity-10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-brand-cyan opacity-5 blur-3xl" />
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Animated */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Total Tasks */}
-          <Card className="interactive border-accent-top overflow-hidden">
+          <Card
+            className={`hover-lift-premium border-accent-animated overflow-hidden ${hasMounted ? 'stagger-4 animate-slide-up' : 'opacity-0'}`}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-text-secondary">Total Tasks</CardTitle>
-              <div className="bg-gradient-teal-subtle flex h-10 w-10 items-center justify-center rounded-lg">
+              <div className="bg-gradient-teal-subtle flex h-10 w-10 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110">
                 <Squares2X2Icon className="h-5 w-5 text-primary" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-1 text-3xl font-bold text-text-primary">{stats.total}</div>
-              <p className="text-xs text-text-tertiary">{completionRate}% completion rate</p>
+              <div className="mb-1 text-3xl font-bold text-text-primary">
+                <AnimatedCounter value={stats.total} duration={1000} startAnimation={hasMounted} />
+              </div>
+              <p className="text-xs text-text-tertiary">
+                <AnimatedPercentage
+                  value={completionRate}
+                  duration={1200}
+                  delay={200}
+                  startAnimation={hasMounted}
+                />{' '}
+                completion rate
+              </p>
               {stats.total > 0 && (
                 <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-secondary">
                   <div
-                    className="bg-gradient-teal h-full transition-all duration-500"
-                    style={{ width: `${completionRate}%` }}
+                    className="bg-gradient-teal h-full transition-all duration-1000 ease-out"
+                    style={{ width: hasMounted ? `${completionRate}%` : '0%' }}
                   />
                 </div>
               )}
@@ -119,7 +166,9 @@ function DashboardPage() {
           </Card>
 
           {/* Pending */}
-          <Card className="interactive overflow-hidden hover:shadow-card-hover">
+          <Card
+            className={`hover-lift-premium overflow-hidden ${hasMounted ? 'stagger-5 animate-slide-up' : 'opacity-0'}`}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-text-secondary">Pending</CardTitle>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
@@ -127,13 +176,22 @@ function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-1 text-3xl font-bold text-text-primary">{stats.pending}</div>
+              <div className="mb-1 text-3xl font-bold text-text-primary">
+                <AnimatedCounter
+                  value={stats.pending}
+                  duration={900}
+                  delay={100}
+                  startAnimation={hasMounted}
+                />
+              </div>
               <p className="text-xs text-text-tertiary">Waiting to be processed</p>
             </CardContent>
           </Card>
 
           {/* In Progress */}
-          <Card className="interactive overflow-hidden hover:shadow-card-hover">
+          <Card
+            className={`hover-lift-premium overflow-hidden ${hasMounted ? 'stagger-6 animate-slide-up' : 'opacity-0'}`}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-text-secondary">In Progress</CardTitle>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-info/10">
@@ -141,11 +199,18 @@ function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-1 text-3xl font-bold text-text-primary">{stats.inProgress}</div>
+              <div className="mb-1 text-3xl font-bold text-text-primary">
+                <AnimatedCounter
+                  value={stats.inProgress}
+                  duration={900}
+                  delay={200}
+                  startAnimation={hasMounted}
+                />
+              </div>
               <p className="text-xs text-text-tertiary">Being worked on by agents</p>
               {stats.inProgress > 0 && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-info">
-                  <div className="status-dot h-2 w-2 bg-info" />
+                  <div className="status-dot-premium status-working h-2.5 w-2.5" />
                   <span>Agents active</span>
                 </div>
               )}
@@ -153,7 +218,9 @@ function DashboardPage() {
           </Card>
 
           {/* Completed */}
-          <Card className="interactive overflow-hidden hover:shadow-card-hover">
+          <Card
+            className={`hover-lift-premium overflow-hidden ${hasMounted ? 'stagger-7 animate-slide-up' : 'opacity-0'}`}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-text-secondary">Completed</CardTitle>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
@@ -161,11 +228,18 @@ function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mb-1 text-3xl font-bold text-text-primary">{stats.completed}</div>
+              <div className="mb-1 text-3xl font-bold text-text-primary">
+                <AnimatedCounter
+                  value={stats.completed}
+                  duration={900}
+                  delay={300}
+                  startAnimation={hasMounted}
+                />
+              </div>
               <p className="text-xs text-text-tertiary">Successfully finished</p>
               {stats.completed > 0 && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-success">
-                  <CheckCircleIcon className="h-3 w-3" />
+                  <div className="status-dot-premium status-alive h-2.5 w-2.5" />
                   <span>Great job!</span>
                 </div>
               )}
@@ -347,18 +421,25 @@ function DashboardPage() {
   );
 }
 
-// Agent Status Item Component
+// Agent Status Item Component - Premium Animated
 interface AgentStatusItemProps {
   icon: React.ComponentType<{ className?: string }>;
   name: string;
   status: 'ready' | 'active' | 'error';
   description: string;
+  delay?: number;
 }
 
-function AgentStatusItem({ icon: Icon, name, status, description }: AgentStatusItemProps) {
-  const statusColors = {
-    ready: 'bg-success',
-    active: 'bg-info',
+function AgentStatusItem({
+  icon: Icon,
+  name,
+  status,
+  description,
+  delay = 0,
+}: AgentStatusItemProps) {
+  const statusClasses = {
+    ready: 'status-alive bg-success',
+    active: 'status-working bg-info',
     error: 'bg-error',
   };
 
@@ -368,19 +449,40 @@ function AgentStatusItem({ icon: Icon, name, status, description }: AgentStatusI
     error: 'Error',
   };
 
+  const glowClasses = {
+    ready: 'group-hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]',
+    active: 'group-hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]',
+    error: 'group-hover:shadow-[0_0_20px_rgba(239,68,68,0.2)]',
+  };
+
   return (
-    <div className="group flex items-center gap-3 rounded-lg border border-border-secondary bg-surface p-3 transition-all hover:border-border-primary hover:bg-surface-hover">
-      <div className="bg-gradient-teal-subtle flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-        <Icon className="h-5 w-5 text-primary" />
+    <div
+      className={`group hover-lift-premium flex items-center gap-3 rounded-lg border border-border-secondary bg-surface p-3 transition-all duration-300 hover:border-border-primary hover:bg-surface-hover ${glowClasses[status]}`}
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="bg-gradient-teal-subtle flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110">
+        <Icon className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-12" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-medium text-text-primary">{name}</span>
-          <div className={`status-dot h-2 w-2 ${statusColors[status]}`} />
+          <span className="text-sm font-medium text-text-primary transition-colors group-hover:text-primary">
+            {name}
+          </span>
+          <div className={`status-dot-premium h-2.5 w-2.5 ${statusClasses[status]}`} />
         </div>
         <p className="truncate text-xs text-text-tertiary">{description}</p>
       </div>
-      <Badge variant="secondary" size="sm" className="shrink-0 text-xs">
+      <Badge
+        variant="secondary"
+        size="sm"
+        className={`shrink-0 text-xs transition-all duration-300 group-hover:scale-105 ${
+          status === 'ready'
+            ? 'group-hover:bg-success/20 group-hover:text-success'
+            : status === 'active'
+              ? 'group-hover:bg-info/20 group-hover:text-info'
+              : 'group-hover:bg-error/20 group-hover:text-error'
+        }`}
+      >
         {statusLabels[status]}
       </Badge>
     </div>

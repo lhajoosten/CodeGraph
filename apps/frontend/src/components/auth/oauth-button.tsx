@@ -60,18 +60,29 @@ export function OAuthButton({ provider, onClick, href, disabled = false }: OAuth
     return (
       <a
         href={href}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border-primary bg-surface py-3 font-semibold text-text-primary transition-all hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-border-primary bg-surface/80 py-3 font-semibold text-text-primary backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-primary/40 hover:bg-surface hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {icon}
-        {label}
+        {/* Subtle hover glow */}
+        <span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="absolute inset-0 bg-gradient-to-r from-brand-teal-500/5 via-transparent to-brand-cyan/5" />
+        </span>
+
+        <span className="relative flex items-center gap-2 transition-transform group-hover:scale-105">
+          {icon}
+        </span>
       </a>
     );
   }
 
   // Render as button with onClick
   return (
-    <Button variant="secondary" className="w-full gap-2" onClick={onClick} disabled={disabled}>
-      {icon}
+    <Button
+      variant="secondary"
+      className="group w-full gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <span className="transition-transform group-hover:scale-105">{icon}</span>
       {label}
     </Button>
   );

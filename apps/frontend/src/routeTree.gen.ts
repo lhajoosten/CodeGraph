@@ -8,243 +8,291 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root';
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized';
-import { Route as R404RouteImport } from './routes/$404';
-import { Route as ProtectedIndexRouteImport } from './routes/_protected/index';
-import { Route as PublicVerifyEmailPendingRouteImport } from './routes/_public/verify-email-pending';
-import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email';
-import { Route as PublicVerify2faRouteImport } from './routes/_public/verify-2fa';
-import { Route as PublicSetup2faRouteImport } from './routes/_public/setup-2fa';
-import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password';
-import { Route as PublicRegisterRouteImport } from './routes/_public/register';
-import { Route as PublicLoginRouteImport } from './routes/_public/login';
-import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password';
-import { Route as PublicCompleteProfileRouteImport } from './routes/_public/complete-profile';
-import { Route as ProtectedWebhooksIndexRouteImport } from './routes/_protected/webhooks/index';
-import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index';
-import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index';
-import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index';
-import { Route as ProtectedAgentsIndexRouteImport } from './routes/_protected/agents/index';
-import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index';
-import { Route as ProtectedWebhooksNewRouteImport } from './routes/_protected/webhooks/new';
-import { Route as ProtectedWebhooksIdRouteImport } from './routes/_protected/webhooks/$id';
-import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id';
-import { Route as ProtectedAdminUsersIndexRouteImport } from './routes/_protected/admin/users/index';
-import { Route as ProtectedAdminRolesIndexRouteImport } from './routes/_protected/admin/roles/index';
-import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider';
-import { Route as ProtectedAdminRolesIdRouteImport } from './routes/_protected/admin/roles/$id';
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as R404RouteImport } from './routes/$404'
+import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
+import { Route as PublicVerifyEmailPendingRouteImport } from './routes/_public/verify-email-pending'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
+import { Route as PublicVerify2faRouteImport } from './routes/_public/verify-2fa'
+import { Route as PublicSetup2faRouteImport } from './routes/_public/setup-2fa'
+import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password'
+import { Route as PublicCompleteProfileRouteImport } from './routes/_public/complete-profile'
+import { Route as ProtectedWebhooksIndexRouteImport } from './routes/_protected/webhooks/index'
+import { Route as ProtectedTasksIndexRouteImport } from './routes/_protected/tasks/index'
+import { Route as ProtectedSettingsIndexRouteImport } from './routes/_protected/settings/index'
+import { Route as ProtectedMetricsIndexRouteImport } from './routes/_protected/metrics/index'
+import { Route as ProtectedAgentsIndexRouteImport } from './routes/_protected/agents/index'
+import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
+import { Route as ProtectedWebhooksNewRouteImport } from './routes/_protected/webhooks/new'
+import { Route as ProtectedWebhooksIdRouteImport } from './routes/_protected/webhooks/$id'
+import { Route as ProtectedTasksIdRouteImport } from './routes/_protected/tasks/$id'
+import { Route as ProtectedAdminUsersIndexRouteImport } from './routes/_protected/admin/users/index'
+import { Route as ProtectedAdminRolesIndexRouteImport } from './routes/_protected/admin/roles/index'
+import { Route as PublicOauthCallbackProviderRouteImport } from './routes/_public/oauth.callback.$provider'
+import { Route as ProtectedAdminRolesIdRouteImport } from './routes/_protected/admin/roles/$id'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const R404Route = R404RouteImport.update({
   id: '/$404',
   path: '/$404',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/_protected/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/index.lazy').then((d) => d.Route));
-const PublicVerifyEmailPendingRoute = PublicVerifyEmailPendingRouteImport.update({
-  id: '/_public/verify-email-pending',
-  path: '/verify-email-pending',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/verify-email-pending.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/index.lazy').then((d) => d.Route),
+)
+const PublicVerifyEmailPendingRoute =
+  PublicVerifyEmailPendingRouteImport.update({
+    id: '/_public/verify-email-pending',
+    path: '/verify-email-pending',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_public/verify-email-pending.lazy').then((d) => d.Route),
+  )
 const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
   id: '/_public/verify-email',
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const PublicVerify2faRoute = PublicVerify2faRouteImport.update({
   id: '/_public/verify-2fa',
   path: '/verify-2fa',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/verify-2fa.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/verify-2fa.lazy').then((d) => d.Route),
+)
 const PublicSetup2faRoute = PublicSetup2faRouteImport.update({
   id: '/_public/setup-2fa',
   path: '/setup-2fa',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/setup-2fa.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/setup-2fa.lazy').then((d) => d.Route),
+)
 const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
   id: '/_public/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/reset-password.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/reset-password.lazy').then((d) => d.Route),
+)
 const PublicRegisterRoute = PublicRegisterRouteImport.update({
   id: '/_public/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/register.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/register.lazy').then((d) => d.Route),
+)
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/login.lazy').then((d) => d.Route));
+} as any).lazy(() => import('./routes/_public/login.lazy').then((d) => d.Route))
 const PublicForgotPasswordRoute = PublicForgotPasswordRouteImport.update({
   id: '/_public/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/forgot-password.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/forgot-password.lazy').then((d) => d.Route),
+)
 const PublicCompleteProfileRoute = PublicCompleteProfileRouteImport.update({
   id: '/_public/complete-profile',
   path: '/complete-profile',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/complete-profile.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_public/complete-profile.lazy').then((d) => d.Route),
+)
 const ProtectedWebhooksIndexRoute = ProtectedWebhooksIndexRouteImport.update({
   id: '/_protected/webhooks/',
   path: '/webhooks/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/webhooks/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/index.lazy').then((d) => d.Route),
+)
 const ProtectedTasksIndexRoute = ProtectedTasksIndexRouteImport.update({
   id: '/_protected/tasks/',
   path: '/tasks/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/tasks/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/tasks/index.lazy').then((d) => d.Route),
+)
 const ProtectedSettingsIndexRoute = ProtectedSettingsIndexRouteImport.update({
   id: '/_protected/settings/',
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/settings/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/settings/index.lazy').then((d) => d.Route),
+)
 const ProtectedMetricsIndexRoute = ProtectedMetricsIndexRouteImport.update({
   id: '/_protected/metrics/',
   path: '/metrics/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/metrics/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/metrics/index.lazy').then((d) => d.Route),
+)
 const ProtectedAgentsIndexRoute = ProtectedAgentsIndexRouteImport.update({
   id: '/_protected/agents/',
   path: '/agents/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/agents/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/agents/index.lazy').then((d) => d.Route),
+)
 const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
   id: '/_protected/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/admin/index.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/admin/index.lazy').then((d) => d.Route),
+)
 const ProtectedWebhooksNewRoute = ProtectedWebhooksNewRouteImport.update({
   id: '/_protected/webhooks/new',
   path: '/webhooks/new',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/webhooks/new.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/new.lazy').then((d) => d.Route),
+)
 const ProtectedWebhooksIdRoute = ProtectedWebhooksIdRouteImport.update({
   id: '/_protected/webhooks/$id',
   path: '/webhooks/$id',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/webhooks/$id.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/webhooks/$id.lazy').then((d) => d.Route),
+)
 const ProtectedTasksIdRoute = ProtectedTasksIdRouteImport.update({
   id: '/_protected/tasks/$id',
   path: '/tasks/$id',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route));
-const ProtectedAdminUsersIndexRoute = ProtectedAdminUsersIndexRouteImport.update({
-  id: '/_protected/admin/users/',
-  path: '/admin/users/',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/admin/users/index.lazy').then((d) => d.Route));
-const ProtectedAdminRolesIndexRoute = ProtectedAdminRolesIndexRouteImport.update({
-  id: '/_protected/admin/roles/',
-  path: '/admin/roles/',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/admin/roles/index.lazy').then((d) => d.Route));
-const PublicOauthCallbackProviderRoute = PublicOauthCallbackProviderRouteImport.update({
-  id: '/_public/oauth/callback/$provider',
-  path: '/oauth/callback/$provider',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_public/oauth.callback.$provider.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/tasks/$id.lazy').then((d) => d.Route),
+)
+const ProtectedAdminUsersIndexRoute =
+  ProtectedAdminUsersIndexRouteImport.update({
+    id: '/_protected/admin/users/',
+    path: '/admin/users/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_protected/admin/users/index.lazy').then((d) => d.Route),
+  )
+const ProtectedAdminRolesIndexRoute =
+  ProtectedAdminRolesIndexRouteImport.update({
+    id: '/_protected/admin/roles/',
+    path: '/admin/roles/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_protected/admin/roles/index.lazy').then((d) => d.Route),
+  )
+const PublicOauthCallbackProviderRoute =
+  PublicOauthCallbackProviderRouteImport.update({
+    id: '/_public/oauth/callback/$provider',
+    path: '/oauth/callback/$provider',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/_public/oauth.callback.$provider.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const ProtectedAdminRolesIdRoute = ProtectedAdminRolesIdRouteImport.update({
   id: '/_protected/admin/roles/$id',
   path: '/admin/roles/$id',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_protected/admin/roles/$id.lazy').then((d) => d.Route));
+} as any).lazy(() =>
+  import('./routes/_protected/admin/roles/$id.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
-  '/$404': typeof R404Route;
-  '/unauthorized': typeof UnauthorizedRoute;
-  '/complete-profile': typeof PublicCompleteProfileRoute;
-  '/forgot-password': typeof PublicForgotPasswordRoute;
-  '/login': typeof PublicLoginRoute;
-  '/register': typeof PublicRegisterRoute;
-  '/reset-password': typeof PublicResetPasswordRoute;
-  '/setup-2fa': typeof PublicSetup2faRoute;
-  '/verify-2fa': typeof PublicVerify2faRoute;
-  '/verify-email': typeof PublicVerifyEmailRoute;
-  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute;
-  '/': typeof ProtectedIndexRoute;
-  '/tasks/$id': typeof ProtectedTasksIdRoute;
-  '/webhooks/$id': typeof ProtectedWebhooksIdRoute;
-  '/webhooks/new': typeof ProtectedWebhooksNewRoute;
-  '/admin': typeof ProtectedAdminIndexRoute;
-  '/agents': typeof ProtectedAgentsIndexRoute;
-  '/metrics': typeof ProtectedMetricsIndexRoute;
-  '/settings': typeof ProtectedSettingsIndexRoute;
-  '/tasks': typeof ProtectedTasksIndexRoute;
-  '/webhooks': typeof ProtectedWebhooksIndexRoute;
-  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute;
-  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute;
-  '/admin/roles': typeof ProtectedAdminRolesIndexRoute;
-  '/admin/users': typeof ProtectedAdminUsersIndexRoute;
+  '/$404': typeof R404Route
+  '/unauthorized': typeof UnauthorizedRoute
+  '/complete-profile': typeof PublicCompleteProfileRoute
+  '/forgot-password': typeof PublicForgotPasswordRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
+  '/reset-password': typeof PublicResetPasswordRoute
+  '/setup-2fa': typeof PublicSetup2faRoute
+  '/verify-2fa': typeof PublicVerify2faRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
+  '/': typeof ProtectedIndexRoute
+  '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/admin': typeof ProtectedAdminIndexRoute
+  '/agents': typeof ProtectedAgentsIndexRoute
+  '/metrics': typeof ProtectedMetricsIndexRoute
+  '/settings': typeof ProtectedSettingsIndexRoute
+  '/tasks': typeof ProtectedTasksIndexRoute
+  '/webhooks': typeof ProtectedWebhooksIndexRoute
+  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
+  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/admin/roles': typeof ProtectedAdminRolesIndexRoute
+  '/admin/users': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/$404': typeof R404Route;
-  '/unauthorized': typeof UnauthorizedRoute;
-  '/complete-profile': typeof PublicCompleteProfileRoute;
-  '/forgot-password': typeof PublicForgotPasswordRoute;
-  '/login': typeof PublicLoginRoute;
-  '/register': typeof PublicRegisterRoute;
-  '/reset-password': typeof PublicResetPasswordRoute;
-  '/setup-2fa': typeof PublicSetup2faRoute;
-  '/verify-2fa': typeof PublicVerify2faRoute;
-  '/verify-email': typeof PublicVerifyEmailRoute;
-  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute;
-  '/': typeof ProtectedIndexRoute;
-  '/tasks/$id': typeof ProtectedTasksIdRoute;
-  '/webhooks/$id': typeof ProtectedWebhooksIdRoute;
-  '/webhooks/new': typeof ProtectedWebhooksNewRoute;
-  '/admin': typeof ProtectedAdminIndexRoute;
-  '/agents': typeof ProtectedAgentsIndexRoute;
-  '/metrics': typeof ProtectedMetricsIndexRoute;
-  '/settings': typeof ProtectedSettingsIndexRoute;
-  '/tasks': typeof ProtectedTasksIndexRoute;
-  '/webhooks': typeof ProtectedWebhooksIndexRoute;
-  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute;
-  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute;
-  '/admin/roles': typeof ProtectedAdminRolesIndexRoute;
-  '/admin/users': typeof ProtectedAdminUsersIndexRoute;
+  '/$404': typeof R404Route
+  '/unauthorized': typeof UnauthorizedRoute
+  '/complete-profile': typeof PublicCompleteProfileRoute
+  '/forgot-password': typeof PublicForgotPasswordRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
+  '/reset-password': typeof PublicResetPasswordRoute
+  '/setup-2fa': typeof PublicSetup2faRoute
+  '/verify-2fa': typeof PublicVerify2faRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
+  '/verify-email-pending': typeof PublicVerifyEmailPendingRoute
+  '/': typeof ProtectedIndexRoute
+  '/tasks/$id': typeof ProtectedTasksIdRoute
+  '/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/admin': typeof ProtectedAdminIndexRoute
+  '/agents': typeof ProtectedAgentsIndexRoute
+  '/metrics': typeof ProtectedMetricsIndexRoute
+  '/settings': typeof ProtectedSettingsIndexRoute
+  '/tasks': typeof ProtectedTasksIndexRoute
+  '/webhooks': typeof ProtectedWebhooksIndexRoute
+  '/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
+  '/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/admin/roles': typeof ProtectedAdminRolesIndexRoute
+  '/admin/users': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  '/$404': typeof R404Route;
-  '/unauthorized': typeof UnauthorizedRoute;
-  '/_public/complete-profile': typeof PublicCompleteProfileRoute;
-  '/_public/forgot-password': typeof PublicForgotPasswordRoute;
-  '/_public/login': typeof PublicLoginRoute;
-  '/_public/register': typeof PublicRegisterRoute;
-  '/_public/reset-password': typeof PublicResetPasswordRoute;
-  '/_public/setup-2fa': typeof PublicSetup2faRoute;
-  '/_public/verify-2fa': typeof PublicVerify2faRoute;
-  '/_public/verify-email': typeof PublicVerifyEmailRoute;
-  '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute;
-  '/_protected/': typeof ProtectedIndexRoute;
-  '/_protected/tasks/$id': typeof ProtectedTasksIdRoute;
-  '/_protected/webhooks/$id': typeof ProtectedWebhooksIdRoute;
-  '/_protected/webhooks/new': typeof ProtectedWebhooksNewRoute;
-  '/_protected/admin/': typeof ProtectedAdminIndexRoute;
-  '/_protected/agents/': typeof ProtectedAgentsIndexRoute;
-  '/_protected/metrics/': typeof ProtectedMetricsIndexRoute;
-  '/_protected/settings/': typeof ProtectedSettingsIndexRoute;
-  '/_protected/tasks/': typeof ProtectedTasksIndexRoute;
-  '/_protected/webhooks/': typeof ProtectedWebhooksIndexRoute;
-  '/_protected/admin/roles/$id': typeof ProtectedAdminRolesIdRoute;
-  '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute;
-  '/_protected/admin/roles/': typeof ProtectedAdminRolesIndexRoute;
-  '/_protected/admin/users/': typeof ProtectedAdminUsersIndexRoute;
+  __root__: typeof rootRouteImport
+  '/$404': typeof R404Route
+  '/unauthorized': typeof UnauthorizedRoute
+  '/_public/complete-profile': typeof PublicCompleteProfileRoute
+  '/_public/forgot-password': typeof PublicForgotPasswordRoute
+  '/_public/login': typeof PublicLoginRoute
+  '/_public/register': typeof PublicRegisterRoute
+  '/_public/reset-password': typeof PublicResetPasswordRoute
+  '/_public/setup-2fa': typeof PublicSetup2faRoute
+  '/_public/verify-2fa': typeof PublicVerify2faRoute
+  '/_public/verify-email': typeof PublicVerifyEmailRoute
+  '/_public/verify-email-pending': typeof PublicVerifyEmailPendingRoute
+  '/_protected/': typeof ProtectedIndexRoute
+  '/_protected/tasks/$id': typeof ProtectedTasksIdRoute
+  '/_protected/webhooks/$id': typeof ProtectedWebhooksIdRoute
+  '/_protected/webhooks/new': typeof ProtectedWebhooksNewRoute
+  '/_protected/admin/': typeof ProtectedAdminIndexRoute
+  '/_protected/agents/': typeof ProtectedAgentsIndexRoute
+  '/_protected/metrics/': typeof ProtectedMetricsIndexRoute
+  '/_protected/settings/': typeof ProtectedSettingsIndexRoute
+  '/_protected/tasks/': typeof ProtectedTasksIndexRoute
+  '/_protected/webhooks/': typeof ProtectedWebhooksIndexRoute
+  '/_protected/admin/roles/$id': typeof ProtectedAdminRolesIdRoute
+  '/_public/oauth/callback/$provider': typeof PublicOauthCallbackProviderRoute
+  '/_protected/admin/roles/': typeof ProtectedAdminRolesIndexRoute
+  '/_protected/admin/users/': typeof ProtectedAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/$404'
     | '/unauthorized'
@@ -270,8 +318,8 @@ export interface FileRouteTypes {
     | '/admin/roles/$id'
     | '/oauth/callback/$provider'
     | '/admin/roles'
-    | '/admin/users';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/admin/users'
+  fileRoutesByTo: FileRoutesByTo
   to:
     | '/$404'
     | '/unauthorized'
@@ -297,7 +345,7 @@ export interface FileRouteTypes {
     | '/admin/roles/$id'
     | '/oauth/callback/$provider'
     | '/admin/roles'
-    | '/admin/users';
+    | '/admin/users'
   id:
     | '__root__'
     | '/$404'
@@ -324,214 +372,214 @@ export interface FileRouteTypes {
     | '/_protected/admin/roles/$id'
     | '/_public/oauth/callback/$provider'
     | '/_protected/admin/roles/'
-    | '/_protected/admin/users/';
-  fileRoutesById: FileRoutesById;
+    | '/_protected/admin/users/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  R404Route: typeof R404Route;
-  UnauthorizedRoute: typeof UnauthorizedRoute;
-  PublicCompleteProfileRoute: typeof PublicCompleteProfileRoute;
-  PublicForgotPasswordRoute: typeof PublicForgotPasswordRoute;
-  PublicLoginRoute: typeof PublicLoginRoute;
-  PublicRegisterRoute: typeof PublicRegisterRoute;
-  PublicResetPasswordRoute: typeof PublicResetPasswordRoute;
-  PublicSetup2faRoute: typeof PublicSetup2faRoute;
-  PublicVerify2faRoute: typeof PublicVerify2faRoute;
-  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute;
-  PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute;
-  ProtectedIndexRoute: typeof ProtectedIndexRoute;
-  ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute;
-  ProtectedWebhooksIdRoute: typeof ProtectedWebhooksIdRoute;
-  ProtectedWebhooksNewRoute: typeof ProtectedWebhooksNewRoute;
-  ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute;
-  ProtectedAgentsIndexRoute: typeof ProtectedAgentsIndexRoute;
-  ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute;
-  ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute;
-  ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute;
-  ProtectedWebhooksIndexRoute: typeof ProtectedWebhooksIndexRoute;
-  ProtectedAdminRolesIdRoute: typeof ProtectedAdminRolesIdRoute;
-  PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute;
-  ProtectedAdminRolesIndexRoute: typeof ProtectedAdminRolesIndexRoute;
-  ProtectedAdminUsersIndexRoute: typeof ProtectedAdminUsersIndexRoute;
+  R404Route: typeof R404Route
+  UnauthorizedRoute: typeof UnauthorizedRoute
+  PublicCompleteProfileRoute: typeof PublicCompleteProfileRoute
+  PublicForgotPasswordRoute: typeof PublicForgotPasswordRoute
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicRegisterRoute: typeof PublicRegisterRoute
+  PublicResetPasswordRoute: typeof PublicResetPasswordRoute
+  PublicSetup2faRoute: typeof PublicSetup2faRoute
+  PublicVerify2faRoute: typeof PublicVerify2faRoute
+  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
+  PublicVerifyEmailPendingRoute: typeof PublicVerifyEmailPendingRoute
+  ProtectedIndexRoute: typeof ProtectedIndexRoute
+  ProtectedTasksIdRoute: typeof ProtectedTasksIdRoute
+  ProtectedWebhooksIdRoute: typeof ProtectedWebhooksIdRoute
+  ProtectedWebhooksNewRoute: typeof ProtectedWebhooksNewRoute
+  ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
+  ProtectedAgentsIndexRoute: typeof ProtectedAgentsIndexRoute
+  ProtectedMetricsIndexRoute: typeof ProtectedMetricsIndexRoute
+  ProtectedSettingsIndexRoute: typeof ProtectedSettingsIndexRoute
+  ProtectedTasksIndexRoute: typeof ProtectedTasksIndexRoute
+  ProtectedWebhooksIndexRoute: typeof ProtectedWebhooksIndexRoute
+  ProtectedAdminRolesIdRoute: typeof ProtectedAdminRolesIdRoute
+  PublicOauthCallbackProviderRoute: typeof PublicOauthCallbackProviderRoute
+  ProtectedAdminRolesIndexRoute: typeof ProtectedAdminRolesIndexRoute
+  ProtectedAdminUsersIndexRoute: typeof ProtectedAdminUsersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/unauthorized': {
-      id: '/unauthorized';
-      path: '/unauthorized';
-      fullPath: '/unauthorized';
-      preLoaderRoute: typeof UnauthorizedRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$404': {
-      id: '/$404';
-      path: '/$404';
-      fullPath: '/$404';
-      preLoaderRoute: typeof R404RouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/$404'
+      path: '/$404'
+      fullPath: '/$404'
+      preLoaderRoute: typeof R404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/': {
-      id: '/_protected/';
-      path: '/';
-      fullPath: '/';
-      preLoaderRoute: typeof ProtectedIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/verify-email-pending': {
-      id: '/_public/verify-email-pending';
-      path: '/verify-email-pending';
-      fullPath: '/verify-email-pending';
-      preLoaderRoute: typeof PublicVerifyEmailPendingRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/verify-email-pending'
+      path: '/verify-email-pending'
+      fullPath: '/verify-email-pending'
+      preLoaderRoute: typeof PublicVerifyEmailPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/verify-email': {
-      id: '/_public/verify-email';
-      path: '/verify-email';
-      fullPath: '/verify-email';
-      preLoaderRoute: typeof PublicVerifyEmailRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/verify-2fa': {
-      id: '/_public/verify-2fa';
-      path: '/verify-2fa';
-      fullPath: '/verify-2fa';
-      preLoaderRoute: typeof PublicVerify2faRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/verify-2fa'
+      path: '/verify-2fa'
+      fullPath: '/verify-2fa'
+      preLoaderRoute: typeof PublicVerify2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/setup-2fa': {
-      id: '/_public/setup-2fa';
-      path: '/setup-2fa';
-      fullPath: '/setup-2fa';
-      preLoaderRoute: typeof PublicSetup2faRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/setup-2fa'
+      path: '/setup-2fa'
+      fullPath: '/setup-2fa'
+      preLoaderRoute: typeof PublicSetup2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/reset-password': {
-      id: '/_public/reset-password';
-      path: '/reset-password';
-      fullPath: '/reset-password';
-      preLoaderRoute: typeof PublicResetPasswordRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof PublicResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/register': {
-      id: '/_public/register';
-      path: '/register';
-      fullPath: '/register';
-      preLoaderRoute: typeof PublicRegisterRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof PublicRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/login': {
-      id: '/_public/login';
-      path: '/login';
-      fullPath: '/login';
-      preLoaderRoute: typeof PublicLoginRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/forgot-password': {
-      id: '/_public/forgot-password';
-      path: '/forgot-password';
-      fullPath: '/forgot-password';
-      preLoaderRoute: typeof PublicForgotPasswordRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof PublicForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/complete-profile': {
-      id: '/_public/complete-profile';
-      path: '/complete-profile';
-      fullPath: '/complete-profile';
-      preLoaderRoute: typeof PublicCompleteProfileRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/complete-profile'
+      path: '/complete-profile'
+      fullPath: '/complete-profile'
+      preLoaderRoute: typeof PublicCompleteProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/webhooks/': {
-      id: '/_protected/webhooks/';
-      path: '/webhooks';
-      fullPath: '/webhooks';
-      preLoaderRoute: typeof ProtectedWebhooksIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/webhooks/'
+      path: '/webhooks'
+      fullPath: '/webhooks'
+      preLoaderRoute: typeof ProtectedWebhooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/tasks/': {
-      id: '/_protected/tasks/';
-      path: '/tasks';
-      fullPath: '/tasks';
-      preLoaderRoute: typeof ProtectedTasksIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof ProtectedTasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/settings/': {
-      id: '/_protected/settings/';
-      path: '/settings';
-      fullPath: '/settings';
-      preLoaderRoute: typeof ProtectedSettingsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ProtectedSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/metrics/': {
-      id: '/_protected/metrics/';
-      path: '/metrics';
-      fullPath: '/metrics';
-      preLoaderRoute: typeof ProtectedMetricsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/metrics/'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof ProtectedMetricsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/agents/': {
-      id: '/_protected/agents/';
-      path: '/agents';
-      fullPath: '/agents';
-      preLoaderRoute: typeof ProtectedAgentsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/agents/'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof ProtectedAgentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/admin/': {
-      id: '/_protected/admin/';
-      path: '/admin';
-      fullPath: '/admin';
-      preLoaderRoute: typeof ProtectedAdminIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof ProtectedAdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/webhooks/new': {
-      id: '/_protected/webhooks/new';
-      path: '/webhooks/new';
-      fullPath: '/webhooks/new';
-      preLoaderRoute: typeof ProtectedWebhooksNewRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/webhooks/new'
+      path: '/webhooks/new'
+      fullPath: '/webhooks/new'
+      preLoaderRoute: typeof ProtectedWebhooksNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/webhooks/$id': {
-      id: '/_protected/webhooks/$id';
-      path: '/webhooks/$id';
-      fullPath: '/webhooks/$id';
-      preLoaderRoute: typeof ProtectedWebhooksIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/webhooks/$id'
+      path: '/webhooks/$id'
+      fullPath: '/webhooks/$id'
+      preLoaderRoute: typeof ProtectedWebhooksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/tasks/$id': {
-      id: '/_protected/tasks/$id';
-      path: '/tasks/$id';
-      fullPath: '/tasks/$id';
-      preLoaderRoute: typeof ProtectedTasksIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/tasks/$id'
+      path: '/tasks/$id'
+      fullPath: '/tasks/$id'
+      preLoaderRoute: typeof ProtectedTasksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/admin/users/': {
-      id: '/_protected/admin/users/';
-      path: '/admin/users';
-      fullPath: '/admin/users';
-      preLoaderRoute: typeof ProtectedAdminUsersIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/admin/users/'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof ProtectedAdminUsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/admin/roles/': {
-      id: '/_protected/admin/roles/';
-      path: '/admin/roles';
-      fullPath: '/admin/roles';
-      preLoaderRoute: typeof ProtectedAdminRolesIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/admin/roles/'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof ProtectedAdminRolesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/oauth/callback/$provider': {
-      id: '/_public/oauth/callback/$provider';
-      path: '/oauth/callback/$provider';
-      fullPath: '/oauth/callback/$provider';
-      preLoaderRoute: typeof PublicOauthCallbackProviderRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_public/oauth/callback/$provider'
+      path: '/oauth/callback/$provider'
+      fullPath: '/oauth/callback/$provider'
+      preLoaderRoute: typeof PublicOauthCallbackProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected/admin/roles/$id': {
-      id: '/_protected/admin/roles/$id';
-      path: '/admin/roles/$id';
-      fullPath: '/admin/roles/$id';
-      preLoaderRoute: typeof ProtectedAdminRolesIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/_protected/admin/roles/$id'
+      path: '/admin/roles/$id'
+      fullPath: '/admin/roles/$id'
+      preLoaderRoute: typeof ProtectedAdminRolesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -561,7 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicOauthCallbackProviderRoute: PublicOauthCallbackProviderRoute,
   ProtectedAdminRolesIndexRoute: ProtectedAdminRolesIndexRoute,
   ProtectedAdminUsersIndexRoute: ProtectedAdminUsersIndexRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

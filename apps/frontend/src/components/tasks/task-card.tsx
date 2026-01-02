@@ -6,6 +6,7 @@ import {
   EyeIcon,
   ClockIcon,
   SparklesIcon,
+  BoltIcon,
 } from '@heroicons/react/24/outline';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { IconButton } from '@/components/ui/icon-button';
@@ -35,6 +36,8 @@ interface TaskCardProps {
   onEdit?: (taskId: number) => void;
   onDelete?: (taskId: number) => void;
   className?: string;
+  /** Animation delay for staggered entrance (in ms) */
+  animationDelay?: number;
 }
 
 // Status color mapping for left border accent
@@ -57,8 +60,12 @@ const PRIORITY_COLORS: Record<TaskPriority, string> = {
   urgent: 'bg-error',
 };
 
-export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
+// Check if task is actively being worked on
+const ACTIVE_STATUSES: TaskStatus[] = ['in_progress', 'planning', 'testing', 'reviewing'];
+
+export function TaskCard({ task, onEdit, onDelete, className, animationDelay = 0 }: TaskCardProps) {
   const statusColorClass = STATUS_COLORS[task.status] || STATUS_COLORS.pending;
+  const isActive = ACTIVE_STATUSES.includes(task.status);
 
   return (
     <Card
@@ -67,15 +74,26 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
         'group relative overflow-hidden',
         'border-accent-left',
         statusColorClass,
-        // Interactive hover effects
-        'interactive cursor-pointer',
-        'hover:border-primary/30 hover:shadow-card-hover',
-        'transition-all duration-200',
+        // Premium hover effects
+        'hover-lift-premium cursor-pointer',
+        'hover:border-primary/30',
+        'transition-all duration-300',
+        // Animated border for active tasks
+        isActive && 'border-accent-animated',
         className
       )}
+      style={{ animationDelay: `${animationDelay}ms` }}
     >
       {/* Subtle gradient overlay on hover */}
-      <div className="bg-gradient-teal-subtle absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-30" />
+      <div className="bg-gradient-teal-subtle absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-40" />
+
+      {/* Glow effect for active tasks */}
+      {isActive && (
+        <div
+          className="pointer-events-none absolute inset-0 animate-glow-breathe opacity-0 group-hover:opacity-100"
+          style={{ animationDuration: '2s' }}
+        />
+      )}
 
       <CardHeader className="relative flex flex-row items-start justify-between gap-3 pb-3">
         <div className="min-w-0 flex-1 space-y-2">
@@ -166,14 +184,28 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
         )}
       </CardFooter>
 
-      {/* AI-powered indicator (subtle badge in corner) */}
-      <div className="absolute top-3 right-3 opacity-0 transition-opacity group-hover:opacity-100">
+      {/* AI-powered indicator with animation */}
+      <div className="absolute top-3 right-3 translate-x-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
         <div
-          className="flex items-center gap-1 rounded-full bg-primary-subtle px-2 py-1 text-xs text-primary"
-          title="AI-powered task"
+          className={cn(
+            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs',
+            isActive
+              ? 'glass-subtle bg-info/20 text-info backdrop-blur-sm'
+              : 'glass-subtle bg-primary-subtle/80 text-primary backdrop-blur-sm'
+          )}
+          title={isActive ? 'AI agents working' : 'AI-powered task'}
         >
-          <SparklesIcon className="h-3 w-3" />
-          <span className="font-medium">AI</span>
+          {isActive ? (
+            <>
+              <BoltIcon className="h-3 w-3 animate-pulse" />
+              <span className="font-medium">Working</span>
+            </>
+          ) : (
+            <>
+              <SparklesIcon className="h-3 w-3" />
+              <span className="font-medium">AI</span>
+            </>
+          )}
         </div>
       </div>
     </Card>

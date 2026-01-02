@@ -24,3 +24,8 @@ export { useCopyToClipboard } from './use-copy-to-clipboard';
 export { useIsMounted, useHasMounted } from './use-mounted';
 export { useKeyboardShortcut, useKeyboardShortcuts } from './use-keyboard-shortcut';
 export { useEventSource, useAgentStream, type AgentUpdate } from './use-event-source';
+export {
+  useAnimatedCounter,
+  useAnimatedPercentage,
+  useAnimatedCurrency,
+} from './use-animated-counter';

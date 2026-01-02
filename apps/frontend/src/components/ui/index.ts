@@ -33,6 +33,7 @@ export * from './tabs';
 // Display components
 export * from './avatar';
 export * from './icon-button';
+export * from './animated-counter';
 
 // Form system
 export * from './form';

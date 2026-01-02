@@ -97,17 +97,23 @@ export const SheetContent = React.forwardRef<
               context.setOpen(false);
             }
           }}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md transition-opacity duration-300"
         />
 
-        {/* Sheet content */}
+        {/* Sheet content with glass effect */}
         <Dialog.Content
           ref={ref}
           {...props}
           className={cn(
             'fixed z-50 flex flex-col',
-            'border border-border-primary bg-background shadow-[0_10px_40px_rgba(0,0,0,0.3)]',
-            'transition-all duration-300 ease-in-out',
+            // Glass morphism styling
+            'border border-border-primary/50 bg-surface/95 backdrop-blur-xl',
+            'shadow-elevated',
+            // Gradient accent border
+            side === 'right' && 'border-l-0 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-linear-to-b before:from-transparent before:via-brand-cyan/40 before:to-transparent',
+            side === 'left' && 'border-r-0 after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-linear-to-b after:from-transparent after:via-brand-cyan/40 after:to-transparent',
+            // Animation
+            'transition-all duration-300 ease-out',
             sideVariants[side as SheetSide],
             isHorizontal ? 'h-full w-full max-w-sm' : 'h-auto max-h-[90vh]',
             className
@@ -119,7 +125,12 @@ export const SheetContent = React.forwardRef<
                 context.setOpen(false);
                 onClose?.();
               }}
-              className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
+              className={cn(
+                'absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg',
+                'text-text-muted transition-all duration-200',
+                'hover:bg-surface-secondary hover:text-text-primary hover:scale-110',
+                'focus:ring-2 focus:ring-brand-cyan/50 focus:outline-none'
+              )}
               aria-label="Close"
             >
               <XMarkIcon className="h-5 w-5" />
@@ -153,7 +164,11 @@ type SheetTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 export const SheetTitle = React.forwardRef<HTMLHeadingElement, SheetTitleProps>(
   ({ className, ...props }, ref) => (
-    <h2 ref={ref} className={cn('text-lg font-semibold text-text-primary', className)} {...props} />
+    <h2
+      ref={ref}
+      className={cn('text-xl font-semibold tracking-tight text-text-primary', className)}
+      {...props}
+    />
   )
 );
 

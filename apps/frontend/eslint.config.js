@@ -111,6 +111,18 @@ export default tseslint.config(
             "^scroll-area$",
             // Skeleton animation class
             "^hc-skel-item$",
+            // Premium animation classes
+            "^orb$",
+            "^orb-.+",
+            "^stagger-\\d+$",
+            "^sparkle-.+",
+            "^hover-lift-.+",
+            "^hover-glow.*",
+            "^glass-.+",
+            "^border-shine$",
+            "^border-accent-animated$",
+            "^shimmer-.+",
+            "^focus-ring-.+",
             // Storybook luminous theme classes
             ".*-lum$",
             "^bg-bg-steel$",

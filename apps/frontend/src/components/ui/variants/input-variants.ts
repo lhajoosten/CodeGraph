@@ -2,39 +2,47 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const inputVariants = cva(
   [
-    'bg-bg-elevated-lum flex w-full rounded-md border px-3 py-2 text-sm',
-    'ring-offset-bg-steel transition-colors duration-200',
-    'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-    'text-text-primary-lum placeholder:text-text-muted-lum',
-    `
-      focus-visible:ring-2 focus-visible:ring-brand-cyan
-      focus-visible:ring-offset-2 focus-visible:outline-none
-    `,
-    'disabled:cursor-not-allowed disabled:opacity-50',
+    // Base styling with glass effect
+    'flex w-full rounded-lg border px-3 py-2 text-sm',
+    'bg-surface/80 backdrop-blur-sm',
+    'ring-offset-surface transition-all duration-200',
+    // File inputs
+    'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-brand-cyan',
+    // Text colors
+    'text-text-primary placeholder:text-text-muted',
+    // Focus styling with glow
+    'focus-visible:ring-2 focus-visible:ring-brand-cyan/30 focus-visible:ring-offset-1 focus-visible:outline-none',
+    // Disabled state
+    'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary',
   ],
   {
     variants: {
       variant: {
-        default: `
-          border-border-default-lum
-          focus-visible:border-brand-cyan
-          focus-visible:shadow-[0_0_8px_rgba(34,211,238,0.3)]
-        `,
-        error: `
-          border-error
-          focus-visible:shadow-[0_0_8px_rgba(239,68,68,0.3)]
-          focus-visible:ring-error
-        `,
-        success: `
-          border-success
-          focus-visible:shadow-[0_0_8px_rgba(34,197,94,0.3)]
-          focus-visible:ring-success
-        `,
+        default: [
+          'border-border-primary/50',
+          'hover:border-border-primary/80 hover:bg-surface',
+          'focus-visible:border-brand-cyan/50',
+          'focus-visible:shadow-[0_0_12px_rgba(34,211,238,0.25)]',
+        ],
+        error: [
+          'border-danger/70',
+          'hover:border-danger',
+          'focus-visible:border-danger',
+          'focus-visible:shadow-[0_0_12px_rgba(239,68,68,0.25)]',
+          'focus-visible:ring-danger/30',
+        ],
+        success: [
+          'border-success/70',
+          'hover:border-success',
+          'focus-visible:border-success',
+          'focus-visible:shadow-[0_0_12px_rgba(34,197,94,0.25)]',
+          'focus-visible:ring-success/30',
+        ],
       },
       inputSize: {
         default: 'h-10',
-        sm: 'h-9 px-2 text-xs',
-        lg: 'h-11 px-4 text-base',
+        sm: 'h-9 px-2.5 text-xs',
+        lg: 'h-12 px-4 text-base',
       },
     },
     defaultVariants: {

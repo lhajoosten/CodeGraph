@@ -11,10 +11,9 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      `
-        inline-flex h-10 items-center justify-center rounded-md bg-secondary p-1
-        text-text-secondary
-      `,
+      'inline-flex h-11 items-center justify-center gap-1 rounded-xl p-1.5',
+      'bg-surface-secondary/50 backdrop-blur-sm border border-border-primary/30',
+      'text-text-secondary',
       className
     )}
     {...props}
@@ -29,20 +28,18 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      `
-        inline-flex items-center justify-center rounded-sm px-3 py-1.5
-        whitespace-nowrap
-      `,
-      'text-sm font-medium ring-offset-background-2 transition-all',
-      `
-        focus-visible:ring-2 focus-visible:ring-primary
-        focus-visible:ring-offset-2 focus-visible:outline-none
-      `,
+      'inline-flex items-center justify-center rounded-lg px-4 py-2 whitespace-nowrap',
+      'text-sm font-medium transition-all duration-200',
+      'ring-offset-surface',
+      // Hover state
+      'hover:text-text-primary hover:bg-surface/50',
+      // Focus state
+      'focus-visible:ring-2 focus-visible:ring-brand-cyan/50 focus-visible:ring-offset-1 focus-visible:outline-none',
+      // Disabled state
       'disabled:pointer-events-none disabled:opacity-50',
-      `
-        data-[state=active]:shadow-tabs
-        data-[state=active]:bg-background-2 data-[state=active]:text-text-primary
-      `,
+      // Active state with gradient and glow
+      'data-[state=active]:bg-surface data-[state=active]:text-brand-cyan',
+      'data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-brand-cyan/20',
       className
     )}
     {...props}

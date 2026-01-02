@@ -98,7 +98,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-[32px] right-3 text-text-muted transition-colors hover:text-text-secondary"
+            className="absolute top-9.75 right-3 text-text-muted transition-colors hover:text-text-secondary"
             tabIndex={-1}
           >
             {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
@@ -127,16 +127,21 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || loginMutation.isPending}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-cyan py-3 font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-brand-cyan to-brand-teal py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting || loginMutation.isPending ? (
-          <>
-            <ArrowPathIcon className="h-[18px] w-[18px] animate-spin" />
-            {t('common:forms.signingIn')}
-          </>
-        ) : (
-          t('luminous.signin.submit')
-        )}
+        {/* Animated shine effect */}
+        <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+        <span className="relative flex items-center gap-2">
+          {isSubmitting || loginMutation.isPending ? (
+            <>
+              <ArrowPathIcon className="h-[18px] w-[18px] animate-spin" />
+              {t('common:forms.signingIn')}
+            </>
+          ) : (
+            t('luminous.signin.submit')
+          )}
+        </span>
       </button>
 
       <p className="text-center text-sm text-text-secondary">

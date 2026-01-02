@@ -1,7 +1,9 @@
+import { type ComponentType } from 'react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useHasMounted } from '@/hooks/common';
 import {
   LightBulbIcon,
   CodeBracketIcon,
@@ -11,6 +13,7 @@ import {
   SparklesIcon,
   ArrowRightIcon,
   CheckCircleIcon,
+  BoltIcon,
 } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
@@ -18,7 +21,7 @@ interface AgentInfo {
   id: string;
   name: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   capabilities: string[];
   model: string;
   color: string;
@@ -130,14 +133,17 @@ const workflowSteps = [
 ];
 
 function AgentsPage() {
+  const hasMounted = useHasMounted();
+
   return (
     <AppLayout>
       <div className="space-y-8">
         {/* Hero Section */}
-        <div className="noise relative overflow-hidden rounded-xl bg-gradient-to-br from-brand-teal-500/10 via-brand-cyan/5 to-transparent p-8 md:p-12">
-          {/* Decorative elements */}
-          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-brand-teal-400/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-brand-cyan/10 blur-3xl" />
+        <div className="noise relative overflow-hidden rounded-xl bg-linear-to-br from-brand-teal-500/10 via-brand-cyan/5 to-transparent p-8 md:p-12">
+          {/* Animated Gradient Orbs */}
+          <div className="orb orb-teal orb-animated pointer-events-none absolute -top-20 -right-20 h-72 w-72 opacity-30" />
+          <div className="orb orb-cyan animate-drift-reverse pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 opacity-25" />
+          <div className="orb orb-purple animate-drift-slow pointer-events-none absolute top-1/2 left-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 opacity-15" />
 
           <div className="relative z-10">
             <motion.div
@@ -146,12 +152,12 @@ function AgentsPage() {
               transition={{ duration: 0.5 }}
               className="mb-6 flex items-center gap-3"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-teal-400 to-brand-cyan shadow-lg">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-brand-teal-400 to-brand-cyan shadow-lg">
                 <CpuChipIcon className="h-7 w-7 text-white" />
               </div>
               <div>
                 <h1 className="text-4xl font-bold text-text-primary md:text-5xl">
-                  Meet Your AI Team
+                  Meet Your <span className="text-gradient-animated">AI Team</span>
                 </h1>
                 <p className="text-lg text-text-secondary">
                   Specialized agents working together to build better code
@@ -170,26 +176,27 @@ function AgentsPage() {
               high-quality results from planning to delivery.
             </motion.p>
 
-            {/* Stats Row */}
+            {/* Stats Row - Premium Glass Pills */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap gap-4 md:gap-8"
+              className="flex flex-wrap gap-3 md:gap-4"
             >
-              <div className="flex items-center gap-2">
+              <div className="glass-subtle flex items-center gap-2 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md">
                 <SparklesIcon className="h-5 w-5 text-brand-teal-500" />
                 <span className="font-semibold text-text-primary">4 Agents</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="glass-subtle flex items-center gap-2 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md">
                 <CpuChipIcon className="h-5 w-5 text-brand-teal-500" />
                 <span className="font-semibold text-text-primary">2 Models</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="glass-subtle flex items-center gap-2 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md">
                 <CheckCircleIcon className="h-5 w-5 text-success" />
                 <span className="font-semibold text-text-primary">Unlimited Tasks</span>
               </div>
-              <div className="rounded-full bg-surface px-4 py-1.5 shadow-sm">
+              <div className="glass-premium flex items-center gap-2 rounded-full px-4 py-2 shadow-md">
+                <BoltIcon className="h-4 w-4 animate-pulse text-brand-cyan" />
                 <span className="text-sm font-medium text-text-secondary">
                   Powered by{' '}
                   <span className="text-gradient-brand font-semibold">Claude by Anthropic</span>
@@ -200,10 +207,19 @@ function AgentsPage() {
         </div>
 
         {/* Workflow Visualization */}
-        <div className="overflow-hidden rounded-xl bg-surface p-6 shadow-card md:p-8">
-          <div className="mb-8 text-center">
-            <h2 className="mb-2 text-2xl font-bold text-text-primary">Workflow Pipeline</h2>
-            <p className="text-text-secondary">
+        <div className="glass-subtle relative overflow-hidden rounded-xl p-6 shadow-card md:p-8">
+          {/* Subtle background glow */}
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-brand-teal-500/5 via-transparent to-brand-cyan/5" />
+
+          <div className="relative mb-8 text-center">
+            <h2
+              className={`mb-2 text-2xl font-bold text-text-primary ${hasMounted ? 'animate-slide-up' : 'opacity-0'}`}
+            >
+              Workflow Pipeline
+            </h2>
+            <p
+              className={`text-text-secondary ${hasMounted ? 'stagger-1 animate-slide-up' : 'opacity-0'}`}
+            >
               Watch how agents collaborate to deliver exceptional results
             </p>
           </div>
@@ -213,9 +229,9 @@ function AgentsPage() {
             <div className="relative">
               {/* Connecting Line */}
               <div className="absolute top-16 right-0 left-0 z-0 h-0.5">
-                <div className="h-full w-full bg-gradient-to-r from-amber-500 to-purple-500 opacity-20" />
+                <div className="h-full w-full bg-linear-to-r from-amber-500 to-purple-500 opacity-20" />
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-amber-500 to-purple-500"
+                  className="absolute inset-0 bg-linear-to-r from-amber-500 to-purple-500"
                   initial={{ scaleX: 0, transformOrigin: 'left' }}
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 2, ease: 'easeInOut', delay: 0.5 }}
@@ -242,24 +258,31 @@ function AgentsPage() {
 
                     {/* Agent Node */}
                     <div className="flex flex-col items-center">
-                      {/* Icon Circle */}
+                      {/* Icon Circle - Enhanced with glow */}
                       <div
-                        className={`relative mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br ${agent.iconGradient} p-0.5 shadow-lg`}
+                        className={`group/node relative mb-4 flex h-32 w-32 cursor-pointer items-center justify-center rounded-full bg-linear-to-br ${agent.iconGradient} p-0.5 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl`}
                       >
-                        <div className="flex h-full w-full items-center justify-center rounded-full bg-surface">
-                          <agent.icon className={`h-12 w-12 ${agent.color}`} />
+                        <div className="flex h-full w-full items-center justify-center rounded-full bg-surface transition-all group-hover/node:bg-surface/90">
+                          <agent.icon
+                            className={`h-12 w-12 transition-transform group-hover/node:scale-110 ${agent.color}`}
+                          />
                         </div>
-                        {/* Status Indicator */}
-                        <div className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-sm">
-                          <div className="status-dot status-ready" />
+                        {/* Status Indicator - Alive pulse */}
+                        <div className="absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full bg-surface shadow-md">
+                          <div className="status-dot-premium status-alive" />
                         </div>
+                        {/* Hover glow ring */}
+                        <div
+                          className="pointer-events-none absolute inset-0 rounded-full opacity-0 ring-4 ring-current transition-opacity group-hover/node:opacity-20"
+                          style={{ color: 'var(--color-brand-teal-500)' }}
+                        />
                       </div>
 
                       {/* Agent Info */}
-                      <h3 className="mb-1 text-center text-sm font-semibold text-text-primary">
+                      <h3 className="mb-1 text-center text-sm font-semibold text-text-primary transition-colors group-hover/node:text-primary">
                         {agent.name}
                       </h3>
-                      <Badge variant="secondary" size="sm" className="text-xs">
+                      <Badge variant="success" size="sm" className="animate-pulse text-xs">
                         Ready
                       </Badge>
                     </div>
@@ -274,9 +297,9 @@ function AgentsPage() {
             <div className="relative space-y-4">
               {/* Connecting Line */}
               <div className="absolute top-0 bottom-0 left-16 w-0.5">
-                <div className="h-full w-full bg-gradient-to-b from-amber-500 to-purple-500 opacity-20" />
+                <div className="h-full w-full bg-linear-to-b from-amber-500 to-purple-500 opacity-20" />
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-b from-amber-500 to-purple-500"
+                  className="absolute inset-0 bg-linear-to-b from-amber-500 to-purple-500"
                   initial={{ scaleY: 0, transformOrigin: 'top' }}
                   animate={{ scaleY: 1 }}
                   transition={{ duration: 2, ease: 'easeInOut', delay: 0.5 }}
@@ -293,23 +316,23 @@ function AgentsPage() {
                   transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                   className="relative flex items-center gap-4"
                 >
-                  {/* Icon Circle */}
+                  {/* Icon Circle - Mobile enhanced */}
                   <div
-                    className={`relative flex h-32 w-32 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${agent.iconGradient} p-0.5 shadow-lg`}
+                    className={`relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-linear-to-br ${agent.iconGradient} p-0.5 shadow-lg`}
                   >
                     <div className="flex h-full w-full items-center justify-center rounded-full bg-surface">
                       <agent.icon className={`h-10 w-10 ${agent.color}`} />
                     </div>
-                    {/* Status Indicator */}
-                    <div className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-sm">
-                      <div className="status-dot status-ready" />
+                    {/* Status Indicator - Alive pulse */}
+                    <div className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-md">
+                      <div className="status-dot-premium status-alive" />
                     </div>
                   </div>
 
                   {/* Agent Info */}
                   <div className="flex-1">
                     <h3 className="mb-1 text-sm font-semibold text-text-primary">{agent.name}</h3>
-                    <Badge variant="secondary" size="sm" className="text-xs">
+                    <Badge variant="success" size="sm" className="text-xs">
                       Ready
                     </Badge>
                   </div>
@@ -331,41 +354,52 @@ function AgentsPage() {
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
               >
                 <Card
-                  className={`group relative overflow-hidden border ${agent.borderColor} bg-gradient-surface interactive glass-subtle shadow-card transition-all duration-300 hover:shadow-card-hover`}
+                  className={`group relative overflow-hidden border ${agent.borderColor} hover-lift-premium glass-subtle shadow-card transition-all duration-300 hover:border-primary/30`}
                 >
-                  {/* Gradient Accent Border */}
+                  {/* Gradient Accent Border - Animated on hover */}
                   <div
-                    className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${agent.iconGradient}`}
+                    className={`absolute top-0 left-0 h-1 w-full bg-linear-to-r ${agent.iconGradient} transition-all duration-300 group-hover:h-1.5`}
                   />
 
-                  <CardContent className="p-6">
+                  {/* Subtle hover glow */}
+                  <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:from-brand-teal-500/5 group-hover:to-transparent group-hover:opacity-100" />
+
+                  <CardContent className="relative p-6">
                     {/* Header */}
                     <div className="mb-4 flex items-start justify-between">
-                      {/* Icon */}
+                      {/* Icon - Enhanced with hover animation */}
                       <div
-                        className={`flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${agent.iconGradient} p-0.5 shadow-lg`}
+                        className={`flex h-16 w-16 items-center justify-center rounded-xl bg-linear-to-br ${agent.iconGradient} p-0.5 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl`}
                       >
                         <div
                           className={`flex h-full w-full items-center justify-center rounded-xl ${agent.bgColor}`}
                         >
-                          <IconComponent className={`h-8 w-8 ${agent.color}`} />
+                          <IconComponent
+                            className={`h-8 w-8 transition-transform duration-300 group-hover:scale-110 ${agent.color}`}
+                          />
                         </div>
                       </div>
 
                       {/* Model Badge & Status */}
                       <div className="flex flex-col items-end gap-2">
-                        <Badge variant="default" size="sm" className="text-xs font-medium">
+                        <Badge
+                          variant="default"
+                          size="sm"
+                          className="text-xs font-medium shadow-sm"
+                        >
                           {agent.model}
                         </Badge>
                         <div className="flex items-center gap-1.5">
-                          <div className="status-dot status-ready" />
+                          <div className="status-dot-premium status-alive" />
                           <span className="text-xs font-medium text-success">Ready</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Title & Description */}
-                    <h3 className="mb-2 text-xl font-bold text-text-primary">{agent.name}</h3>
+                    <h3 className="mb-2 text-xl font-bold text-text-primary transition-colors group-hover:text-primary">
+                      {agent.name}
+                    </h3>
                     <p className="mb-4 text-sm leading-relaxed text-text-secondary">
                       {agent.description}
                     </p>
@@ -376,10 +410,11 @@ function AgentsPage() {
                         Capabilities
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {agent.capabilities.map((capability) => (
+                        {agent.capabilities.map((capability, capIndex) => (
                           <div
                             key={capability}
-                            className={`flex items-center gap-1.5 rounded-full ${agent.bgColor} px-3 py-1.5 text-xs font-medium ${agent.color}`}
+                            className={`flex items-center gap-1.5 rounded-full ${agent.bgColor} px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:scale-105 ${agent.color}`}
+                            style={{ transitionDelay: `${capIndex * 25}ms` }}
                           >
                             <CheckCircleIcon className="h-3.5 w-3.5" />
                             {capability}
@@ -395,17 +430,36 @@ function AgentsPage() {
         </div>
 
         {/* How It Works Timeline */}
-        <div className="bg-gradient-surface overflow-hidden rounded-xl p-6 shadow-card md:p-8">
-          <div className="mb-8 text-center">
-            <h2 className="mb-2 text-2xl font-bold text-text-primary">How It Works</h2>
-            <p className="text-text-secondary">
+        <div className="glass-subtle relative overflow-hidden rounded-xl p-6 shadow-card md:p-8">
+          {/* Background accent */}
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-brand-teal-500/5 via-transparent to-brand-cyan/5" />
+          <div className="orb orb-teal pointer-events-none absolute -top-32 -right-32 h-64 w-64 opacity-10" />
+
+          <div className="relative mb-8 text-center">
+            <h2
+              className={`mb-2 text-2xl font-bold text-text-primary ${hasMounted ? 'animate-slide-up' : 'opacity-0'}`}
+            >
+              How It Works
+            </h2>
+            <p
+              className={`text-text-secondary ${hasMounted ? 'stagger-1 animate-slide-up' : 'opacity-0'}`}
+            >
               The agents work together in a coordinated pipeline to complete your tasks
             </p>
           </div>
 
           <div className="relative mx-auto max-w-3xl">
-            {/* Timeline Line */}
-            <div className="absolute top-0 bottom-0 left-4 w-0.5 bg-border-primary md:left-8" />
+            {/* Timeline Line - Gradient animated */}
+            <div className="absolute top-0 bottom-0 left-4 w-0.5 md:left-8">
+              <div className="h-full w-full bg-linear-to-b from-amber-500/30 via-blue-500/30 via-green-500/30 to-purple-500/30" />
+              <motion.div
+                className="absolute inset-0 bg-linear-to-b from-amber-500 via-blue-500 via-green-500 to-purple-500"
+                initial={{ scaleY: 0, transformOrigin: 'top' }}
+                animate={{ scaleY: 1 }}
+                transition={{ duration: 2, ease: 'easeOut', delay: 0.5 }}
+                style={{ width: '2px' }}
+              />
+            </div>
 
             {/* Timeline Steps */}
             <div className="space-y-8">
@@ -417,33 +471,35 @@ function AgentsPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.8 + index * 0.15 }}
-                    className="relative flex gap-4 md:gap-8"
+                    className="group relative flex gap-4 md:gap-8"
                   >
-                    {/* Number Circle with Icon */}
+                    {/* Number Circle with Icon - Enhanced */}
                     <div className="relative z-10 flex shrink-0 flex-col items-center">
                       <div
-                        className={`flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${step.agent.iconGradient} p-0.5 shadow-lg`}
+                        className={`flex h-16 w-16 items-center justify-center rounded-xl bg-linear-to-br ${step.agent.iconGradient} p-0.5 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl`}
                       >
                         <div
                           className={`flex h-full w-full items-center justify-center rounded-xl ${step.agent.bgColor}`}
                         >
-                          <IconComponent className={`h-7 w-7 ${step.agent.color}`} />
+                          <IconComponent
+                            className={`h-7 w-7 transition-transform group-hover:scale-110 ${step.agent.color}`}
+                          />
                         </div>
                       </div>
                       <div
-                        className={`absolute -bottom-2 flex h-6 w-6 items-center justify-center rounded-full ${step.agent.bgColor} border-2 border-surface text-xs font-bold ${step.agent.color}`}
+                        className={`absolute -bottom-2 flex h-6 w-6 items-center justify-center rounded-full ${step.agent.bgColor} border-2 border-surface text-xs font-bold shadow-sm ${step.agent.color}`}
                       >
                         {index + 1}
                       </div>
                     </div>
 
-                    {/* Content Card */}
+                    {/* Content Card - Enhanced */}
                     <div className="flex-1 pb-8">
                       <Card
-                        className={`border ${step.agent.borderColor} interactive-scale bg-surface/50 shadow-sm transition-all duration-300 hover:shadow-md`}
+                        className={`border ${step.agent.borderColor} hover-lift-premium glass-subtle shadow-sm transition-all duration-300`}
                       >
                         <CardContent className="p-4">
-                          <h3 className="mb-1 text-lg font-semibold text-text-primary">
+                          <h3 className="mb-1 text-lg font-semibold text-text-primary transition-colors group-hover:text-primary">
                             {step.title}
                           </h3>
                           <p className="text-sm leading-relaxed text-text-secondary">

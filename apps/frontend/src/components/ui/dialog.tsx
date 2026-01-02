@@ -18,15 +18,10 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm',
-      `
-        data-[state=open]:animate-in
-        data-[state=closed]:animate-out
-      `,
-      `
-        data-[state=closed]:fade-out-0
-        data-[state=open]:fade-in-0
-      `,
+      'fixed inset-0 z-50 bg-black/60 backdrop-blur-md',
+      'data-[state=open]:animate-in data-[state=closed]:animate-out',
+      'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      'duration-300',
       className
     )}
     {...props}
@@ -45,32 +40,21 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        `
-          fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg
-          translate-x-[-50%] translate-y-[-50%]
-        `,
-        'gap-4 rounded-lg border border-border bg-background-2 p-6 shadow-modal',
-        'duration-200',
-        `
-          data-[state=open]:animate-in
-          data-[state=closed]:animate-out
-        `,
-        `
-          data-[state=closed]:fade-out-0
-          data-[state=open]:fade-in-0
-        `,
-        `
-          data-[state=closed]:zoom-out-95
-          data-[state=open]:zoom-in-95
-        `,
-        `
-          data-[state=closed]:slide-out-to-left-1/2
-          data-[state=closed]:slide-out-to-top-[48%]
-        `,
-        `
-          data-[state=open]:slide-in-from-left-1/2
-          data-[state=open]:slide-in-from-top-[48%]
-        `,
+        'fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg',
+        'translate-x-[-50%] translate-y-[-50%]',
+        // Premium glass styling
+        'gap-4 rounded-xl border border-border-primary/50 p-6',
+        'bg-surface/95 backdrop-blur-xl shadow-elevated',
+        // Gradient accent border at top
+        'before:absolute before:inset-x-0 before:top-0 before:h-px',
+        'before:bg-linear-to-r before:from-transparent before:via-brand-cyan/50 before:to-transparent',
+        // Animation
+        'duration-300',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out',
+        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+        'data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
+        'data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
         className
       )}
       {...props}
@@ -78,15 +62,13 @@ const DialogContent = React.forwardRef<
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close
-          className={`
-            absolute top-4 right-4 rounded-sm opacity-70
-            ring-offset-background-2 transition-opacity
-            hover:opacity-100
-            focus:ring-2 focus:ring-primary focus:ring-offset-2
-            focus:outline-none
-            disabled:pointer-events-none
-            data-[state=open]:bg-secondary
-          `}
+          className={cn(
+            'absolute top-4 right-4 rounded-lg p-1.5',
+            'text-text-muted transition-all duration-200',
+            'hover:bg-surface-secondary hover:text-text-primary hover:scale-110',
+            'focus:ring-2 focus:ring-brand-cyan/50 focus:ring-offset-2 focus:ring-offset-surface focus:outline-none',
+            'disabled:pointer-events-none'
+          )}
         >
           <XMarkIcon className="h-4 w-4" />
           <span className="sr-only">Close</span>
@@ -132,9 +114,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      `
-      text-lg leading-none font-semibold tracking-tight text-text-primary
-    `,
+      'text-xl font-semibold tracking-tight text-text-primary leading-none',
       className
     )}
     {...props}
